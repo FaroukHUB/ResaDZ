@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
+  <!-- Accueil -->
+  <url>
+    <loc>https://mbcarsdzrouiba.com/</loc>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+
+  <!-- Pages principales -->
+  <url><loc>https://mbcarsdzrouiba.com/suv.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/berlines.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/citadines.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/conditions.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/nous-contacter.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/Apropos.php</loc></url>
+
+  <!-- Marques (exemples) -->
+  <url><loc>https://mbcarsdzrouiba.com/marques/audi.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/marques/bmw.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/marques/mercedes.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/marques/vw.php</loc></url>
+  <url><loc>https://mbcarsdzrouiba.com/dacia.php</loc></url>
+  <!-- etc. pour chaque marque que tu as réellement en ligne -->
+
+</urlset>
