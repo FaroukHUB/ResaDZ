@@ -1,6 +1,0 @@
-User-agent: *
-Disallow: /admin/
-Disallow: /tmp/
-Allow: /
-
-Sitemap: https://mbcarsdzrouiba.com/sitemap.xml
