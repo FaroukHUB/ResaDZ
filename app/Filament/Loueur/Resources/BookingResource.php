@@ -1,0 +1,491 @@
+<?php
+
+namespace App\Filament\Loueur\Resources;
+
+use App\Filament\Loueur\Resources\BookingResource\Pages;
+use App\Models\Booking;
+use App\Models\Vehicle;
+use App\Models\DeliveryZone;
+use Filament\Forms;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+
+class BookingResource extends Resource
+{
+    protected static ?string $model = Booking::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+
+    protected static ?string $navigationGroup = 'Réservations';
+
+    protected static ?string $navigationLabel = 'Mes Réservations';
+
+    protected static ?string $modelLabel = 'Réservation';
+
+    protected static ?string $pluralModelLabel = 'Réservations';
+
+    protected static ?int $navigationSort = 1;
+
+    public static function getEloquentQuery(): Builder
+    {
+        $loueur = Auth::user()->loueur;
+
+        return parent::getEloquentQuery()
+            ->when($loueur, fn ($query) => $query->where('loueur_id', $loueur->id))
+            ->orderBy('created_at', 'desc');
+    }
+
+    public static function form(Form $form): Form
+    {
+        $loueur = Auth::user()->loueur;
+
+        return $form
+            ->schema([
+                Forms\Components\Tabs::make('Réservation')
+                    ->tabs([
+                        Forms\Components\Tabs\Tab::make('Informations')
+                            ->icon('heroicon-o-information-circle')
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('reference')
+                                            ->label('Référence')
+                                            ->disabled()
+                                            ->dehydrated(false),
+                                        Forms\Components\Select::make('status')
+                                            ->label('Statut')
+                                            ->options([
+                                                'pending' => 'En attente',
+                                                'confirmed' => 'Confirmée',
+                                                'active' => 'En cours',
+                                                'completed' => 'Terminée',
+                                                'cancelled' => 'Annulée',
+                                            ])
+                                            ->required(),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\Select::make('vehicle_id')
+                                            ->label('Véhicule')
+                                            ->options(fn () => $loueur
+                                                ? Vehicle::where('loueur_id', $loueur->id)->pluck('full_name', 'id')
+                                                : []
+                                            )
+                                            ->searchable()
+                                            ->required(),
+                                        Forms\Components\Select::make('currency')
+                                            ->label('Devise')
+                                            ->options([
+                                                'DZD' => 'Dinar (DA)',
+                                                'EUR' => 'Euro (€)',
+                                            ])
+                                            ->default('DZD'),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\DateTimePicker::make('start_date')
+                                            ->label('Date de début')
+                                            ->required(),
+                                        Forms\Components\DateTimePicker::make('end_date')
+                                            ->label('Date de fin')
+                                            ->required(),
+                                    ]),
+                                Forms\Components\TextInput::make('total_days')
+                                    ->label('Nombre de jours')
+                                    ->numeric()
+                                    ->minValue(1),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Client')
+                            ->icon('heroicon-o-user')
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('client_name')
+                                            ->label('Nom du client')
+                                            ->required(),
+                                        Forms\Components\TextInput::make('client_phone')
+                                            ->label('Téléphone')
+                                            ->tel(),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('client_email')
+                                            ->label('Email')
+                                            ->email(),
+                                        Forms\Components\TextInput::make('client_whatsapp')
+                                            ->label('WhatsApp'),
+                                    ]),
+                                Forms\Components\Section::make('Documents')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('client_id_document')
+                                            ->label('Pièce d\'identité')
+                                            ->directory('bookings/documents')
+                                            ->visibility('private'),
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\FileUpload::make('client_license_front')
+                                                    ->label('Permis (recto)')
+                                                    ->directory('bookings/documents')
+                                                    ->visibility('private'),
+                                                Forms\Components\FileUpload::make('client_license_back')
+                                                    ->label('Permis (verso)')
+                                                    ->directory('bookings/documents')
+                                                    ->visibility('private'),
+                                            ]),
+                                    ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Livraison')
+                            ->icon('heroicon-o-truck')
+                            ->schema([
+                                Forms\Components\Section::make('Récupération')
+                                    ->schema([
+                                        Forms\Components\Select::make('pickup_zone_id')
+                                            ->label('Zone de récupération')
+                                            ->options(fn () => $loueur
+                                                ? DeliveryZone::where('loueur_id', $loueur->id)->pluck('name', 'id')
+                                                : []
+                                            ),
+                                        Forms\Components\TextInput::make('pickup_address')
+                                            ->label('Adresse de récupération'),
+                                        Forms\Components\Textarea::make('pickup_notes')
+                                            ->label('Notes de récupération')
+                                            ->rows(2),
+                                    ]),
+                                Forms\Components\Section::make('Retour')
+                                    ->schema([
+                                        Forms\Components\Select::make('return_zone_id')
+                                            ->label('Zone de retour')
+                                            ->options(fn () => $loueur
+                                                ? DeliveryZone::where('loueur_id', $loueur->id)->pluck('name', 'id')
+                                                : []
+                                            ),
+                                        Forms\Components\TextInput::make('return_address')
+                                            ->label('Adresse de retour'),
+                                        Forms\Components\Textarea::make('return_notes')
+                                            ->label('Notes de retour')
+                                            ->rows(2),
+                                    ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Tarification')
+                            ->icon('heroicon-o-currency-euro')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('base_price')
+                                            ->label('Prix de base')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('duration_discount')
+                                            ->label('Remise durée')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('season_surcharge')
+                                            ->label('Surcharge saison')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                    ]),
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('delivery_fee')
+                                            ->label('Frais livraison')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('return_fee')
+                                            ->label('Frais retour')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('options_total')
+                                            ->label('Total options')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                    ]),
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('extra_fees')
+                                            ->label('Frais extra')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('discount_amount')
+                                            ->label('Remise')
+                                            ->numeric()
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('total_price')
+                                            ->label('TOTAL')
+                                            ->numeric()
+                                            ->suffix('DA')
+                                            ->required(),
+                                    ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Paiement')
+                            ->icon('heroicon-o-banknotes')
+                            ->schema([
+                                Forms\Components\Section::make('Acompte')
+                                    ->schema([
+                                        Forms\Components\Grid::make(3)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('advance_amount')
+                                                    ->label('Montant acompte')
+                                                    ->numeric()
+                                                    ->suffix('DA'),
+                                                Forms\Components\Select::make('advance_status')
+                                                    ->label('Statut acompte')
+                                                    ->options([
+                                                        'pending' => 'En attente',
+                                                        'paid' => 'Payé',
+                                                        'refunded' => 'Remboursé',
+                                                    ]),
+                                                Forms\Components\Select::make('advance_payment_method')
+                                                    ->label('Méthode')
+                                                    ->options([
+                                                        'cash' => 'Espèces',
+                                                        'cib' => 'CIB',
+                                                        'dahabia' => 'Dahabia',
+                                                        'baridimob' => 'BaridiMob',
+                                                        'paypal' => 'PayPal',
+                                                        'bank_transfer' => 'Virement',
+                                                    ]),
+                                            ]),
+                                        Forms\Components\DateTimePicker::make('advance_expires_at')
+                                            ->label('Expiration acompte'),
+                                    ]),
+                                Forms\Components\Section::make('Caution')
+                                    ->schema([
+                                        Forms\Components\Grid::make(3)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('deposit_amount')
+                                                    ->label('Montant caution')
+                                                    ->numeric()
+                                                    ->suffix('DA'),
+                                                Forms\Components\Select::make('deposit_currency')
+                                                    ->label('Devise')
+                                                    ->options([
+                                                        'DZD' => 'DA',
+                                                        'EUR' => '€',
+                                                    ]),
+                                                Forms\Components\Select::make('deposit_status')
+                                                    ->label('Statut')
+                                                    ->options([
+                                                        'pending' => 'En attente',
+                                                        'received' => 'Reçue',
+                                                        'returned' => 'Rendue',
+                                                        'partial' => 'Partielle',
+                                                    ]),
+                                            ]),
+                                    ]),
+                                Forms\Components\Section::make('Paiement final')
+                                    ->schema([
+                                        Forms\Components\Grid::make(3)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('amount_paid')
+                                                    ->label('Montant payé')
+                                                    ->numeric()
+                                                    ->suffix('DA'),
+                                                Forms\Components\TextInput::make('amount_remaining')
+                                                    ->label('Reste à payer')
+                                                    ->numeric()
+                                                    ->suffix('DA'),
+                                                Forms\Components\Select::make('payment_status')
+                                                    ->label('Statut paiement')
+                                                    ->options([
+                                                        'pending' => 'En attente',
+                                                        'partial' => 'Partiel',
+                                                        'paid' => 'Payé',
+                                                        'refunded' => 'Remboursé',
+                                                    ]),
+                                            ]),
+                                        Forms\Components\Select::make('payment_method')
+                                            ->label('Méthode de paiement')
+                                            ->options([
+                                                'cash' => 'Espèces',
+                                                'cib' => 'CIB',
+                                                'dahabia' => 'Dahabia',
+                                                'baridimob' => 'BaridiMob',
+                                                'paypal' => 'PayPal',
+                                                'bank_transfer' => 'Virement',
+                                            ]),
+                                    ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('État véhicule')
+                            ->icon('heroicon-o-clipboard-document-check')
+                            ->schema([
+                                Forms\Components\Section::make('Départ')
+                                    ->schema([
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('mileage_start')
+                                                    ->label('Kilométrage départ')
+                                                    ->numeric()
+                                                    ->suffix('km'),
+                                                Forms\Components\Select::make('fuel_level_start')
+                                                    ->label('Niveau carburant')
+                                                    ->options([
+                                                        'empty' => 'Vide',
+                                                        'quarter' => '1/4',
+                                                        'half' => '1/2',
+                                                        'three_quarters' => '3/4',
+                                                        'full' => 'Plein',
+                                                    ]),
+                                            ]),
+                                        Forms\Components\Textarea::make('condition_notes_before')
+                                            ->label('Notes état avant')
+                                            ->rows(2),
+                                        Forms\Components\FileUpload::make('photos_before')
+                                            ->label('Photos avant')
+                                            ->multiple()
+                                            ->directory('bookings/photos')
+                                            ->visibility('private'),
+                                    ]),
+                                Forms\Components\Section::make('Retour')
+                                    ->schema([
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('mileage_end')
+                                                    ->label('Kilométrage retour')
+                                                    ->numeric()
+                                                    ->suffix('km'),
+                                                Forms\Components\Select::make('fuel_level_end')
+                                                    ->label('Niveau carburant')
+                                                    ->options([
+                                                        'empty' => 'Vide',
+                                                        'quarter' => '1/4',
+                                                        'half' => '1/2',
+                                                        'three_quarters' => '3/4',
+                                                        'full' => 'Plein',
+                                                    ]),
+                                            ]),
+                                        Forms\Components\Textarea::make('condition_notes_after')
+                                            ->label('Notes état après')
+                                            ->rows(2),
+                                        Forms\Components\FileUpload::make('photos_after')
+                                            ->label('Photos après')
+                                            ->multiple()
+                                            ->directory('bookings/photos')
+                                            ->visibility('private'),
+                                    ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Notes')
+                            ->icon('heroicon-o-document-text')
+                            ->schema([
+                                Forms\Components\Textarea::make('internal_notes')
+                                    ->label('Notes internes')
+                                    ->rows(4)
+                                    ->helperText('Ces notes ne sont pas visibles par le client'),
+                            ]),
+                    ])
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('reference')
+                    ->label('Réf.')
+                    ->searchable()
+                    ->sortable()
+                    ->copyable(),
+                Tables\Columns\TextColumn::make('client_name')
+                    ->label('Client')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('vehicle.full_name')
+                    ->label('Véhicule')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('start_date')
+                    ->label('Début')
+                    ->date('d/m/Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('end_date')
+                    ->label('Fin')
+                    ->date('d/m/Y')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('total_price')
+                    ->label('Total')
+                    ->formatStateUsing(fn ($record) => $record->getFormattedTotal())
+                    ->sortable(),
+                Tables\Columns\BadgeColumn::make('status')
+                    ->label('Statut')
+                    ->colors([
+                        'warning' => 'pending',
+                        'info' => 'confirmed',
+                        'success' => 'active',
+                        'gray' => 'completed',
+                        'danger' => 'cancelled',
+                    ])
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'pending' => 'En attente',
+                        'confirmed' => 'Confirmée',
+                        'active' => 'En cours',
+                        'completed' => 'Terminée',
+                        'cancelled' => 'Annulée',
+                        default => $state,
+                    }),
+                Tables\Columns\BadgeColumn::make('payment_status')
+                    ->label('Paiement')
+                    ->colors([
+                        'warning' => 'pending',
+                        'info' => 'partial',
+                        'success' => 'paid',
+                        'danger' => 'refunded',
+                    ])
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'pending' => 'En attente',
+                        'partial' => 'Partiel',
+                        'paid' => 'Payé',
+                        'refunded' => 'Remboursé',
+                        default => $state ?? '-',
+                    }),
+            ])
+            ->filters([
+                Tables\Filters\SelectFilter::make('status')
+                    ->label('Statut')
+                    ->options([
+                        'pending' => 'En attente',
+                        'confirmed' => 'Confirmée',
+                        'active' => 'En cours',
+                        'completed' => 'Terminée',
+                        'cancelled' => 'Annulée',
+                    ]),
+                Tables\Filters\SelectFilter::make('payment_status')
+                    ->label('Paiement')
+                    ->options([
+                        'pending' => 'En attente',
+                        'partial' => 'Partiel',
+                        'paid' => 'Payé',
+                    ]),
+                Tables\Filters\SelectFilter::make('vehicle_id')
+                    ->label('Véhicule')
+                    ->relationship('vehicle', 'full_name'),
+            ])
+            ->actions([
+                Tables\Actions\ViewAction::make(),
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListBookings::route('/'),
+            'create' => Pages\CreateBooking::route('/create'),
+            'view' => Pages\ViewBooking::route('/{record}'),
+            'edit' => Pages\EditBooking::route('/{record}/edit'),
+        ];
+    }
+}
