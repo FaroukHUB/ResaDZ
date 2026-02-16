@@ -1,0 +1,120 @@
+@extends('front.layouts.app')
+
+@section('title', 'Véhicules disponibles - ResaDZ')
+@section('meta_description', 'Parcourez tous les véhicules disponibles à la location en Algérie. Comparez les prix et réservez en ligne.')
+
+@section('content')
+
+    <!-- Header -->
+    <section class="bg-white border-b border-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <h1 class="text-3xl font-bold text-gray-900">Véhicules disponibles</h1>
+            <p class="mt-2 text-gray-500">{{ $vehicles->total() }} véhicule{{ $vehicles->total() > 1 ? 's' : '' }} trouvé{{ $vehicles->total() > 1 ? 's' : '' }}</p>
+        </div>
+    </section>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+
+            <!-- Filters Sidebar -->
+            <aside class="w-full lg:w-72 shrink-0">
+                <form action="{{ route('vehicles.index') }}" method="GET" class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5 sticky top-24">
+                    <h3 class="font-bold text-gray-900 text-lg">Filtres</h3>
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 block mb-1">Marque</label>
+                        <select name="brand" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">Toutes</option>
+                            @foreach($brands as $brand)
+                                <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 block mb-1">Catégorie</label>
+                        <select name="category" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">Toutes</option>
+                            @foreach($categories as $category)
+                                <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 block mb-1">Transmission</label>
+                        <select name="transmission" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">Toutes</option>
+                            <option value="automatic" {{ request('transmission') == 'automatic' ? 'selected' : '' }}>Automatique</option>
+                            <option value="manual" {{ request('transmission') == 'manual' ? 'selected' : '' }}>Manuelle</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 block mb-1">Carburant</label>
+                        <select name="fuel" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                            <option value="">Tous</option>
+                            <option value="diesel" {{ request('fuel') == 'diesel' ? 'selected' : '' }}>Diesel</option>
+                            <option value="essence" {{ request('fuel') == 'essence' ? 'selected' : '' }}>Essence</option>
+                            <option value="hybrid" {{ request('fuel') == 'hybrid' ? 'selected' : '' }}>Hybride</option>
+                            <option value="electric" {{ request('fuel') == 'electric' ? 'selected' : '' }}>Électrique</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-1">Prix min</label>
+                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="DA" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-1">Prix max</label>
+                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="DA" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full py-2.5 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition">
+                        Appliquer
+                    </button>
+
+                    @if(request()->hasAny(['brand', 'category', 'transmission', 'fuel', 'min_price', 'max_price']))
+                        <a href="{{ route('vehicles.index') }}" class="block text-center text-sm text-gray-500 hover:text-gray-700">
+                            Réinitialiser les filtres
+                        </a>
+                    @endif
+                </form>
+            </aside>
+
+            <!-- Vehicle Grid -->
+            <div class="flex-1">
+                <!-- Sort -->
+                <div class="flex items-center justify-end mb-6">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm text-gray-500">Trier par :</span>
+                        <a href="{{ route('vehicles.index', array_merge(request()->query(), ['sort' => 'recent'])) }}" class="text-sm px-3 py-1 rounded-lg {{ request('sort', 'recent') === 'recent' ? 'bg-amber-100 text-amber-700 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">Récents</a>
+                        <a href="{{ route('vehicles.index', array_merge(request()->query(), ['sort' => 'price_asc'])) }}" class="text-sm px-3 py-1 rounded-lg {{ request('sort') === 'price_asc' ? 'bg-amber-100 text-amber-700 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">Prix &uarr;</a>
+                        <a href="{{ route('vehicles.index', array_merge(request()->query(), ['sort' => 'price_desc'])) }}" class="text-sm px-3 py-1 rounded-lg {{ request('sort') === 'price_desc' ? 'bg-amber-100 text-amber-700 font-medium' : 'text-gray-600 hover:bg-gray-100' }}">Prix &darr;</a>
+                    </div>
+                </div>
+
+                @if($vehicles->count() > 0)
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                        @foreach($vehicles as $vehicle)
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                        @endforeach
+                    </div>
+
+                    <div class="mt-10">
+                        {{ $vehicles->links() }}
+                    </div>
+                @else
+                    <div class="text-center py-20">
+                        <svg class="w-16 h-16 text-gray-300 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v4.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                        <h3 class="mt-4 text-lg font-semibold text-gray-900">Aucun véhicule trouvé</h3>
+                        <p class="mt-2 text-gray-500">Essayez de modifier vos filtres.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+
+@endsection
