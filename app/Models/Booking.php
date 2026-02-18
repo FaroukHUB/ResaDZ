@@ -38,6 +38,10 @@ class Booking extends Model
         'extra_fees',
         'discount_amount',
         'total_price',
+        'commission_amount',
+        'commission_rate',
+        'commission_paid',
+        'commission_paid_at',
         'currency',
         'selected_options',
         'deposit_amount',
@@ -104,6 +108,10 @@ class Booking extends Model
         'extra_fees' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'commission_amount' => 'decimal:2',
+        'commission_rate' => 'decimal:2',
+        'commission_paid' => 'boolean',
+        'commission_paid_at' => 'date',
         'deposit_amount' => 'decimal:2',
         'advance_amount' => 'decimal:2',
         'amount_paid' => 'decimal:2',
@@ -121,7 +129,46 @@ class Booking extends Model
             if (empty($booking->confirmation_token)) {
                 $booking->confirmation_token = Str::random(64);
             }
+
+            // Calculer la commission automatiquement
+            $booking->calculateCommission();
         });
+
+        static::updating(function ($booking) {
+            // Recalculer si le prix total change
+            if ($booking->isDirty('total_price')) {
+                $booking->calculateCommission();
+            }
+        });
+    }
+
+    /**
+     * Calculate commission based on loueur's rate.
+     */
+    public function calculateCommission(): void
+    {
+        $loueur = $this->loueur ?? Loueur::find($this->loueur_id);
+
+        if ($loueur && $loueur->shouldPayCommission()) {
+            $rate = $loueur->getCommissionRate();
+            $this->commission_rate = $rate;
+            $this->commission_amount = round(($this->total_price * $rate) / 100, 2);
+        } else {
+            // En période d'essai = pas de commission
+            $this->commission_rate = 0;
+            $this->commission_amount = 0;
+        }
+    }
+
+    /**
+     * Mark commission as paid.
+     */
+    public function markCommissionPaid(): void
+    {
+        $this->update([
+            'commission_paid' => true,
+            'commission_paid_at' => now(),
+        ]);
     }
 
     // Relations

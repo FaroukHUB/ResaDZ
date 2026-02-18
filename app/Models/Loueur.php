@@ -43,16 +43,29 @@ class Loueur extends Model
         'total_rentals',
         'meta_title',
         'meta_description',
+        'trial_ends_at',
+        'is_suspended',
+        'suspension_reason',
+        'commission_rate',
+        'commission_paid_until',
+        'commission_notes',
     ];
 
     protected $casts = [
         'payment_methods' => 'array',
         'is_active' => 'boolean',
         'is_verified' => 'boolean',
+        'is_suspended' => 'boolean',
         'verified_at' => 'datetime',
         'subscription_expires_at' => 'datetime',
+        'trial_ends_at' => 'date',
+        'commission_paid_until' => 'date',
+        'commission_rate' => 'decimal:2',
         'rating' => 'decimal:2',
     ];
+
+    // Commission par défaut (5%)
+    public const DEFAULT_COMMISSION_RATE = 5.00;
 
     // Relations
     public function user(): BelongsTo
@@ -178,10 +191,91 @@ class Loueur extends Model
         return $badges;
     }
 
+    /**
+     * Get the commission rate for this loueur (custom or default).
+     */
+    public function getCommissionRate(): float
+    {
+        return $this->commission_rate ?? self::DEFAULT_COMMISSION_RATE;
+    }
+
+    /**
+     * Check if loueur is in trial period.
+     */
+    public function isInTrial(): bool
+    {
+        return $this->trial_ends_at && $this->trial_ends_at->isFuture();
+    }
+
+    /**
+     * Check if trial has expired.
+     */
+    public function isTrialExpired(): bool
+    {
+        return $this->trial_ends_at && $this->trial_ends_at->isPast();
+    }
+
+    /**
+     * Check if loueur should pay commission (trial expired).
+     */
+    public function shouldPayCommission(): bool
+    {
+        return !$this->isInTrial();
+    }
+
+    /**
+     * Get total unpaid commission for a given period.
+     */
+    public function getUnpaidCommission(?string $month = null): float
+    {
+        $query = $this->bookings()
+            ->whereIn('status', ['confirmed', 'active', 'completed'])
+            ->where('commission_paid', false);
+
+        if ($month) {
+            $query->whereMonth('created_at', substr($month, 5, 2))
+                  ->whereYear('created_at', substr($month, 0, 4));
+        }
+
+        return $query->sum('commission_amount');
+    }
+
+    /**
+     * Get count of bookings with unpaid commission.
+     */
+    public function getUnpaidBookingsCount(?string $month = null): int
+    {
+        $query = $this->bookings()
+            ->whereIn('status', ['confirmed', 'active', 'completed'])
+            ->where('commission_paid', false);
+
+        if ($month) {
+            $query->whereMonth('created_at', substr($month, 5, 2))
+                  ->whereYear('created_at', substr($month, 0, 4));
+        }
+
+        return $query->count();
+    }
+
     // Scopes
     public function scopeActive($query)
     {
-        return $query->where('is_active', true);
+        return $query->where('is_active', true)->where('is_suspended', false);
+    }
+
+    public function scopeSuspended($query)
+    {
+        return $query->where('is_suspended', true);
+    }
+
+    public function scopeInTrial($query)
+    {
+        return $query->whereNotNull('trial_ends_at')->where('trial_ends_at', '>', now());
+    }
+
+    public function scopeTrialExpired($query)
+    {
+        return $query->whereNotNull('trial_ends_at')->where('trial_ends_at', '<=', now());
     }
 
     public function scopeVerified($query)

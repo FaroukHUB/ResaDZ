@@ -146,6 +146,43 @@ class LoueurResource extends Resource
                                         Forms\Components\Toggle::make('is_verified')
                                             ->label('Vérifié')
                                             ->helperText('Badge de confiance affiché sur le site'),
+                                        Forms\Components\Toggle::make('is_suspended')
+                                            ->label('Suspendu')
+                                            ->helperText('Bloque l\'accès au compte'),
+                                    ]),
+                                Forms\Components\Textarea::make('suspension_reason')
+                                    ->label('Raison de suspension')
+                                    ->visible(fn ($get) => $get('is_suspended'))
+                                    ->rows(2),
+                            ]),
+
+                        Forms\Components\Tabs\Tab::make('Essai & Commission')
+                            ->icon('heroicon-o-banknotes')
+                            ->schema([
+                                Forms\Components\Section::make('Période d\'essai')
+                                    ->description('1 mois gratuit par défaut, renouvelable')
+                                    ->schema([
+                                        Forms\Components\DatePicker::make('trial_ends_at')
+                                            ->label('Fin de période d\'essai')
+                                            ->default(now()->addMonth())
+                                            ->helperText('Pendant l\'essai, aucune commission n\'est prélevée'),
+                                    ]),
+                                Forms\Components\Section::make('Commission')
+                                    ->description('Taux personnalisé (optionnel)')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('commission_rate')
+                                            ->label('Taux de commission')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('%')
+                                            ->placeholder(Loueur::DEFAULT_COMMISSION_RATE . '% (par défaut)')
+                                            ->helperText('Laissez vide pour utiliser le taux global'),
+                                        Forms\Components\DatePicker::make('commission_paid_until')
+                                            ->label('Commission payée jusqu\'au'),
+                                        Forms\Components\Textarea::make('commission_notes')
+                                            ->label('Notes sur les paiements')
+                                            ->rows(2),
                                     ]),
                             ]),
 
@@ -197,18 +234,36 @@ class LoueurResource extends Resource
                     ->label('Véhicules')
                     ->counts('vehicles')
                     ->sortable(),
+                Tables\Columns\TextColumn::make('trial_ends_at')
+                    ->label('Essai')
+                    ->date('d/m/Y')
+                    ->color(fn ($record) => $record->isInTrial() ? 'success' : 'warning')
+                    ->description(fn ($record) => $record->isInTrial() ? 'En cours' : ($record->trial_ends_at ? 'Expiré' : '-'))
+                    ->sortable(),
                 Tables\Columns\IconColumn::make('is_verified')
                     ->label('Vérifié')
                     ->boolean(),
-                Tables\Columns\IconColumn::make('is_active')
-                    ->label('Actif')
-                    ->boolean(),
+                Tables\Columns\IconColumn::make('is_suspended')
+                    ->label('Susp.')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-x-circle')
+                    ->falseIcon('heroicon-o-check-circle')
+                    ->trueColor('danger')
+                    ->falseColor('success'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Actif'),
                 Tables\Filters\TernaryFilter::make('is_verified')
                     ->label('Vérifié'),
+                Tables\Filters\TernaryFilter::make('is_suspended')
+                    ->label('Suspendu'),
+                Tables\Filters\Filter::make('in_trial')
+                    ->label('En période d\'essai')
+                    ->query(fn ($query) => $query->inTrial()),
+                Tables\Filters\Filter::make('trial_expired')
+                    ->label('Essai expiré')
+                    ->query(fn ($query) => $query->trialExpired()),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
@@ -270,6 +325,30 @@ class LoueurResource extends Resource
                             ->boolean(),
                     ])
                     ->columns(3),
+
+                Infolists\Components\Section::make('Essai & Commission')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('trial_ends_at')
+                            ->label('Fin d\'essai')
+                            ->date('d/m/Y')
+                            ->color(fn (Loueur $record) => $record->isInTrial() ? 'success' : 'warning')
+                            ->badge(),
+                        Infolists\Components\TextEntry::make('commission_rate_display')
+                            ->label('Taux de commission')
+                            ->state(fn (Loueur $record) => $record->getCommissionRate() . '%')
+                            ->badge()
+                            ->color('info'),
+                        Infolists\Components\TextEntry::make('unpaid_commission')
+                            ->label('Commission impayée')
+                            ->state(fn (Loueur $record) => number_format($record->getUnpaidCommission(), 0, ',', ' ') . ' DA')
+                            ->color(fn (Loueur $record) => $record->getUnpaidCommission() > 0 ? 'danger' : 'success')
+                            ->badge(),
+                        Infolists\Components\TextEntry::make('commission_paid_until')
+                            ->label('Payé jusqu\'au')
+                            ->date('d/m/Y')
+                            ->placeholder('Non défini'),
+                    ])
+                    ->columns(4),
 
                 Infolists\Components\Section::make('Statistiques')
                     ->schema([
