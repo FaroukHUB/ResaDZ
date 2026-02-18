@@ -32,13 +32,22 @@ class HomeController extends Controller
         $totalVehicles = Vehicle::where('is_active', true)->count();
         $totalLoueurs = Loueur::where('is_active', true)->count();
 
+        // Get unique wilayas from active loueurs
+        $wilayas = Loueur::where('is_active', true)
+            ->whereNotNull('wilaya')
+            ->distinct()
+            ->pluck('wilaya')
+            ->sort()
+            ->values();
+
         return view('front.pages.home', compact(
             'featuredVehicles',
             'brands',
             'categories',
             'loueurs',
             'totalVehicles',
-            'totalLoueurs'
+            'totalLoueurs',
+            'wilayas'
         ));
     }
 }
