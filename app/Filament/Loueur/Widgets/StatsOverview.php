@@ -22,6 +22,8 @@ class StatsOverview extends BaseWidget
             return [];
         }
 
+        $now = Carbon::now();
+
         // Véhicules actifs
         $activeVehicles = Vehicle::where('loueur_id', $loueur->id)
             ->where('is_active', true)
@@ -29,25 +31,19 @@ class StatsOverview extends BaseWidget
 
         // Réservations ce mois
         $monthlyBookings = Booking::where('loueur_id', $loueur->id)
-            ->whereMonth('created_at', now()->month)
-            ->whereYear('created_at', now()->year)
+            ->whereMonth('created_at', $now->month)
+            ->whereYear('created_at', $now->year)
             ->count();
 
-        // Revenus ce mois
-        $monthlyIncome = Transaction::where('loueur_id', $loueur->id)
-            ->where('type', 'income')
-            ->whereMonth('transaction_date', now()->month)
-            ->whereYear('transaction_date', now()->year)
-            ->where('status', 'completed')
-            ->sum('amount');
+        // Réservations mois dernier (pour comparaison)
+        $lastMonthBookings = Booking::where('loueur_id', $loueur->id)
+            ->whereMonth('created_at', $now->copy()->subMonth()->month)
+            ->whereYear('created_at', $now->copy()->subMonth()->year)
+            ->count();
 
-        // Dépenses ce mois
-        $monthlyExpenses = Transaction::where('loueur_id', $loueur->id)
-            ->where('type', 'expense')
-            ->whereMonth('transaction_date', now()->month)
-            ->whereYear('transaction_date', now()->year)
-            ->where('status', 'completed')
-            ->sum('amount');
+        $bookingTrend = $lastMonthBookings > 0
+            ? round(($monthlyBookings - $lastMonthBookings) / $lastMonthBookings * 100)
+            : ($monthlyBookings > 0 ? 100 : 0);
 
         // Réservations en attente
         $pendingBookings = Booking::where('loueur_id', $loueur->id)
@@ -59,23 +55,47 @@ class StatsOverview extends BaseWidget
             ->where('status', 'active')
             ->count();
 
+        // Revenus ce mois
+        $monthlyIncome = Transaction::where('loueur_id', $loueur->id)
+            ->where('type', 'income')
+            ->whereMonth('transaction_date', $now->month)
+            ->whereYear('transaction_date', $now->year)
+            ->sum('amount');
+
+        // Dépenses ce mois
+        $monthlyExpenses = Transaction::where('loueur_id', $loueur->id)
+            ->where('type', 'expense')
+            ->whereMonth('transaction_date', $now->month)
+            ->whereYear('transaction_date', $now->year)
+            ->sum('amount');
+
+        $netProfit = $monthlyIncome - $monthlyExpenses;
+
+        // Taux d'occupation
+        $totalVehicles = Vehicle::where('loueur_id', $loueur->id)->where('is_active', true)->count();
+        $occupiedVehicles = Booking::where('loueur_id', $loueur->id)
+            ->where('status', 'active')
+            ->distinct('vehicle_id')
+            ->count('vehicle_id');
+        $occupancyRate = $totalVehicles > 0 ? round(($occupiedVehicles / $totalVehicles) * 100) : 0;
+
         return [
             Stat::make('Véhicules actifs', $activeVehicles)
-                ->description('Dans votre flotte')
+                ->description($occupancyRate . '% en location')
                 ->descriptionIcon('heroicon-m-truck')
                 ->color('primary'),
             Stat::make('Réservations ce mois', $monthlyBookings)
-                ->description($pendingBookings . ' en attente')
+                ->description($pendingBookings . ' en attente | ' . ($bookingTrend >= 0 ? '+' : '') . $bookingTrend . '% vs mois dernier')
                 ->descriptionIcon('heroicon-m-calendar')
                 ->color('info'),
             Stat::make('En location', $activeBookings)
-                ->description('Véhicules en cours')
+                ->description('Taux occupation : ' . $occupancyRate . '%')
                 ->descriptionIcon('heroicon-m-key')
                 ->color('success'),
-            Stat::make('Revenus du mois', number_format($monthlyIncome, 0, ',', ' ') . ' DA')
-                ->description('- ' . number_format($monthlyExpenses, 0, ',', ' ') . ' DA dépenses')
+            Stat::make('Bénéfice net du mois', number_format($netProfit, 0, ',', ' ') . ' DA')
+                ->description(number_format($monthlyIncome, 0, ',', ' ') . ' DA revenus - ' . number_format($monthlyExpenses, 0, ',', ' ') . ' DA dépenses')
                 ->descriptionIcon('heroicon-m-banknotes')
-                ->color($monthlyIncome > $monthlyExpenses ? 'success' : 'warning'),
+                ->color($netProfit >= 0 ? 'success' : 'danger'),
         ];
     }
 }
