@@ -56,10 +56,10 @@ class LoueurResource extends Resource
                                         Forms\Components\TextInput::make('subdomain')
                                             ->label('Sous-domaine')
                                             ->prefix('https://')
-                                            ->suffix('.resadz.dz')
+                                            ->suffix('.resadz.com')
                                             ->required()
                                             ->unique(ignoreRecord: true)
-                                            ->helperText('Ex: sayara → sayara.resadz.dz'),
+                                            ->helperText('Ex: sayara → sayara.resadz.com'),
                                     ]),
                                 Forms\Components\Hidden::make('slug'),
                                 Forms\Components\Textarea::make('description')
@@ -192,7 +192,7 @@ class LoueurResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('subdomain')
                     ->label('Sous-domaine')
-                    ->formatStateUsing(fn ($state) => $state . '.resadz.dz')
+                    ->formatStateUsing(fn ($state) => $state . '.resadz.com')
                     ->copyable()
                     ->color('primary'),
                 Tables\Columns\TextColumn::make('user.name')
