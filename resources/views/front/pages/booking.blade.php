@@ -17,7 +17,7 @@
 
         <h1 class="text-3xl font-bold text-gray-900 mb-8">Réserver {{ $vehicle->full_name }}</h1>
 
-        <form action="{{ route('booking.store') }}" method="POST" id="bookingForm">
+        <form action="{{ route('booking.store') }}" method="POST" id="bookingForm" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
 
@@ -26,12 +26,12 @@
                 <!-- Left: Form -->
                 <div class="lg:col-span-2 space-y-6">
 
-                    <!-- Dates -->
+                    <!-- Dates & Heures -->
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Dates de location</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Dates et heures de location</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date de début</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Date de début *</label>
                                 <input type="date" name="start_date" id="start_date" required
                                        min="{{ date('Y-m-d') }}"
                                        value="{{ old('start_date') }}"
@@ -39,12 +39,38 @@
                                 @error('start_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date de fin</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Heure de prise en charge *</label>
+                                <select name="pickup_time" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="">Choisir une heure</option>
+                                    @for($h = 7; $h <= 22; $h++)
+                                        <option value="{{ sprintf('%02d:00', $h) }}" {{ old('pickup_time') == sprintf('%02d:00', $h) ? 'selected' : '' }}>{{ sprintf('%02d:00', $h) }}</option>
+                                        @if($h < 22)
+                                            <option value="{{ sprintf('%02d:30', $h) }}" {{ old('pickup_time') == sprintf('%02d:30', $h) ? 'selected' : '' }}>{{ sprintf('%02d:30', $h) }}</option>
+                                        @endif
+                                    @endfor
+                                </select>
+                                @error('pickup_time') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Date de fin *</label>
                                 <input type="date" name="end_date" id="end_date" required
                                        min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                        value="{{ old('end_date') }}"
                                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
                                 @error('end_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Heure de retour *</label>
+                                <select name="return_time" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
+                                    <option value="">Choisir une heure</option>
+                                    @for($h = 7; $h <= 22; $h++)
+                                        <option value="{{ sprintf('%02d:00', $h) }}" {{ old('return_time') == sprintf('%02d:00', $h) ? 'selected' : '' }}>{{ sprintf('%02d:00', $h) }}</option>
+                                        @if($h < 22)
+                                            <option value="{{ sprintf('%02d:30', $h) }}" {{ old('return_time') == sprintf('%02d:30', $h) ? 'selected' : '' }}>{{ sprintf('%02d:30', $h) }}</option>
+                                        @endif
+                                    @endfor
+                                </select>
+                                @error('return_time') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
                         @if($vehicle->min_rental_days > 1)
@@ -85,11 +111,11 @@
                         </div>
                     </div>
 
-                    <!-- Delivery -->
-                    @if($deliveryZones->count() > 0)
+                    <!-- Lieu de prise en charge & retour -->
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Livraison & Retour</h2>
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Lieu de prise en charge & retour</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @if($deliveryZones->count() > 0)
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Zone de récupération</label>
                                 <select name="pickup_zone_id" id="pickup_zone_id"
@@ -110,17 +136,25 @@
                                     @endforeach
                                 </select>
                             </div>
+                            @endif
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de récupération</label>
-                                <input type="text" name="pickup_address" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500" placeholder="Adresse précise (optionnel)">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de récupération *</label>
+                                <input type="text" name="pickup_address" required
+                                       value="{{ old('pickup_address') }}"
+                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
+                                       placeholder="Ex: Aéroport Houari Boumediene, Alger centre...">
+                                @error('pickup_address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de retour</label>
-                                <input type="text" name="return_address" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500" placeholder="Adresse précise (optionnel)">
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de retour *</label>
+                                <input type="text" name="return_address" required
+                                       value="{{ old('return_address') }}"
+                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
+                                       placeholder="Ex: Même adresse, autre adresse...">
+                                @error('return_address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
                     </div>
-                    @endif
 
                     <!-- Options -->
                     @if(count($availableOptions) > 0)
@@ -143,6 +177,32 @@
                         </div>
                     </div>
                     @endif
+
+                    <!-- Documents -->
+                    <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Documents</h2>
+                        <p class="text-sm text-gray-500 mb-4">Pour accélérer le traitement de votre réservation, envoyez vos documents maintenant.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Pièce d'identité (CNI)</label>
+                                <input type="file" name="client_id_document" accept="image/*,.pdf"
+                                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                                @error('client_id_document') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Permis de conduire (recto)</label>
+                                <input type="file" name="client_license_front" accept="image/*,.pdf"
+                                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                                @error('client_license_front') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Permis de conduire (verso)</label>
+                                <input type="file" name="client_license_back" accept="image/*,.pdf"
+                                       class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-amber-50 file:text-amber-700 hover:file:bg-amber-100">
+                                @error('client_license_back') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                            </div>
+                        </div>
+                    </div>
 
                     <!-- Notes -->
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">

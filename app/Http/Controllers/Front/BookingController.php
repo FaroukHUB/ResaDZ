@@ -85,16 +85,21 @@ class BookingController extends Controller
             'vehicle_id' => 'required|exists:vehicles,id',
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
+            'pickup_time' => 'required|string|max:5',
+            'return_time' => 'required|string|max:5',
             'client_name' => 'required|string|max:255',
             'client_phone' => 'required|string|max:50',
             'client_email' => 'nullable|email|max:255',
             'pickup_zone_id' => 'nullable|exists:delivery_zones,id',
             'return_zone_id' => 'nullable|exists:delivery_zones,id',
-            'pickup_address' => 'nullable|string|max:500',
-            'return_address' => 'nullable|string|max:500',
+            'pickup_address' => 'required|string|max:500',
+            'return_address' => 'required|string|max:500',
             'options' => 'nullable|array',
             'currency' => 'nullable|in:DZD,EUR',
             'internal_notes' => 'nullable|string|max:1000',
+            'client_id_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'client_license_front' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'client_license_back' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
@@ -132,6 +137,17 @@ class BookingController extends Controller
             currency: $request->currency ?? 'DZD'
         );
 
+        // Upload des documents client
+        $idDocPath = $request->hasFile('client_id_document')
+            ? $request->file('client_id_document')->store('bookings/documents', 'public')
+            : null;
+        $licenseFrontPath = $request->hasFile('client_license_front')
+            ? $request->file('client_license_front')->store('bookings/documents', 'public')
+            : null;
+        $licenseBackPath = $request->hasFile('client_license_back')
+            ? $request->file('client_license_back')->store('bookings/documents', 'public')
+            : null;
+
         // Timer configuré par le loueur
         $timerHours = $loueur ? $loueur->getSetting('reservation_timer_hours', null) : null;
 
@@ -151,7 +167,12 @@ class BookingController extends Controller
             'pickup_zone_id' => $request->pickup_zone_id,
             'return_zone_id' => $request->return_zone_id,
             'pickup_address' => $request->pickup_address,
+            'pickup_time' => $request->pickup_time,
             'return_address' => $request->return_address,
+            'return_time' => $request->return_time,
+            'client_id_document' => $idDocPath,
+            'client_license_front' => $licenseFrontPath,
+            'client_license_back' => $licenseBackPath,
             'currency' => $request->currency ?? 'DZD',
             'base_price' => $pricing['base_price'],
             'duration_discount' => $pricing['duration_discount'],
