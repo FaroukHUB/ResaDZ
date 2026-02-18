@@ -12,7 +12,7 @@ class VehicleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Vehicle::with(['brand', 'category', 'loueur'])
+        $query = Vehicle::with(['brand', 'category', 'loueur.settings'])
             ->where('is_active', true)
             ->where('status', 'available');
 
@@ -57,12 +57,12 @@ class VehicleController extends Controller
 
     public function show(string $slug)
     {
-        $vehicle = Vehicle::with(['brand', 'category', 'loueur'])
+        $vehicle = Vehicle::with(['brand', 'category', 'loueur.settings'])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
-        $relatedVehicles = Vehicle::with(['brand', 'loueur'])
+        $relatedVehicles = Vehicle::with(['brand', 'loueur.settings'])
             ->where('is_active', true)
             ->where('status', 'available')
             ->where('id', '!=', $vehicle->id)

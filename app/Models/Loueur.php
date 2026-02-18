@@ -123,6 +123,41 @@ class Loueur extends Model
         );
     }
 
+    /**
+     * Get configured badge labels for vehicle cards.
+     */
+    public function getBadges(): array
+    {
+        $badges = [];
+
+        if ($this->getSetting('badge_insurance', false)) {
+            $badges[] = 'Assurance incluse';
+        }
+        if ($this->getSetting('badge_delivery', false)) {
+            $badges[] = 'Livraison offerte';
+        }
+        if ($this->getSetting('badge_degressive', false)) {
+            $badges[] = 'Prix dégressif selon la durée';
+        }
+        if ($this->getSetting('badge_airport', false)) {
+            $badges[] = 'Livraison aéroport';
+        }
+        if ($this->getSetting('badge_km_unlimited', false)) {
+            $badges[] = 'Kilométrage illimité';
+        }
+
+        $customBadges = $this->getSetting('custom_badges', []);
+        if (is_array($customBadges)) {
+            foreach ($customBadges as $custom) {
+                if (!empty($custom['text'])) {
+                    $badges[] = $custom['text'];
+                }
+            }
+        }
+
+        return $badges;
+    }
+
     // Scopes
     public function scopeActive($query)
     {

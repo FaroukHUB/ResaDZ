@@ -12,7 +12,7 @@ class HomeController extends Controller
 {
     public function index()
     {
-        $featuredVehicles = Vehicle::with(['brand', 'category', 'loueur'])
+        $featuredVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
             ->where('is_active', true)
             ->where('status', 'available')
             ->orderBy('is_featured', 'desc')

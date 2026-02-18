@@ -185,8 +185,8 @@
                             <div class="text-sm font-medium text-gray-700 mb-2">Paiements acceptés</div>
                             <div class="flex flex-wrap gap-2">
                                 @foreach($vehicle->loueur->payment_methods as $method)
-                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">
-                                        {{ match($method) {
+                                    @php
+                                        $methodLabels = [
                                             'cash' => 'Espèces',
                                             'cib' => 'CIB',
                                             'dahabia' => 'Dahabia',
@@ -194,8 +194,10 @@
                                             'paypal' => 'PayPal',
                                             'bank_transfer' => 'Virement',
                                             'wise' => 'Wise',
-                                            default => $method
-                                        } }}
+                                        ];
+                                    @endphp
+                                    <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">
+                                        {{ $methodLabels[$method] ?? $method }}
                                     </span>
                                 @endforeach
                             </div>

@@ -61,6 +61,13 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'require_documents' => $loueur->getSetting('require_documents', true),
                 'notify_whatsapp' => $loueur->getSetting('notify_whatsapp', true),
                 'notify_email' => $loueur->getSetting('notify_email', true),
+                // Badges
+                'badge_insurance' => $loueur->getSetting('badge_insurance', false),
+                'badge_delivery' => $loueur->getSetting('badge_delivery', false),
+                'badge_degressive' => $loueur->getSetting('badge_degressive', false),
+                'badge_airport' => $loueur->getSetting('badge_airport', false),
+                'badge_km_unlimited' => $loueur->getSetting('badge_km_unlimited', false),
+                'custom_badges' => $loueur->getSetting('custom_badges', []),
             ]);
         }
     }
@@ -207,6 +214,45 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     ->label('Notifications Email')
                                     ->helperText('Recevoir les notifications de réservation par email'),
                             ]),
+                        Forms\Components\Tabs\Tab::make('Badges')
+                            ->icon('heroicon-o-tag')
+                            ->schema([
+                                Forms\Components\Section::make('Badges des cartes véhicules')
+                                    ->description('Sélectionnez les badges à afficher sur vos cartes véhicules. Ces badges apparaissent sur le marketplace pour rassurer les clients.')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('badge_insurance')
+                                            ->label('Assurance incluse')
+                                            ->helperText('Affiche "Assurance incluse" sur vos véhicules'),
+                                        Forms\Components\Toggle::make('badge_delivery')
+                                            ->label('Livraison offerte')
+                                            ->helperText('Affiche "Livraison offerte" sur vos véhicules'),
+                                        Forms\Components\Toggle::make('badge_degressive')
+                                            ->label('Prix dégressif')
+                                            ->helperText('Affiche "Prix dégressif selon la durée" sur vos véhicules'),
+                                        Forms\Components\Toggle::make('badge_airport')
+                                            ->label('Livraison aéroport')
+                                            ->helperText('Affiche "Livraison aéroport" sur vos véhicules'),
+                                        Forms\Components\Toggle::make('badge_km_unlimited')
+                                            ->label('Kilométrage illimité')
+                                            ->helperText('Affiche "Kilométrage illimité" sur vos véhicules'),
+                                    ]),
+                                Forms\Components\Section::make('Badges personnalisés')
+                                    ->description('Ajoutez vos propres badges (max 3)')
+                                    ->schema([
+                                        Forms\Components\Repeater::make('custom_badges')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\TextInput::make('text')
+                                                    ->label('Texte du badge')
+                                                    ->required()
+                                                    ->maxLength(50)
+                                                    ->placeholder('Ex: GPS inclus'),
+                                            ])
+                                            ->maxItems(3)
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Ajouter un badge'),
+                                    ]),
+                            ]),
                         Forms\Components\Tabs\Tab::make('SEO')
                             ->icon('heroicon-o-magnifying-glass')
                             ->schema([
@@ -272,6 +318,14 @@ class Settings extends Page implements Forms\Contracts\HasForms
         $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
         $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
         $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');
+
+        // Badges
+        $loueur->setSetting('badge_insurance', $data['badge_insurance'] ?? false, 'boolean');
+        $loueur->setSetting('badge_delivery', $data['badge_delivery'] ?? false, 'boolean');
+        $loueur->setSetting('badge_degressive', $data['badge_degressive'] ?? false, 'boolean');
+        $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
+        $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
+        $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
 
         Notification::make()
             ->title('Paramètres enregistrés')
