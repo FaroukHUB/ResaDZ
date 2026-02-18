@@ -10,6 +10,8 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Illuminate\Support\Str;
 
 class LoueurResource extends Resource
@@ -34,18 +36,38 @@ class LoueurResource extends Resource
             ->schema([
                 Forms\Components\Tabs::make('Loueur')
                     ->tabs([
-                        Forms\Components\Tabs\Tab::make('Informations')
-                            ->icon('heroicon-o-building-storefront')
+                        Forms\Components\Tabs\Tab::make('Compte & Agence')
+                            ->icon('heroicon-o-user')
                             ->schema([
-                                Forms\Components\Select::make('user_id')
-                                    ->label('Utilisateur')
-                                    ->options(User::where('role', 'loueur')
-                                        ->orWhereDoesntHave('loueur')
-                                        ->pluck('name', 'id'))
-                                    ->searchable()
-                                    ->required()
-                                    ->helperText('L\'utilisateur associé à ce loueur'),
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Section::make('Identifiants de connexion')
+                                    ->description('Ces identifiants permettront au loueur de se connecter à son dashboard')
+                                    ->schema([
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('user_email')
+                                                    ->label('Email')
+                                                    ->email()
+                                                    ->required()
+                                                    ->unique('users', 'email', ignoreRecord: true, modifyRuleUsing: function ($rule, $record) {
+                                                        return $record ? $rule->ignore($record->user_id) : $rule;
+                                                    })
+                                                    ->dehydrated(false)
+                                                    ->afterStateHydrated(function ($component, $record) {
+                                                        if ($record && $record->user) {
+                                                            $component->state($record->user->email);
+                                                        }
+                                                    }),
+                                                Forms\Components\TextInput::make('user_password')
+                                                    ->label('Mot de passe')
+                                                    ->password()
+                                                    ->dehydrated(false)
+                                                    ->required(fn ($record) => $record === null)
+                                                    ->helperText(fn ($record) => $record ? 'Laissez vide pour ne pas changer' : 'Min. 8 caractères'),
+                                            ]),
+                                    ])
+                                    ->collapsible(),
+
+                                Forms\Components\Section::make('Informations de l\'agence')
                                     ->schema([
                                         Forms\Components\TextInput::make('company_name')
                                             ->label('Nom de l\'agence')
@@ -53,28 +75,22 @@ class LoueurResource extends Resource
                                             ->maxLength(255)
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state))),
-                                        Forms\Components\TextInput::make('subdomain')
-                                            ->label('Sous-domaine')
-                                            ->prefix('https://')
-                                            ->suffix('.resadz.com')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->helperText('Ex: sayara → sayara.resadz.com'),
+                                        Forms\Components\Hidden::make('slug'),
+                                        Forms\Components\Textarea::make('description')
+                                            ->label('Description')
+                                            ->rows(3),
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('city')
+                                                    ->label('Ville'),
+                                                Forms\Components\TextInput::make('wilaya')
+                                                    ->label('Wilaya'),
+                                            ]),
+                                        Forms\Components\TextInput::make('address')
+                                            ->label('Adresse'),
                                     ]),
-                                Forms\Components\Hidden::make('slug'),
-                                Forms\Components\Textarea::make('description')
-                                    ->label('Description')
-                                    ->rows(3),
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('city')
-                                            ->label('Ville'),
-                                        Forms\Components\TextInput::make('wilaya')
-                                            ->label('Wilaya'),
-                                    ]),
-                                Forms\Components\TextInput::make('address')
-                                    ->label('Adresse'),
                             ]),
+
                         Forms\Components\Tabs\Tab::make('Contact')
                             ->icon('heroicon-o-phone')
                             ->schema([
@@ -87,8 +103,9 @@ class LoueurResource extends Resource
                                             ->label('WhatsApp'),
                                     ]),
                                 Forms\Components\TextInput::make('email_contact')
-                                    ->label('Email de contact')
-                                    ->email(),
+                                    ->label('Email de contact (public)')
+                                    ->email()
+                                    ->helperText('Email affiché sur le site (peut être différent de l\'email de connexion)'),
                                 Forms\Components\Grid::make(3)
                                     ->schema([
                                         Forms\Components\TextInput::make('facebook')
@@ -99,6 +116,7 @@ class LoueurResource extends Resource
                                             ->label('TikTok'),
                                     ]),
                             ]),
+
                         Forms\Components\Tabs\Tab::make('Paiements')
                             ->icon('heroicon-o-banknotes')
                             ->schema([
@@ -114,18 +132,8 @@ class LoueurResource extends Resource
                                         'wise' => 'Wise',
                                     ])
                                     ->columns(3),
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('paypal_email')
-                                            ->label('Email PayPal'),
-                                        Forms\Components\TextInput::make('iban')
-                                            ->label('IBAN'),
-                                        Forms\Components\TextInput::make('wise_email')
-                                            ->label('Email Wise'),
-                                        Forms\Components\TextInput::make('baridimob_rip')
-                                            ->label('RIP BaridiMob'),
-                                    ]),
                             ]),
+
                         Forms\Components\Tabs\Tab::make('Statut')
                             ->icon('heroicon-o-check-badge')
                             ->schema([
@@ -134,26 +142,13 @@ class LoueurResource extends Resource
                                         Forms\Components\Toggle::make('is_active')
                                             ->label('Actif')
                                             ->default(true)
-                                            ->helperText('Le loueur peut accéder à son panel'),
+                                            ->helperText('Le loueur peut accéder à son dashboard'),
                                         Forms\Components\Toggle::make('is_verified')
                                             ->label('Vérifié')
-                                            ->helperText('Badge de confiance'),
-                                    ]),
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\Select::make('subscription_plan')
-                                            ->label('Abonnement')
-                                            ->options([
-                                                'free' => 'Gratuit',
-                                                'basic' => 'Basic',
-                                                'pro' => 'Pro',
-                                                'enterprise' => 'Enterprise',
-                                            ])
-                                            ->default('free'),
-                                        Forms\Components\DatePicker::make('subscription_expires_at')
-                                            ->label('Expiration abonnement'),
+                                            ->helperText('Badge de confiance affiché sur le site'),
                                     ]),
                             ]),
+
                         Forms\Components\Tabs\Tab::make('Images')
                             ->icon('heroicon-o-photo')
                             ->schema([
@@ -168,10 +163,7 @@ class LoueurResource extends Resource
                                 Forms\Components\FileUpload::make('cover_image')
                                     ->label('Image de couverture')
                                     ->image()
-                                    ->directory('loueurs/covers')
-                                    ->imageResizeMode('cover')
-                                    ->imageResizeTargetWidth('1200')
-                                    ->imageResizeTargetHeight('400'),
+                                    ->directory('loueurs/covers'),
                             ]),
                     ])
                     ->columnSpanFull(),
@@ -190,24 +182,20 @@ class LoueurResource extends Resource
                     ->label('Agence')
                     ->searchable()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('subdomain')
-                    ->label('Sous-domaine')
-                    ->formatStateUsing(fn ($state) => $state . '.resadz.com')
+                Tables\Columns\TextColumn::make('user.email')
+                    ->label('Email connexion')
+                    ->searchable()
                     ->copyable()
-                    ->color('primary'),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Propriétaire')
+                    ->icon('heroicon-o-envelope'),
+                Tables\Columns\TextColumn::make('phone')
+                    ->label('Téléphone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('city')
-                    ->label('Ville')
+                Tables\Columns\TextColumn::make('wilaya')
+                    ->label('Wilaya')
                     ->placeholder('-'),
                 Tables\Columns\TextColumn::make('vehicles_count')
                     ->label('Véhicules')
                     ->counts('vehicles')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('bookings_count')
-                    ->label('Réservations')
-                    ->counts('bookings')
                     ->sortable(),
                 Tables\Columns\IconColumn::make('is_verified')
                     ->label('Vérifié')
@@ -215,34 +203,87 @@ class LoueurResource extends Resource
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Actif')
                     ->boolean(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->label('Créé le')
-                    ->date('d/m/Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Actif'),
                 Tables\Filters\TernaryFilter::make('is_verified')
                     ->label('Vérifié'),
-                Tables\Filters\SelectFilter::make('subscription_plan')
-                    ->label('Abonnement')
-                    ->options([
-                        'free' => 'Gratuit',
-                        'basic' => 'Basic',
-                        'pro' => 'Pro',
-                        'enterprise' => 'Enterprise',
-                    ]),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('loginAs')
+                    ->label('Accéder au dashboard')
+                    ->icon('heroicon-o-arrow-top-right-on-square')
+                    ->color('success')
+                    ->url(fn (Loueur $record) => '/loueur')
+                    ->openUrlInNewTab()
+                    ->visible(fn (Loueur $record) => $record->is_active),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
+            ]);
+    }
+
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\Section::make('Accès au Dashboard')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('user.email')
+                            ->label('Email de connexion')
+                            ->copyable()
+                            ->icon('heroicon-o-envelope'),
+                        Infolists\Components\TextEntry::make('dashboard_url')
+                            ->label('URL du dashboard')
+                            ->state(fn () => url('/loueur'))
+                            ->copyable()
+                            ->icon('heroicon-o-link'),
+                        Infolists\Components\TextEntry::make('public_url')
+                            ->label('Page publique')
+                            ->state(fn (Loueur $record) => url('/loueur/' . $record->slug))
+                            ->copyable()
+                            ->url(fn (Loueur $record) => url('/loueur/' . $record->slug))
+                            ->icon('heroicon-o-globe-alt'),
+                    ])
+                    ->columns(3),
+
+                Infolists\Components\Section::make('Informations')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('company_name')
+                            ->label('Agence'),
+                        Infolists\Components\TextEntry::make('phone')
+                            ->label('Téléphone'),
+                        Infolists\Components\TextEntry::make('wilaya')
+                            ->label('Wilaya'),
+                        Infolists\Components\TextEntry::make('city')
+                            ->label('Ville'),
+                        Infolists\Components\IconEntry::make('is_active')
+                            ->label('Actif')
+                            ->boolean(),
+                        Infolists\Components\IconEntry::make('is_verified')
+                            ->label('Vérifié')
+                            ->boolean(),
+                    ])
+                    ->columns(3),
+
+                Infolists\Components\Section::make('Statistiques')
+                    ->schema([
+                        Infolists\Components\TextEntry::make('vehicles_count')
+                            ->label('Véhicules')
+                            ->state(fn (Loueur $record) => $record->vehicles()->count()),
+                        Infolists\Components\TextEntry::make('bookings_count')
+                            ->label('Réservations')
+                            ->state(fn (Loueur $record) => $record->bookings()->count()),
+                        Infolists\Components\TextEntry::make('created_at')
+                            ->label('Inscrit le')
+                            ->date('d/m/Y'),
+                    ])
+                    ->columns(3),
             ]);
     }
 
