@@ -20,6 +20,12 @@ class BookingController extends Controller
             ->where('status', 'available')
             ->firstOrFail();
 
+        // Un véhicule sans loueur ne peut pas être réservé
+        if (!$vehicle->loueur_id || !$vehicle->loueur) {
+            return redirect()->route('vehicles.show', $vehicle->slug)
+                ->with('error', 'Ce véhicule n\'est pas disponible à la réservation pour le moment.');
+        }
+
         $deliveryZones = DeliveryZone::where('loueur_id', $vehicle->loueur_id)
             ->where('is_active', true)
             ->orderBy('sort_order')
@@ -93,6 +99,11 @@ class BookingController extends Controller
 
         $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
         $loueur = $vehicle->loueur;
+
+        // Un véhicule sans loueur ne peut pas être réservé
+        if (!$vehicle->loueur_id || !$loueur) {
+            return back()->withErrors(['vehicle_id' => 'Ce véhicule n\'est pas disponible à la réservation.'])->withInput();
+        }
 
         // Vérifier le nombre minimum de jours (configuré par le loueur)
         $start = \Carbon\Carbon::parse($request->start_date);
