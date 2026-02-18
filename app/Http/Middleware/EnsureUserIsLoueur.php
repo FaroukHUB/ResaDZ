@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserIsLoueur
 {
     /**
-     * Vérifie que l'utilisateur connecté est un loueur avec un profil loueur actif.
+     * Vérifie que l'utilisateur connecté est un loueur OU un super admin.
+     * Le super admin a accès à tout.
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -18,6 +19,11 @@ class EnsureUserIsLoueur
         // Pas connecté → redirection vers login
         if (!$user) {
             return redirect()->route('filament.loueur.auth.login');
+        }
+
+        // Super Admin = accès à tout, sans restriction
+        if ($user->role === 'super_admin') {
+            return $next($request);
         }
 
         // Vérifie que l'utilisateur a un profil loueur
