@@ -353,16 +353,17 @@ class Settings extends Page implements Forms\Contracts\HasForms
 5. Collez le lien et cliquez sur "Ajouter un agenda"
 
 Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
-                                        Forms\Components\Placeholder::make('ical_url')
-                                            ->label('Votre lien iCal (cliquez pour copier)')
-                                            ->content(function () {
+                                        Forms\Components\TextInput::make('ical_url_display')
+                                            ->label('Votre lien iCal')
+                                            ->default(function () {
                                                 $loueur = Auth::user()->loueur;
                                                 if (!$loueur) return 'Non disponible';
                                                 $token = \App\Http\Controllers\Api\CalendarController::generateToken($loueur->id);
                                                 return url('/calendar/ical/' . $token . '.ics');
                                             })
-                                            ->copyable()
-                                            ->extraAttributes(['class' => 'font-mono text-sm']),
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->helperText('Copiez ce lien et collez-le dans Google Agenda'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('SEO')
