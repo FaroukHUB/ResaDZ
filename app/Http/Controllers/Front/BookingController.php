@@ -38,11 +38,35 @@ class BookingController extends Controller
             ? $vehicle->loueur->getSetting('reservation_timer_hours', null)
             : null;
 
+        // Return options settings
+        $fuelReturnFee = $vehicle->loueur
+            ? (float) $vehicle->loueur->getSetting('fuel_return_fee', 0)
+            : 0;
+        $washReturnFee = $vehicle->loueur
+            ? (float) $vehicle->loueur->getSetting('wash_return_fee', 0)
+            : 0;
+        $returnMarginHours = $vehicle->loueur
+            ? (int) $vehicle->loueur->getSetting('return_margin_hours', 2)
+            : 2;
+
+        // Deposit settings
+        $depositRequired = $vehicle->loueur
+            ? $vehicle->loueur->getSetting('deposit_required', false)
+            : false;
+        $depositPaymentMethods = $vehicle->loueur
+            ? $vehicle->loueur->getSetting('deposit_payment_methods', [])
+            : [];
+
         return view('front.pages.booking', compact(
             'vehicle',
             'deliveryZones',
             'availableOptions',
-            'timerHours'
+            'timerHours',
+            'fuelReturnFee',
+            'washReturnFee',
+            'returnMarginHours',
+            'depositRequired',
+            'depositPaymentMethods'
         ));
     }
 
@@ -77,7 +101,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Enregistre la réservation.
+     * Enregistre la demande de réservation (formulaire simplifié).
      */
     public function store(Request $request, PricingService $pricingService)
     {
@@ -86,10 +110,9 @@ class BookingController extends Controller
             'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after:start_date',
             'pickup_time' => 'required|string|max:5',
-            'return_time' => 'required|string|max:5',
             'client_name' => 'required|string|max:255',
             'client_phone' => 'required|string|max:50',
-            'client_email' => 'nullable|email|max:255',
+            'client_email' => 'required|email|max:255',
             'pickup_zone_id' => 'nullable|exists:delivery_zones,id',
             'return_zone_id' => 'nullable|exists:delivery_zones,id',
             'pickup_address' => 'required|string|max:500',
@@ -97,9 +120,6 @@ class BookingController extends Controller
             'options' => 'nullable|array',
             'currency' => 'nullable|in:DZD,EUR',
             'internal_notes' => 'nullable|string|max:1000',
-            'client_id_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'client_license_front' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
-            'client_license_back' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ]);
 
         $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
@@ -126,6 +146,28 @@ class BookingController extends Controller
             return back()->withErrors(['end_date' => "La durée maximum est de {$maxDays} jours."])->withInput();
         }
 
+        // Calculer l'heure de retour automatiquement (pickup_time + marge)
+        $returnMarginHours = $loueur ? (int) $loueur->getSetting('return_margin_hours', 2) : 2;
+        $pickupTimeParts = explode(':', $request->pickup_time);
+        $returnHour = (int) $pickupTimeParts[0] + $returnMarginHours;
+        if ($returnHour > 22) $returnHour = 22;
+        if ($returnHour < 10) $returnHour = 10;
+        $returnTime = sprintf('%02d:%02d', $returnHour, $pickupTimeParts[1] ?? 0);
+
+        // Gérer les options de retour (plein/lavage)
+        $selectedOptions = $request->options ?? [];
+        $extraFees = 0;
+
+        $fuelReturnFee = $loueur ? (float) $loueur->getSetting('fuel_return_fee', 0) : 0;
+        $washReturnFee = $loueur ? (float) $loueur->getSetting('wash_return_fee', 0) : 0;
+
+        if (in_array('Retour sans plein', $selectedOptions) && $fuelReturnFee > 0) {
+            $extraFees += $fuelReturnFee;
+        }
+        if (in_array('Retour sans lavage', $selectedOptions) && $washReturnFee > 0) {
+            $extraFees += $washReturnFee;
+        }
+
         // Calculer le prix
         $pricing = $pricingService->calculate(
             vehicle: $vehicle,
@@ -133,23 +175,15 @@ class BookingController extends Controller
             endDate: $request->end_date,
             pickupZoneId: $request->pickup_zone_id,
             returnZoneId: $request->return_zone_id,
-            selectedOptions: $request->options ?? [],
+            selectedOptions: array_filter($selectedOptions, fn($opt) => !in_array($opt, ['Retour sans plein', 'Retour sans lavage'])),
             currency: $request->currency ?? 'DZD'
         );
 
-        // Upload des documents client
-        $idDocPath = $request->hasFile('client_id_document')
-            ? $request->file('client_id_document')->store('bookings/documents', 'public')
-            : null;
-        $licenseFrontPath = $request->hasFile('client_license_front')
-            ? $request->file('client_license_front')->store('bookings/documents', 'public')
-            : null;
-        $licenseBackPath = $request->hasFile('client_license_back')
-            ? $request->file('client_license_back')->store('bookings/documents', 'public')
-            : null;
-
         // Timer configuré par le loueur
         $timerHours = $loueur ? $loueur->getSetting('reservation_timer_hours', null) : null;
+
+        // Total avec frais supplémentaires
+        $totalPrice = $pricing['total'] + $extraFees;
 
         // Créer la réservation
         $booking = Booking::create([
@@ -169,10 +203,7 @@ class BookingController extends Controller
             'pickup_address' => $request->pickup_address,
             'pickup_time' => $request->pickup_time,
             'return_address' => $request->return_address,
-            'return_time' => $request->return_time,
-            'client_id_document' => $idDocPath,
-            'client_license_front' => $licenseFrontPath,
-            'client_license_back' => $licenseBackPath,
+            'return_time' => $returnTime,
             'currency' => $request->currency ?? 'DZD',
             'base_price' => $pricing['base_price'],
             'duration_discount' => $pricing['duration_discount'],
@@ -180,8 +211,9 @@ class BookingController extends Controller
             'delivery_fee' => $pricing['delivery_fee'],
             'return_fee' => $pricing['return_fee'],
             'options_total' => $pricing['options_total'],
-            'selected_options' => $request->options ?? [],
-            'total_price' => $pricing['total'],
+            'extra_fees' => $extraFees,
+            'selected_options' => $selectedOptions,
+            'total_price' => $totalPrice,
             'advance_amount' => $pricing['advance_amount'],
             'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : null,
             'advance_expires_at' => $timerHours ? now()->addHours($timerHours) : null,
@@ -189,7 +221,7 @@ class BookingController extends Controller
             'deposit_currency' => $pricing['deposit_currency'],
             'payment_status' => 'pending',
             'amount_paid' => 0,
-            'amount_remaining' => $pricing['total'],
+            'amount_remaining' => $totalPrice,
             'internal_notes' => $request->internal_notes,
         ]);
 
@@ -197,7 +229,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Page de confirmation après réservation.
+     * Page de confirmation après réservation (pour le client juste après avoir soumis).
      */
     public function confirmation(string $reference)
     {
@@ -209,5 +241,65 @@ class BookingController extends Controller
         $timerHours = $loueur ? $loueur->getSetting('reservation_timer_hours', null) : null;
 
         return view('front.pages.booking-confirmation', compact('booking', 'timerHours'));
+    }
+
+    /**
+     * Page de confirmation client avec lien unique (envoyée par email après acceptation du loueur).
+     */
+    public function clientConfirmation(string $token)
+    {
+        $booking = Booking::with(['vehicle.brand', 'vehicle.category', 'loueur', 'pickupZone', 'returnZone'])
+            ->where('confirmation_token', $token)
+            ->firstOrFail();
+
+        // Récupérer les conditions de location du loueur
+        $rentalConditions = $booking->loueur ? $booking->loueur->getSetting('rental_conditions', []) : [];
+
+        // Vérifier si des documents sont requis
+        $requireDocuments = $booking->loueur ? $booking->loueur->getSetting('require_documents', true) : true;
+
+        // Paramètres d'acompte
+        $depositRequired = $booking->loueur ? $booking->loueur->getSetting('deposit_required', false) : false;
+        $depositPaymentMethods = $booking->loueur ? $booking->loueur->getSetting('deposit_payment_methods', []) : [];
+
+        return view('front.pages.client-confirmation', compact(
+            'booking',
+            'rentalConditions',
+            'requireDocuments',
+            'depositRequired',
+            'depositPaymentMethods'
+        ));
+    }
+
+    /**
+     * Upload des documents client (CNI, permis).
+     */
+    public function uploadDocuments(Request $request, string $token)
+    {
+        $booking = Booking::where('confirmation_token', $token)->firstOrFail();
+
+        $request->validate([
+            'client_id_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'client_license_front' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'client_license_back' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+        ]);
+
+        $updates = [];
+
+        if ($request->hasFile('client_id_document')) {
+            $updates['client_id_document'] = $request->file('client_id_document')->store('bookings/documents', 'public');
+        }
+        if ($request->hasFile('client_license_front')) {
+            $updates['client_license_front'] = $request->file('client_license_front')->store('bookings/documents', 'public');
+        }
+        if ($request->hasFile('client_license_back')) {
+            $updates['client_license_back'] = $request->file('client_license_back')->store('bookings/documents', 'public');
+        }
+
+        if (!empty($updates)) {
+            $booking->update($updates);
+        }
+
+        return back()->with('success', 'Vos documents ont été téléchargés avec succès.');
     }
 }

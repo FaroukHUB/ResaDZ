@@ -20,6 +20,10 @@ Route::post('/reserver/calculer', [BookingController::class, 'calculatePrice'])-
 Route::post('/reserver', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/reservation/{reference}', [BookingController::class, 'confirmation'])->name('booking.confirmation');
 
+// Confirmation client (lien unique envoyé par email)
+Route::get('/ma-reservation/{token}', [BookingController::class, 'clientConfirmation'])->name('booking.client-confirmation');
+Route::post('/ma-reservation/{token}/documents', [BookingController::class, 'uploadDocuments'])->name('booking.upload-documents');
+
 // SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
@@ -34,3 +38,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/contrat/{booking}/apercu', [\App\Http\Controllers\Loueur\ContractController::class, 'preview'])
         ->name('contract.preview');
 });
+
+// Contract PDF via token (for client confirmation page - no auth required)
+Route::get('/contrat/client/{token}/telecharger', [\App\Http\Controllers\Loueur\ContractController::class, 'downloadByToken'])
+    ->name('contract.download-by-token');

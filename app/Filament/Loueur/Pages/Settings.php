@@ -70,6 +70,13 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'custom_badges' => $loueur->getSetting('custom_badges', []),
                 // Conditions
                 'rental_conditions' => $loueur->getSetting('rental_conditions', []),
+                // Return options
+                'return_margin_hours' => $loueur->getSetting('return_margin_hours', 2),
+                'fuel_return_fee' => $loueur->getSetting('fuel_return_fee', 0),
+                'wash_return_fee' => $loueur->getSetting('wash_return_fee', 0),
+                // Deposit settings
+                'deposit_required' => $loueur->getSetting('deposit_required', false),
+                'deposit_payment_methods' => $loueur->getSetting('deposit_payment_methods', []),
             ]);
         }
     }
@@ -204,6 +211,49 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                         Forms\Components\Toggle::make('require_documents')
                                             ->label('Exiger les documents du client')
                                             ->helperText('Pièce d\'identité et permis de conduire'),
+                                    ]),
+                                Forms\Components\Section::make('Options de retour')
+                                    ->description('Configurez les options et frais liés au retour du véhicule')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('return_margin_hours')
+                                            ->label('Marge horaire pour le retour')
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->maxValue(12)
+                                            ->suffix('heures')
+                                            ->helperText('Temps accordé après l\'heure de prise pour le retour (ex: 2h = retour avant 12h si prise à 10h)'),
+                                        Forms\Components\Grid::make(2)
+                                            ->schema([
+                                                Forms\Components\TextInput::make('fuel_return_fee')
+                                                    ->label('Frais retour sans plein')
+                                                    ->numeric()
+                                                    ->minValue(0)
+                                                    ->suffix('DA')
+                                                    ->helperText('Frais si le client rend le véhicule sans le plein (0 = option désactivée)'),
+                                                Forms\Components\TextInput::make('wash_return_fee')
+                                                    ->label('Frais retour sans lavage')
+                                                    ->numeric()
+                                                    ->minValue(0)
+                                                    ->suffix('DA')
+                                                    ->helperText('Frais si le client rend le véhicule non lavé (0 = option désactivée)'),
+                                            ]),
+                                    ]),
+                                Forms\Components\Section::make('Acompte en ligne')
+                                    ->description('Permettre aux clients de régler un acompte pour garantir leur réservation')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('deposit_required')
+                                            ->label('Proposer le paiement d\'un acompte')
+                                            ->helperText('Le client pourra payer un acompte pour confirmer sa réservation')
+                                            ->live(),
+                                        Forms\Components\CheckboxList::make('deposit_payment_methods')
+                                            ->label('Méthodes de paiement acceptées pour l\'acompte')
+                                            ->options([
+                                                'paypal' => 'PayPal',
+                                                'cash' => 'Espèces (sur place)',
+                                            ])
+                                            ->columns(2)
+                                            ->visible(fn ($get) => $get('deposit_required'))
+                                            ->helperText('Le client pourra choisir parmi ces méthodes'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Notifications')
@@ -442,6 +492,15 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
 
         // Conditions
         $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
+
+        // Return options
+        $loueur->setSetting('return_margin_hours', $data['return_margin_hours'] ?? 2, 'integer');
+        $loueur->setSetting('fuel_return_fee', $data['fuel_return_fee'] ?? 0, 'decimal');
+        $loueur->setSetting('wash_return_fee', $data['wash_return_fee'] ?? 0, 'decimal');
+
+        // Deposit settings
+        $loueur->setSetting('deposit_required', $data['deposit_required'] ?? false, 'boolean');
+        $loueur->setSetting('deposit_payment_methods', $data['deposit_payment_methods'] ?? [], 'json');
 
         Notification::make()
             ->title('Paramètres enregistrés')

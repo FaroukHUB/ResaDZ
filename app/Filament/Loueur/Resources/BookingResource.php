@@ -11,8 +11,11 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Notifications\Notification;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\BookingConfirmedMail;
 
 class BookingResource extends Resource
 {
@@ -462,6 +465,57 @@ class BookingResource extends Resource
                     ->relationship('vehicle', 'full_name'),
             ])
             ->actions([
+                Tables\Actions\Action::make('confirmBooking')
+                    ->label('Confirmer')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->visible(fn (Booking $record) => $record->status === 'pending')
+                    ->requiresConfirmation()
+                    ->modalHeading('Confirmer la réservation')
+                    ->modalDescription('Voulez-vous confirmer cette réservation ? Un email sera envoyé au client avec un lien pour accéder à sa page de confirmation.')
+                    ->modalSubmitActionLabel('Confirmer et envoyer l\'email')
+                    ->action(function (Booking $record) {
+                        $record->update([
+                            'status' => 'confirmed',
+                            'confirmed_by_loueur_at' => now(),
+                        ]);
+
+                        // Send email to client
+                        if ($record->client_email) {
+                            try {
+                                Mail::to($record->client_email)->send(new BookingConfirmedMail($record));
+                                Notification::make()
+                                    ->title('Réservation confirmée')
+                                    ->body('Un email a été envoyé au client.')
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('Réservation confirmée')
+                                    ->body('La réservation est confirmée mais l\'email n\'a pas pu être envoyé.')
+                                    ->warning()
+                                    ->send();
+                            }
+                        } else {
+                            Notification::make()
+                                ->title('Réservation confirmée')
+                                ->body('Aucun email configuré pour ce client.')
+                                ->warning()
+                                ->send();
+                        }
+                    }),
+                Tables\Actions\Action::make('copyConfirmationLink')
+                    ->label('Copier le lien')
+                    ->icon('heroicon-o-link')
+                    ->color('gray')
+                    ->visible(fn (Booking $record) => $record->isConfirmedByLoueur())
+                    ->action(function (Booking $record) {
+                        Notification::make()
+                            ->title('Lien copié')
+                            ->body('Lien de confirmation: ' . $record->getConfirmationUrl())
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('downloadContract')

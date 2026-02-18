@@ -14,6 +14,7 @@ class Booking extends Model
 
     protected $fillable = [
         'reference',
+        'confirmation_token',
         'loueur_id',
         'vehicle_id',
         'client_id',
@@ -71,6 +72,7 @@ class Booking extends Model
         'contract_signed_at',
         'contract_signature',
         'contract_pdf',
+        'confirmed_by_loueur_at',
         'status',
         'cancellation_reason',
         'cancelled_at',
@@ -89,6 +91,7 @@ class Booking extends Model
         'advance_paid_at' => 'datetime',
         'advance_expires_at' => 'datetime',
         'contract_signed_at' => 'datetime',
+        'confirmed_by_loueur_at' => 'datetime',
         'cancelled_at' => 'datetime',
         'client_reviewed' => 'boolean',
         'loueur_reviewed' => 'boolean',
@@ -114,6 +117,9 @@ class Booking extends Model
         static::creating(function ($booking) {
             if (empty($booking->reference)) {
                 $booking->reference = 'RDZ-' . date('Y') . '-' . strtoupper(Str::random(6));
+            }
+            if (empty($booking->confirmation_token)) {
+                $booking->confirmation_token = Str::random(64);
             }
         });
     }
@@ -179,6 +185,16 @@ class Booking extends Model
     {
         $symbol = $this->currency === 'EUR' ? '€' : 'DA';
         return number_format($this->total_price, 0, ',', ' ') . ' ' . $symbol;
+    }
+
+    public function getConfirmationUrl(): string
+    {
+        return route('booking.client-confirmation', $this->confirmation_token);
+    }
+
+    public function isConfirmedByLoueur(): bool
+    {
+        return $this->confirmed_by_loueur_at !== null;
     }
 
     // Scopes

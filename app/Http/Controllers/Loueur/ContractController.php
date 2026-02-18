@@ -54,4 +54,22 @@ class ContractController extends Controller
 
         return $pdf->stream($this->contractService->getFilename($booking));
     }
+
+    /**
+     * Download contract by token (for client confirmation page - no auth required).
+     */
+    public function downloadByToken(string $token)
+    {
+        $booking = Booking::where('confirmation_token', $token)->firstOrFail();
+
+        // Only allow if booking is confirmed by loueur
+        if (!$booking->isConfirmedByLoueur()) {
+            abort(403, 'Le contrat n\'est pas encore disponible.');
+        }
+
+        $pdf = $this->contractService->generateContract($booking);
+        $filename = $this->contractService->getFilename($booking);
+
+        return $pdf->download($filename);
+    }
 }
