@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Http\Middleware\EnsureUserIsLoueur;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -10,7 +11,6 @@ use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -27,7 +27,7 @@ class LoueurPanelProvider extends PanelProvider
             ->path('loueur')
             ->login()
             ->colors([
-                'primary' => Color::Blue,
+                'primary' => Color::Amber,
                 'danger' => Color::Red,
                 'success' => Color::Green,
                 'warning' => Color::Orange,
@@ -55,6 +55,7 @@ class LoueurPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
+                EnsureUserIsLoueur::class, // Vérifie que c'est bien un loueur
             ])
             ->navigationGroups([
                 'Catalogue',
