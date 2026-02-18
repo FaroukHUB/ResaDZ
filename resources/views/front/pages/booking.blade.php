@@ -149,27 +149,52 @@
                     </div>
 
                     <!-- Options -->
-                    @if(count($availableOptions) > 0 || $fuelReturnFee > 0 || $washReturnFee > 0)
+                    @if(count($rentalOptions) > 0 || $fuelReturnFee > 0 || $washReturnFee > 0)
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Options</h2>
                         <div class="space-y-3">
-                            @foreach($availableOptions as $option)
-                                <label class="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-amber-50 cursor-pointer transition border border-transparent hover:border-amber-200">
-                                    <div class="flex items-center gap-3">
-                                        <input type="checkbox" name="options[]" value="{{ $option['name'] }}" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
-                                        <span class="font-medium text-gray-900">{{ $option['name'] }}</span>
+                            @foreach($rentalOptions as $option)
+                                @php
+                                    $isFree = ($option['is_free'] ?? false) || (($option['price'] ?? 0) == 0);
+                                    $optionPrice = (float) ($option['price'] ?? 0);
+                                @endphp
+                                <label class="flex items-center justify-between p-4 rounded-xl {{ $isFree ? 'bg-green-50 hover:bg-green-100 border-green-200' : 'bg-gray-50 hover:bg-amber-50 border-transparent hover:border-amber-200' }} cursor-pointer transition border">
+                                    <div class="flex items-center gap-4">
+                                        <input type="checkbox" name="options[]" value="{{ $option['name'] }}"
+                                               data-price="{{ $optionPrice }}"
+                                               data-per="{{ $option['per'] ?? 'day' }}"
+                                               data-free="{{ $isFree ? '1' : '0' }}"
+                                               class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
+                                        @if(!empty($option['image']))
+                                            <img src="{{ asset('storage/' . $option['image']) }}" alt="{{ $option['name'] }}" class="w-12 h-12 rounded-lg object-cover">
+                                        @endif
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <span class="font-medium text-gray-900">{{ $option['name'] }}</span>
+                                                @if($isFree)
+                                                    <span class="px-2 py-0.5 bg-green-500 text-white text-xs font-bold rounded-full">OFFERT</span>
+                                                @endif
+                                            </div>
+                                            @if(!empty($option['description']))
+                                                <p class="text-xs text-gray-500 mt-0.5">{{ $option['description'] }}</p>
+                                            @endif
+                                        </div>
                                     </div>
-                                    <span class="text-sm font-semibold text-amber-600">
-                                        +{{ number_format($option['price'] ?? 0, 0, ',', ' ') }} DA
-                                        /{{ ($option['per'] ?? 'day') === 'day' ? 'jour' : 'location' }}
-                                    </span>
+                                    @if(!$isFree && $optionPrice > 0)
+                                        <span class="text-sm font-semibold text-amber-600 whitespace-nowrap">
+                                            +{{ number_format($optionPrice, 0, ',', ' ') }} DA
+                                            /{{ ($option['per'] ?? 'day') === 'day' ? 'jour' : 'loc.' }}
+                                        </span>
+                                    @endif
                                 </label>
                             @endforeach
 
                             @if($fuelReturnFee > 0)
                                 <label class="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-amber-50 cursor-pointer transition border border-transparent hover:border-amber-200">
                                     <div class="flex items-center gap-3">
-                                        <input type="checkbox" name="options[]" value="Retour sans plein" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
+                                        <input type="checkbox" name="options[]" value="Retour sans plein"
+                                               data-price="{{ $fuelReturnFee }}" data-per="booking" data-free="0"
+                                               class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
                                         <div>
                                             <span class="font-medium text-gray-900">Retour sans plein</span>
                                             <p class="text-xs text-gray-500">Je ne souhaite pas faire le plein au retour</p>
@@ -182,7 +207,9 @@
                             @if($washReturnFee > 0)
                                 <label class="flex items-center justify-between p-4 rounded-xl bg-gray-50 hover:bg-amber-50 cursor-pointer transition border border-transparent hover:border-amber-200">
                                     <div class="flex items-center gap-3">
-                                        <input type="checkbox" name="options[]" value="Retour sans lavage" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
+                                        <input type="checkbox" name="options[]" value="Retour sans lavage"
+                                               data-price="{{ $washReturnFee }}" data-per="booking" data-free="0"
+                                               class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
                                         <div>
                                             <span class="font-medium text-gray-900">Retour sans lavage</span>
                                             <p class="text-xs text-gray-500">Je ne souhaite pas laver le véhicule au retour</p>

@@ -77,6 +77,8 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 // Deposit settings
                 'deposit_required' => $loueur->getSetting('deposit_required', false),
                 'deposit_payment_methods' => $loueur->getSetting('deposit_payment_methods', []),
+                // Rental options (siège bébé, GPS, etc.)
+                'rental_options' => $loueur->getSetting('rental_options', []),
             ]);
         }
     }
@@ -255,6 +257,81 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->visible(fn ($get) => $get('deposit_required'))
                                             ->helperText('Le client pourra choisir parmi ces méthodes'),
                                     ]),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Options')
+                            ->icon('heroicon-o-squares-plus')
+                            ->schema([
+                                Forms\Components\Section::make('Options de location')
+                                    ->description('Configurez les options payantes ou offertes que vous proposez à vos clients (siège bébé, GPS, chauffeur, etc.)')
+                                    ->schema([
+                                        Forms\Components\Repeater::make('rental_options')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\Grid::make(3)
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('name')
+                                                            ->label('Nom de l\'option')
+                                                            ->required()
+                                                            ->maxLength(100)
+                                                            ->placeholder('Ex: Siège bébé'),
+                                                        Forms\Components\TextInput::make('price')
+                                                            ->label('Prix')
+                                                            ->numeric()
+                                                            ->minValue(0)
+                                                            ->suffix('DA')
+                                                            ->placeholder('0 = offert')
+                                                            ->helperText('Laisser 0 pour offrir'),
+                                                        Forms\Components\Select::make('per')
+                                                            ->label('Facturation')
+                                                            ->options([
+                                                                'day' => 'Par jour',
+                                                                'booking' => 'Par location',
+                                                            ])
+                                                            ->default('day'),
+                                                    ]),
+                                                Forms\Components\Grid::make(2)
+                                                    ->schema([
+                                                        Forms\Components\FileUpload::make('image')
+                                                            ->label('Photo (optionnel)')
+                                                            ->image()
+                                                            ->directory('rental-options')
+                                                            ->maxSize(2048)
+                                                            ->helperText('Image de l\'option (max 2 Mo)'),
+                                                        Forms\Components\Textarea::make('description')
+                                                            ->label('Description (optionnel)')
+                                                            ->rows(2)
+                                                            ->placeholder('Description courte de l\'option...'),
+                                                    ]),
+                                                Forms\Components\Toggle::make('is_free')
+                                                    ->label('Option offerte')
+                                                    ->helperText('Affiche un badge "Offert" à côté de cette option')
+                                                    ->live(),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Ajouter une option')
+                                            ->reorderable()
+                                            ->collapsible()
+                                            ->itemLabel(fn (array $state): ?string =>
+                                                ($state['name'] ?? 'Nouvelle option') .
+                                                (($state['is_free'] ?? false) ? ' (Offert)' : (isset($state['price']) && $state['price'] > 0 ? ' - ' . number_format($state['price'], 0, ',', ' ') . ' DA' : ''))
+                                            ),
+                                    ]),
+                                Forms\Components\Section::make('Exemples d\'options')
+                                    ->description('Voici quelques idées d\'options à proposer :')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('examples')
+                                            ->label('')
+                                            ->content('
+                                                • **Siège bébé** : 500 DA/jour
+                                                • **GPS** : 1 000 DA/jour ou offert
+                                                • **Chauffeur** : 3 000 DA/jour
+                                                • **Wifi portable** : 800 DA/jour
+                                                • **Assurance tous risques** : 2 000 DA/jour
+                                                • **Kilométrage illimité** : 1 500 DA/location (offert)
+                                            ')
+                                            ->extraAttributes(['class' => 'text-sm text-gray-600']),
+                                    ])
+                                    ->collapsed(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Notifications')
                             ->icon('heroicon-o-bell')
@@ -501,6 +578,9 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         // Deposit settings
         $loueur->setSetting('deposit_required', $data['deposit_required'] ?? false, 'boolean');
         $loueur->setSetting('deposit_payment_methods', $data['deposit_payment_methods'] ?? [], 'json');
+
+        // Rental options
+        $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
 
         Notification::make()
             ->title('Paramètres enregistrés')

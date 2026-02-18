@@ -31,7 +31,10 @@ class BookingController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        $availableOptions = $vehicle->available_options ?? [];
+        // Options de location configurées par le loueur (siège bébé, GPS, etc.)
+        $rentalOptions = $vehicle->loueur
+            ? $vehicle->loueur->getSetting('rental_options', [])
+            : [];
 
         // Timer configuré par le loueur (en heures)
         $timerHours = $vehicle->loueur
@@ -60,7 +63,7 @@ class BookingController extends Controller
         return view('front.pages.booking', compact(
             'vehicle',
             'deliveryZones',
-            'availableOptions',
+            'rentalOptions',
             'timerHours',
             'fuelReturnFee',
             'washReturnFee',
@@ -86,16 +89,61 @@ class BookingController extends Controller
         ]);
 
         $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
+        $loueur = $vehicle->loueur;
+        $selectedOptions = $request->options ?? [];
 
+        // Calculer les jours
+        $start = \Carbon\Carbon::parse($request->start_date);
+        $end = \Carbon\Carbon::parse($request->end_date);
+        $totalDays = max(1, $start->diffInDays($end));
+
+        // Calculer les frais d'options
+        $optionsFees = 0;
+
+        // Options de retour (plein/lavage)
+        $fuelReturnFee = $loueur ? (float) $loueur->getSetting('fuel_return_fee', 0) : 0;
+        $washReturnFee = $loueur ? (float) $loueur->getSetting('wash_return_fee', 0) : 0;
+
+        if (in_array('Retour sans plein', $selectedOptions) && $fuelReturnFee > 0) {
+            $optionsFees += $fuelReturnFee;
+        }
+        if (in_array('Retour sans lavage', $selectedOptions) && $washReturnFee > 0) {
+            $optionsFees += $washReturnFee;
+        }
+
+        // Options de location du loueur (siège bébé, GPS, etc.)
+        $rentalOptions = $loueur ? $loueur->getSetting('rental_options', []) : [];
+        foreach ($rentalOptions as $option) {
+            $optionName = $option['name'] ?? '';
+            if (in_array($optionName, $selectedOptions)) {
+                $isFree = ($option['is_free'] ?? false) || (($option['price'] ?? 0) == 0);
+                if (!$isFree) {
+                    $price = (float) ($option['price'] ?? 0);
+                    $per = $option['per'] ?? 'day';
+                    if ($per === 'day') {
+                        $optionsFees += $price * $totalDays;
+                    } else {
+                        $optionsFees += $price;
+                    }
+                }
+            }
+        }
+
+        // Calculer le prix de base
         $pricing = $pricingService->calculate(
             vehicle: $vehicle,
             startDate: $request->start_date,
             endDate: $request->end_date,
             pickupZoneId: $request->pickup_zone_id,
             returnZoneId: $request->return_zone_id,
-            selectedOptions: $request->options ?? [],
+            selectedOptions: [],
             currency: $request->currency ?? 'DZD'
         );
+
+        // Ajouter les frais d'options au total
+        $pricing['options_total'] = $optionsFees;
+        $pricing['total'] = $pricing['total'] + $optionsFees;
+        $pricing['formatted_total'] = number_format($pricing['total'], 0, ',', ' ') . ' ' . ($pricing['currency'] === 'EUR' ? '€' : 'DA');
 
         return response()->json($pricing);
     }
@@ -154,36 +202,56 @@ class BookingController extends Controller
         if ($returnHour < 10) $returnHour = 10;
         $returnTime = sprintf('%02d:%02d', $returnHour, $pickupTimeParts[1] ?? 0);
 
-        // Gérer les options de retour (plein/lavage)
+        // Gérer les options sélectionnées
         $selectedOptions = $request->options ?? [];
-        $extraFees = 0;
+        $optionsFees = 0;
 
+        // Options de retour (plein/lavage)
         $fuelReturnFee = $loueur ? (float) $loueur->getSetting('fuel_return_fee', 0) : 0;
         $washReturnFee = $loueur ? (float) $loueur->getSetting('wash_return_fee', 0) : 0;
 
         if (in_array('Retour sans plein', $selectedOptions) && $fuelReturnFee > 0) {
-            $extraFees += $fuelReturnFee;
+            $optionsFees += $fuelReturnFee;
         }
         if (in_array('Retour sans lavage', $selectedOptions) && $washReturnFee > 0) {
-            $extraFees += $washReturnFee;
+            $optionsFees += $washReturnFee;
         }
 
-        // Calculer le prix
+        // Options de location du loueur (siège bébé, GPS, etc.)
+        $rentalOptions = $loueur ? $loueur->getSetting('rental_options', []) : [];
+        foreach ($rentalOptions as $option) {
+            $optionName = $option['name'] ?? '';
+            if (in_array($optionName, $selectedOptions)) {
+                // Si l'option n'est pas gratuite
+                $isFree = ($option['is_free'] ?? false) || (($option['price'] ?? 0) == 0);
+                if (!$isFree) {
+                    $price = (float) ($option['price'] ?? 0);
+                    $per = $option['per'] ?? 'day';
+                    if ($per === 'day') {
+                        $optionsFees += $price * $totalDays;
+                    } else {
+                        $optionsFees += $price;
+                    }
+                }
+            }
+        }
+
+        // Calculer le prix de base (sans les options du loueur, car on les calcule séparément)
         $pricing = $pricingService->calculate(
             vehicle: $vehicle,
             startDate: $request->start_date,
             endDate: $request->end_date,
             pickupZoneId: $request->pickup_zone_id,
             returnZoneId: $request->return_zone_id,
-            selectedOptions: array_filter($selectedOptions, fn($opt) => !in_array($opt, ['Retour sans plein', 'Retour sans lavage'])),
+            selectedOptions: [], // Options calculées manuellement
             currency: $request->currency ?? 'DZD'
         );
 
         // Timer configuré par le loueur
         $timerHours = $loueur ? $loueur->getSetting('reservation_timer_hours', null) : null;
 
-        // Total avec frais supplémentaires
-        $totalPrice = $pricing['total'] + $extraFees;
+        // Total avec frais d'options
+        $totalPrice = $pricing['total'] + $optionsFees;
 
         // Créer la réservation
         $booking = Booking::create([
@@ -210,8 +278,8 @@ class BookingController extends Controller
             'season_surcharge' => $pricing['season_surcharge'],
             'delivery_fee' => $pricing['delivery_fee'],
             'return_fee' => $pricing['return_fee'],
-            'options_total' => $pricing['options_total'],
-            'extra_fees' => $extraFees,
+            'options_total' => $optionsFees,
+            'extra_fees' => 0,
             'selected_options' => $selectedOptions,
             'total_price' => $totalPrice,
             'advance_amount' => $pricing['advance_amount'],
