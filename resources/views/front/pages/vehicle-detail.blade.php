@@ -207,16 +207,26 @@
             </div>
         </div>
 
-        <!-- Related Vehicles -->
+        {{-- Related Vehicles --}}
         @if($relatedVehicles->count() > 0)
-        <div class="mt-16">
-            <h2 class="text-2xl font-bold text-gray-900 mb-6">Véhicules similaires</h2>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($relatedVehicles as $relVehicle)
-                    @include('front.components.vehicle-card', ['vehicle' => $relVehicle])
-                @endforeach
+            <div class="mt-16">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Véhicules similaires</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    @foreach($relatedVehicles as $relVehicle)
+                        <a href="{{ route('vehicles.show', $relVehicle->slug) }}" class="block bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition">
+                            <div class="aspect-[16/10] bg-gray-100">
+                                @if($relVehicle->image)
+                                    <img src="{{ asset('storage/' . $relVehicle->image) }}" alt="{{ $relVehicle->full_name }}" class="w-full h-full object-cover">
+                                @endif
+                            </div>
+                            <div class="p-4">
+                                <h3 class="font-semibold text-gray-900">{{ $relVehicle->full_name }}</h3>
+                                <p class="text-amber-600 font-bold mt-1">{{ number_format($relVehicle->price_per_day, 0, ',', ' ') }} DA/jour</p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
             </div>
-        </div>
         @endif
     </div>
 
