@@ -4,31 +4,25 @@
 @section('meta_description', $loueur->meta_description ?? $loueur->company_name . ' - Location de voitures à ' . ($loueur->city ?? 'en Algérie') . '. Réservez en ligne sur ResaDZ.')
 
 @section('meta_extra')
-<script type="application/ld+json">
-{
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "{{ $loueur->company_name }}",
-    "description": "{{ $loueur->description ?? 'Location de voitures' }}",
-    "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "{{ $loueur->city ?? '' }}",
-        "addressRegion": "{{ $loueur->wilaya ?? '' }}",
-        "addressCountry": "DZ"
-    },
-    @if($loueur->phone)
-    "telephone": "{{ $loueur->phone }}",
-    @endif
-    @if($loueur->rating)
-    "aggregateRating": {
-        "@type": "AggregateRating",
-        "ratingValue": "{{ $loueur->rating }}",
-        "reviewCount": "{{ $loueur->total_reviews ?? 0 }}"
-    },
-    @endif
-    "url": "{{ url()->current() }}"
+@php
+$schemaData = [
+    '@context' => 'https://schema.org',
+    '@type' => 'LocalBusiness',
+    'name' => $loueur->company_name,
+    'description' => $loueur->description ?? 'Location de voitures',
+    'address' => [
+        '@type' => 'PostalAddress',
+        'addressLocality' => $loueur->city ?? '',
+        'addressRegion' => $loueur->wilaya ?? '',
+        'addressCountry' => 'DZ',
+    ],
+    'url' => url()->current(),
+];
+if ($loueur->phone) {
+    $schemaData['telephone'] = $loueur->phone;
 }
-</script>
+@endphp
+<script type="application/ld+json">{!! json_encode($schemaData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
 @endsection
 
 @section('content')

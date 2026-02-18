@@ -9,11 +9,11 @@
 <!-- Schema.org JSON-LD -->
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "Car",
+    "@@context": "https://schema.org",
+    "@@type": "Car",
     "name": "{{ $vehicle->full_name }}",
     "brand": {
-        "@type": "Brand",
+        "@@type": "Brand",
         "name": "{{ $vehicle->brand->name ?? '' }}"
     },
     "fuelType": "{{ $vehicle->fuel_type }}",
@@ -21,7 +21,7 @@
     "vehicleTransmission": "{{ $vehicle->transmission }}",
     "seatingCapacity": {{ $vehicle->seats ?? 5 }},
     "offers": {
-        "@type": "Offer",
+        "@@type": "Offer",
         "price": "{{ $vehicle->price_per_day }}",
         "priceCurrency": "DZD",
         "availability": "https://schema.org/InStock"
