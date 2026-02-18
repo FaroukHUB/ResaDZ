@@ -122,20 +122,61 @@ class VehicleResource extends Resource
                             ->icon('heroicon-o-currency-euro')
                             ->schema([
                                 Forms\Components\Section::make('Prix de base')
+                                    ->description('Le prix affiché au client inclura automatiquement les frais de service (+250 DA/jour)')
                                     ->schema([
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('price_per_day')
-                                                    ->label('Prix / jour (DA)')
+                                                    ->label('Votre prix / jour (DA)')
                                                     ->numeric()
                                                     ->required()
-                                                    ->suffix('DA'),
+                                                    ->suffix('DA')
+                                                    ->helperText('Ce que vous recevez')
+                                                    ->live(onBlur: true),
                                                 Forms\Components\TextInput::make('price_per_day_eur')
-                                                    ->label('Prix / jour (EUR)')
+                                                    ->label('Votre prix / jour (EUR)')
                                                     ->numeric()
                                                     ->suffix('€')
                                                     ->helperText('Pour clients diaspora'),
                                             ]),
+                                        Forms\Components\Placeholder::make('client_price_info')
+                                            ->label('')
+                                            ->content(fn ($record) => $record && $record->price_per_day
+                                                ? '💡 Prix affiché au client : ' . number_format($record->price_per_day + 250, 0, ',', ' ') . ' DA/jour (votre prix + 250 DA de frais de service)'
+                                                : '💡 Le prix affiché au client sera votre prix + 250 DA/jour de frais de service'),
+                                    ]),
+                                Forms\Components\Section::make('Prix dégressifs')
+                                    ->description('Proposez des réductions pour les locations longue durée')
+                                    ->schema([
+                                        Forms\Components\Repeater::make('degressive_pricing')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\Grid::make(3)
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('from_days')
+                                                            ->label('À partir de (jours)')
+                                                            ->numeric()
+                                                            ->required()
+                                                            ->minValue(2),
+                                                        Forms\Components\TextInput::make('price_per_day')
+                                                            ->label('Prix / jour (DA)')
+                                                            ->numeric()
+                                                            ->required()
+                                                            ->suffix('DA'),
+                                                        Forms\Components\TextInput::make('price_per_day_eur')
+                                                            ->label('Prix / jour (EUR)')
+                                                            ->numeric()
+                                                            ->suffix('€'),
+                                                    ]),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Ajouter un palier')
+                                            ->collapsible()
+                                            ->itemLabel(fn (array $state): ?string =>
+                                                isset($state['from_days']) && isset($state['price_per_day'])
+                                                    ? "À partir de {$state['from_days']} jours : {$state['price_per_day']} DA/jour (client: " . ((int)$state['price_per_day'] + 250) . " DA)"
+                                                    : null
+                                            ),
                                     ]),
                                 Forms\Components\Section::make('Caution')
                                     ->schema([
@@ -245,7 +286,8 @@ class VehicleResource extends Resource
                     ->badge(),
                 Tables\Columns\TextColumn::make('price_per_day')
                     ->label('Prix/jour')
-                    ->formatStateUsing(fn ($state) => number_format($state, 0, ',', ' ') . ' DA')
+                    ->formatStateUsing(fn ($state) => number_format($state + 250, 0, ',', ' ') . ' DA')
+                    ->description(fn ($record) => 'Vous: ' . number_format($record->price_per_day, 0, ',', ' ') . ' DA')
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Statut')

@@ -13,6 +13,18 @@ class ViewBooking extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Actions\Action::make('downloadContract')
+                ->label('Télécharger le contrat')
+                ->icon('heroicon-o-document-arrow-down')
+                ->color('success')
+                ->url(fn () => route('contract.download', $this->record))
+                ->openUrlInNewTab(),
+            Actions\Action::make('previewContract')
+                ->label('Aperçu contrat')
+                ->icon('heroicon-o-eye')
+                ->color('gray')
+                ->url(fn () => route('contract.preview', $this->record))
+                ->openUrlInNewTab(),
             Actions\EditAction::make(),
         ];
     }

@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Front\BookingController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoueurController;
@@ -22,3 +23,14 @@ Route::get('/reservation/{reference}', [BookingController::class, 'confirmation'
 // SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+
+// Calendar iCal Feed (for Google Calendar sync)
+Route::get('/calendar/ical/{token}.ics', [CalendarController::class, 'icalFeed'])->name('calendar.ical');
+
+// Contract PDF (requires auth)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/contrat/{booking}/telecharger', [\App\Http\Controllers\Loueur\ContractController::class, 'download'])
+        ->name('contract.download');
+    Route::get('/contrat/{booking}/apercu', [\App\Http\Controllers\Loueur\ContractController::class, 'preview'])
+        ->name('contract.preview');
+});

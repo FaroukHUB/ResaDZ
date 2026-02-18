@@ -124,6 +124,26 @@ class Loueur extends Model
     }
 
     /**
+     * Get configured rental conditions.
+     */
+    public function getConditions(): array
+    {
+        $conditions = $this->getSetting('rental_conditions', []);
+        if (!is_array($conditions)) {
+            return [];
+        }
+
+        return collect($conditions)->map(function ($condition) {
+            return [
+                'title' => $condition['title'] === 'Autre'
+                    ? ($condition['custom_title'] ?? 'Condition')
+                    : $condition['title'],
+                'description' => $condition['description'] ?? '',
+            ];
+        })->toArray();
+    }
+
+    /**
      * Get configured badge labels for vehicle cards.
      */
     public function getBadges(): array

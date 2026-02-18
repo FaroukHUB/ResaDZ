@@ -68,6 +68,8 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'badge_airport' => $loueur->getSetting('badge_airport', false),
                 'badge_km_unlimited' => $loueur->getSetting('badge_km_unlimited', false),
                 'custom_badges' => $loueur->getSetting('custom_badges', []),
+                // Conditions
+                'rental_conditions' => $loueur->getSetting('rental_conditions', []),
             ]);
         }
     }
@@ -253,6 +255,116 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->addActionLabel('Ajouter un badge'),
                                     ]),
                             ]),
+                        Forms\Components\Tabs\Tab::make('Conditions')
+                            ->icon('heroicon-o-clipboard-document-list')
+                            ->schema([
+                                Forms\Components\Section::make('Conditions de location')
+                                    ->description('Définissez vos conditions de location. Ces informations seront affichées aux clients sur la page de détail du véhicule.')
+                                    ->schema([
+                                        Forms\Components\Repeater::make('rental_conditions')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\Select::make('title')
+                                                    ->label('Titre de la condition')
+                                                    ->options([
+                                                        'Âge minimum' => 'Âge minimum',
+                                                        'Permis de conduire' => 'Permis de conduire',
+                                                        'Caution' => 'Caution',
+                                                        'Documents requis' => 'Documents requis',
+                                                        'Carburant' => 'Carburant',
+                                                        'Kilométrage' => 'Kilométrage',
+                                                        'Livraison' => 'Livraison',
+                                                        'Annulation' => 'Annulation',
+                                                        'Assurance' => 'Assurance',
+                                                        'Pénalités' => 'Pénalités',
+                                                        'Horaires' => 'Horaires',
+                                                        'Zone de circulation' => 'Zone de circulation',
+                                                        'Autre' => 'Autre (personnalisé)',
+                                                    ])
+                                                    ->required()
+                                                    ->searchable()
+                                                    ->live(),
+                                                Forms\Components\TextInput::make('custom_title')
+                                                    ->label('Titre personnalisé')
+                                                    ->visible(fn ($get) => $get('title') === 'Autre')
+                                                    ->required(fn ($get) => $get('title') === 'Autre')
+                                                    ->maxLength(100),
+                                                Forms\Components\Textarea::make('description')
+                                                    ->label('Description')
+                                                    ->required()
+                                                    ->rows(2)
+                                                    ->placeholder(fn ($get) => match($get('title')) {
+                                                        'Âge minimum' => 'Ex: Le conducteur doit avoir au minimum 21 ans.',
+                                                        'Permis de conduire' => 'Ex: Permis de conduire valide depuis au moins 2 ans.',
+                                                        'Caution' => 'Ex: Caution de 50 000 DA exigée à la prise du véhicule.',
+                                                        'Documents requis' => 'Ex: Carte d\'identité + Permis de conduire + Justificatif de domicile.',
+                                                        'Carburant' => 'Ex: Véhicule remis avec le plein, à rendre avec le plein.',
+                                                        'Kilométrage' => 'Ex: 200 km/jour inclus. Supplément de 15 DA/km au-delà.',
+                                                        'Livraison' => 'Ex: Livraison gratuite à Alger centre. Frais supplémentaires hors zone.',
+                                                        'Annulation' => 'Ex: Annulation gratuite jusqu\'à 48h avant. 50% de l\'acompte retenu après.',
+                                                        'Assurance' => 'Ex: Assurance tous risques incluse. Franchise de 20 000 DA.',
+                                                        'Pénalités' => 'Ex: Retard de retour : 2 000 DA par heure supplémentaire.',
+                                                        'Horaires' => 'Ex: Prise et retour du véhicule de 8h à 20h.',
+                                                        'Zone de circulation' => 'Ex: Circulation autorisée uniquement en Algérie.',
+                                                        default => 'Décrivez cette condition...',
+                                                    }),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Ajouter une condition')
+                                            ->reorderable()
+                                            ->collapsible()
+                                            ->itemLabel(fn (array $state): ?string =>
+                                                $state['title'] === 'Autre'
+                                                    ? ($state['custom_title'] ?? 'Condition personnalisée')
+                                                    : ($state['title'] ?? 'Nouvelle condition')
+                                            ),
+                                    ]),
+                                Forms\Components\Section::make('Exemple de conditions')
+                                    ->description('Voici quelques suggestions pour vous aider à rédiger vos conditions :')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('examples')
+                                            ->label('')
+                                            ->content('
+                                                • **Âge minimum** : Le conducteur doit avoir au minimum 21 ans (25 ans pour les véhicules haut de gamme).
+                                                • **Permis** : Permis de conduire valide depuis au moins 2 ans.
+                                                • **Caution** : Caution de 30 000 à 100 000 DA selon le véhicule, restituée au retour.
+                                                • **Documents** : CNI + Permis de conduire + Justificatif de domicile de moins de 3 mois.
+                                                • **Carburant** : Véhicule remis avec le plein, à rendre avec le plein (sinon surfacturation).
+                                                • **Kilométrage** : 200 km/jour inclus. Au-delà : 15 DA/km supplémentaire.
+                                            ')
+                                            ->extraAttributes(['class' => 'text-sm text-gray-600']),
+                                    ])
+                                    ->collapsed(),
+                            ]),
+                        Forms\Components\Tabs\Tab::make('Synchronisation')
+                            ->icon('heroicon-o-arrow-path')
+                            ->schema([
+                                Forms\Components\Section::make('Synchronisation Google Agenda')
+                                    ->description('Synchronisez vos réservations et blocages avec Google Agenda, Apple Calendar ou Outlook.')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('ical_instructions')
+                                            ->label('Comment synchroniser')
+                                            ->content('Pour synchroniser votre calendrier ResaDZ avec Google Agenda :
+
+1. Copiez le lien iCal ci-dessous
+2. Ouvrez Google Agenda (calendar.google.com)
+3. Cliquez sur "+" à côté de "Autres agendas"
+4. Sélectionnez "À partir de l\'URL"
+5. Collez le lien et cliquez sur "Ajouter un agenda"
+
+Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
+                                        Forms\Components\Placeholder::make('ical_url')
+                                            ->label('Votre lien iCal (cliquez pour copier)')
+                                            ->content(function () {
+                                                $loueur = Auth::user()->loueur;
+                                                if (!$loueur) return 'Non disponible';
+                                                $token = \App\Http\Controllers\Api\CalendarController::generateToken($loueur->id);
+                                                return url('/calendar/ical/' . $token . '.ics');
+                                            })
+                                            ->copyable()
+                                            ->extraAttributes(['class' => 'font-mono text-sm']),
+                                    ]),
+                            ]),
                         Forms\Components\Tabs\Tab::make('SEO')
                             ->icon('heroicon-o-magnifying-glass')
                             ->schema([
@@ -326,6 +438,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
         $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
         $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
         $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
+
+        // Conditions
+        $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
 
         Notification::make()
             ->title('Paramètres enregistrés')

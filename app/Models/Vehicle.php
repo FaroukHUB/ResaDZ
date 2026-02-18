@@ -25,6 +25,7 @@ class Vehicle extends Model
         'price_per_week',
         'price_per_month',
         'pricing',
+        'degressive_pricing',
         'deposit_amount',
         'deposit_currency',
         'available_options',
@@ -59,6 +60,7 @@ class Vehicle extends Model
         'price_per_week' => 'decimal:2',
         'price_per_month' => 'decimal:2',
         'pricing' => 'array',
+        'degressive_pricing' => 'array',
         'deposit_amount' => 'decimal:2',
         'available_options' => 'array',
         'mileage_limit_per_day' => 'integer',
@@ -159,32 +161,63 @@ class Vehicle extends Model
         return $query->orderBy('sort_order')->orderBy('full_name');
     }
 
-    // Calculer le prix selon la durée (config du loueur)
-    public function calculatePrice(int $days): array
+    // Commission ResaDZ par jour (en DA)
+    public const COMMISSION_PER_DAY = 250;
+
+    // Calculer le prix selon la durée avec prix dégressif et commission
+    public function calculatePrice(int $days, string $currency = 'DZD'): array
     {
-        $basePrice = $this->price_per_day * $days;
-        $discount = 0;
+        $pricePerDay = $currency === 'EUR'
+            ? ($this->price_per_day_eur ?? 0)
+            : $this->price_per_day;
 
-        // Appliquer les réductions par durée si configurées
-        if ($this->pricing && isset($this->pricing['by_duration'])) {
-            foreach ($this->pricing['by_duration'] as $rule) {
-                $minDays = $rule['min_days'] ?? 0;
-                $maxDays = $rule['max_days'] ?? PHP_INT_MAX;
+        // Chercher le prix dégressif applicable
+        if ($this->degressive_pricing && is_array($this->degressive_pricing)) {
+            // Trier par from_days descendant pour prendre le meilleur palier
+            $tiers = collect($this->degressive_pricing)
+                ->filter(fn($tier) => isset($tier['from_days']) && $days >= $tier['from_days'])
+                ->sortByDesc('from_days')
+                ->first();
 
-                if ($days >= $minDays && $days <= $maxDays) {
-                    $discountPercent = $rule['discount_percent'] ?? 0;
-                    $discount = $basePrice * ($discountPercent / 100);
-                    break;
-                }
+            if ($tiers) {
+                $pricePerDay = $currency === 'EUR'
+                    ? ($tiers['price_per_day_eur'] ?? $pricePerDay)
+                    : ($tiers['price_per_day'] ?? $pricePerDay);
             }
         }
 
+        // Prix du loueur (ce qu'il reçoit)
+        $loueurTotal = $pricePerDay * $days;
+
+        // Commission ResaDZ (uniquement en DZD)
+        $commissionPerDay = $currency === 'EUR' ? 0 : self::COMMISSION_PER_DAY;
+        $commissionTotal = $commissionPerDay * $days;
+
+        // Prix affiché au client (loueur + commission)
+        $clientTotal = $loueurTotal + $commissionTotal;
+
         return [
-            'base_price' => $basePrice,
-            'discount' => $discount,
-            'total' => $basePrice - $discount,
-            'currency' => 'DZD',
+            'price_per_day_loueur' => $pricePerDay,
+            'price_per_day_client' => $pricePerDay + $commissionPerDay,
+            'loueur_total' => $loueurTotal,
+            'commission_per_day' => $commissionPerDay,
+            'commission_total' => $commissionTotal,
+            'client_total' => $clientTotal,
+            'days' => $days,
+            'currency' => $currency,
         ];
+    }
+
+    // Prix affiché au client (avec commission)
+    public function getClientPricePerDay(string $currency = 'DZD'): float
+    {
+        $basePrice = $currency === 'EUR'
+            ? ($this->price_per_day_eur ?? 0)
+            : $this->price_per_day;
+
+        return $currency === 'EUR'
+            ? $basePrice
+            : $basePrice + self::COMMISSION_PER_DAY;
     }
 
     // Helpers
@@ -195,7 +228,16 @@ class Vehicle extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        return number_format($this->price_per_day, 0, ',', ' ') . ' DA';
+        $clientPrice = $this->getClientPricePerDay('DZD');
+        return number_format($clientPrice, 0, ',', ' ') . ' DA';
+    }
+
+    public function getFormattedPriceEurAttribute(): string
+    {
+        if (!$this->price_per_day_eur) {
+            return '';
+        }
+        return number_format($this->price_per_day_eur, 0, ',', ' ') . ' €';
     }
 
     public function isAvailableForDates($startDate, $endDate): bool
