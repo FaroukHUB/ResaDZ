@@ -14,7 +14,10 @@
             </div>
         @endif
         <h4 class="text-white text-sm font-semibold truncate">
-            @if($vehicle->brand)<span class="text-amber-400">{{ $vehicle->brand->name }}</span> @endif{{ $vehicle->model ?? '' }}
+            @if($vehicle->brand)
+                <span class="text-amber-400">{{ $vehicle->brand->name }}</span>
+            @endif
+            {{ $vehicle->model ?? '' }}
         </h4>
     </div>
 
@@ -56,7 +59,10 @@
     {{-- Loueur info --}}
     @if($loueur)
         <div class="px-4 py-2 text-xs text-gray-500 border-t border-gray-800">
-            {{ $loueur->company_name }}@if($loueur->city || $loueur->wilaya) &middot; {{ $loueur->city ?? $loueur->wilaya }}@endif
+            {{ $loueur->company_name }}
+            @if($loueur->city || $loueur->wilaya)
+                &middot; {{ $loueur->city ?? $loueur->wilaya }}
+            @endif
             @if($loueur->is_verified)
                 <span class="text-green-500 ml-1" title="Vérifié">&#10003;</span>
             @endif
