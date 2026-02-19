@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Front\BookingController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoueurController;
+use App\Http\Controllers\Front\ReviewController;
 use App\Http\Controllers\Front\SitemapController;
 use App\Http\Controllers\Front\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -23,6 +24,16 @@ Route::get('/reservation/{reference}', [BookingController::class, 'confirmation'
 // Confirmation client (lien unique envoyé par email)
 Route::get('/ma-reservation/{token}', [BookingController::class, 'clientConfirmation'])->name('booking.client-confirmation');
 Route::post('/ma-reservation/{token}/documents', [BookingController::class, 'uploadDocuments'])->name('booking.upload-documents');
+
+// Avis clients
+Route::get('/avis/{token}', [ReviewController::class, 'create'])->name('review.create');
+Route::post('/avis/{token}', [ReviewController::class, 'store'])->name('review.store');
+
+// Pages SEO par wilaya
+Route::get('/location-voiture-{wilaya}', [VehicleController::class, 'byWilaya'])->name('vehicles.by-wilaya');
+
+// Comparateur de véhicules
+Route::get('/comparer', [VehicleController::class, 'compare'])->name('vehicles.compare');
 
 // SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');

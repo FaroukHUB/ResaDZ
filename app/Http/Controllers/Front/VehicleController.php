@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\Loueur;
 use App\Models\Vehicle;
 use Illuminate\Http\Request;
 
@@ -74,5 +75,70 @@ class VehicleController extends Controller
             ->get();
 
         return view('front.pages.vehicle-detail', compact('vehicle', 'relatedVehicles'));
+    }
+
+    /**
+     * SEO page: vehicles by wilaya.
+     */
+    public function byWilaya(string $wilaya)
+    {
+        // Normalize wilaya slug to name
+        $wilayaName = str_replace('-', ' ', ucwords($wilaya, '-'));
+
+        // Find loueurs in this wilaya
+        $loueurIds = Loueur::where('is_active', true)
+            ->where('is_suspended', false)
+            ->where(function ($q) use ($wilayaName, $wilaya) {
+                $q->whereRaw('LOWER(wilaya) = ?', [strtolower($wilayaName)])
+                  ->orWhereRaw('LOWER(wilaya) = ?', [strtolower($wilaya)]);
+            })
+            ->pluck('id');
+
+        $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            ->where('is_active', true)
+            ->where('status', 'available')
+            ->whereIn('loueur_id', $loueurIds)
+            ->orderBy('is_featured', 'desc')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+
+        $loueurs = Loueur::where('is_active', true)
+            ->whereIn('id', $loueurIds)
+            ->withCount('vehicles')
+            ->get();
+
+        $brands = Brand::orderBy('name')->get();
+        $categories = Category::orderBy('name')->get();
+
+        $totalVehicles = $vehicles->total();
+
+        return view('front.pages.vehicles-by-wilaya', compact(
+            'vehicles',
+            'loueurs',
+            'brands',
+            'categories',
+            'wilayaName',
+            'totalVehicles'
+        ));
+    }
+
+    /**
+     * Compare vehicles side by side.
+     */
+    public function compare(Request $request)
+    {
+        $ids = $request->get('ids', '');
+        $vehicleIds = array_filter(explode(',', $ids));
+
+        if (count($vehicleIds) < 2 || count($vehicleIds) > 3) {
+            return redirect()->route('vehicles.index')->with('error', 'Sélectionnez 2 ou 3 véhicules à comparer.');
+        }
+
+        $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            ->where('is_active', true)
+            ->whereIn('id', $vehicleIds)
+            ->get();
+
+        return view('front.pages.compare', compact('vehicles'));
     }
 }

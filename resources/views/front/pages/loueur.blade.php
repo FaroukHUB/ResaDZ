@@ -34,7 +34,7 @@ if ($loueur->phone) {
                 @if($loueur->logo)
                     <img src="{{ asset('storage/' . $loueur->logo) }}" alt="{{ $loueur->company_name }}" class="w-20 h-20 rounded-2xl object-cover shadow-sm border border-gray-200">
                 @else
-                    <div class="w-20 h-20 bg-gradient-to-br from-amber-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-sm">
+                    <div class="w-20 h-20 bg-gray-900 rounded-2xl flex items-center justify-center shadow-sm">
                         <span class="text-white font-bold text-3xl">{{ strtoupper(substr($loueur->company_name, 0, 1)) }}</span>
                     </div>
                 @endif
@@ -50,6 +50,21 @@ if ($loueur->phone) {
                         @endif
                     </div>
                     <p class="text-gray-500 mt-1">{{ $loueur->city ?? '' }} {{ $loueur->wilaya ? '- ' . $loueur->wilaya : '' }}</p>
+
+                    {{-- Rating --}}
+                    @if($loueur->total_reviews > 0)
+                        <div class="flex items-center gap-2 mt-2">
+                            <div class="flex items-center gap-0.5">
+                                @for($i = 1; $i <= 5; $i++)
+                                    <svg class="w-4 h-4 {{ $i <= round($loueur->rating) ? 'text-yellow-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                    </svg>
+                                @endfor
+                            </div>
+                            <span class="font-bold text-gray-900">{{ number_format($loueur->rating, 1) }}</span>
+                            <a href="#avis" class="text-sm text-gray-500 hover:text-red-600 transition">{{ $loueur->total_reviews }} avis vérifiés</a>
+                        </div>
+                    @endif
                     @if($loueur->description)
                         <p class="text-gray-600 mt-3 max-w-2xl">{{ $loueur->description }}</p>
                     @endif
@@ -57,7 +72,7 @@ if ($loueur->phone) {
                     <!-- Contact -->
                     <div class="flex flex-wrap gap-3 mt-4">
                         @if($loueur->phone)
-                            <a href="tel:{{ $loueur->phone }}" class="inline-flex items-center gap-2 px-4 py-2 bg-amber-600 text-white font-semibold rounded-lg hover:bg-amber-700 transition text-sm">
+                            <a href="tel:{{ $loueur->phone }}" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 {{ $loueur->phone }}
                             </a>
@@ -105,6 +120,11 @@ if ($loueur->phone) {
                 <p class="text-gray-500">Aucun véhicule disponible pour le moment.</p>
             </div>
         @endif
+
+        {{-- Reviews Section --}}
+        <div id="avis">
+            @include('front.components.reviews-section', ['loueur' => $loueur])
+        </div>
     </section>
 
 @endsection
