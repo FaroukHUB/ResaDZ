@@ -31,6 +31,7 @@ class Vehicle extends Model
         'available_options',
         'transmission',
         'fuel_type',
+        'has_air_conditioning',
         'seats',
         'doors',
         'luggage_capacity',
@@ -64,6 +65,7 @@ class Vehicle extends Model
         'deposit_amount' => 'decimal:2',
         'available_options' => 'array',
         'mileage_limit_per_day' => 'integer',
+        'has_air_conditioning' => 'boolean',
         'extra_mileage_fee' => 'decimal:2',
         'gallery' => 'array',
         'is_featured' => 'boolean',
@@ -119,6 +121,23 @@ class Vehicle extends Model
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);
+    }
+
+    public function offers(): HasMany
+    {
+        return $this->hasMany(VehicleOffer::class);
+    }
+
+    /**
+     * Get the currently active offer for this vehicle.
+     */
+    public function getActiveOfferAttribute(): ?VehicleOffer
+    {
+        return $this->offers()
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->first();
     }
 
     // Scopes

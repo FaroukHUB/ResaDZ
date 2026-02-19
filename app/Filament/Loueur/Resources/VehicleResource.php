@@ -117,6 +117,10 @@ class VehicleResource extends Resource
                                             ->numeric()
                                             ->suffix('valises'),
                                     ]),
+                                Forms\Components\Toggle::make('has_air_conditioning')
+                                    ->label('Climatisation')
+                                    ->default(true)
+                                    ->helperText('Ce véhicule dispose de la climatisation'),
                             ]),
                         Forms\Components\Tabs\Tab::make('Tarification')
                             ->icon('heroicon-o-currency-euro')

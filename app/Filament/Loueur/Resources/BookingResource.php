@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingConfirmedMail;
+use App\Mail\ReviewRequestMail;
 
 class BookingResource extends Resource
 {
@@ -515,6 +516,42 @@ class BookingResource extends Resource
                             ->body('Lien de confirmation: ' . $record->getConfirmationUrl())
                             ->success()
                             ->send();
+                    }),
+                Tables\Actions\Action::make('completeBooking')
+                    ->label('Terminer')
+                    ->icon('heroicon-o-flag')
+                    ->color('gray')
+                    ->visible(fn (Booking $record) => in_array($record->status, ['confirmed', 'active']))
+                    ->requiresConfirmation()
+                    ->modalHeading('Terminer la location')
+                    ->modalDescription('Marquer cette location comme terminée ? Un email sera envoyé au client pour lui demander de laisser un avis.')
+                    ->modalSubmitActionLabel('Terminer et demander un avis')
+                    ->action(function (Booking $record) {
+                        $record->update(['status' => 'completed']);
+
+                        // Send review request email to client
+                        if ($record->client_email) {
+                            try {
+                                Mail::to($record->client_email)->send(new ReviewRequestMail($record));
+                                Notification::make()
+                                    ->title('Location terminée')
+                                    ->body('Un email a été envoyé au client pour lui demander un avis.')
+                                    ->success()
+                                    ->send();
+                            } catch (\Exception $e) {
+                                Notification::make()
+                                    ->title('Location terminée')
+                                    ->body('L\'email de demande d\'avis n\'a pas pu être envoyé.')
+                                    ->warning()
+                                    ->send();
+                            }
+                        } else {
+                            Notification::make()
+                                ->title('Location terminée')
+                                ->body('Aucun email configuré pour ce client - pas de demande d\'avis envoyée.')
+                                ->warning()
+                                ->send();
+                        }
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

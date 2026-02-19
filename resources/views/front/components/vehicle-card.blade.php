@@ -43,10 +43,10 @@
                 {{ $loueur->company_name }}
             </div>
         @endif
-        {{-- Category badge --}}
-        @if($vehicle->category)
-            <div class="absolute top-2 right-2 bg-white/90 backdrop-blur-sm px-2 py-1 rounded-full text-xs text-gray-700 font-medium">
-                {{ $vehicle->category->name }}
+        {{-- Special Offer Badge --}}
+        @if($vehicle->activeOffer)
+            <div class="absolute top-2 right-2 bg-gradient-to-r from-red-600 to-orange-500 px-3 py-1.5 rounded-full shadow-lg animate-pulse">
+                <span class="text-xs font-black text-white tracking-wide">{{ $vehicle->activeOffer->badge_text }}</span>
             </div>
         @endif
     </a>
@@ -106,6 +106,14 @@
             </div>
         </div>
     </div>
+
+    {{-- Clim indicator --}}
+    @if($vehicle->has_air_conditioning)
+        <div class="px-4 py-2 bg-blue-50 border-t border-blue-100 flex items-center gap-2">
+            <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            <span class="text-xs text-blue-700 font-semibold">Climatisation</span>
+        </div>
+    @endif
 
     {{-- Badges (loueur features) --}}
     @if(count($badges) > 0)
