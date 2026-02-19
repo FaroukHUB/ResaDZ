@@ -139,7 +139,40 @@ class Booking extends Model
             if ($booking->isDirty('total_price')) {
                 $booking->calculateCommission();
             }
+
+            // Créer une transaction d'entrée automatique quand le statut passe à "completed"
+            if ($booking->isDirty('status') && $booking->status === 'completed') {
+                $booking->createIncomeTransaction();
+            }
         });
+    }
+
+    /**
+     * Create an automatic income transaction when booking is completed.
+     */
+    public function createIncomeTransaction(): void
+    {
+        // Vérifier qu'une transaction n'existe pas déjà pour cette réservation
+        $exists = Transaction::where('booking_id', $this->id)
+            ->where('type', 'income')
+            ->exists();
+
+        if ($exists) {
+            return;
+        }
+
+        Transaction::create([
+            'loueur_id' => $this->loueur_id,
+            'type' => 'income',
+            'booking_id' => $this->id,
+            'vehicle_id' => $this->vehicle_id,
+            'description' => 'Location ' . ($this->vehicle?->full_name ?? 'Véhicule') . ' - ' . $this->client_name,
+            'amount' => $this->total_price,
+            'currency' => $this->currency ?? 'DZD',
+            'payment_method' => $this->payment_method ?? 'cash',
+            'transaction_date' => now(),
+            'status' => 'completed',
+        ]);
     }
 
     /**

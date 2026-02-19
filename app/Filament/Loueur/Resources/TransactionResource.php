@@ -5,7 +5,6 @@ namespace App\Filament\Loueur\Resources;
 use App\Filament\Loueur\Resources\TransactionResource\Pages;
 use App\Models\Transaction;
 use App\Models\Vehicle;
-use App\Models\Booking;
 use App\Models\ExpenseCategory;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -19,17 +18,17 @@ class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-banknotes';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-trending-down';
 
     protected static ?string $navigationGroup = 'Finances';
 
-    protected static ?string $navigationLabel = 'Entrées / Sorties';
+    protected static ?string $navigationLabel = 'Dépenses';
 
-    protected static ?string $modelLabel = 'Transaction';
+    protected static ?string $modelLabel = 'Dépense';
 
-    protected static ?string $pluralModelLabel = 'Transactions';
+    protected static ?string $pluralModelLabel = 'Dépenses';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function getEloquentQuery(): Builder
     {
@@ -37,6 +36,7 @@ class TransactionResource extends Resource
 
         return parent::getEloquentQuery()
             ->when($loueur, fn ($query) => $query->where('loueur_id', $loueur->id))
+            ->where('type', 'expense')
             ->orderBy('transaction_date', 'desc');
     }
 
@@ -46,26 +46,10 @@ class TransactionResource extends Resource
 
         return $form
             ->schema([
-                Forms\Components\Section::make('Type de transaction')
-                    ->schema([
-                        Forms\Components\Grid::make(2)
-                            ->schema([
-                                Forms\Components\Select::make('type')
-                                    ->label('Type')
-                                    ->options([
-                                        'income' => '💰 Entrée (Revenu)',
-                                        'expense' => '💸 Sortie (Dépense)',
-                                    ])
-                                    ->required()
-                                    ->reactive()
-                                    ->afterStateUpdated(fn ($set) => $set('expense_category_id', null)),
-                                Forms\Components\DatePicker::make('transaction_date')
-                                    ->label('Date')
-                                    ->required()
-                                    ->default(now()),
-                            ]),
-                    ]),
-                Forms\Components\Section::make('Détails')
+                Forms\Components\Hidden::make('type')
+                    ->default('expense'),
+                Forms\Components\Section::make('Dépense')
+                    ->description('Ajoutez vos dépenses : carburant, entretien, assurance, etc.')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -73,7 +57,14 @@ class TransactionResource extends Resource
                                     ->label('Description')
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Ex: Location VW Tiguan - Ahmed'),
+                                    ->placeholder('Ex: Plein carburant Tiguan'),
+                                Forms\Components\DatePicker::make('transaction_date')
+                                    ->label('Date')
+                                    ->required()
+                                    ->default(now()),
+                            ]),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
                                 Forms\Components\Select::make('expense_category_id')
                                     ->label('Catégorie')
                                     ->options(fn () => $loueur
@@ -82,27 +73,12 @@ class TransactionResource extends Resource
                                             ->pluck('name', 'id')
                                         : ExpenseCategory::where('is_default', true)->pluck('name', 'id')
                                     )
-                                    ->visible(fn ($get) => $get('type') === 'expense')
-                                    ->searchable(),
-                            ]),
-                        Forms\Components\Grid::make(2)
-                            ->schema([
+                                    ->searchable()
+                                    ->required(),
                                 Forms\Components\Select::make('vehicle_id')
                                     ->label('Véhicule concerné')
                                     ->options(fn () => $loueur
                                         ? Vehicle::where('loueur_id', $loueur->id)->pluck('full_name', 'id')
-                                        : []
-                                    )
-                                    ->searchable()
-                                    ->placeholder('Optionnel'),
-                                Forms\Components\Select::make('booking_id')
-                                    ->label('Réservation liée')
-                                    ->options(fn () => $loueur
-                                        ? Booking::where('loueur_id', $loueur->id)
-                                            ->orderBy('created_at', 'desc')
-                                            ->limit(50)
-                                            ->get()
-                                            ->mapWithKeys(fn ($b) => [$b->id => $b->reference . ' - ' . $b->client_name])
                                         : []
                                     )
                                     ->searchable()
@@ -117,7 +93,8 @@ class TransactionResource extends Resource
                                     ->label('Montant')
                                     ->numeric()
                                     ->required()
-                                    ->minValue(0),
+                                    ->minValue(0)
+                                    ->suffix('DA'),
                                 Forms\Components\Select::make('currency')
                                     ->label('Devise')
                                     ->options([
@@ -127,28 +104,23 @@ class TransactionResource extends Resource
                                     ->default('DZD')
                                     ->required(),
                                 Forms\Components\Select::make('payment_method')
-                                    ->label('Méthode')
+                                    ->label('Méthode de paiement')
                                     ->options([
                                         'cash' => 'Espèces',
                                         'cib' => 'CIB',
                                         'dahabia' => 'Dahabia',
                                         'baridimob' => 'BaridiMob',
-                                        'paypal' => 'PayPal',
                                         'bank_transfer' => 'Virement',
-                                        'wise' => 'Wise',
                                     ])
                                     ->default('cash'),
                             ]),
-                        Forms\Components\TextInput::make('payment_reference')
-                            ->label('Référence paiement')
-                            ->placeholder('Numéro de transaction, reçu, etc.')
-                            ->helperText('Optionnel'),
                     ]),
                 Forms\Components\Section::make('Notes')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
                             ->label('Notes additionnelles')
-                            ->rows(3),
+                            ->rows(2)
+                            ->placeholder('Détails supplémentaires, numéro de facture, etc.'),
                     ])
                     ->collapsed(),
             ]);
@@ -162,17 +134,6 @@ class TransactionResource extends Resource
                     ->label('Date')
                     ->date('d/m/Y')
                     ->sortable(),
-                Tables\Columns\BadgeColumn::make('type')
-                    ->label('Type')
-                    ->colors([
-                        'success' => 'income',
-                        'danger' => 'expense',
-                    ])
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'income' => 'Entrée',
-                        'expense' => 'Sortie',
-                        default => $state,
-                    }),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
@@ -180,16 +141,14 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('expenseCategory.name')
                     ->label('Catégorie')
                     ->badge()
-                    ->color('gray')
-                    ->placeholder('-'),
+                    ->color('gray'),
                 Tables\Columns\TextColumn::make('vehicle.full_name')
                     ->label('Véhicule')
-                    ->placeholder('-')
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->placeholder('-'),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Montant')
-                    ->formatStateUsing(fn ($record) => $record->getFormattedAmount())
-                    ->color(fn ($record) => $record->isIncome() ? 'success' : 'danger')
+                    ->formatStateUsing(fn ($record) => '-' . number_format($record->amount, 0, ',', ' ') . ' ' . ($record->currency === 'EUR' ? '€' : 'DA'))
+                    ->color('danger')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Méthode')
@@ -198,37 +157,20 @@ class TransactionResource extends Resource
                         'cib' => 'CIB',
                         'dahabia' => 'Dahabia',
                         'baridimob' => 'BaridiMob',
-                        'paypal' => 'PayPal',
                         'bank_transfer' => 'Virement',
-                        'wise' => 'Wise',
                         default => $state ?? '-',
                     })
                     ->badge()
-                    ->color('info'),
+                    ->color('info')
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\SelectFilter::make('type')
-                    ->label('Type')
-                    ->options([
-                        'income' => 'Entrées',
-                        'expense' => 'Sorties',
-                    ]),
                 Tables\Filters\SelectFilter::make('expense_category_id')
                     ->label('Catégorie')
                     ->relationship('expenseCategory', 'name'),
                 Tables\Filters\SelectFilter::make('vehicle_id')
                     ->label('Véhicule')
                     ->relationship('vehicle', 'full_name'),
-                Tables\Filters\SelectFilter::make('payment_method')
-                    ->label('Méthode')
-                    ->options([
-                        'cash' => 'Espèces',
-                        'cib' => 'CIB',
-                        'dahabia' => 'Dahabia',
-                        'baridimob' => 'BaridiMob',
-                        'paypal' => 'PayPal',
-                        'bank_transfer' => 'Virement',
-                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -243,9 +185,7 @@ class TransactionResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array
