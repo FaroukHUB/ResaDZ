@@ -561,6 +561,54 @@ class BookingResource extends Resource
                     ->color('success')
                     ->url(fn (Booking $record) => route('contract.download', $record))
                     ->openUrlInNewTab(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\Action::make('whatsappConfirm')
+                        ->label('WhatsApp: Confirmer')
+                        ->icon('heroicon-o-chat-bubble-left')
+                        ->color('success')
+                        ->visible(fn (Booking $record) => $record->client_whatsapp && $record->status === 'confirmed')
+                        ->url(fn (Booking $record) => 'https://wa.me/' . preg_replace('/[^0-9]/', '', $record->client_whatsapp) . '?text=' . urlencode(
+                            "Bonjour {$record->client_name} !\n\n" .
+                            "Votre réservation est CONFIRMÉE ✅\n\n" .
+                            "📅 Du " . $record->start_date->format('d/m/Y') . " au " . $record->end_date->format('d/m/Y') . "\n" .
+                            "🚗 " . ($record->vehicle->full_name ?? 'Véhicule') . "\n" .
+                            "💰 Total: " . number_format($record->total_price, 0, ',', ' ') . " DA\n\n" .
+                            "À bientôt !\n" .
+                            "ResaDZ"
+                        ))
+                        ->openUrlInNewTab(),
+                    Tables\Actions\Action::make('whatsappReminder')
+                        ->label('WhatsApp: Rappel')
+                        ->icon('heroicon-o-bell')
+                        ->color('warning')
+                        ->visible(fn (Booking $record) => $record->client_whatsapp && in_array($record->status, ['confirmed', 'active']))
+                        ->url(fn (Booking $record) => 'https://wa.me/' . preg_replace('/[^0-9]/', '', $record->client_whatsapp) . '?text=' . urlencode(
+                            "Bonjour {$record->client_name} !\n\n" .
+                            "⏰ Rappel pour votre location:\n\n" .
+                            "📅 " . $record->start_date->format('d/m/Y') . " à " . ($record->pickup_time ?? '09:00') . "\n" .
+                            "🚗 " . ($record->vehicle->full_name ?? 'Véhicule') . "\n\n" .
+                            "N'oubliez pas votre permis et pièce d'identité !\n\n" .
+                            "ResaDZ"
+                        ))
+                        ->openUrlInNewTab(),
+                    Tables\Actions\Action::make('whatsappReview')
+                        ->label('WhatsApp: Demander avis')
+                        ->icon('heroicon-o-star')
+                        ->color('gray')
+                        ->visible(fn (Booking $record) => $record->client_whatsapp && $record->status === 'completed')
+                        ->url(fn (Booking $record) => 'https://wa.me/' . preg_replace('/[^0-9]/', '', $record->client_whatsapp) . '?text=' . urlencode(
+                            "Bonjour {$record->client_name} !\n\n" .
+                            "Merci d'avoir loué avec nous ! 🙏\n\n" .
+                            "Votre avis compte beaucoup. Pourriez-vous nous laisser un commentaire ?\n\n" .
+                            "👉 " . route('review.create', $record->confirmation_token) . "\n\n" .
+                            "Merci !\n" .
+                            "ResaDZ"
+                        ))
+                        ->openUrlInNewTab(),
+                ])->label('WhatsApp')
+                    ->icon('heroicon-o-chat-bubble-oval-left-ellipsis')
+                    ->color('success')
+                    ->visible(fn (Booking $record) => !empty($record->client_whatsapp)),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

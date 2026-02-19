@@ -1,212 +1,145 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        {{-- Navigation et filtres --}}
-        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-            <div class="flex items-center gap-2">
-                <x-filament::button
-                    wire:click="previousMonth"
-                    icon="heroicon-o-chevron-left"
-                    color="gray"
-                    size="sm"
-                />
-                <h2 class="text-xl font-semibold min-w-[200px] text-center">
-                    {{ $calendarData['month'] ?? '' }}
-                </h2>
-                <x-filament::button
-                    wire:click="nextMonth"
-                    icon="heroicon-o-chevron-right"
-                    color="gray"
-                    size="sm"
-                />
-                <x-filament::button
-                    wire:click="goToToday"
-                    color="gray"
-                    size="sm"
-                >
-                    Aujourd'hui
-                </x-filament::button>
-            </div>
-
-            {{-- Filtre véhicule --}}
-            <div class="flex items-center gap-2">
-                <span class="text-sm text-gray-500">Véhicule :</span>
-                <select
-                    wire:change="selectVehicle($event.target.value)"
-                    class="border-gray-300 rounded-lg shadow-sm focus:border-primary-500 focus:ring-primary-500"
-                >
-                    <option value="">Tous les véhicules</option>
-                    @foreach($calendarData['vehicles'] ?? [] as $vehicle)
-                        <option value="{{ $vehicle['id'] }}" @selected($selectedVehicleId == $vehicle['id'])>
-                            {{ $vehicle['name'] }}
-                        </option>
-                    @endforeach
-                </select>
-            </div>
+        {{-- Month Navigation --}}
+        <div class="flex items-center justify-between bg-white dark:bg-gray-800 rounded-xl p-4 shadow">
+            <a href="?month={{ $prevMonth->month }}&year={{ $prevMonth->year }}"
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Précédent
+            </a>
+            <h2 class="text-xl font-bold text-gray-900 dark:text-white capitalize">{{ $monthName }}</h2>
+            <a href="?month={{ $nextMonth->month }}&year={{ $nextMonth->year }}"
+               class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                Suivant
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                </svg>
+            </a>
         </div>
 
-        {{-- Légende --}}
+        {{-- Legend --}}
         <div class="flex flex-wrap gap-4 text-sm">
             <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-amber-500"></span>
-                <span>En attente</span>
+                <div class="w-4 h-4 bg-green-500 rounded"></div>
+                <span class="text-gray-600 dark:text-gray-400">Disponible</span>
             </div>
             <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-blue-500"></span>
-                <span>Confirmée</span>
+                <div class="w-4 h-4 bg-amber-500 rounded"></div>
+                <span class="text-gray-600 dark:text-gray-400">En attente</span>
             </div>
             <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-green-500"></span>
-                <span>En cours</span>
+                <div class="w-4 h-4 bg-blue-500 rounded"></div>
+                <span class="text-gray-600 dark:text-gray-400">Confirmée</span>
             </div>
             <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-red-500"></span>
-                <span>Bloqué</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <span class="w-4 h-4 rounded bg-orange-500"></span>
-                <span>Maintenance</span>
+                <div class="w-4 h-4 bg-red-500 rounded"></div>
+                <span class="text-gray-600 dark:text-gray-400">En cours</span>
             </div>
         </div>
 
-        {{-- Calendrier --}}
+        {{-- Calendar Grid --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
-            {{-- Jours de la semaine --}}
-            <div class="grid grid-cols-7 bg-gray-50 dark:bg-gray-700 border-b">
-                @foreach(['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'] as $dayName)
-                    <div class="p-2 text-center text-sm font-medium text-gray-600 dark:text-gray-300">
-                        {{ $dayName }}
-                    </div>
-                @endforeach
-            </div>
-
-            {{-- Grille du calendrier --}}
-            @php
-                $days = $calendarData['days'] ?? [];
-                $events = $calendarData['events'] ?? [];
-                $firstDay = !empty($days) ? \Carbon\Carbon::parse($days[0]['date'])->dayOfWeek : 0;
-            @endphp
-
-            <div class="grid grid-cols-7">
-                {{-- Cellules vides avant le premier jour --}}
-                @for($i = 0; $i < $firstDay; $i++)
-                    <div class="min-h-[100px] border-r border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"></div>
-                @endfor
-
-                {{-- Jours du mois --}}
-                @foreach($days as $day)
-                    @php
-                        $dayEvents = collect($events)->filter(function($event) use ($day) {
-                            return $day['date'] >= $event['startDate'] && $day['date'] <= $event['endDate'];
-                        });
-                    @endphp
-
-                    <div class="min-h-[100px] border-r border-b border-gray-100 dark:border-gray-700 p-1 {{ $day['isToday'] ? 'bg-primary-50 dark:bg-primary-900/20' : ($day['isWeekend'] ? 'bg-gray-50 dark:bg-gray-900/50' : '') }}">
-                        <div class="text-right mb-1">
-                            <span class="inline-flex items-center justify-center w-7 h-7 text-sm {{ $day['isToday'] ? 'bg-primary-500 text-white rounded-full font-bold' : 'text-gray-700 dark:text-gray-300' }}">
-                                {{ $day['day'] }}
-                            </span>
-                        </div>
-
-                        <div class="space-y-1 overflow-y-auto max-h-[70px]">
-                            @foreach($dayEvents as $event)
-                                @php
-                                    $bgColor = match($event['color']) {
-                                        'amber' => 'bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200 border-amber-300',
-                                        'blue' => 'bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border-blue-300',
-                                        'green' => 'bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-green-300',
-                                        'red' => 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 border-red-300',
-                                        'orange' => 'bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border-orange-300',
-                                        default => 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 border-gray-300',
-                                    };
-                                @endphp
-
-                                <div
-                                    class="text-xs px-1 py-0.5 rounded border truncate cursor-pointer hover:opacity-80 {{ $bgColor }}"
-                                    title="{{ $event['vehicleName'] }}: {{ $event['title'] }} ({{ $event['startDate'] }} - {{ $event['endDate'] }})"
-                                    @if($event['type'] === 'availability')
-                                        wire:click="deleteAvailability({{ explode('-', $event['id'])[1] }})"
-                                        wire:confirm="Supprimer ce blocage ?"
-                                    @endif
-                                >
-                                    {{ Str::limit($event['title'], 15) }}
-                                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full min-w-[800px]">
+                    <thead>
+                        <tr class="bg-gray-50 dark:bg-gray-700">
+                            <th class="sticky left-0 bg-gray-50 dark:bg-gray-700 px-4 py-3 text-left text-xs font-semibold text-gray-600 dark:text-gray-300 uppercase tracking-wider w-48 z-10">
+                                Véhicule
+                            </th>
+                            @foreach($days as $day)
+                                <th class="px-1 py-3 text-center text-xs font-medium {{ $day->isToday() ? 'bg-amber-100 dark:bg-amber-900/30' : '' }} {{ $day->isWeekend() ? 'text-red-500' : 'text-gray-600 dark:text-gray-300' }}">
+                                    <div>{{ $day->format('D') }}</div>
+                                    <div class="font-bold">{{ $day->format('d') }}</div>
+                                </th>
                             @endforeach
-                        </div>
-                    </div>
-                @endforeach
-
-                {{-- Cellules vides après le dernier jour --}}
-                @php
-                    $lastDay = !empty($days) ? \Carbon\Carbon::parse(end($days)['date'])->dayOfWeek : 6;
-                    $remainingCells = 6 - $lastDay;
-                @endphp
-                @for($i = 0; $i < $remainingCells; $i++)
-                    <div class="min-h-[100px] border-r border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900"></div>
-                @endfor
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                        @forelse($vehicles as $vehicle)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                <td class="sticky left-0 bg-white dark:bg-gray-800 px-4 py-3 z-10">
+                                    <div class="flex items-center gap-3">
+                                        @if($vehicle->image)
+                                            <img src="{{ asset('storage/' . $vehicle->image) }}" alt="{{ $vehicle->full_name }}" class="w-10 h-10 rounded-lg object-cover">
+                                        @else
+                                            <div class="w-10 h-10 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25"/>
+                                                </svg>
+                                            </div>
+                                        @endif
+                                        <div>
+                                            <div class="font-medium text-gray-900 dark:text-white text-sm">{{ $vehicle->full_name }}</div>
+                                            <div class="text-xs text-gray-500">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA/j</div>
+                                        </div>
+                                    </div>
+                                </td>
+                                @foreach($days as $day)
+                                    @php
+                                        $key = $vehicle->id . '_' . $day->format('Y-m-d');
+                                        $booking = $bookingMap[$key] ?? null;
+                                        $statusColors = [
+                                            'pending' => 'bg-amber-500',
+                                            'confirmed' => 'bg-blue-500',
+                                            'active' => 'bg-red-500',
+                                        ];
+                                        $bgColor = $booking ? ($statusColors[$booking->status] ?? 'bg-gray-400') : 'bg-green-500';
+                                    @endphp
+                                    <td class="px-1 py-3 text-center {{ $day->isToday() ? 'bg-amber-50 dark:bg-amber-900/10' : '' }}">
+                                        @if($booking)
+                                            <a href="{{ route('filament.loueur.resources.bookings.edit', $booking->id) }}"
+                                               class="block w-6 h-6 mx-auto rounded {{ $bgColor }} hover:ring-2 hover:ring-offset-1 hover:ring-gray-400 transition"
+                                               title="{{ $booking->client_name }} - {{ $booking->status }}">
+                                            </a>
+                                        @else
+                                            <div class="w-6 h-6 mx-auto rounded {{ $bgColor }} opacity-30"></div>
+                                        @endif
+                                    </td>
+                                @endforeach
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="{{ count($days) + 1 }}" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400">
+                                    Aucun véhicule actif. Ajoutez des véhicules pour voir le calendrier.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        {{-- Formulaire de blocage --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-            <h3 class="text-lg font-semibold mb-4">Bloquer des dates</h3>
-            <form wire:submit="blockDates">
-                {{ $this->blockDatesForm }}
-
-                <div class="mt-4">
-                    <x-filament::button type="submit">
-                        Bloquer ces dates
-                    </x-filament::button>
-                </div>
-            </form>
-        </div>
-
-        {{-- Liste des événements du mois --}}
-        @if(!empty($calendarData['events']))
+        {{-- Upcoming Bookings --}}
+        @if($bookings->count() > 0)
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-                <h3 class="text-lg font-semibold mb-4">Événements du mois</h3>
-                <div class="space-y-2">
-                    @foreach(collect($calendarData['events'])->sortBy('startDate') as $event)
-                        <div class="flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-700">
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Réservations ce mois</h3>
+                <div class="space-y-3">
+                    @foreach($bookings->sortBy('start_date') as $booking)
+                        <a href="{{ route('filament.loueur.resources.bookings.edit', $booking->id) }}"
+                           class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition">
                             <div class="flex items-center gap-3">
                                 @php
-                                    $dotColor = match($event['color']) {
-                                        'amber' => 'bg-amber-500',
-                                        'blue' => 'bg-blue-500',
-                                        'green' => 'bg-green-500',
-                                        'red' => 'bg-red-500',
-                                        'orange' => 'bg-orange-500',
-                                        default => 'bg-gray-500',
-                                    };
+                                    $statusColors = [
+                                        'pending' => 'bg-amber-500',
+                                        'confirmed' => 'bg-blue-500',
+                                        'active' => 'bg-red-500',
+                                    ];
                                 @endphp
-                                <span class="w-3 h-3 rounded-full {{ $dotColor }}"></span>
+                                <div class="w-3 h-3 rounded-full {{ $statusColors[$booking->status] ?? 'bg-gray-400' }}"></div>
                                 <div>
-                                    <p class="font-medium">{{ $event['title'] }}</p>
-                                    <p class="text-sm text-gray-500">
-                                        {{ $event['vehicleName'] }} &bull;
-                                        {{ \Carbon\Carbon::parse($event['startDate'])->format('d/m') }} - {{ \Carbon\Carbon::parse($event['endDate'])->format('d/m/Y') }}
-                                    </p>
+                                    <div class="font-medium text-gray-900 dark:text-white">{{ $booking->client_name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $booking->vehicle->full_name ?? 'N/A' }}</div>
                                 </div>
                             </div>
-                            @if($event['type'] === 'availability')
-                                <x-filament::button
-                                    color="danger"
-                                    size="xs"
-                                    wire:click="deleteAvailability({{ explode('-', $event['id'])[1] }})"
-                                    wire:confirm="Supprimer ce blocage ?"
-                                >
-                                    Supprimer
-                                </x-filament::button>
-                            @else
-                                <span class="text-sm text-gray-500">
-                                    {{ match($event['status'] ?? '') {
-                                        'pending' => 'En attente',
-                                        'confirmed' => 'Confirmée',
-                                        'active' => 'En cours',
-                                        default => '',
-                                    } }}
-                                </span>
-                            @endif
-                        </div>
+                            <div class="text-right">
+                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    {{ $booking->start_date->format('d/m') }} → {{ $booking->end_date->format('d/m') }}
+                                </div>
+                                <div class="text-sm text-gray-500">{{ $booking->total_days }} jours</div>
+                            </div>
+                        </a>
                     @endforeach
                 </div>
             </div>
