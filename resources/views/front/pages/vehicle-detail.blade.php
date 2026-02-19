@@ -155,6 +155,33 @@
                         @endif
                     </div>
 
+                    {{-- Special Offer Banner --}}
+                    @if($vehicle->activeOffer)
+                        @php
+                            $offer = $vehicle->activeOffer;
+                            $discountText = $offer->discount_type === 'percentage'
+                                ? '-' . number_format($offer->discount_value, 0) . '%'
+                                : '-' . number_format($offer->discount_value, 0, ',', ' ') . ' DA';
+                        @endphp
+                        <div class="bg-gradient-to-r from-red-600 to-orange-500 rounded-xl p-4 text-white">
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+                                    <span class="text-lg font-black">{{ $offer->badge_text }}</span>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="font-bold text-lg">{{ $offer->title }}</div>
+                                    <div class="text-sm text-white/90">{{ $discountText }} sur votre location</div>
+                                </div>
+                            </div>
+                            @if($offer->description)
+                                <p class="text-sm text-white/80 mt-3 border-t border-white/20 pt-3">{{ $offer->description }}</p>
+                            @endif
+                            <div class="text-xs text-white/70 mt-2">
+                                Valable jusqu'au {{ $offer->end_date->format('d/m/Y') }}
+                            </div>
+                        </div>
+                    @endif
+
                     <!-- Réserver -->
                     <a href="{{ route('booking.create', $vehicle->slug) }}" class="flex items-center justify-center gap-2 w-full py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
