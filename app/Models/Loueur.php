@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasWebpImages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -9,7 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Loueur extends Model
 {
-    use HasFactory;
+    use HasFactory, HasWebpImages;
+
+    public function getWebpImageFields(): array
+    {
+        return ['logo', 'cover_image'];
+    }
 
     protected $fillable = [
         'user_id',

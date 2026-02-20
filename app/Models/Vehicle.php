@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Traits\HasWebpImages;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,7 +12,15 @@ use Illuminate\Support\Str;
 
 class Vehicle extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, HasWebpImages;
+
+    /**
+     * Image fields to convert to WebP
+     */
+    public function getWebpImageFields(): array
+    {
+        return ['image'];
+    }
 
     protected $fillable = [
         'loueur_id',
