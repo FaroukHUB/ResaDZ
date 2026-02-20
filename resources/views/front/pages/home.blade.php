@@ -41,18 +41,37 @@
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
             <div class="max-w-3xl">
-                {{-- Dynamic Title from Slide or Default --}}
-                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
-                    @if(isset($heroSlides) && $heroSlides->count() > 0 && $heroSlides->first()->title)
-                        {{ $heroSlides->first()->title }}
-                        @if($heroSlides->first()->subtitle)
-                            <span class="block text-red-500">{{ $heroSlides->first()->subtitle }}</span>
-                        @endif
-                    @else
+                {{-- Dynamic Titles that change with slides --}}
+                @if(isset($heroSlides) && $heroSlides->count() > 0)
+                    <div class="relative">
+                        @foreach($heroSlides as $index => $slide)
+                            <div class="hero-title transition-opacity duration-700 {{ $index === 0 ? 'opacity-100' : 'opacity-0 absolute top-0 left-0' }}" data-index="{{ $index }}">
+                                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                                    @if($slide->title)
+                                        {{ $slide->title }}
+                                        @if($slide->subtitle)
+                                            <span class="block text-red-500">{{ $slide->subtitle }}</span>
+                                        @endif
+                                    @else
+                                        Louez votre voiture
+                                        <span class="block text-red-500">partout en Algérie</span>
+                                    @endif
+                                </h1>
+                                @if($slide->button_text && $slide->button_url)
+                                    <a href="{{ $slide->button_url }}" class="mt-6 inline-flex items-center px-6 py-3 bg-red-600 text-white font-bold rounded-lg hover:bg-red-700 transition shadow-lg">
+                                        {{ $slide->button_text }}
+                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
+                    </div>
+                @else
+                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
                         Louez votre voiture
                         <span class="block text-red-500">partout en Algérie</span>
-                    @endif
-                </h1>
+                    </h1>
+                @endif
                 <p class="mt-6 text-lg sm:text-xl text-gray-200 max-w-xl">
                     Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.
                 </p>
@@ -243,6 +262,7 @@
     // Hero Slider
     document.addEventListener('DOMContentLoaded', function() {
         const slides = document.querySelectorAll('.hero-slide');
+        const titles = document.querySelectorAll('.hero-title');
         const dots = document.querySelectorAll('.hero-dot');
 
         if (slides.length <= 1) return;
@@ -252,15 +272,30 @@
         let autoSlideInterval;
 
         function showSlide(index) {
+            // Transition images
             slides.forEach((slide, i) => {
                 slide.classList.toggle('opacity-100', i === index);
                 slide.classList.toggle('opacity-0', i !== index);
             });
+
+            // Transition titles
+            titles.forEach((title, i) => {
+                if (i === index) {
+                    title.classList.remove('opacity-0', 'absolute', 'top-0', 'left-0');
+                    title.classList.add('opacity-100');
+                } else {
+                    title.classList.remove('opacity-100');
+                    title.classList.add('opacity-0', 'absolute', 'top-0', 'left-0');
+                }
+            });
+
+            // Update dots
             dots.forEach((dot, i) => {
                 dot.classList.toggle('bg-white', i === index);
                 dot.classList.toggle('scale-110', i === index);
                 dot.classList.toggle('bg-white/50', i !== index);
             });
+
             currentSlide = index;
         }
 
