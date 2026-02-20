@@ -121,13 +121,15 @@ class BoostPackageResource extends Resource
                     ->money('DZD', locale: 'fr')
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('boost_type')
+                Tables\Columns\TextColumn::make('boost_type')
                     ->label('Type')
-                    ->colors([
-                        'gray' => 'standard',
-                        'warning' => 'premium',
-                        'success' => 'featured',
-                    ]),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'standard' => 'gray',
+                        'premium' => 'warning',
+                        'featured' => 'success',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\IconColumn::make('show_badge')
                     ->label('Badge')

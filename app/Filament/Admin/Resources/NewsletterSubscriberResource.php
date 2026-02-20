@@ -80,14 +80,16 @@ class NewsletterSubscriberResource extends Resource
                     ->searchable()
                     ->placeholder('-'),
 
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Statut')
-                    ->colors([
-                        'warning' => 'pending',
-                        'success' => 'active',
-                        'danger' => fn ($state) => in_array($state, ['unsubscribed', 'bounced']),
-                    ])
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'pending' => 'warning',
+                        'active' => 'success',
+                        'unsubscribed', 'bounced' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'En attente',
                         'active' => 'Actif',
                         'unsubscribed' => 'Désabonné',

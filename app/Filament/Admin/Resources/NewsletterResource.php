@@ -100,16 +100,18 @@ class NewsletterResource extends Resource
                     ->sortable()
                     ->limit(40),
 
-                Tables\Columns\BadgeColumn::make('status')
+                Tables\Columns\TextColumn::make('status')
                     ->label('Statut')
-                    ->colors([
-                        'gray' => 'draft',
-                        'warning' => 'scheduled',
-                        'info' => 'sending',
-                        'success' => 'sent',
-                        'danger' => 'cancelled',
-                    ])
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'draft' => 'gray',
+                        'scheduled' => 'warning',
+                        'sending' => 'info',
+                        'sent' => 'success',
+                        'cancelled' => 'danger',
+                        default => 'gray',
+                    })
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'draft' => 'Brouillon',
                         'scheduled' => 'Planifié',
                         'sending' => 'En cours',

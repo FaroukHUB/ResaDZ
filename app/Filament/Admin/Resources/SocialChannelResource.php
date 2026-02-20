@@ -108,14 +108,16 @@ class SocialChannelResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('type')
+                Tables\Columns\TextColumn::make('type')
                     ->label('Type')
-                    ->colors([
-                        'success' => 'whatsapp',
-                        'info' => 'telegram',
-                        'primary' => 'facebook',
-                        'danger' => 'instagram',
-                    ]),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'whatsapp' => 'success',
+                        'telegram' => 'info',
+                        'facebook' => 'primary',
+                        'instagram' => 'danger',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\TextColumn::make('url')
                     ->label('Lien')

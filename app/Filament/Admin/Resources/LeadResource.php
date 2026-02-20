@@ -114,14 +114,16 @@ class LeadResource extends Resource
                     ->copyable()
                     ->placeholder('-'),
 
-                Tables\Columns\BadgeColumn::make('source')
+                Tables\Columns\TextColumn::make('source')
                     ->label('Source')
-                    ->colors([
-                        'primary' => 'popup',
-                        'success' => 'footer',
-                        'warning' => 'landing',
-                        'info' => fn ($state) => in_array($state, ['whatsapp_cta', 'telegram_cta']),
-                    ]),
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'popup' => 'primary',
+                        'footer' => 'success',
+                        'landing' => 'warning',
+                        'whatsapp_cta', 'telegram_cta' => 'info',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\IconColumn::make('subscribed_newsletter')
                     ->label('NL')
