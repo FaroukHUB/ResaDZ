@@ -60,6 +60,7 @@ class ReferralRewardResource extends Resource
                     ]),
 
                 Forms\Components\Section::make('Montants')
+                    ->description('Pour les réductions %, entrez le pourcentage (ex: 10 pour 10%)')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -67,21 +68,13 @@ class ReferralRewardResource extends Resource
                                     ->label('Récompense parrain')
                                     ->numeric()
                                     ->required()
-                                    ->suffix(fn ($get) => match ($get('reward_type')) {
-                                        'discount_percent' => '%',
-                                        default => 'DA',
-                                    })
-                                    ->helperText('Ce que reçoit le parrain'),
+                                    ->helperText('Montant en DA ou pourcentage selon le type'),
 
                                 Forms\Components\TextInput::make('referred_amount')
                                     ->label('Récompense filleul')
                                     ->numeric()
                                     ->required()
-                                    ->suffix(fn ($get) => match ($get('reward_type')) {
-                                        'discount_percent' => '%',
-                                        default => 'DA',
-                                    })
-                                    ->helperText('Ce que reçoit le filleul'),
+                                    ->helperText('Montant en DA ou pourcentage selon le type'),
                             ]),
                     ]),
 
@@ -112,12 +105,10 @@ class ReferralRewardResource extends Resource
                                     ->default(true),
 
                                 Forms\Components\DateTimePicker::make('starts_at')
-                                    ->label('Date de début')
-                                    ->placeholder('Immédiat'),
+                                    ->label('Date de début'),
 
                                 Forms\Components\DateTimePicker::make('ends_at')
-                                    ->label('Date de fin')
-                                    ->placeholder('Sans fin'),
+                                    ->label('Date de fin'),
                             ]),
                     ]),
             ]);
@@ -132,31 +123,36 @@ class ReferralRewardResource extends Resource
                     ->searchable()
                     ->sortable(),
 
-                Tables\Columns\BadgeColumn::make('event')
+                Tables\Columns\TextColumn::make('event')
                     ->label('Événement')
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'registration' => 'Inscription',
                         'first_booking' => '1ère réservation',
                         'account_verified' => 'Compte vérifié',
                         default => $state,
                     })
-                    ->colors([
-                        'info' => 'registration',
-                        'success' => 'first_booking',
-                        'warning' => 'account_verified',
-                    ]),
+                    ->color(fn (string $state): string => match ($state) {
+                        'registration' => 'info',
+                        'first_booking' => 'success',
+                        'account_verified' => 'warning',
+                        default => 'gray',
+                    }),
 
                 Tables\Columns\TextColumn::make('referrer_amount')
                     ->label('Parrain')
-                    ->formatStateUsing(fn ($record) => $record->formatted_referrer_amount),
+                    ->numeric()
+                    ->suffix(' DA'),
 
                 Tables\Columns\TextColumn::make('referred_amount')
                     ->label('Filleul')
-                    ->formatStateUsing(fn ($record) => $record->formatted_referred_amount),
+                    ->numeric()
+                    ->suffix(' DA'),
 
-                Tables\Columns\BadgeColumn::make('reward_type')
+                Tables\Columns\TextColumn::make('reward_type')
                     ->label('Type')
-                    ->formatStateUsing(fn ($state) => match ($state) {
+                    ->badge()
+                    ->formatStateUsing(fn (string $state): string => match ($state) {
                         'credit' => 'Crédit',
                         'discount_percent' => 'Réduction %',
                         'discount_fixed' => 'Réduction DA',
