@@ -1,0 +1,24 @@
+<?php
+
+namespace App\Filament\Admin\Resources\HeroSlideResource\Pages;
+
+use App\Filament\Admin\Resources\HeroSlideResource;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
+
+class EditHeroSlide extends EditRecord
+{
+    protected static string $resource = HeroSlideResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Actions\DeleteAction::make(),
+        ];
+    }
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('index');
+    }
+}

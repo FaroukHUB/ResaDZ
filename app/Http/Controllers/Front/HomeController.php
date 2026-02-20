@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
+use App\Models\HeroSlide;
 use App\Models\Loueur;
 use App\Models\Vehicle;
 
@@ -40,6 +41,9 @@ class HomeController extends Controller
             ->sort()
             ->values();
 
+        // Get active hero slides
+        $heroSlides = HeroSlide::active()->ordered()->get();
+
         return view('front.pages.home', compact(
             'featuredVehicles',
             'brands',
@@ -47,7 +51,8 @@ class HomeController extends Controller
             'loueurs',
             'totalVehicles',
             'totalLoueurs',
-            'wilayas'
+            'wilayas',
+            'heroSlides'
         ));
     }
 }

@@ -5,11 +5,29 @@
 
 @section('content')
 
-    <!-- Hero Section with Image -->
+    <!-- Hero Section with Slider -->
     <section class="relative min-h-[600px] lg:min-h-[700px] flex items-center">
-        {{-- Background Image - placez votre image hero dans public/assets/hero.jpg --}}
+        {{-- Background Slider --}}
         <div class="absolute inset-0 z-0">
-            @if(file_exists(public_path('assets/hero.jpg')))
+            @if(isset($heroSlides) && $heroSlides->count() > 0)
+                {{-- Slider Images --}}
+                <div id="hero-slider" class="relative w-full h-full">
+                    @foreach($heroSlides as $index => $slide)
+                        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
+                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover">
+                        </div>
+                    @endforeach
+                </div>
+
+                {{-- Slider Navigation Dots --}}
+                @if($heroSlides->count() > 1)
+                    <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+                        @foreach($heroSlides as $index => $slide)
+                            <button onclick="goToSlide({{ $index }})" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70' }}" data-index="{{ $index }}"></button>
+                        @endforeach
+                    </div>
+                @endif
+            @elseif(file_exists(public_path('assets/hero.jpg')))
                 <img src="{{ asset('assets/hero.jpg') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
             @elseif(file_exists(public_path('assets/hero.png')))
                 <img src="{{ asset('assets/hero.png') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
@@ -23,9 +41,17 @@
 
         <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
             <div class="max-w-3xl">
+                {{-- Dynamic Title from Slide or Default --}}
                 <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
-                    Louez votre voiture
-                    <span class="block text-red-500">partout en Algérie</span>
+                    @if(isset($heroSlides) && $heroSlides->count() > 0 && $heroSlides->first()->title)
+                        {{ $heroSlides->first()->title }}
+                        @if($heroSlides->first()->subtitle)
+                            <span class="block text-red-500">{{ $heroSlides->first()->subtitle }}</span>
+                        @endif
+                    @else
+                        Louez votre voiture
+                        <span class="block text-red-500">partout en Algérie</span>
+                    @endif
                 </h1>
                 <p class="mt-6 text-lg sm:text-xl text-gray-200 max-w-xl">
                     Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.
@@ -210,4 +236,50 @@
         </div>
     </section>
 
+@endsection
+
+@section('scripts')
+<script>
+    // Hero Slider
+    document.addEventListener('DOMContentLoaded', function() {
+        const slides = document.querySelectorAll('.hero-slide');
+        const dots = document.querySelectorAll('.hero-dot');
+
+        if (slides.length <= 1) return;
+
+        let currentSlide = 0;
+        const totalSlides = slides.length;
+        let autoSlideInterval;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('opacity-100', i === index);
+                slide.classList.toggle('opacity-0', i !== index);
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('bg-white', i === index);
+                dot.classList.toggle('scale-110', i === index);
+                dot.classList.toggle('bg-white/50', i !== index);
+            });
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            showSlide((currentSlide + 1) % totalSlides);
+        }
+
+        window.goToSlide = function(index) {
+            showSlide(index);
+            resetAutoSlide();
+        };
+
+        function resetAutoSlide() {
+            clearInterval(autoSlideInterval);
+            autoSlideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Start auto-sliding every 5 seconds
+        autoSlideInterval = setInterval(nextSlide, 5000);
+    });
+</script>
 @endsection
