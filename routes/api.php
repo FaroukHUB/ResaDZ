@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\PopupController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -37,4 +38,10 @@ Route::prefix('reservations')->group(function () {
     Route::post('/', [ReservationController::class, 'store']);
     Route::get('/{reference}', [ReservationController::class, 'show']);
     Route::post('/{reference}/cancel', [ReservationController::class, 'cancel']);
+});
+
+// Popups (tracking)
+Route::prefix('popup')->group(function () {
+    Route::post('/{popup}/view', [PopupController::class, 'trackView']);
+    Route::post('/{popup}/click', [PopupController::class, 'trackClick']);
 });
