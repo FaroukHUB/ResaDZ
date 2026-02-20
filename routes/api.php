@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\MarketingController;
 use App\Http\Controllers\Api\PopupController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\VehicleController;
@@ -44,4 +45,17 @@ Route::prefix('reservations')->group(function () {
 Route::prefix('popup')->group(function () {
     Route::post('/{popup}/view', [PopupController::class, 'trackView']);
     Route::post('/{popup}/click', [PopupController::class, 'trackClick']);
+});
+
+// Marketing
+Route::prefix('marketing')->group(function () {
+    Route::post('/subscribe', [MarketingController::class, 'subscribe']);
+    Route::post('/track-channel', [MarketingController::class, 'trackChannelClick']);
+    Route::post('/capture-lead', [MarketingController::class, 'captureLead']);
+    Route::post('/apply-referral', [MarketingController::class, 'applyReferral']);
+
+    // Authenticated routes
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/referral-link', [MarketingController::class, 'getReferralLink']);
+    });
 });

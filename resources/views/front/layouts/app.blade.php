@@ -187,12 +187,9 @@
                     </ul>
                 </div>
 
-                <!-- Contact -->
+                <!-- Newsletter -->
                 <div>
-                    <h4 class="text-white font-semibold mb-4">Contact</h4>
-                    <ul class="space-y-2">
-                        <li>contact@resadz.com</li>
-                    </ul>
+                    <x-newsletter-footer />
                 </div>
             </div>
 
@@ -206,5 +203,8 @@
 
     {{-- Popup Component --}}
     <x-popup :page-type="$pageType ?? null" />
+
+    {{-- Lead Capture Popup --}}
+    <x-lead-capture />
 </body>
 </html>
