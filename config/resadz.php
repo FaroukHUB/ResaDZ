@@ -31,4 +31,15 @@ return [
     |
     */
     'commission_currency' => 'DZD',
+
+    /*
+    |--------------------------------------------------------------------------
+    | Excluded Tracking IPs
+    |--------------------------------------------------------------------------
+    |
+    | IPs à exclure du tracking des visites (admin, développeur, etc.)
+    | Ajoutez votre IP ici pour ne pas fausser les statistiques.
+    |
+    */
+    'excluded_tracking_ips' => array_filter(explode(',', env('EXCLUDED_TRACKING_IPS', ''))),
 ];

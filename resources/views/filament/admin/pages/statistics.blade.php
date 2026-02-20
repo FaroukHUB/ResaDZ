@@ -1,5 +1,28 @@
 <x-filament-panels::page>
     <div class="space-y-6">
+        {{-- Info Banner --}}
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+            <div class="flex items-start gap-3">
+                <svg class="w-5 h-5 text-blue-600 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+                <div class="flex-1">
+                    <p class="text-sm text-blue-800 dark:text-blue-200">
+                        <strong>Votre IP actuelle :</strong> <code class="bg-blue-100 dark:bg-blue-800 px-2 py-0.5 rounded">{{ $currentIp }}</code>
+                    </p>
+                    <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                        Pour exclure votre IP du tracking, ajoutez dans votre fichier <code>.env</code> :
+                        <code class="bg-blue-100 dark:bg-blue-800 px-1 rounded">EXCLUDED_TRACKING_IPS={{ $currentIp }}</code>
+                    </p>
+                    @if(count($excludedIps) > 0)
+                        <p class="text-xs text-green-600 dark:text-green-400 mt-1">
+                            IPs actuellement exclues : {{ implode(', ', $excludedIps) }}
+                        </p>
+                    @endif
+                </div>
+            </div>
+        </div>
+
         {{-- Quick Stats --}}
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {{-- Today Visits --}}
@@ -83,6 +106,62 @@
             </div>
         </div>
 
+        {{-- IP Details Section --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+                <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/>
+                </svg>
+                Visiteurs par IP (ce mois)
+            </h3>
+            <p class="text-sm text-gray-500 mb-4">
+                Total : {{ number_format($totalRecords) }} visites enregistrées
+                @if($oldestRecord)
+                    depuis le {{ $oldestRecord->visited_at->format('d/m/Y') }}
+                @endif
+            </p>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">IP</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Visites</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Première visite</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Dernière visite</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Note</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse($topIps as $ipData)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                <td class="py-2 px-3">
+                                    <code class="bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded text-xs">{{ $ipData->ip_address }}</code>
+                                </td>
+                                <td class="py-2 px-3 font-medium text-gray-900 dark:text-white">{{ number_format($ipData->visits) }}</td>
+                                <td class="py-2 px-3 text-gray-500">{{ \Carbon\Carbon::parse($ipData->first_visit)->format('d/m/Y H:i') }}</td>
+                                <td class="py-2 px-3 text-gray-500">{{ \Carbon\Carbon::parse($ipData->last_visit)->format('d/m/Y H:i') }}</td>
+                                <td class="py-2 px-3">
+                                    @if($ipData->ip_address === $currentIp)
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                            C'est vous
+                                        </span>
+                                    @elseif(in_array($ipData->ip_address, $excludedIps))
+                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400">
+                                            Exclu
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-gray-500">Pas encore de données</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {{-- Top Pages --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
@@ -98,6 +177,7 @@
                             'seo_wilaya' => 'Pages SEO wilaya',
                             'compare' => 'Comparateur',
                             'review' => 'Avis',
+                            'auth' => 'Connexion/Inscription',
                             'other' => 'Autres',
                         ];
                         $totalPageVisits = $topPages->sum('visits');
@@ -162,6 +242,51 @@
                         <p class="text-gray-500 text-sm">Pas encore de données</p>
                     @endforelse
                 </div>
+            </div>
+        </div>
+
+        {{-- Recent Visits --}}
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Dernières visites (50)</h3>
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm">
+                    <thead>
+                        <tr class="border-b border-gray-200 dark:border-gray-700">
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Date</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">IP</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Page</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Appareil</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Navigateur</th>
+                            <th class="text-left py-2 px-3 text-gray-500 font-medium">Source</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+                        @forelse($recentVisits as $visit)
+                            <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 {{ $visit->ip_address === $currentIp ? 'bg-yellow-50 dark:bg-yellow-900/20' : '' }}">
+                                <td class="py-2 px-3 text-gray-500 whitespace-nowrap">{{ $visit->visited_at->format('d/m H:i') }}</td>
+                                <td class="py-2 px-3">
+                                    <code class="bg-gray-100 dark:bg-gray-600 px-2 py-0.5 rounded text-xs">{{ $visit->ip_address }}</code>
+                                </td>
+                                <td class="py-2 px-3 text-gray-700 dark:text-gray-300 max-w-xs truncate" title="{{ $visit->url }}">
+                                    {{ $visit->page_type }}
+                                </td>
+                                <td class="py-2 px-3 text-gray-500">{{ $visit->device_type ?? '-' }}</td>
+                                <td class="py-2 px-3 text-gray-500">{{ $visit->browser ?? '-' }}</td>
+                                <td class="py-2 px-3 text-gray-500 max-w-xs truncate" title="{{ $visit->referer }}">
+                                    @if($visit->referer)
+                                        {{ parse_url($visit->referer, PHP_URL_HOST) ?? $visit->referer }}
+                                    @else
+                                        Direct
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="6" class="py-8 text-center text-gray-500">Pas encore de visites</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
 

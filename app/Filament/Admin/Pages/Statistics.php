@@ -7,6 +7,8 @@ use App\Models\Booking;
 use App\Models\Vehicle;
 use App\Models\Loueur;
 use Filament\Pages\Page;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Carbon\Carbon;
 
 class Statistics extends Page
@@ -20,6 +22,26 @@ class Statistics extends Page
     protected static ?int $navigationSort = 1;
 
     protected static string $view = 'filament.admin.pages.statistics';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('clearOldData')
+                ->label('Nettoyer anciennes données')
+                ->icon('heroicon-o-trash')
+                ->color('danger')
+                ->requiresConfirmation()
+                ->modalHeading('Nettoyer les données')
+                ->modalDescription('Supprimer les visites de plus de 90 jours ?')
+                ->action(function () {
+                    $deleted = PageVisit::where('visited_at', '<', now()->subDays(90))->delete();
+                    Notification::make()
+                        ->title("$deleted visites supprimées")
+                        ->success()
+                        ->send();
+                }),
+        ];
+    }
 
     public function getViewData(): array
     {
@@ -93,6 +115,31 @@ class Statistics extends Page
             ->where('status', 'completed')
             ->sum('total_price');
 
+        // ===== DETAILED IP STATS =====
+        // Top IPs this month with details
+        $topIps = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+            ->selectRaw('ip_address, COUNT(*) as visits, MAX(visited_at) as last_visit, MIN(visited_at) as first_visit')
+            ->groupBy('ip_address')
+            ->orderByDesc('visits')
+            ->limit(20)
+            ->get();
+
+        // Recent visits with full details
+        $recentVisits = PageVisit::with('vehicle')
+            ->orderByDesc('visited_at')
+            ->limit(50)
+            ->get();
+
+        // Excluded IPs from config
+        $excludedIps = config('resadz.excluded_tracking_ips', []);
+
+        // Your current IP (for reference)
+        $currentIp = request()->ip();
+
+        // Total data stored
+        $totalRecords = PageVisit::count();
+        $oldestRecord = PageVisit::orderBy('visited_at')->first();
+
         return [
             'todayVisits' => $todayVisits,
             'yesterdayVisits' => $yesterdayVisits,
@@ -110,6 +157,13 @@ class Statistics extends Page
             'totalVehicles' => $totalVehicles,
             'monthBookings' => $monthBookings,
             'monthRevenue' => $monthRevenue,
+            // New detailed data
+            'topIps' => $topIps,
+            'recentVisits' => $recentVisits,
+            'excludedIps' => $excludedIps,
+            'currentIp' => $currentIp,
+            'totalRecords' => $totalRecords,
+            'oldestRecord' => $oldestRecord,
         ];
     }
 }
