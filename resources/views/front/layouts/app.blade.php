@@ -96,7 +96,27 @@
                         Réserver
                     </a>
                     @auth
-                        <a href="/admin" class="text-sm text-gray-500 hover:text-gray-700">Dashboard</a>
+                        @if(Auth::user()->loueur)
+                            <a href="/loueur" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition text-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6z"/></svg>
+                                Mon espace
+                            </a>
+                        @elseif(Auth::user()->role === 'admin')
+                            <a href="/admin" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition text-sm">
+                                Admin
+                            </a>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}" class="inline">
+                            @csrf
+                            <button type="submit" class="text-sm text-gray-400 hover:text-gray-600 transition">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/></svg>
+                            </button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition text-sm">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                            Connexion
+                        </a>
                     @endauth
 
                     <!-- Mobile Menu Button -->
@@ -114,6 +134,19 @@
                     <a href="{{ route('home') }}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Accueil</a>
                     <a href="{{ route('vehicles.index') }}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Véhicules</a>
                     <a href="#how-it-works" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Comment ça marche</a>
+                    <div class="border-t border-gray-100 my-2"></div>
+                    @auth
+                        @if(Auth::user()->loueur)
+                            <a href="/loueur" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Mon espace loueur</a>
+                        @endif
+                        <form method="POST" action="{{ route('logout') }}">
+                            @csrf
+                            <button type="submit" class="w-full text-left px-3 py-2 rounded-lg text-red-600 hover:bg-red-50 font-medium">Déconnexion</button>
+                        </form>
+                    @else
+                        <a href="{{ route('login') }}" class="px-3 py-2 rounded-lg bg-gray-900 text-white text-center font-medium">Connexion</a>
+                        <a href="{{ route('register') }}" class="px-3 py-2 rounded-lg bg-red-600 text-white text-center font-medium">Créer un compte loueur</a>
+                    @endauth
                 </div>
             </div>
         </div>

@@ -7,7 +7,19 @@ use App\Http\Controllers\Front\LoueurController;
 use App\Http\Controllers\Front\ReviewController;
 use App\Http\Controllers\Front\SitemapController;
 use App\Http\Controllers\Front\VehicleController;
+use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
+
+// Auth Routes
+Route::get('/connexion', [AuthController::class, 'showLogin'])->name('login');
+Route::post('/connexion', [AuthController::class, 'login']);
+Route::get('/inscription', [AuthController::class, 'showRegister'])->name('register');
+Route::post('/inscription', [AuthController::class, 'register']);
+Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout');
+
+// Google OAuth
+Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
+Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallback'])->name('auth.google.callback');
 
 // Marketplace Frontend
 Route::get('/', [HomeController::class, 'index'])->name('home');
