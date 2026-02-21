@@ -1,11 +1,36 @@
 @php
+    use App\Models\Setting;
     use App\Models\SocialChannel;
-    $channels = SocialChannel::active()->ordered()->get();
+
+    // Get settings
+    $enabled = Setting::get('lead_capture_enabled', true);
+    $delayMs = (int) Setting::get('lead_capture_delay', 15) * 1000;
+    $frequency = Setting::get('lead_capture_frequency', 'once_per_session');
+    $emoji = Setting::get('lead_capture_emoji', '🎉');
+    $title = Setting::get('lead_capture_title', 'Ne ratez plus aucune offre !');
+    $subtitle = Setting::get('lead_capture_subtitle', 'Rejoignez notre communauté pour des promos exclusives');
+    $placeholder = Setting::get('lead_capture_placeholder', 'Votre email');
+    $buttonText = Setting::get('lead_capture_button_text', 'OK');
+    $dismissText = Setting::get('lead_capture_dismiss_text', 'Ne plus afficher');
+    $successMessage = Setting::get('lead_capture_success_message', 'Inscription réussie !');
+    $gradientFrom = Setting::get('lead_capture_gradient_from', '#dc2626');
+    $gradientTo = Setting::get('lead_capture_gradient_to', '#ef4444');
+    $buttonColor = Setting::get('lead_capture_button_color', '#dc2626');
+    $buttonHoverColor = Setting::get('lead_capture_button_hover_color', '#b91c1c');
+    $showSocial = Setting::get('lead_capture_show_social', true);
+    $allowedPages = Setting::get('lead_capture_pages', ['home', 'vehicles', 'vehicle_detail']);
+
+    // Check current page
+    $currentPage = $pageType ?? 'home';
+    $shouldShowOnPage = is_array($allowedPages) && in_array($currentPage, $allowedPages);
+
+    // Get social channels
+    $channels = $showSocial ? SocialChannel::active()->ordered()->get() : collect();
 @endphp
 
-@if($channels->count() > 0 || true)
+@if($enabled && $shouldShowOnPage)
 <div
-    x-data="leadCapture()"
+    x-data="leadCapture('{{ $frequency }}', {{ $delayMs }})"
     x-show="isVisible"
     x-transition:enter="transition ease-out duration-300"
     x-transition:enter-start="opacity-0"
@@ -28,17 +53,21 @@
         @click.stop
     >
         {{-- Close Button --}}
-        <button @click="close()" class="absolute top-3 right-3 z-10 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition">
-            <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <button @click="close()" class="absolute top-3 right-3 z-10 p-2 rounded-full bg-black/10 hover:bg-black/20 transition">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
             </svg>
         </button>
 
         {{-- Header --}}
-        <div class="bg-gradient-to-r from-red-600 to-red-500 p-6 text-white text-center">
-            <div class="text-4xl mb-2">🎉</div>
-            <h3 class="text-xl font-bold">Ne ratez plus aucune offre !</h3>
-            <p class="text-red-100 text-sm mt-1">Rejoignez notre communauté pour des promos exclusives</p>
+        <div class="p-6 text-white text-center" style="background: linear-gradient(to right, {{ $gradientFrom }}, {{ $gradientTo }});">
+            @if($emoji)
+            <div class="text-4xl mb-2">{{ $emoji }}</div>
+            @endif
+            <h3 class="text-xl font-bold">{{ $title }}</h3>
+            @if($subtitle)
+            <p class="text-white/80 text-sm mt-1">{{ $subtitle }}</p>
+            @endif
         </div>
 
         {{-- Content --}}
@@ -49,20 +78,24 @@
                     <input
                         type="email"
                         x-model="email"
-                        placeholder="Votre email"
-                        class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                        placeholder="{{ $placeholder }}"
+                        class="flex-1 px-4 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:border-transparent"
+                        style="--tw-ring-color: {{ $buttonColor }};"
                         required
                     >
                     <button
                         type="submit"
                         :disabled="loading"
-                        class="px-6 py-3 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+                        class="px-6 py-3 text-white font-semibold rounded-lg transition disabled:opacity-50"
+                        style="background-color: {{ $buttonColor }};"
+                        onmouseover="this.style.backgroundColor='{{ $buttonHoverColor }}'"
+                        onmouseout="this.style.backgroundColor='{{ $buttonColor }}'"
                     >
-                        <span x-show="!loading">OK</span>
+                        <span x-show="!loading">{{ $buttonText }}</span>
                         <span x-show="loading">...</span>
                     </button>
                 </div>
-                <p x-show="success" x-transition class="text-green-600 text-sm mt-2">✓ Inscription réussie !</p>
+                <p x-show="success" x-transition class="text-green-600 text-sm mt-2">{{ $successMessage }}</p>
                 <p x-show="error" x-transition class="text-red-600 text-sm mt-2" x-text="error"></p>
             </form>
 
@@ -103,36 +136,75 @@
         {{-- Footer --}}
         <div class="bg-gray-50 px-6 py-3 text-center">
             <button @click="close(); neverShow()" class="text-gray-400 text-sm hover:text-gray-600">
-                Ne plus afficher
+                {{ $dismissText }}
             </button>
         </div>
     </div>
 </div>
 
 <script>
-function leadCapture() {
+function leadCapture(frequency, delay) {
     return {
         isVisible: false,
         email: '',
         loading: false,
         success: false,
         error: '',
+        frequency: frequency,
 
         init() {
-            // Show after 15 seconds if not dismissed
-            if (!localStorage.getItem('lead_capture_dismissed')) {
-                setTimeout(() => {
-                    // Don't show if popup is already visible
-                    if (!document.querySelector('[x-data="popupManager"]')?.classList.contains('visible')) {
-                        this.isVisible = true;
-                    }
-                }, 15000);
+            // Check if should show based on frequency
+            if (!this.shouldShowBasedOnFrequency()) {
+                return;
             }
+
+            // Show after delay
+            setTimeout(() => {
+                // Don't show if another popup is already visible
+                if (!document.querySelector('[x-data^="popupManager"]')?.classList.contains('visible')) {
+                    this.isVisible = true;
+                    this.markAsShown();
+                }
+            }, delay);
+        },
+
+        shouldShowBasedOnFrequency() {
+            const storageKey = 'lead_capture';
+            const stored = localStorage.getItem(storageKey);
+
+            // Check if permanently dismissed
+            if (localStorage.getItem('lead_capture_dismissed')) {
+                return false;
+            }
+
+            if (!stored) return true;
+
+            const data = JSON.parse(stored);
+            const now = Date.now();
+
+            switch (this.frequency) {
+                case 'always':
+                    return true;
+                case 'once_per_session':
+                    return !sessionStorage.getItem(storageKey);
+                case 'once_per_day':
+                    return (now - data.timestamp) > (24 * 60 * 60 * 1000);
+                case 'once_ever':
+                    return false;
+                default:
+                    return true;
+            }
+        },
+
+        markAsShown() {
+            const storageKey = 'lead_capture';
+            const data = { timestamp: Date.now(), shown: true };
+            localStorage.setItem(storageKey, JSON.stringify(data));
+            sessionStorage.setItem(storageKey, 'true');
         },
 
         close() {
             this.isVisible = false;
-            sessionStorage.setItem('lead_capture_shown', 'true');
         },
 
         neverShow() {
