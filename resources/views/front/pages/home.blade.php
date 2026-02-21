@@ -68,12 +68,12 @@
                     </div>
                 @else
                     <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
-                        Louez votre voiture
-                        <span class="block text-red-500">partout en Algérie</span>
+                        {{ $homeContent['hero_title'] ?? 'Louez votre voiture' }}
+                        <span class="block text-red-500">{{ $homeContent['hero_subtitle'] ?? 'partout en Algérie' }}</span>
                     </h1>
                 @endif
                 <p class="mt-6 text-lg sm:text-xl text-gray-200 max-w-xl">
-                    Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.
+                    {{ $homeContent['hero_description'] ?? 'Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.' }}
                 </p>
 
                 <!-- Search Form Card -->
@@ -155,8 +155,8 @@
     <section id="how-it-works" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-14">
-                <h2 class="text-3xl font-bold text-gray-900">Comment ça marche</h2>
-                <p class="mt-3 text-gray-500">En 3 étapes simples</p>
+                <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['how_it_works_title'] ?? 'Comment ça marche' }}</h2>
+                <p class="mt-3 text-gray-500">{{ $homeContent['how_it_works_subtitle'] ?? 'En 3 étapes simples' }}</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -197,9 +197,9 @@
                                 <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                             </svg>
                         </div>
-                        <h2 class="text-3xl font-bold text-gray-900">Notre sélection pour vous</h2>
+                        <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['selection_title'] ?? 'Notre sélection pour vous' }}</h2>
                     </div>
-                    <p class="text-gray-500">Les véhicules que nous recommandons</p>
+                    <p class="text-gray-500">{{ $homeContent['selection_subtitle'] ?? 'Les véhicules que nous recommandons' }}</p>
                 </div>
                 <a href="{{ route('vehicles.index') }}" class="text-amber-600 font-semibold hover:text-amber-700 transition flex items-center gap-1">
                     Voir tout
@@ -222,8 +222,8 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-10">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-900">Véhicules disponibles</h2>
-                    <p class="mt-2 text-gray-500">Les meilleures offres du moment</p>
+                    <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['vehicles_title'] ?? 'Véhicules disponibles' }}</h2>
+                    <p class="mt-2 text-gray-500">{{ $homeContent['vehicles_subtitle'] ?? 'Les meilleures offres du moment' }}</p>
                 </div>
                 <a href="{{ route('vehicles.index') }}" class="text-red-600 font-semibold hover:text-red-700 transition flex items-center gap-1">
                     Voir tout
@@ -245,8 +245,8 @@
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-10">
-                <h2 class="text-3xl font-bold text-gray-900">Nos loueurs partenaires</h2>
-                <p class="mt-2 text-gray-500">Des professionnels vérifiés à votre service</p>
+                <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['loueurs_title'] ?? 'Nos loueurs partenaires' }}</h2>
+                <p class="mt-2 text-gray-500">{{ $homeContent['loueurs_subtitle'] ?? 'Des professionnels vérifiés à votre service' }}</p>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -284,10 +284,10 @@
     <!-- CTA -->
     <section class="py-20 bg-gray-900">
         <div class="max-w-4xl mx-auto px-4 text-center">
-            <h2 class="text-3xl font-bold text-white">Vous êtes loueur de voitures ?</h2>
-            <p class="mt-4 text-gray-400 text-lg">Rejoignez ResaDZ et développez votre activité en ligne. Gérez vos véhicules, réservations et finances depuis un seul tableau de bord.</p>
+            <h2 class="text-3xl font-bold text-white">{{ $homeContent['cta_title'] ?? 'Vous êtes loueur de voitures ?' }}</h2>
+            <p class="mt-4 text-gray-400 text-lg">{{ $homeContent['cta_description'] ?? 'Rejoignez ResaDZ et développez votre activité en ligne. Gérez vos véhicules, réservations et finances depuis un seul tableau de bord.' }}</p>
             <a href="/loueur" class="mt-8 inline-flex items-center px-8 py-4 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-xl">
-                Devenir partenaire
+                {{ $homeContent['cta_button'] ?? 'Devenir partenaire' }}
             </a>
         </div>
     </section>

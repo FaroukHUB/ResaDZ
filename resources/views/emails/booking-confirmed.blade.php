@@ -5,11 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Réservation confirmée</title>
 </head>
+@php
+    $companyName = \App\Models\Setting::get('company_name', 'ResaDZ');
+    $companySlogan = \App\Models\Setting::get('company_slogan', 'Location de véhicules en Algérie');
+@endphp
 <body style="margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f5f5;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); padding: 30px; border-radius: 16px 16px 0 0; text-align: center;">
-            <h1 style="color: white; margin: 0; font-size: 28px;">ResaDZ</h1>
+            <h1 style="color: white; margin: 0; font-size: 28px;">{{ $companyName }}</h1>
             <p style="color: rgba(255,255,255,0.9); margin: 10px 0 0 0; font-size: 14px;">Votre réservation est confirmée</p>
         </div>
 
@@ -94,14 +98,14 @@
             <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 25px 0;">
 
             <p style="font-size: 12px; color: #9ca3af; text-align: center; margin: 0;">
-                Cet email a été envoyé par ResaDZ suite à la confirmation de votre réservation.<br>
+                Cet email a été envoyé par {{ $companyName }} suite à la confirmation de votre réservation.<br>
                 Si vous n'êtes pas à l'origine de cette demande, veuillez ignorer cet email.
             </p>
         </div>
 
         <!-- Footer -->
         <div style="text-align: center; padding: 20px; color: #9ca3af; font-size: 12px;">
-            <p>&copy; {{ date('Y') }} ResaDZ - Location de véhicules en Algérie</p>
+            <p>&copy; {{ date('Y') }} {{ $companyName }} - {{ $companySlogan }}</p>
         </div>
     </div>
 </body>

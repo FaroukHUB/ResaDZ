@@ -42,7 +42,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Heure de prise en charge *</label>
                                 <select name="pickup_time" id="pickup_time" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
                                     <option value="">Choisir</option>
-                                    @for($h = 7; $h <= 21; $h++)
+                                    @for($h = $operatingHoursStart; $h <= $operatingHoursEnd; $h++)
                                         <option value="{{ sprintf('%02d:00', $h) }}" {{ old('pickup_time') == sprintf('%02d:00', $h) ? 'selected' : '' }}>{{ sprintf('%02d:00', $h) }}</option>
                                     @endfor
                                 </select>

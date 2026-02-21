@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
+use App\Models\Setting;
 use App\Models\VehicleBoost;
 use App\Notifications\InvoiceSentNotification;
 use Illuminate\Http\Request;
@@ -29,13 +30,14 @@ class BoostPaymentController extends Controller
 
         $package = $boost->boostPackage;
 
-        // Convert DZD to USD (approximate rate, should be configured)
-        $exchangeRate = config('services.paypal.dzd_to_usd_rate', 0.0074);
+        // Convert DZD to USD using platform settings
+        $exchangeRate = (float) Setting::get('dzd_to_usd_rate', 0.0074);
         $amountUSD = round($package->price * $exchangeRate, 2);
 
-        // Minimum PayPal amount
-        if ($amountUSD < 1) {
-            $amountUSD = 1;
+        // Minimum PayPal amount from settings
+        $minPaypalAmount = (float) Setting::get('min_paypal_amount_usd', 1);
+        if ($amountUSD < $minPaypalAmount) {
+            $amountUSD = $minPaypalAmount;
         }
 
         // Build PayPal payment URL

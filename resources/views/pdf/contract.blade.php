@@ -468,7 +468,7 @@
 
     {{-- Pied de page --}}
     <div class="footer">
-        Document genere automatiquement par ResaDZ - {{ now()->format('d/m/Y H:i') }}<br>
+        Document genere automatiquement par {{ \App\Models\Setting::get('company_name', 'ResaDZ') }} - {{ now()->format('d/m/Y H:i') }}<br>
         {{ url('/') }}
     </div>
 </body>

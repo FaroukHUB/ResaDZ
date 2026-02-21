@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use App\Models\Booking;
 use App\Models\Invoice;
 use App\Models\Loueur;
+use App\Models\Setting;
 use App\Notifications\InvoiceSentNotification;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
@@ -104,7 +105,7 @@ class GenerateMonthlyCommissionInvoices extends Command
             'loueur_id' => $loueur->id,
             'status' => Invoice::STATUS_SENT,
             'issue_date' => now(),
-            'due_date' => now()->addDays(15),
+            'due_date' => now()->addDays((int) Setting::get('commission_invoice_due_days', 15)),
             'billing_name' => $loueur->company_name,
             'billing_address' => $loueur->address,
             'billing_city' => $loueur->city,

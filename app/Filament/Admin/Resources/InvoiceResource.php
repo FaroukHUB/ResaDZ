@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources;
 use App\Filament\Admin\Resources\InvoiceResource\Pages;
 use App\Models\Invoice;
 use App\Models\Loueur;
+use App\Models\Setting;
 use App\Notifications\InvoiceSentNotification;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -72,7 +73,7 @@ class InvoiceResource extends Resource
 
                         Forms\Components\DatePicker::make('due_date')
                             ->label('Date d\'échéance')
-                            ->default(now()->addDays(30))
+                            ->default(fn () => now()->addDays((int) Setting::get('invoice_due_days', 30)))
                             ->required(),
 
                         Forms\Components\Select::make('payment_method')

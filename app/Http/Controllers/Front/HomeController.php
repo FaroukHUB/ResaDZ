@@ -7,6 +7,7 @@ use App\Models\Brand;
 use App\Models\Category;
 use App\Models\HeroSlide;
 use App\Models\Loueur;
+use App\Models\Setting;
 use App\Models\Vehicle;
 
 class HomeController extends Controller
@@ -63,6 +64,24 @@ class HomeController extends Controller
         // Get active hero slides
         $heroSlides = HeroSlide::active()->ordered()->get();
 
+        // Get homepage content from settings
+        $homeContent = [
+            'hero_title' => Setting::get('hero_title', 'Louez votre voiture'),
+            'hero_subtitle' => Setting::get('hero_subtitle', 'partout en Algérie'),
+            'hero_description' => Setting::get('hero_description', 'Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.'),
+            'how_it_works_title' => Setting::get('how_it_works_title', 'Comment ça marche'),
+            'how_it_works_subtitle' => Setting::get('how_it_works_subtitle', 'En 3 étapes simples'),
+            'selection_title' => Setting::get('selection_title', 'Notre sélection pour vous'),
+            'selection_subtitle' => Setting::get('selection_subtitle', 'Les véhicules que nous recommandons'),
+            'vehicles_title' => Setting::get('vehicles_title', 'Véhicules disponibles'),
+            'vehicles_subtitle' => Setting::get('vehicles_subtitle', 'Les meilleures offres du moment'),
+            'loueurs_title' => Setting::get('loueurs_title', 'Nos loueurs partenaires'),
+            'loueurs_subtitle' => Setting::get('loueurs_subtitle', 'Des professionnels vérifiés à votre service'),
+            'cta_title' => Setting::get('cta_title', 'Vous êtes loueur de voitures ?'),
+            'cta_description' => Setting::get('cta_description', 'Rejoignez ResaDZ et développez votre activité en ligne. Gérez vos véhicules, réservations et finances depuis un seul tableau de bord.'),
+            'cta_button' => Setting::get('cta_button', 'Devenir partenaire'),
+        ];
+
         return view('front.pages.home', compact(
             'selectedVehicles',
             'featuredVehicles',
@@ -72,7 +91,8 @@ class HomeController extends Controller
             'totalVehicles',
             'totalLoueurs',
             'wilayas',
-            'heroSlides'
+            'heroSlides',
+            'homeContent'
         ));
     }
 }

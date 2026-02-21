@@ -2,17 +2,32 @@
 
 namespace App\Services;
 
+use App\Models\Setting;
 use App\Models\Vehicle;
 use App\Models\DeliveryZone;
 use Carbon\Carbon;
 
 class PricingService
 {
-    // Commission ResaDZ par jour (en DA) - seulement pour DZD
-    public const COMMISSION_PER_DAY = 250;
+    /**
+     * Get commission per day from settings
+     */
+    private function getCommissionPerDay(): int
+    {
+        return (int) Setting::get('commission_per_day_dzd', 250);
+    }
+
+    /**
+     * Get weekend days from settings
+     */
+    private function getWeekendDays(): array
+    {
+        return Setting::get('weekend_days', ['friday', 'saturday']) ?? ['friday', 'saturday'];
+    }
+
     /**
      * Calcule le prix total d'une location en fonction des règles du loueur.
-     * Inclut la commission ResaDZ (+250 DA/jour) pour les paiements en DZD.
+     * Inclut la commission ResaDZ (configurable) pour les paiements en DZD.
      */
     public function calculate(
         Vehicle $vehicle,
@@ -48,8 +63,8 @@ class PricingService
             }
         }
 
-        // 3. Commission ResaDZ (uniquement en DZD)
-        $commissionPerDay = $currency === 'EUR' ? 0 : self::COMMISSION_PER_DAY;
+        // 3. Commission ResaDZ (uniquement en DZD) - from settings
+        $commissionPerDay = $currency === 'EUR' ? 0 : $this->getCommissionPerDay();
         $commissionTotal = $commissionPerDay * $totalDays;
 
         // Prix de base pour le client = prix loueur + commission
@@ -208,17 +223,30 @@ class PricingService
     }
 
     /**
-     * Compte les jours de weekend dans la période.
+     * Compte les jours de weekend dans la période (configurable via settings).
      */
     private function countWeekendDays(Carbon $start, Carbon $end): int
     {
         $count = 0;
         $current = $start->copy();
+        $weekendDays = $this->getWeekendDays();
+
+        $dayMap = [
+            'monday' => 'isMonday',
+            'tuesday' => 'isTuesday',
+            'wednesday' => 'isWednesday',
+            'thursday' => 'isThursday',
+            'friday' => 'isFriday',
+            'saturday' => 'isSaturday',
+            'sunday' => 'isSunday',
+        ];
 
         while ($current->lte($end)) {
-            // Vendredi et samedi = weekend en Algérie
-            if ($current->isFriday() || $current->isSaturday()) {
-                $count++;
+            foreach ($weekendDays as $day) {
+                if (isset($dayMap[$day]) && $current->{$dayMap[$day]}()) {
+                    $count++;
+                    break;
+                }
             }
             $current->addDay();
         }

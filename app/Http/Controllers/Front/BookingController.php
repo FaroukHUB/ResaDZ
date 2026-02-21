@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Front;
 use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\DeliveryZone;
+use App\Models\Setting;
 use App\Models\Vehicle;
 use App\Services\PricingService;
 use Illuminate\Http\Request;
@@ -60,6 +61,10 @@ class BookingController extends Controller
             ? $vehicle->loueur->getSetting('deposit_payment_methods', [])
             : [];
 
+        // Operating hours from platform settings
+        $operatingHoursStart = (int) Setting::get('operating_hours_start', 7);
+        $operatingHoursEnd = (int) Setting::get('operating_hours_end', 21);
+
         return view('front.pages.booking', compact(
             'vehicle',
             'deliveryZones',
@@ -69,7 +74,9 @@ class BookingController extends Controller
             'washReturnFee',
             'returnMarginHours',
             'depositRequired',
-            'depositPaymentMethods'
+            'depositPaymentMethods',
+            'operatingHoursStart',
+            'operatingHoursEnd'
         ));
     }
 
@@ -206,11 +213,13 @@ class BookingController extends Controller
         }
 
         // Calculer l'heure de retour automatiquement (pickup_time + marge)
-        $returnMarginHours = $loueur ? (int) $loueur->getSetting('return_margin_hours', 2) : 2;
+        $returnMarginHours = $loueur ? (int) $loueur->getSetting('return_margin_hours', 2) : (int) Setting::get('default_return_margin_hours', 2);
+        $maxReturnHour = (int) Setting::get('max_return_hour', 22);
+        $minReturnHour = (int) Setting::get('min_return_hour', 10);
         $pickupTimeParts = explode(':', $request->pickup_time);
         $returnHour = (int) $pickupTimeParts[0] + $returnMarginHours;
-        if ($returnHour > 22) $returnHour = 22;
-        if ($returnHour < 10) $returnHour = 10;
+        if ($returnHour > $maxReturnHour) $returnHour = $maxReturnHour;
+        if ($returnHour < $minReturnHour) $returnHour = $minReturnHour;
         $returnTime = sprintf('%02d:%02d', $returnHour, $pickupTimeParts[1] ?? 0);
 
         // Gérer les options sélectionnées
@@ -269,7 +278,7 @@ class BookingController extends Controller
             'loueur_id' => $vehicle->loueur_id,
             'vehicle_id' => $vehicle->id,
             'client_id' => auth()->id(),
-            'reference' => 'RES-' . strtoupper(Str::random(8)),
+            'reference' => Setting::get('booking_reference_prefix', 'RES') . '-' . strtoupper(Str::random(8)),
             'status' => 'pending',
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,

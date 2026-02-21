@@ -195,12 +195,20 @@
         }
     </style>
 </head>
+@php
+    $companyName = \App\Models\Setting::get('company_name', 'ResaDZ');
+    $companySlogan = \App\Models\Setting::get('company_slogan', 'Marketplace de location de voitures');
+    $companyAddress = \App\Models\Setting::get('company_address', 'Algérie');
+    $companyEmail = \App\Models\Setting::get('company_email', 'contact@resadz.com');
+    $companyPhone = \App\Models\Setting::get('company_phone', '');
+    $companyNif = \App\Models\Setting::get('company_nif', '');
+@endphp
 <body>
     <div class="header">
         <div>
-            <div class="logo">Resa<span>DZ</span></div>
-            <p style="color: #6b7280; margin-top: 5px;">Marketplace de location de voitures</p>
-            <p style="color: #6b7280;">Algérie</p>
+            <div class="logo">{{ $companyName }}</div>
+            <p style="color: #6b7280; margin-top: 5px;">{{ $companySlogan }}</p>
+            <p style="color: #6b7280;">{{ $companyAddress }}</p>
         </div>
         <div class="invoice-title">
             <h1>FACTURE</h1>
@@ -214,10 +222,12 @@
     <div class="addresses">
         <div class="address-block">
             <h3>Facturé par</h3>
-            <p class="name">ResaDZ</p>
-            <p>Marketplace de location de voitures</p>
-            <p>Algérie</p>
-            <p>contact@resadz.com</p>
+            <p class="name">{{ $companyName }}</p>
+            <p>{{ $companySlogan }}</p>
+            <p>{{ $companyAddress }}</p>
+            @if($companyPhone)<p>Tél: {{ $companyPhone }}</p>@endif
+            <p>{{ $companyEmail }}</p>
+            @if($companyNif)<p>NIF: {{ $companyNif }}</p>@endif
         </div>
         <div class="address-block">
             <h3>Facturé à</h3>
@@ -313,7 +323,7 @@
     @endif
 
     <div class="footer">
-        <p>ResaDZ - Marketplace de location de voitures en Algérie</p>
+        <p>{{ $companyName }} - {{ $companySlogan }}</p>
         <p>Facture générée le {{ now()->format('d/m/Y à H:i') }}</p>
     </div>
 </body>

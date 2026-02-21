@@ -218,7 +218,7 @@ class Invoice extends Model
             'loueur_id' => $loueur->id,
             'status' => $boost->status === 'active' ? self::STATUS_PAID : self::STATUS_DRAFT,
             'issue_date' => now(),
-            'due_date' => now()->addDays(30),
+            'due_date' => now()->addDays((int) Setting::get('invoice_due_days', 30)),
             'paid_date' => $boost->status === 'active' ? now() : null,
             'payment_method' => $boost->payment_method,
             'payment_reference' => $boost->payment_reference,
