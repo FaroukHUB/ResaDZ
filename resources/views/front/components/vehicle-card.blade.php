@@ -4,6 +4,10 @@
     $degressivePricing = $vehicle->degressive_pricing;
     $showSelectionBorder = $showSelectionBorder ?? false;
     $hasGoldenBorder = $vehicle->is_boosted || $showSelectionBorder;
+
+    // Check if badges already show these features to avoid duplicates
+    $hasBadgeDegressive = $loueur && $loueur->getSetting('badge_degressive', false);
+    $hasBadgeKmUnlimited = $loueur && $loueur->getSetting('badge_km_unlimited', false);
 @endphp
 
 <article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group {{ $hasGoldenBorder ? 'border-2 border-amber-400 ring-1 ring-amber-200' : 'border border-gray-100' }}">
@@ -110,8 +114,11 @@
                 <div class="text-gray-800 font-medium">
                     @if($vehicle->mileage_limit_per_day)
                         {{ $vehicle->mileage_limit_per_day }} km
-                    @else
+                    @elseif(!$hasBadgeKmUnlimited)
+                        {{-- Only show "Illimité" if the badge doesn't already show it --}}
                         <span class="text-green-600">Illimité</span>
+                    @else
+                        <span class="text-gray-400">-</span>
                     @endif
                 </div>
             </div>
@@ -159,8 +166,8 @@
         </div>
     @endif
 
-    {{-- Degressive pricing hint --}}
-    @if(!empty($degressivePricing) && is_array($degressivePricing) && count($degressivePricing) > 0)
+    {{-- Degressive pricing hint - only show if badge doesn't already show it --}}
+    @if(!empty($degressivePricing) && is_array($degressivePricing) && count($degressivePricing) > 0 && !$hasBadgeDegressive)
         <div class="px-4 py-2 bg-amber-50 border-t border-amber-100 flex items-center gap-2">
             <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
             <span class="text-xs text-amber-700 font-medium">Prix dégressif disponible</span>
