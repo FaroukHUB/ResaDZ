@@ -25,8 +25,8 @@ class HomeController extends Controller
 
         // Véhicules populaires (boostés + featured + récents)
         $featuredVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
-            ->where('is_active', true)
-            ->where('status', 'available')
+            ->where('vehicles.is_active', true)
+            ->where('vehicles.status', 'available')
             ->leftJoin('vehicle_boosts', function ($join) {
                 $join->on('vehicles.id', '=', 'vehicle_boosts.vehicle_id')
                     ->where('vehicle_boosts.status', '=', 'active')
