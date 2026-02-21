@@ -13,6 +13,17 @@ class HomeController extends Controller
 {
     public function index()
     {
+        // Notre sélection pour vous (choisis manuellement depuis l'admin)
+        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            ->where('is_active', true)
+            ->where('status', 'available')
+            ->where('is_in_selection', true)
+            ->orderBy('selection_order')
+            ->orderByDesc('created_at')
+            ->limit(8)
+            ->get();
+
+        // Véhicules populaires (boostés + featured + récents)
         $featuredVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
             ->where('is_active', true)
             ->where('status', 'available')
@@ -53,6 +64,7 @@ class HomeController extends Controller
         $heroSlides = HeroSlide::active()->ordered()->get();
 
         return view('front.pages.home', compact(
+            'selectedVehicles',
             'featuredVehicles',
             'brands',
             'categories',

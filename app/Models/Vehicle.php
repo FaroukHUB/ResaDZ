@@ -54,6 +54,8 @@ class Vehicle extends Model
         'gallery',
         'status',
         'is_featured',
+        'is_in_selection',
+        'selection_order',
         'is_active',
         'available_from',
         'available_until',
@@ -78,6 +80,7 @@ class Vehicle extends Model
         'extra_mileage_fee' => 'decimal:2',
         'gallery' => 'array',
         'is_featured' => 'boolean',
+        'is_in_selection' => 'boolean',
         'is_active' => 'boolean',
         'available_from' => 'date',
         'available_until' => 'date',
@@ -190,6 +193,13 @@ class Vehicle extends Model
     public function scopeFeatured($query)
     {
         return $query->where('is_featured', true);
+    }
+
+    public function scopeInSelection($query)
+    {
+        return $query->where('is_in_selection', true)
+            ->orderBy('selection_order')
+            ->orderBy('created_at', 'desc');
     }
 
     public function scopeByCategory($query, $categorySlug)

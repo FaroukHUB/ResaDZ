@@ -2,9 +2,11 @@
     $loueur = $vehicle->loueur;
     $badges = $loueur ? $loueur->getBadges() : [];
     $degressivePricing = $vehicle->degressive_pricing;
+    $showSelectionBorder = $showSelectionBorder ?? false;
+    $hasGoldenBorder = $vehicle->is_boosted || $showSelectionBorder;
 @endphp
 
-<article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group {{ $vehicle->is_boosted ? 'border-2 border-amber-400 ring-1 ring-amber-200' : 'border border-gray-100' }}">
+<article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group {{ $hasGoldenBorder ? 'border-2 border-amber-400 ring-1 ring-amber-200' : 'border border-gray-100' }}">
     {{-- Head: Brand logo + Model name + Year --}}
     <div class="flex items-center justify-between px-4 py-3 bg-gray-900">
         <div class="flex items-center gap-3 min-w-0">
