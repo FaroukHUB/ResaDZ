@@ -204,15 +204,22 @@ class Statistics extends Page
 
         // ===== BOUNCE RATE =====
         $totalSessions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+            ->whereNotNull('session_id')
             ->distinct('session_id')
             ->count('session_id');
 
-        $bouncedSessions = DB::table('page_visits')
-            ->whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('session_id')
-            ->groupBy('session_id')
-            ->havingRaw('COUNT(*) = 1')
-            ->count();
+        // Count sessions with only 1 page view (bounced)
+        $bouncedSessionsResult = DB::select("
+            SELECT COUNT(*) as count FROM (
+                SELECT session_id
+                FROM page_visits
+                WHERE visited_at BETWEEN ? AND ?
+                AND session_id IS NOT NULL
+                GROUP BY session_id
+                HAVING COUNT(*) = 1
+            ) as bounced
+        ", [$startOfMonth, now()]);
+        $bouncedSessions = $bouncedSessionsResult[0]->count ?? 0;
 
         $bounceRate = $totalSessions > 0 ? round(($bouncedSessions / $totalSessions) * 100, 1) : 0;
 
