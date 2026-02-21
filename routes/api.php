@@ -59,3 +59,10 @@ Route::prefix('marketing')->group(function () {
         Route::get('/referral-link', [MarketingController::class, 'getReferralLink']);
     });
 });
+
+// Analytics & Tracking
+Route::prefix('tracking')->group(function () {
+    Route::post('/click', [\App\Http\Controllers\Api\TrackingController::class, 'trackClick']);
+    Route::get('/realtime', [\App\Http\Controllers\Api\TrackingController::class, 'getRealtimeVisitors']);
+    Route::post('/heartbeat', [\App\Http\Controllers\Api\TrackingController::class, 'heartbeat']);
+});
