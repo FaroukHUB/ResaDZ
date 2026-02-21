@@ -13,3 +13,9 @@ Schedule::command('invoices:generate-monthly')
     ->monthlyOn(1, '06:00')
     ->description('Generate monthly commission invoices for loueurs')
     ->emailOutputOnFailure(config('mail.admin_email'));
+
+// Send review request emails 2 days after booking completion (daily at 10:00 AM)
+Schedule::command('reviews:send-requests')
+    ->dailyAt('10:00')
+    ->description('Send review request emails to clients after completed bookings')
+    ->emailOutputOnFailure(config('mail.admin_email'));
