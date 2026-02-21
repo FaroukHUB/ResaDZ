@@ -124,6 +124,19 @@ class ViewConversation extends ViewRecord
         $this->record->refresh();
     }
 
+    public function deleteConversation(): void
+    {
+        $this->record->messages()->delete();
+        $this->record->delete();
+
+        Notification::make()
+            ->title('Conversation supprimée')
+            ->success()
+            ->send();
+
+        $this->redirect(ConversationResource::getUrl('index'));
+    }
+
     public function getViewData(): array
     {
         return [

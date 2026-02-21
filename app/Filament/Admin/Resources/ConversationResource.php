@@ -191,6 +191,18 @@ class ConversationResource extends Resource
                     ->requiresConfirmation()
                     ->visible(fn ($record) => $record->status === 'open')
                     ->action(fn ($record) => $record->update(['status' => 'closed'])),
+
+                Tables\Actions\Action::make('delete')
+                    ->label('Supprimer')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Supprimer la conversation')
+                    ->modalDescription('Êtes-vous sûr de vouloir supprimer cette conversation ? Cette action est irréversible.')
+                    ->action(function ($record) {
+                        $record->messages()->delete();
+                        $record->delete();
+                    }),
             ])
             ->bulkActions([
                 Tables\Actions\BulkAction::make('close')
@@ -203,6 +215,20 @@ class ConversationResource extends Resource
                     ->label('Marquer comme lu')
                     ->icon('heroicon-o-envelope-open')
                     ->action(fn ($records) => $records->each->markAsReadByAdmin()),
+
+                Tables\Actions\BulkAction::make('delete')
+                    ->label('Supprimer les sélectionnés')
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Supprimer les conversations')
+                    ->modalDescription('Êtes-vous sûr de vouloir supprimer ces conversations ? Cette action est irréversible.')
+                    ->action(function ($records) {
+                        foreach ($records as $record) {
+                            $record->messages()->delete();
+                            $record->delete();
+                        }
+                    }),
             ]);
     }
 
