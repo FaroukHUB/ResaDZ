@@ -181,15 +181,15 @@
 
                 {{-- Input Area --}}
                 @if($selectedConversation->status === 'open')
-                    <div class="flex-shrink-0 p-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-100 dark:border-gray-700">
-                        <form wire:submit.prevent="sendMessage" class="flex items-end gap-3">
-                            <div class="flex-1 relative">
+                    <div class="flex-shrink-0 p-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+                        <form wire:submit.prevent="sendMessage" class="flex items-center gap-4">
+                            <div class="flex-1">
                                 <textarea
                                     wire:model="newMessage"
                                     placeholder="Tapez votre message..."
                                     rows="1"
-                                    class="w-full px-4 py-3 pr-12 bg-gray-100 dark:bg-gray-700 border-0 rounded-2xl text-gray-900 dark:text-white placeholder-gray-500 focus:ring-2 focus:ring-primary-500 resize-none transition-all"
-                                    style="min-height: 48px; max-height: 120px;"
+                                    class="w-full px-5 py-4 bg-gray-100 dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 resize-none text-base"
+                                    style="min-height: 56px; max-height: 120px;"
                                     x-data
                                     x-on:input="$el.style.height = 'auto'; $el.style.height = Math.min($el.scrollHeight, 120) + 'px'"
                                     x-on:keydown.enter.prevent="if (!$event.shiftKey) { $wire.sendMessage(); }"
@@ -197,10 +197,10 @@
                             </div>
                             <button
                                 type="submit"
-                                class="group flex-shrink-0 w-14 h-14 bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-600 text-white rounded-2xl hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-700 focus:ring-4 focus:ring-cyan-500/50 transition-all duration-300 shadow-lg shadow-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/50 hover:scale-105 flex items-center justify-center relative overflow-hidden"
+                                style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 50%, #3b82f6 100%); box-shadow: 0 8px 25px -5px rgba(6, 182, 212, 0.5);"
+                                class="flex-shrink-0 w-16 h-16 text-white rounded-2xl hover:opacity-90 focus:ring-4 focus:ring-blue-300 transition-all duration-200 flex items-center justify-center transform hover:scale-105"
                             >
-                                <div class="absolute inset-0 bg-gradient-to-t from-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <svg class="w-6 h-6 transform rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform relative z-10" fill="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                                 </svg>
                             </button>
