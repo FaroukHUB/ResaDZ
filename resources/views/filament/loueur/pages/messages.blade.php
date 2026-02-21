@@ -10,9 +10,9 @@
                         type="button"
                         x-data
                         x-on:click="$dispatch('open-modal', { id: 'new-conversation' })"
-                        class="w-10 h-10 bg-white/20 hover:bg-white/30 text-white rounded-xl flex items-center justify-center transition-colors"
+                        class="group w-10 h-10 bg-white/20 hover:bg-white text-white hover:text-cyan-600 rounded-xl flex items-center justify-center transition-all duration-300 hover:shadow-lg hover:scale-110"
                     >
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
                         </svg>
                     </button>
@@ -77,7 +77,7 @@
                             type="button"
                             x-data
                             x-on:click="$dispatch('open-modal', { id: 'new-conversation' })"
-                            class="mt-4 px-4 py-2 bg-primary-600 text-white text-sm font-medium rounded-xl hover:bg-primary-700 transition-colors"
+                            class="group mt-4 px-5 py-2.5 bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-600 text-white text-sm font-semibold rounded-xl hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-700 transition-all duration-300 shadow-md shadow-cyan-500/30 hover:shadow-lg hover:shadow-cyan-500/40 hover:scale-105"
                         >
                             Nouvelle conversation
                         </button>
@@ -197,9 +197,10 @@
                             </div>
                             <button
                                 type="submit"
-                                class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 focus:ring-4 focus:ring-primary-500/50 transition-all shadow-lg shadow-primary-500/25 flex items-center justify-center"
+                                class="group flex-shrink-0 w-14 h-14 bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-600 text-white rounded-2xl hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-700 focus:ring-4 focus:ring-cyan-500/50 transition-all duration-300 shadow-lg shadow-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/50 hover:scale-105 flex items-center justify-center relative overflow-hidden"
                             >
-                                <svg class="w-5 h-5 transform rotate-45" fill="currentColor" viewBox="0 0 24 24">
+                                <div class="absolute inset-0 bg-gradient-to-t from-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <svg class="w-6 h-6 transform rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform relative z-10" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                                 </svg>
                             </button>
@@ -231,9 +232,15 @@
                             type="button"
                             x-data
                             x-on:click="$dispatch('open-modal', { id: 'new-conversation' })"
-                            class="mt-6 px-6 py-3 bg-gradient-to-r from-primary-500 to-primary-600 text-white font-medium rounded-xl hover:from-primary-600 hover:to-primary-700 transition-all shadow-lg shadow-primary-500/25"
+                            class="group mt-6 px-8 py-4 bg-gradient-to-r from-emerald-400 via-cyan-500 to-blue-600 text-white font-semibold rounded-2xl hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-700 transition-all duration-300 shadow-lg shadow-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/50 hover:scale-105 relative overflow-hidden"
                         >
-                            Contacter le support
+                            <div class="absolute inset-0 bg-gradient-to-t from-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <span class="relative z-10 flex items-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                                Contacter le support
+                            </span>
                         </button>
                     </div>
                 </div>

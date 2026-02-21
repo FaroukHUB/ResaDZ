@@ -169,9 +169,10 @@
                         </div>
                         <button
                             type="submit"
-                            class="flex-shrink-0 w-12 h-12 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-xl hover:from-primary-600 hover:to-primary-700 focus:ring-4 focus:ring-primary-500/50 transition-all shadow-lg shadow-primary-500/25 flex items-center justify-center"
+                            class="group flex-shrink-0 w-14 h-14 bg-gradient-to-br from-emerald-400 via-cyan-500 to-blue-600 text-white rounded-2xl hover:from-emerald-500 hover:via-cyan-600 hover:to-blue-700 focus:ring-4 focus:ring-cyan-500/50 transition-all duration-300 shadow-lg shadow-cyan-500/40 hover:shadow-xl hover:shadow-cyan-500/50 hover:scale-105 flex items-center justify-center relative overflow-hidden"
                         >
-                            <svg class="w-5 h-5 transform rotate-45" fill="currentColor" viewBox="0 0 24 24">
+                            <div class="absolute inset-0 bg-gradient-to-t from-white/0 to-white/20 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                            <svg class="w-6 h-6 transform rotate-45 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform relative z-10" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                             </svg>
                         </button>
