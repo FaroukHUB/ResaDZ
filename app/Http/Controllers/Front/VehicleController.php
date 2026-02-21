@@ -14,38 +14,47 @@ class VehicleController extends Controller
     public function index(Request $request)
     {
         $query = Vehicle::with(['brand', 'category', 'loueur.settings'])
-            ->where('is_active', true)
-            ->where('status', 'available');
+            ->where('vehicles.is_active', true)
+            ->where('vehicles.status', 'available');
 
         // Filtres
         if ($request->filled('brand')) {
-            $query->where('brand_id', $request->brand);
+            $query->where('vehicles.brand_id', $request->brand);
         }
         if ($request->filled('category')) {
-            $query->where('category_id', $request->category);
+            $query->where('vehicles.category_id', $request->category);
         }
         if ($request->filled('transmission')) {
-            $query->where('transmission', $request->transmission);
+            $query->where('vehicles.transmission', $request->transmission);
         }
         if ($request->filled('fuel')) {
-            $query->where('fuel_type', $request->fuel);
+            $query->where('vehicles.fuel_type', $request->fuel);
         }
         if ($request->filled('min_price')) {
-            $query->where('price_per_day', '>=', $request->min_price);
+            $query->where('vehicles.price_per_day', '>=', $request->min_price);
         }
         if ($request->filled('max_price')) {
-            $query->where('price_per_day', '<=', $request->max_price);
+            $query->where('vehicles.price_per_day', '<=', $request->max_price);
         }
         if ($request->filled('wilaya')) {
             $query->whereHas('loueur', fn ($q) => $q->where('wilaya', $request->wilaya));
         }
 
-        // Tri
+        // Joindre les boosts actifs pour prioriser
+        $query->leftJoin('vehicle_boosts', function ($join) {
+            $join->on('vehicles.id', '=', 'vehicle_boosts.vehicle_id')
+                ->where('vehicle_boosts.status', '=', 'active')
+                ->where('vehicle_boosts.ends_at', '>=', now());
+        })
+        ->select('vehicles.*')
+        ->selectRaw('CASE WHEN vehicle_boosts.id IS NOT NULL THEN 1 ELSE 0 END as has_boost');
+
+        // Tri - les boostés toujours en premier
         $sort = $request->get('sort', 'recent');
         $query = match ($sort) {
-            'price_asc' => $query->orderBy('price_per_day', 'asc'),
-            'price_desc' => $query->orderBy('price_per_day', 'desc'),
-            default => $query->orderBy('is_featured', 'desc')->orderBy('created_at', 'desc'),
+            'price_asc' => $query->orderByDesc('has_boost')->orderBy('vehicles.price_per_day', 'asc'),
+            'price_desc' => $query->orderByDesc('has_boost')->orderBy('vehicles.price_per_day', 'desc'),
+            default => $query->orderByDesc('has_boost')->orderByDesc('vehicles.is_featured')->orderByDesc('vehicles.created_at'),
         };
 
         $vehicles = $query->paginate(12)->withQueryString();

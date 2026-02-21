@@ -16,8 +16,16 @@ class HomeController extends Controller
         $featuredVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
             ->where('is_active', true)
             ->where('status', 'available')
-            ->orderBy('is_featured', 'desc')
-            ->orderBy('created_at', 'desc')
+            ->leftJoin('vehicle_boosts', function ($join) {
+                $join->on('vehicles.id', '=', 'vehicle_boosts.vehicle_id')
+                    ->where('vehicle_boosts.status', '=', 'active')
+                    ->where('vehicle_boosts.ends_at', '>=', now());
+            })
+            ->select('vehicles.*')
+            ->selectRaw('CASE WHEN vehicle_boosts.id IS NOT NULL THEN 1 ELSE 0 END as has_boost')
+            ->orderByDesc('has_boost')
+            ->orderByDesc('is_featured')
+            ->orderByDesc('vehicles.created_at')
             ->limit(8)
             ->get();
 

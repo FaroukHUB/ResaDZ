@@ -137,6 +137,33 @@ class Vehicle extends Model
         return $this->hasMany(VehicleOffer::class);
     }
 
+    public function boosts(): HasMany
+    {
+        return $this->hasMany(VehicleBoost::class);
+    }
+
+    /**
+     * Get the active boost for this vehicle.
+     */
+    public function getActiveBoostAttribute(): ?VehicleBoost
+    {
+        return $this->boosts()
+            ->where('status', 'active')
+            ->where('ends_at', '>=', now())
+            ->first();
+    }
+
+    /**
+     * Check if this vehicle is currently boosted.
+     */
+    public function getIsBoostedAttribute(): bool
+    {
+        return $this->boosts()
+            ->where('status', 'active')
+            ->where('ends_at', '>=', now())
+            ->exists();
+    }
+
     /**
      * Get the currently active offer for this vehicle.
      */
