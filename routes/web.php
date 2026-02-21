@@ -79,3 +79,11 @@ Route::middleware(['auth'])->prefix('boost')->group(function () {
 // PayPal Webhook (no auth - called by PayPal)
 Route::post('/webhook/paypal', [\App\Http\Controllers\BoostPaymentController::class, 'paypalWebhook'])
     ->name('boost.paypal.webhook');
+
+// Admin Invoice PDF
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/invoices/{invoice}/pdf', [\App\Http\Controllers\Admin\InvoicePdfController::class, 'download'])
+        ->name('admin.invoices.pdf');
+    Route::get('/invoices/{invoice}/pdf/view', [\App\Http\Controllers\Admin\InvoicePdfController::class, 'stream'])
+        ->name('admin.invoices.pdf.view');
+});

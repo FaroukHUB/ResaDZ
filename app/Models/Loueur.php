@@ -114,6 +114,26 @@ class Loueur extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function conversations(): HasMany
+    {
+        return $this->hasMany(Conversation::class);
+    }
+
+    public function invoices(): HasMany
+    {
+        return $this->hasMany(Invoice::class);
+    }
+
+    public function unreadConversationsCount(): int
+    {
+        return $this->conversations()->where('loueur_unread', true)->count();
+    }
+
+    public function unpaidInvoicesCount(): int
+    {
+        return $this->invoices()->whereIn('status', ['sent', 'overdue'])->count();
+    }
+
     // Helpers pour récupérer les settings
     public function getSetting(string $key, $default = null)
     {

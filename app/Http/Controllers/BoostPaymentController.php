@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Invoice;
 use App\Models\VehicleBoost;
+use App\Notifications\InvoiceSentNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -92,6 +94,30 @@ class BoostPaymentController extends Controller
             'starts_at' => now(),
             'ends_at' => now()->addDays($boost->boostPackage->duration_days),
         ]);
+
+        // Auto-generate invoice for this boost purchase
+        try {
+            $invoice = Invoice::createForBoost($boost);
+
+            // Mark as paid immediately since payment was just completed
+            $invoice->markAsPaid('paypal', $request->input('paypal_order_id', 'paypal_' . time()));
+
+            // Send invoice notification to loueur
+            $loueur = $boost->vehicle->loueur;
+            $loueur->notify(new InvoiceSentNotification($invoice));
+
+            Log::info('Invoice auto-generated for boost', [
+                'invoice_id' => $invoice->id,
+                'invoice_number' => $invoice->invoice_number,
+                'boost_id' => $boost->id,
+            ]);
+        } catch (\Exception $e) {
+            // Log error but don't fail the payment flow
+            Log::error('Failed to generate invoice for boost', [
+                'boost_id' => $boost->id,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         // Clear session
         session()->forget('boost_payment');
