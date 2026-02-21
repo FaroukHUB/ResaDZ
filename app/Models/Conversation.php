@@ -141,4 +141,125 @@ class Conversation extends Model
             self::STATUS_ARCHIVED => 'Archivé',
         ];
     }
+
+    /**
+     * Get message templates grouped by category
+     */
+    public static function getMessageTemplates(): array
+    {
+        return [
+            'boost' => [
+                'boost_activated' => [
+                    'subject' => 'Votre boost a été activé',
+                    'message' => "Bonjour,\n\nNous avons le plaisir de vous informer que votre pack boost a été activé avec succès.\n\nVotre véhicule bénéficie désormais d'une visibilité accrue sur notre plateforme.\n\nMerci pour votre confiance !",
+                ],
+                'boost_expiring' => [
+                    'subject' => 'Votre boost expire bientôt',
+                    'message' => "Bonjour,\n\nNous vous informons que votre pack boost arrive à expiration dans les prochains jours.\n\nPour continuer à bénéficier d'une visibilité optimale, n'hésitez pas à renouveler votre boost.\n\nCordialement,",
+                ],
+                'boost_expired' => [
+                    'subject' => 'Votre boost a expiré',
+                    'message' => "Bonjour,\n\nVotre pack boost est arrivé à expiration.\n\nVous pouvez à tout moment souscrire à un nouveau pack pour remettre en avant vos véhicules.\n\nCordialement,",
+                ],
+                'boost_promo' => [
+                    'subject' => 'Offre spéciale boost',
+                    'message' => "Bonjour,\n\nNous avons une offre spéciale sur nos packs boost !\n\nProfitez-en pour augmenter la visibilité de vos véhicules à tarif réduit.\n\nCordialement,",
+                ],
+            ],
+            'invoice' => [
+                'invoice_sent' => [
+                    'subject' => 'Nouvelle facture disponible',
+                    'message' => "Bonjour,\n\nUne nouvelle facture est disponible dans votre espace.\n\nVous pouvez la consulter et la télécharger en PDF depuis la section \"Mes factures\".\n\nCordialement,",
+                ],
+                'invoice_reminder' => [
+                    'subject' => 'Rappel de facture',
+                    'message' => "Bonjour,\n\nNous vous rappelons qu'une facture est en attente de règlement.\n\nMerci de procéder au paiement dans les meilleurs délais.\n\nCordialement,",
+                ],
+                'payment_received' => [
+                    'subject' => 'Paiement reçu - Merci !',
+                    'message' => "Bonjour,\n\nNous avons bien reçu votre paiement. Merci !\n\nVotre facture a été marquée comme payée.\n\nCordialement,",
+                ],
+                'payment_issue' => [
+                    'subject' => 'Problème de paiement',
+                    'message' => "Bonjour,\n\nNous avons rencontré un problème avec votre paiement.\n\nMerci de nous contacter pour régulariser la situation.\n\nCordialement,",
+                ],
+            ],
+            'support' => [
+                'welcome' => [
+                    'subject' => 'Bienvenue sur ResaDZ !',
+                    'message' => "Bonjour et bienvenue sur ResaDZ !\n\nNous sommes ravis de vous compter parmi nos loueurs partenaires.\n\nN'hésitez pas à nous contacter si vous avez des questions.\n\nCordialement,",
+                ],
+                'account_verified' => [
+                    'subject' => 'Votre compte a été vérifié',
+                    'message' => "Bonjour,\n\nVotre compte a été vérifié avec succès !\n\nVous pouvez maintenant publier vos véhicules et recevoir des réservations.\n\nCordialement,",
+                ],
+                'documents_required' => [
+                    'subject' => 'Documents requis',
+                    'message' => "Bonjour,\n\nAfin de finaliser la vérification de votre compte, nous avons besoin des documents suivants :\n\n- \n- \n\nMerci de les télécharger dans votre espace.\n\nCordialement,",
+                ],
+                'vehicle_approved' => [
+                    'subject' => 'Véhicule approuvé',
+                    'message' => "Bonjour,\n\nVotre véhicule a été approuvé et est maintenant visible sur la plateforme.\n\nBonne location !\n\nCordialement,",
+                ],
+                'vehicle_rejected' => [
+                    'subject' => 'Véhicule non approuvé',
+                    'message' => "Bonjour,\n\nAprès examen, votre véhicule n'a pas pu être approuvé pour les raisons suivantes :\n\n- \n\nMerci de corriger ces points et de soumettre à nouveau.\n\nCordialement,",
+                ],
+            ],
+            'general' => [
+                'custom' => [
+                    'subject' => '',
+                    'message' => '',
+                ],
+                'maintenance' => [
+                    'subject' => 'Maintenance prévue',
+                    'message' => "Bonjour,\n\nNous vous informons qu'une maintenance est prévue sur notre plateforme.\n\nLe service pourrait être temporairement indisponible.\n\nMerci de votre compréhension.\n\nCordialement,",
+                ],
+                'new_feature' => [
+                    'subject' => 'Nouvelle fonctionnalité',
+                    'message' => "Bonjour,\n\nNous avons le plaisir de vous annoncer une nouvelle fonctionnalité sur ResaDZ !\n\n\n\nN'hésitez pas à l'essayer.\n\nCordialement,",
+                ],
+                'thank_you' => [
+                    'subject' => 'Merci !',
+                    'message' => "Bonjour,\n\nNous tenions à vous remercier pour votre confiance et votre fidélité.\n\nCordialement,",
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Get flat list of templates for select dropdown
+     */
+    public static function getTemplateOptions(): array
+    {
+        $options = [];
+        $templates = self::getMessageTemplates();
+
+        foreach ($templates as $category => $categoryTemplates) {
+            $categoryLabel = self::getCategories()[$category] ?? ucfirst($category);
+            foreach ($categoryTemplates as $key => $template) {
+                if (!empty($template['subject'])) {
+                    $options["{$category}.{$key}"] = "[{$categoryLabel}] {$template['subject']}";
+                } else {
+                    $options["{$category}.{$key}"] = "[{$categoryLabel}] Message personnalisé";
+                }
+            }
+        }
+
+        return $options;
+    }
+
+    /**
+     * Get a specific template
+     */
+    public static function getTemplate(string $templateKey): ?array
+    {
+        $parts = explode('.', $templateKey);
+        if (count($parts) !== 2) {
+            return null;
+        }
+
+        $templates = self::getMessageTemplates();
+        return $templates[$parts[0]][$parts[1]] ?? null;
+    }
 }

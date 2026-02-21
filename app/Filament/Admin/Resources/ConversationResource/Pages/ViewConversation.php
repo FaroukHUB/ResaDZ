@@ -87,10 +87,41 @@ class ViewConversation extends ViewRecord
         // Refresh the record to get new messages
         $this->record->refresh();
 
+        $this->dispatch('messageSent');
+
         Notification::make()
             ->title('Message envoyé')
             ->success()
             ->send();
+    }
+
+    public function applyQuickReply(string $message): void
+    {
+        $this->newMessage = $message;
+    }
+
+    public function closeConversation(): void
+    {
+        $this->record->update(['status' => 'closed']);
+
+        Notification::make()
+            ->title('Conversation fermée')
+            ->success()
+            ->send();
+
+        $this->record->refresh();
+    }
+
+    public function reopenConversation(): void
+    {
+        $this->record->update(['status' => 'open']);
+
+        Notification::make()
+            ->title('Conversation rouverte')
+            ->success()
+            ->send();
+
+        $this->record->refresh();
     }
 
     public function getViewData(): array

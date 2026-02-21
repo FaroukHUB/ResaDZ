@@ -51,6 +51,26 @@ class ConversationResource extends Resource
                             ->searchable()
                             ->required(),
 
+                        Forms\Components\Select::make('template')
+                            ->label('Template rapide')
+                            ->options(Conversation::getTemplateOptions())
+                            ->placeholder('Choisir un template...')
+                            ->live()
+                            ->afterStateUpdated(function ($state, Forms\Set $set) {
+                                if ($state) {
+                                    $template = Conversation::getTemplate($state);
+                                    if ($template) {
+                                        $set('subject', $template['subject']);
+                                        $set('initial_message', $template['message']);
+                                        // Set category based on template
+                                        $category = explode('.', $state)[0];
+                                        $set('category', $category);
+                                    }
+                                }
+                            })
+                            ->helperText('Sélectionnez un template pour pré-remplir le message')
+                            ->columnSpanFull(),
+
                         Forms\Components\TextInput::make('subject')
                             ->label('Sujet')
                             ->required()
@@ -67,10 +87,11 @@ class ConversationResource extends Resource
                             ->default('normal'),
 
                         Forms\Components\Textarea::make('initial_message')
-                            ->label('Message initial')
+                            ->label('Message')
                             ->required()
-                            ->rows(4)
-                            ->columnSpanFull(),
+                            ->rows(6)
+                            ->columnSpanFull()
+                            ->helperText('Vous pouvez modifier le message pré-rempli selon vos besoins'),
                     ])
                     ->columns(2),
             ]);

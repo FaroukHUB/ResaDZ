@@ -31,6 +31,7 @@ class Messages extends Page implements HasForms
     public string $newMessage = '';
     public string $newSubject = '';
     public string $newCategory = 'general';
+    public string $newConversationMessage = '';
 
     public static function getNavigationBadge(): ?string
     {
@@ -101,6 +102,8 @@ class Messages extends Page implements HasForms
         if ($conversation) {
             $conversation->markAsReadByLoueur();
         }
+
+        $this->dispatch('conversationSelected');
     }
 
     public function sendMessage(): void
@@ -127,6 +130,8 @@ class Messages extends Page implements HasForms
 
         $this->newMessage = '';
 
+        $this->dispatch('messageSent');
+
         Notification::make()
             ->title('Message envoyé')
             ->success()
@@ -135,7 +140,7 @@ class Messages extends Page implements HasForms
 
     public function startNewConversation(): void
     {
-        if (empty(trim($this->newSubject)) || empty(trim($this->newMessage))) {
+        if (empty(trim($this->newSubject)) || empty(trim($this->newConversationMessage))) {
             Notification::make()
                 ->title('Veuillez remplir tous les champs')
                 ->danger()
@@ -154,15 +159,18 @@ class Messages extends Page implements HasForms
         ]);
 
         $conversation->addMessage(
-            content: $this->newMessage,
+            content: $this->newConversationMessage,
             senderType: 'loueur',
             senderId: $this->getLoueur()->id
         );
 
         $this->selectedConversationId = $conversation->id;
         $this->newSubject = '';
-        $this->newMessage = '';
+        $this->newConversationMessage = '';
         $this->newCategory = 'general';
+
+        $this->dispatch('close-modal', id: 'new-conversation');
+        $this->dispatch('conversationSelected');
 
         Notification::make()
             ->title('Conversation créée')
