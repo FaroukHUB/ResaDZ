@@ -41,4 +41,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URL', '/auth/google/callback'),
     ],
 
+    'paypal' => [
+        'client_id' => env('PAYPAL_CLIENT_ID'),
+        'client_secret' => env('PAYPAL_CLIENT_SECRET'),
+        'mode' => env('PAYPAL_MODE', 'sandbox'), // 'sandbox' or 'live'
+        'dzd_to_usd_rate' => env('DZD_TO_USD_RATE', 0.0074), // Approximate exchange rate
+    ],
+
 ];

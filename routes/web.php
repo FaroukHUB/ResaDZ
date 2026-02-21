@@ -65,3 +65,17 @@ Route::middleware(['auth'])->group(function () {
 // Contract PDF via token (for client confirmation page - no auth required)
 Route::get('/contrat/client/{token}/telecharger', [\App\Http\Controllers\Loueur\ContractController::class, 'downloadByToken'])
     ->name('contract.download-by-token');
+
+// Boost Payments (requires auth)
+Route::middleware(['auth'])->prefix('boost')->group(function () {
+    Route::get('/paypal/{boost}', [\App\Http\Controllers\BoostPaymentController::class, 'createPayPalPayment'])
+        ->name('boost.paypal.create');
+    Route::get('/paypal/success', [\App\Http\Controllers\BoostPaymentController::class, 'paypalSuccess'])
+        ->name('boost.paypal.success');
+    Route::get('/paypal/cancel', [\App\Http\Controllers\BoostPaymentController::class, 'paypalCancel'])
+        ->name('boost.paypal.cancel');
+});
+
+// PayPal Webhook (no auth - called by PayPal)
+Route::post('/webhook/paypal', [\App\Http\Controllers\BoostPaymentController::class, 'paypalWebhook'])
+    ->name('boost.paypal.webhook');
