@@ -153,6 +153,9 @@ class BookingController extends Controller
      */
     public function store(Request $request, PricingService $pricingService)
     {
+        // Validation conditionnelle : return_address requis seulement si retour différent
+        $returnRequired = $request->input('same_return_location', '1') === '0';
+
         $request->validate([
             'vehicle_id' => 'required|exists:vehicles,id',
             'start_date' => 'required|date|after_or_equal:today',
@@ -164,11 +167,21 @@ class BookingController extends Controller
             'pickup_zone_id' => 'nullable|exists:delivery_zones,id',
             'return_zone_id' => 'nullable|exists:delivery_zones,id',
             'pickup_address' => 'required|string|max:500',
-            'return_address' => 'required|string|max:500',
+            'return_address' => $returnRequired ? 'required|string|max:500' : 'nullable|string|max:500',
+            'same_return_location' => 'nullable|in:0,1',
             'options' => 'nullable|array',
             'currency' => 'nullable|in:DZD,EUR',
             'internal_notes' => 'nullable|string|max:1000',
         ]);
+
+        // Si retour au même endroit, copier les infos de pickup vers return
+        $returnZoneId = $request->return_zone_id;
+        $returnAddress = $request->return_address;
+
+        if ($request->input('same_return_location', '1') === '1') {
+            $returnZoneId = $request->pickup_zone_id;
+            $returnAddress = $request->pickup_address;
+        }
 
         $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
         $loueur = $vehicle->loueur;
@@ -242,7 +255,7 @@ class BookingController extends Controller
             startDate: $request->start_date,
             endDate: $request->end_date,
             pickupZoneId: $request->pickup_zone_id,
-            returnZoneId: $request->return_zone_id,
+            returnZoneId: $returnZoneId,
             selectedOptions: [], // Options calculées manuellement
             currency: $request->currency ?? 'DZD'
         );
@@ -267,10 +280,10 @@ class BookingController extends Controller
             'client_phone' => $request->client_phone,
             'client_email' => $request->client_email,
             'pickup_zone_id' => $request->pickup_zone_id,
-            'return_zone_id' => $request->return_zone_id,
+            'return_zone_id' => $returnZoneId,
             'pickup_address' => $request->pickup_address,
             'pickup_time' => $request->pickup_time,
-            'return_address' => $request->return_address,
+            'return_address' => $returnAddress,
             'return_time' => $returnTime,
             'currency' => $request->currency ?? 'DZD',
             'base_price' => $pricing['base_price'],

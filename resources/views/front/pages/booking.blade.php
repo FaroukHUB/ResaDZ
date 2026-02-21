@@ -105,46 +105,62 @@
 
                     <!-- Lieu de prise en charge & retour -->
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                        <h2 class="text-lg font-bold text-gray-900 mb-4">Où souhaitez-vous récupérer le véhicule ?</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <h2 class="text-lg font-bold text-gray-900 mb-4">Lieu de prise en charge</h2>
+                        <div class="space-y-4">
                             @if($deliveryZones->count() > 0)
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Zone de récupération</label>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Zone</label>
                                 <select name="pickup_zone_id" id="pickup_zone_id"
                                         class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
-                                    <option value="">Sur place (gratuit)</option>
+                                    <option value="">Sur place chez le loueur (gratuit)</option>
                                     @foreach($deliveryZones->where('delivery_available', true) as $zone)
-                                        <option value="{{ $zone->id }}">{{ $zone->name }} {{ $zone->delivery_fee > 0 ? '(+' . $zone->getFormattedDeliveryFee() . ')' : '(Gratuit)' }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Zone de retour</label>
-                                <select name="return_zone_id" id="return_zone_id"
-                                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
-                                    <option value="">Sur place (gratuit)</option>
-                                    @foreach($deliveryZones->where('return_available', true) as $zone)
-                                        <option value="{{ $zone->id }}">{{ $zone->name }} {{ $zone->return_fee > 0 ? '(+' . number_format($zone->return_fee, 0, ',', ' ') . ' DA)' : '(Gratuit)' }}</option>
+                                        <option value="{{ $zone->id }}" data-return-fee="{{ $zone->return_fee }}">{{ $zone->name }} {{ $zone->delivery_fee > 0 ? '(+' . $zone->getFormattedDeliveryFee() . ')' : '(Gratuit)' }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             @endif
-                            <div class="{{ $deliveryZones->count() > 0 ? '' : 'sm:col-span-2' }}">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de récupération *</label>
-                                <input type="text" name="pickup_address" required
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse précise *</label>
+                                <input type="text" name="pickup_address" id="pickup_address" required
                                        value="{{ old('pickup_address') }}"
                                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
                                        placeholder="Ex: Aéroport Houari Boumediene, Alger centre...">
                                 @error('pickup_address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
-                            <div class="{{ $deliveryZones->count() > 0 ? '' : 'sm:col-span-2' }}">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de retour *</label>
-                                <input type="text" name="return_address" required
-                                       value="{{ old('return_address') }}"
-                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
-                                       placeholder="Ex: Même adresse, autre adresse...">
-                                @error('return_address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+
+                            {{-- Toggle retour différent --}}
+                            <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
+                                <input type="checkbox" id="different_return" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500">
+                                <span class="text-sm text-gray-700">Je souhaite rendre le véhicule à un endroit différent</span>
+                            </label>
+
+                            {{-- Champs retour (masqués par défaut) --}}
+                            <div id="return_fields" class="hidden space-y-4 pt-4 border-t border-gray-200">
+                                <h3 class="text-md font-semibold text-gray-900">Lieu de retour</h3>
+                                @if($deliveryZones->count() > 0)
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Zone de retour</label>
+                                    <select name="return_zone_id" id="return_zone_id"
+                                            class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
+                                        <option value="">Sur place chez le loueur (gratuit)</option>
+                                        @foreach($deliveryZones->where('return_available', true) as $zone)
+                                            <option value="{{ $zone->id }}">{{ $zone->name }} {{ $zone->return_fee > 0 ? '(+' . number_format($zone->return_fee, 0, ',', ' ') . ' DA)' : '(Gratuit)' }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                @endif
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Adresse de retour *</label>
+                                    <input type="text" name="return_address" id="return_address"
+                                           value="{{ old('return_address') }}"
+                                           class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
+                                           placeholder="Ex: Gare routière, Hôtel...">
+                                    @error('return_address') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                                </div>
                             </div>
+
+                            {{-- Champ caché pour retour identique --}}
+                            <input type="hidden" name="same_return_location" id="same_return_location" value="1">
                         </div>
                     </div>
 
@@ -277,12 +293,37 @@
     const pickupTime = document.getElementById('pickup_time');
     const pickupZone = document.getElementById('pickup_zone_id');
     const returnZone = document.getElementById('return_zone_id');
+    const pickupAddress = document.getElementById('pickup_address');
+    const returnAddress = document.getElementById('return_address');
+    const differentReturn = document.getElementById('different_return');
+    const returnFields = document.getElementById('return_fields');
+    const sameReturnLocation = document.getElementById('same_return_location');
     const optionBoxes = document.querySelectorAll('.option-checkbox');
     const priceBreakdown = document.getElementById('priceBreakdown');
     const submitBtn = document.getElementById('submitBtn');
     const returnTimeInfo = document.getElementById('returnTimeInfo');
     const returnDateDisplay = document.getElementById('returnDateDisplay');
     const returnTimeDisplay = document.getElementById('returnTimeDisplay');
+
+    // Toggle retour différent
+    if (differentReturn) {
+        differentReturn.addEventListener('change', function() {
+            if (this.checked) {
+                returnFields.classList.remove('hidden');
+                sameReturnLocation.value = '0';
+                if (returnAddress) returnAddress.required = true;
+            } else {
+                returnFields.classList.add('hidden');
+                sameReturnLocation.value = '1';
+                if (returnAddress) {
+                    returnAddress.required = false;
+                    returnAddress.value = '';
+                }
+                if (returnZone) returnZone.value = '';
+            }
+            recalculate();
+        });
+    }
 
     function updateReturnTime() {
         if (!endDate.value || !pickupTime.value) {
