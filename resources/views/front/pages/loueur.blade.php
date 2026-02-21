@@ -72,13 +72,22 @@ if ($loueur->phone) {
                     <!-- Contact -->
                     <div class="flex flex-wrap gap-3 mt-4">
                         @if($loueur->phone)
-                            <a href="tel:{{ $loueur->phone }}" class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
+                            <a href="tel:{{ $loueur->phone }}"
+                               data-track="phone"
+                               data-loueur-id="{{ $loueur->id }}"
+                               data-phone="{{ $loueur->phone }}"
+                               class="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition text-sm">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                                 {{ $loueur->phone }}
                             </a>
                         @endif
                         @if($loueur->whatsapp)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $loueur->whatsapp) }}" target="_blank" class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition text-sm">
+                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $loueur->whatsapp) }}"
+                               target="_blank"
+                               data-track="whatsapp"
+                               data-loueur-id="{{ $loueur->id }}"
+                               data-phone="{{ $loueur->whatsapp }}"
+                               class="inline-flex items-center gap-2 px-4 py-2 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition text-sm">
                                 WhatsApp
                             </a>
                         @endif

@@ -170,12 +170,21 @@
     {{-- Actions --}}
     <div class="flex items-center gap-2 px-4 py-3 bg-white border-t border-gray-100 mt-auto">
         @if($loueur && $loueur->phone)
-            <a href="tel:{{ $loueur->phone }}" class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition">
+            <a href="tel:{{ $loueur->phone }}"
+               data-track="phone"
+               data-vehicle-id="{{ $vehicle->id }}"
+               data-loueur-id="{{ $loueur->id }}"
+               data-phone="{{ $loueur->phone }}"
+               class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
                 Appeler
             </a>
         @endif
-        <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition">
+        <a href="{{ route('vehicles.show', $vehicle->slug) }}"
+           data-track="view_details"
+           data-vehicle-id="{{ $vehicle->id }}"
+           data-loueur-id="{{ $loueur?->id }}"
+           class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition">
             Réserver
         </a>
     </div>

@@ -201,6 +201,9 @@
 
     @yield('scripts')
 
+    {{-- Analytics Tracking --}}
+    <script src="{{ asset('js/tracking.js') }}"></script>
+
     {{-- Popup Component --}}
     <x-popup :page-type="$pageType ?? null" />
 
