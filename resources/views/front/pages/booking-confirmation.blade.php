@@ -80,24 +80,10 @@
                 </div>
             @endif
 
-            <!-- Contact -->
-            @if($booking->vehicle->loueur)
-                <div class="text-center pt-4 border-t border-gray-100">
-                    <p class="text-gray-500 text-sm mb-3">Le loueur va vous contacter pour confirmer la réservation.</p>
-                    <div class="flex justify-center gap-3">
-                        @if($booking->vehicle->loueur->phone)
-                            <a href="tel:{{ $booking->vehicle->loueur->phone }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition">
-                                Appeler le loueur
-                            </a>
-                        @endif
-                        @if($booking->vehicle->loueur->whatsapp)
-                            <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $booking->vehicle->loueur->whatsapp) }}?text={{ urlencode('Bonjour, j\'ai fait une réservation ' . $booking->reference . ' pour ' . $booking->vehicle->full_name . ' du ' . \Carbon\Carbon::parse($booking->start_date)->format('d/m/Y') . ' au ' . \Carbon\Carbon::parse($booking->end_date)->format('d/m/Y') . '.') }}" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition">
-                                WhatsApp
-                            </a>
-                        @endif
-                    </div>
-                </div>
-            @endif
+            <!-- Info -->
+            <div class="text-center pt-4 border-t border-gray-100">
+                <p class="text-gray-500 text-sm">Le loueur va vous contacter pour confirmer la réservation.</p>
+            </div>
         </div>
 
         <div class="text-center mt-8">
