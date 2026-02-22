@@ -257,7 +257,7 @@ class VehicleResource extends Resource
                                     ]),
                                 Forms\Components\Toggle::make('is_featured')
                                     ->label('Mettre en avant')
-                                    ->helperText('Apparaîtra en priorité dans les recherches'),
+                                    ->helperText('Affiché sur la page d\'accueil dans sa catégorie'),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\DatePicker::make('available_from')

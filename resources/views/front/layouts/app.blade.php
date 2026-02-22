@@ -68,6 +68,14 @@
 
     <style>
         body { font-family: 'Inter', sans-serif; }
+        /* Hide scrollbar for mobile sliders */
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
     </style>
 
     @yield('head')

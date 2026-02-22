@@ -24,7 +24,8 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
 
-        // Véhicules par catégorie, triés par prix (du moins cher au plus cher)
+        // Véhicules par catégorie (seulement les "featured" choisis par l'admin)
+        // Triés par prix croissant, limité à 4 pour l'affichage homepage
         $categories = Category::active()->ordered()->get();
 
         $vehiclesByCategory = [];
@@ -33,8 +34,9 @@ class HomeController extends Controller
                 ->where('is_active', true)
                 ->where('status', 'available')
                 ->where('category_id', $category->id)
+                ->where('is_featured', true)
                 ->orderBy('price_per_day', 'asc')
-                ->limit(8)
+                ->limit(4)
                 ->get();
         }
 

@@ -83,7 +83,8 @@ class VehicleResource extends Resource
                             ->default(true),
 
                         Forms\Components\Toggle::make('is_featured')
-                            ->label('Mis en avant'),
+                            ->label('Mis en avant')
+                            ->helperText('Affiché sur la page d\'accueil dans sa catégorie'),
                     ])->columns(2),
             ]);
     }
@@ -147,7 +148,7 @@ class VehicleResource extends Resource
                     ->boolean(),
 
                 Tables\Columns\IconColumn::make('is_featured')
-                    ->label('Vedette')
+                    ->label('Homepage')
                     ->boolean(),
 
                 Tables\Columns\TextColumn::make('created_at')

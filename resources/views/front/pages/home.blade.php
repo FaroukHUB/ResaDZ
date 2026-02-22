@@ -153,124 +153,164 @@
 
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
-    <section class="py-20 bg-gradient-to-b from-amber-50 to-white">
+    <section class="py-16 lg:py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-10">
+            <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-2 bg-amber-100 rounded-lg">
-                            <svg class="w-6 h-6 text-amber-600" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['selection_title'] ?? 'Notre sélection pour vous' }}</h2>
-                    </div>
-                    <p class="text-gray-500">{{ $homeContent['selection_subtitle'] ?? 'Les véhicules que nous recommandons' }}</p>
+                    <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">{{ $homeContent['selection_title'] ?? 'Notre sélection' }}</h2>
+                    <p class="mt-2 text-gray-500 text-sm lg:text-base">{{ $homeContent['selection_subtitle'] ?? 'Les véhicules que nous recommandons' }}</p>
                 </div>
-                <a href="{{ route('vehicles.index') }}" class="text-amber-600 font-semibold hover:text-amber-700 transition flex items-center gap-1">
+                <a href="{{ route('vehicles.index') }}" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition group">
                     Voir tout
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($selectedVehicles as $vehicle)
-                    @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true])
+            <!-- Desktop Grid -->
+            <div class="hidden lg:grid grid-cols-4 gap-6">
+                @foreach($selectedVehicles->take(4) as $vehicle)
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle])
                 @endforeach
             </div>
+
+            <!-- Mobile Slider -->
+            <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-4" style="width: max-content;">
+                    @foreach($selectedVehicles->take(4) as $vehicle)
+                        <div class="w-[280px] flex-shrink-0">
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <a href="{{ route('vehicles.index') }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition">
+                Voir tout
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
         </div>
     </section>
     @endif
 
-    <!-- Citadines - Véhicules économiques -->
+    <!-- Citadines -->
     @if(isset($vehiclesByCategory['citadine']) && $vehiclesByCategory['citadine']->count() > 0)
-    <section class="py-20 bg-gray-50">
+    <section class="py-16 lg:py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-10">
+            <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-2 bg-green-100 rounded-lg">
-                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-3xl font-bold text-gray-900">Citadines</h2>
-                    </div>
-                    <p class="text-gray-500">Économiques et pratiques pour la ville</p>
+                    <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">Citadines</h2>
+                    <p class="mt-2 text-gray-500 text-sm lg:text-base">Économiques et pratiques pour la ville</p>
                 </div>
-                <a href="{{ route('vehicles.index', ['category' => 'citadine']) }}" class="text-green-600 font-semibold hover:text-green-700 transition flex items-center gap-1">
+                <a href="{{ route('vehicles.index', ['category' => 'citadine']) }}" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition group">
                     Voir tout
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Desktop Grid -->
+            <div class="hidden lg:grid grid-cols-4 gap-6">
                 @foreach($vehiclesByCategory['citadine'] as $vehicle)
                     @include('front.components.vehicle-card', ['vehicle' => $vehicle])
                 @endforeach
             </div>
+
+            <!-- Mobile Slider -->
+            <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-4" style="width: max-content;">
+                    @foreach($vehiclesByCategory['citadine'] as $vehicle)
+                        <div class="w-[280px] flex-shrink-0">
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <a href="{{ route('vehicles.index', ['category' => 'citadine']) }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition">
+                Voir tout
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
         </div>
     </section>
     @endif
 
-    <!-- Berlines - Confort et élégance -->
+    <!-- Berlines -->
     @if(isset($vehiclesByCategory['berline']) && $vehiclesByCategory['berline']->count() > 0)
-    <section class="py-20 bg-white">
+    <section class="py-16 lg:py-24 bg-white">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-10">
+            <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-2 bg-blue-100 rounded-lg">
-                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-3xl font-bold text-gray-900">Berlines</h2>
-                    </div>
-                    <p class="text-gray-500">Confort et élégance pour vos trajets</p>
+                    <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">Berlines</h2>
+                    <p class="mt-2 text-gray-500 text-sm lg:text-base">Confort et élégance pour vos trajets</p>
                 </div>
-                <a href="{{ route('vehicles.index', ['category' => 'berline']) }}" class="text-blue-600 font-semibold hover:text-blue-700 transition flex items-center gap-1">
+                <a href="{{ route('vehicles.index', ['category' => 'berline']) }}" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition group">
                     Voir tout
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Desktop Grid -->
+            <div class="hidden lg:grid grid-cols-4 gap-6">
                 @foreach($vehiclesByCategory['berline'] as $vehicle)
                     @include('front.components.vehicle-card', ['vehicle' => $vehicle])
                 @endforeach
             </div>
+
+            <!-- Mobile Slider -->
+            <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-4" style="width: max-content;">
+                    @foreach($vehiclesByCategory['berline'] as $vehicle)
+                        <div class="w-[280px] flex-shrink-0">
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <a href="{{ route('vehicles.index', ['category' => 'berline']) }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition">
+                Voir tout
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
         </div>
     </section>
     @endif
 
-    <!-- SUV - Puissance et polyvalence -->
+    <!-- SUV -->
     @if(isset($vehiclesByCategory['suv']) && $vehiclesByCategory['suv']->count() > 0)
-    <section class="py-20 bg-gray-50">
+    <section class="py-16 lg:py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-10">
+            <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="p-2 bg-red-100 rounded-lg">
-                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                            </svg>
-                        </div>
-                        <h2 class="text-3xl font-bold text-gray-900">SUV</h2>
-                    </div>
-                    <p class="text-gray-500">Puissance et polyvalence pour tous vos trajets</p>
+                    <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">SUV</h2>
+                    <p class="mt-2 text-gray-500 text-sm lg:text-base">Puissance et polyvalence pour tous vos trajets</p>
                 </div>
-                <a href="{{ route('vehicles.index', ['category' => 'suv']) }}" class="text-red-600 font-semibold hover:text-red-700 transition flex items-center gap-1">
+                <a href="{{ route('vehicles.index', ['category' => 'suv']) }}" class="hidden sm:flex items-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition group">
                     Voir tout
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                    <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <!-- Desktop Grid -->
+            <div class="hidden lg:grid grid-cols-4 gap-6">
                 @foreach($vehiclesByCategory['suv'] as $vehicle)
                     @include('front.components.vehicle-card', ['vehicle' => $vehicle])
                 @endforeach
             </div>
+
+            <!-- Mobile Slider -->
+            <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-4" style="width: max-content;">
+                    @foreach($vehiclesByCategory['suv'] as $vehicle)
+                        <div class="w-[280px] flex-shrink-0">
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <a href="{{ route('vehicles.index', ['category' => 'suv']) }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-gray-900 hover:text-red-600 transition">
+                Voir tout
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
         </div>
     </section>
     @endif
