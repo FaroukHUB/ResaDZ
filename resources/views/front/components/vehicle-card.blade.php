@@ -6,10 +6,10 @@
     $hasGoldenBorder = $vehicle->is_boosted || $showSelectionBorder;
 @endphp
 
-<article class="rounded-lg overflow-hidden flex flex-col border-2 {{ $hasGoldenBorder ? 'border-amber-500' : 'border-amber-500/30' }} bg-black">
+<article class="rounded-lg overflow-hidden flex flex-col {{ $hasGoldenBorder ? 'border-2 border-amber-500' : 'border border-neutral-800' }} bg-black">
 
     {{-- Header: Brand + Model --}}
-    <div class="px-4 py-3 flex items-center gap-3 border-b border-amber-500/30">
+    <div class="px-4 py-3 flex items-center gap-3 border-b border-neutral-800">
         @if($vehicle->brand && $vehicle->brand->logo)
             <img src="{{ asset('storage/' . $vehicle->brand->logo) }}" alt="{{ $vehicle->brand->name }}" class="w-8 h-8 object-contain bg-white rounded-full p-1" loading="lazy">
         @else
@@ -17,9 +17,9 @@
                 <span class="text-black text-xs font-black">{{ strtoupper(substr($vehicle->brand->name ?? 'V', 0, 2)) }}</span>
             </div>
         @endif
-        <div class="flex items-baseline gap-2">
+        <div class="flex items-baseline gap-2 min-w-0">
             <span class="text-white/60 text-sm font-medium">{{ $vehicle->brand->name ?? '' }}</span>
-            <span class="text-white font-bold">{{ $vehicle->model ?? $vehicle->full_name }}</span>
+            <span class="text-white font-bold truncate">{{ $vehicle->model ?? $vehicle->full_name }}</span>
             @if($vehicle->year)
                 <span class="text-white font-bold">{{ $vehicle->year }}</span>
             @endif
@@ -27,7 +27,7 @@
     </div>
 
     {{-- Image Section --}}
-    <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative border-b border-amber-500/30">
+    <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative border-b border-neutral-800">
         <div class="aspect-[16/10] overflow-hidden">
             @if($vehicle->image)
                 <img src="{{ asset('storage/' . $vehicle->image) }}" alt="{{ $vehicle->full_name }}"
@@ -59,17 +59,10 @@
                 <span class="text-white text-xs">{{ $loueur->company_name }}</span>
             </div>
         @endif
-
-        {{-- Voir nos conditions button --}}
-        <div class="absolute bottom-3 left-3">
-            <span class="inline-flex items-center px-4 py-2 bg-black/80 border border-amber-500 text-white text-sm font-semibold rounded hover:bg-amber-500 hover:text-black transition">
-                Voir nos conditions
-            </span>
-        </div>
     </a>
 
     {{-- Price Section --}}
-    <div class="px-4 py-4 border-b border-amber-500/30">
+    <div class="px-4 py-4 border-b border-neutral-800">
         <div class="flex items-baseline gap-2">
             <span class="text-2xl font-black text-white">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA</span>
             @if($vehicle->price_per_day_eur)
@@ -79,52 +72,37 @@
         <p class="text-white/50 text-sm mt-1">Prix / jour</p>
     </div>
 
-    {{-- Badges Section --}}
-    @php
-        $allBadges = [];
-
-        // Add vehicle-specific badges
-        if(!$vehicle->mileage_limit_per_day) {
-            $allBadges[] = ['emoji' => '✅', 'text' => 'Kilométrage illimité'];
-        }
-        if(!empty($degressivePricing) && is_array($degressivePricing) && count($degressivePricing) > 0) {
-            $allBadges[] = ['emoji' => '📉', 'text' => 'Prix dégressif selon la durée'];
-        }
-
-        // Add loueur badges
-        foreach($badges as $badge) {
-            $emoji = match($badge['icon'] ?? '') {
-                'check' => '✅',
-                'truck' => '🚚',
-                'plane' => '✈️',
-                'arrow-down' => '📉',
-                'infinity' => '♾️',
-                default => '⭐',
-            };
-            $allBadges[] = ['emoji' => $emoji, 'text' => $badge['text'] ?? $badge];
-        }
-    @endphp
-
-    @if(count($allBadges) > 0)
-        <div class="px-4 py-3 space-y-2 border-b border-amber-500/30">
-            @foreach($allBadges as $badge)
+    {{-- Badges Section (only if loueur has badges configured) --}}
+    @if(count($badges) > 0)
+        <div class="px-4 py-3 space-y-2 border-b border-neutral-800">
+            @foreach($badges as $badge)
+                @php
+                    $emoji = match($badge['icon'] ?? '') {
+                        'check' => '✅',
+                        'truck' => '🚚',
+                        'plane' => '✈️',
+                        'arrow-down' => '📉',
+                        'infinity' => '♾️',
+                        default => '⭐',
+                    };
+                @endphp
                 <div class="flex items-center gap-2">
                     <span class="bg-white/10 rounded px-2 py-1 text-sm">
-                        <span>{{ $badge['emoji'] }}</span>
-                        <span class="text-white ml-1">{{ $badge['text'] }}</span>
+                        <span>{{ $emoji }}</span>
+                        <span class="text-white ml-1">{{ $badge['text'] ?? $badge }}</span>
                     </span>
                 </div>
             @endforeach
         </div>
     @endif
 
-    {{-- Action Buttons --}}
-    <div class="p-4 flex gap-3 mt-auto">
+    {{-- Action Button --}}
+    <div class="p-4 mt-auto">
         <a href="{{ route('vehicles.show', $vehicle->slug) }}"
            data-track="view_details"
            data-vehicle-id="{{ $vehicle->id }}"
            data-loueur-id="{{ $loueur?->id }}"
-           class="flex-1 flex items-center justify-center gap-2 h-12 bg-amber-500 text-black text-sm font-bold rounded hover:bg-amber-400 transition">
+           class="flex items-center justify-center gap-2 h-12 bg-amber-500 text-black text-sm font-bold rounded hover:bg-amber-400 transition w-full">
             Réserver
         </a>
     </div>
