@@ -9,7 +9,15 @@
     <section class="bg-white border-b border-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h1 class="text-3xl font-bold text-gray-900">Véhicules disponibles</h1>
-            <p class="mt-2 text-gray-500">{{ $vehicles->total() }} véhicule{{ $vehicles->total() > 1 ? 's' : '' }} trouvé{{ $vehicles->total() > 1 ? 's' : '' }}</p>
+            <p class="mt-2 text-gray-500">
+                {{ $vehicles->total() }} véhicule{{ $vehicles->total() > 1 ? 's' : '' }} trouvé{{ $vehicles->total() > 1 ? 's' : '' }}
+                @if($pickupDate && $returnDate)
+                    <span class="text-red-600 font-medium">du {{ $pickupDate->format('d/m/Y') }} au {{ $returnDate->format('d/m/Y') }}</span>
+                @endif
+                @if(request('wilaya'))
+                    <span class="text-gray-600">à {{ request('wilaya') }}</span>
+                @endif
+            </p>
         </div>
     </section>
 
@@ -21,9 +29,35 @@
                 <form action="{{ route('vehicles.index') }}" method="GET" class="bg-white rounded-2xl border border-gray-200 p-6 space-y-5 sticky top-24">
                     <h3 class="font-bold text-gray-900 text-lg">Filtres</h3>
 
+                    {{-- Dates de réservation --}}
+                    <div class="p-4 bg-gray-50 rounded-xl space-y-3">
+                        <div class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Disponibilité</div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-1">Date de départ</label>
+                            <input type="date" name="pickup_date" value="{{ request('pickup_date', $pickupDate?->format('Y-m-d')) }}" min="{{ date('Y-m-d') }}" class="w-full px-3 py-2 rounded-xl bg-white border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
+                        </div>
+                        <div>
+                            <label class="text-sm font-medium text-gray-700 block mb-1">Date de retour</label>
+                            <input type="date" name="return_date" value="{{ request('return_date', $returnDate?->format('Y-m-d')) }}" min="{{ date('Y-m-d') }}" class="w-full px-3 py-2 rounded-xl bg-white border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
+                        </div>
+                    </div>
+
+                    {{-- Wilaya --}}
+                    @if(isset($wilayas) && $wilayas->count() > 0)
+                    <div>
+                        <label class="text-sm font-medium text-gray-700 block mb-1">Wilaya</label>
+                        <select name="wilaya" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
+                            <option value="">Toutes</option>
+                            @foreach($wilayas as $wilaya)
+                                <option value="{{ $wilaya }}" {{ request('wilaya') == $wilaya ? 'selected' : '' }}>{{ $wilaya }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
+
                     <div>
                         <label class="text-sm font-medium text-gray-700 block mb-1">Marque</label>
-                        <select name="brand" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                        <select name="brand" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
                             <option value="">Toutes</option>
                             @foreach($brands as $brand)
                                 <option value="{{ $brand->id }}" {{ request('brand') == $brand->id ? 'selected' : '' }}>{{ $brand->name }}</option>
@@ -33,7 +67,7 @@
 
                     <div>
                         <label class="text-sm font-medium text-gray-700 block mb-1">Catégorie</label>
-                        <select name="category" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                        <select name="category" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
                             <option value="">Toutes</option>
                             @foreach($categories as $category)
                                 <option value="{{ $category->id }}" {{ request('category') == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
@@ -43,7 +77,7 @@
 
                     <div>
                         <label class="text-sm font-medium text-gray-700 block mb-1">Transmission</label>
-                        <select name="transmission" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                        <select name="transmission" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
                             <option value="">Toutes</option>
                             <option value="automatic" {{ request('transmission') == 'automatic' ? 'selected' : '' }}>Automatique</option>
                             <option value="manual" {{ request('transmission') == 'manual' ? 'selected' : '' }}>Manuelle</option>
@@ -52,7 +86,7 @@
 
                     <div>
                         <label class="text-sm font-medium text-gray-700 block mb-1">Carburant</label>
-                        <select name="fuel" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                        <select name="fuel" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
                             <option value="">Tous</option>
                             <option value="diesel" {{ request('fuel') == 'diesel' ? 'selected' : '' }}>Diesel</option>
                             <option value="essence" {{ request('fuel') == 'essence' ? 'selected' : '' }}>Essence</option>
@@ -64,19 +98,19 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="text-sm font-medium text-gray-700 block mb-1">Prix min</label>
-                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="DA" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                            <input type="number" name="min_price" value="{{ request('min_price') }}" placeholder="DA" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
                         </div>
                         <div>
                             <label class="text-sm font-medium text-gray-700 block mb-1">Prix max</label>
-                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="DA" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-amber-500 focus:border-amber-500">
+                            <input type="number" name="max_price" value="{{ request('max_price') }}" placeholder="DA" class="w-full px-3 py-2 rounded-xl bg-gray-50 border border-gray-200 text-sm focus:ring-red-500 focus:border-red-500">
                         </div>
                     </div>
 
-                    <button type="submit" class="w-full py-2.5 bg-amber-600 text-white font-semibold rounded-xl hover:bg-amber-700 transition">
-                        Appliquer
+                    <button type="submit" class="w-full py-2.5 bg-red-600 text-white font-semibold rounded-xl hover:bg-red-700 transition">
+                        Rechercher
                     </button>
 
-                    @if(request()->hasAny(['brand', 'category', 'transmission', 'fuel', 'min_price', 'max_price']))
+                    @if(request()->hasAny(['brand', 'category', 'transmission', 'fuel', 'min_price', 'max_price', 'wilaya', 'pickup_date', 'return_date']))
                         <a href="{{ route('vehicles.index') }}" class="block text-center text-sm text-gray-500 hover:text-gray-700">
                             Réinitialiser les filtres
                         </a>

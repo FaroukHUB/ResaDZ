@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\Booking;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Loueur;
 use App\Models\Vehicle;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class VehicleController extends Controller
@@ -40,6 +42,36 @@ class VehicleController extends Controller
             $query->whereHas('loueur', fn ($q) => $q->where('wilaya', $request->wilaya));
         }
 
+        // Filtrage par disponibilité (dates de réservation)
+        $pickupDate = null;
+        $returnDate = null;
+
+        if ($request->filled('pickup_date') && $request->filled('return_date')) {
+            try {
+                $pickupDate = Carbon::parse($request->pickup_date)->startOfDay();
+                $returnDate = Carbon::parse($request->return_date)->endOfDay();
+
+                // Exclure les véhicules qui ont des réservations confirmées/en attente pendant cette période
+                $bookedVehicleIds = Booking::whereIn('status', ['pending', 'confirmed'])
+                    ->where(function ($q) use ($pickupDate, $returnDate) {
+                        // Réservation qui chevauche la période demandée
+                        $q->where(function ($sub) use ($pickupDate, $returnDate) {
+                            $sub->where('start_date', '<=', $returnDate)
+                                ->where('end_date', '>=', $pickupDate);
+                        });
+                    })
+                    ->pluck('vehicle_id')
+                    ->unique()
+                    ->toArray();
+
+                if (!empty($bookedVehicleIds)) {
+                    $query->whereNotIn('vehicles.id', $bookedVehicleIds);
+                }
+            } catch (\Exception $e) {
+                // Ignorer les dates invalides
+            }
+        }
+
         // Joindre les boosts actifs pour prioriser
         $query->leftJoin('vehicle_boosts', function ($join) {
             $join->on('vehicles.id', '=', 'vehicle_boosts.vehicle_id')
@@ -62,7 +94,22 @@ class VehicleController extends Controller
         $brands = Brand::orderBy('name')->get();
         $categories = Category::orderBy('name')->get();
 
-        return view('front.pages.vehicles', compact('vehicles', 'brands', 'categories'));
+        // Wilayas pour le filtre
+        $wilayas = Loueur::where('is_active', true)
+            ->whereNotNull('wilaya')
+            ->distinct()
+            ->pluck('wilaya')
+            ->sort()
+            ->values();
+
+        return view('front.pages.vehicles', compact(
+            'vehicles',
+            'brands',
+            'categories',
+            'wilayas',
+            'pickupDate',
+            'returnDate'
+        ));
     }
 
     public function show(string $slug)
