@@ -102,7 +102,7 @@
            data-track="view_details"
            data-vehicle-id="{{ $vehicle->id }}"
            data-loueur-id="{{ $loueur?->id }}"
-           class="flex items-center justify-center gap-2 h-12 bg-amber-500 text-black text-sm font-bold rounded hover:bg-amber-400 transition w-full">
+           class="flex items-center justify-center gap-2 h-12 bg-emerald-500 text-white text-sm font-bold rounded hover:bg-emerald-400 transition w-full">
             Réserver
         </a>
     </div>
