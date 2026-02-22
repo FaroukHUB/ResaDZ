@@ -26,6 +26,7 @@ class LoueurPanelProvider extends PanelProvider
             ->id('loueur')
             ->path('loueur')
             ->login()
+            ->font('Cairo')
             ->colors([
                 'primary' => Color::Amber,
                 'danger' => Color::Red,
