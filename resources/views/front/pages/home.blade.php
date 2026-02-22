@@ -169,7 +169,7 @@
             <!-- Desktop Grid -->
             <div class="hidden lg:grid grid-cols-4 gap-6">
                 @foreach($selectedVehicles->take(4) as $vehicle)
-                    @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true])
                 @endforeach
             </div>
 
@@ -178,7 +178,7 @@
                 <div class="flex gap-4" style="width: max-content;">
                     @foreach($selectedVehicles->take(4) as $vehicle)
                         <div class="w-[280px] flex-shrink-0">
-                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true])
                         </div>
                     @endforeach
                 </div>
