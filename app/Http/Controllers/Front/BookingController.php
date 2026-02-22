@@ -8,6 +8,7 @@ use App\Models\DeliveryZone;
 use App\Models\Setting;
 use App\Models\Vehicle;
 use App\Services\PricingService;
+use App\Services\WebPushService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -311,6 +312,23 @@ class BookingController extends Controller
             'amount_remaining' => $totalPrice,
             'internal_notes' => $request->internal_notes,
         ]);
+
+        // Send push notification to loueur if enabled
+        if ($loueur && $loueur->getSetting('notify_push', true)) {
+            try {
+                $webPush = new WebPushService();
+                $webPush->sendBookingNotification($loueur, [
+                    'vehicle' => $vehicle->full_name,
+                    'dates' => $booking->start_date->format('d/m') . ' - ' . $booking->end_date->format('d/m'),
+                    'amount' => number_format($totalPrice, 0, ',', ' ') . ' DA',
+                    'booking_id' => $booking->id,
+                    'url' => '/loueur/bookings/' . $booking->id,
+                ]);
+            } catch (\Exception $e) {
+                // Silently fail - don't block booking creation
+                \Log::warning('Push notification failed: ' . $e->getMessage());
+            }
+        }
 
         return redirect()->route('booking.confirmation', $booking->reference);
     }

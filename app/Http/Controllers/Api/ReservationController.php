@@ -6,9 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Reservation;
 use App\Models\Vehicle;
 use App\Models\Availability;
+use App\Services\WebPushService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
@@ -110,6 +112,22 @@ class ReservationController extends Controller
             ]);
 
             DB::commit();
+
+            // Send push notification to loueur if enabled
+            if ($vehicle->loueur && $vehicle->loueur->getSetting('notify_push', true)) {
+                try {
+                    $webPush = new WebPushService();
+                    $webPush->sendBookingNotification($vehicle->loueur, [
+                        'vehicle' => $vehicle->full_name,
+                        'dates' => $reservation->start_date->format('d/m') . ' - ' . $reservation->end_date->format('d/m'),
+                        'amount' => number_format($totalPrice, 0, ',', ' ') . ' DA',
+                        'booking_id' => $reservation->id,
+                        'url' => '/loueur/bookings',
+                    ]);
+                } catch (\Exception $e) {
+                    Log::warning('Push notification failed: ' . $e->getMessage());
+                }
+            }
 
             return response()->json([
                 'success' => true,

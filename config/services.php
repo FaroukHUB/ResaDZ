@@ -48,4 +48,9 @@ return [
         'dzd_to_usd_rate' => env('DZD_TO_USD_RATE', 0.0074), // Approximate exchange rate
     ],
 
+    'webpush' => [
+        'public_key' => env('VAPID_PUBLIC_KEY'),
+        'private_key' => env('VAPID_PRIVATE_KEY'),
+    ],
+
 ];

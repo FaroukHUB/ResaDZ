@@ -59,6 +59,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'cancellation_deadline_hours' => $loueur->getSetting('cancellation_deadline_hours', 48),
                 'auto_confirm_bookings' => $loueur->getSetting('auto_confirm_bookings', false),
                 'require_documents' => $loueur->getSetting('require_documents', true),
+                'notify_push' => $loueur->getSetting('notify_push', true),
                 'notify_whatsapp' => $loueur->getSetting('notify_whatsapp', true),
                 'notify_email' => $loueur->getSetting('notify_email', true),
                 // Badges
@@ -336,12 +337,16 @@ class Settings extends Page implements Forms\Contracts\HasForms
                         Forms\Components\Tabs\Tab::make('Notifications')
                             ->icon('heroicon-o-bell')
                             ->schema([
-                                Forms\Components\Toggle::make('notify_whatsapp')
-                                    ->label('Notifications WhatsApp')
-                                    ->helperText('Recevoir les notifications de réservation sur WhatsApp'),
+                                Forms\Components\Toggle::make('notify_push')
+                                    ->label('Notifications Push')
+                                    ->helperText('Recevoir des notifications instantanées sur votre navigateur'),
                                 Forms\Components\Toggle::make('notify_email')
                                     ->label('Notifications Email')
                                     ->helperText('Recevoir les notifications de réservation par email'),
+                                Forms\Components\Toggle::make('notify_whatsapp')
+                                    ->label('Notifications WhatsApp')
+                                    ->helperText('Recevoir les notifications de réservation sur WhatsApp (bientôt disponible)')
+                                    ->disabled(),
                             ]),
                         Forms\Components\Tabs\Tab::make('Badges')
                             ->icon('heroicon-o-tag')
@@ -556,6 +561,7 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         $loueur->setSetting('cancellation_deadline_hours', $data['cancellation_deadline_hours'] ?? 48, 'integer');
         $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
         $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
+        $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
         $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
         $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');
 

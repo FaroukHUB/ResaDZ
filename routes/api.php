@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CatalogController;
 use App\Http\Controllers\Api\MarketingController;
 use App\Http\Controllers\Api\PopupController;
+use App\Http\Controllers\Api\PushSubscriptionController;
 use App\Http\Controllers\Api\ReservationController;
 use App\Http\Controllers\Api\VehicleController;
 use Illuminate\Support\Facades\Route;
@@ -65,4 +66,13 @@ Route::prefix('tracking')->group(function () {
     Route::post('/click', [\App\Http\Controllers\Api\TrackingController::class, 'trackClick']);
     Route::get('/realtime', [\App\Http\Controllers\Api\TrackingController::class, 'getRealtimeVisitors']);
     Route::post('/heartbeat', [\App\Http\Controllers\Api\TrackingController::class, 'heartbeat']);
+});
+
+// Push Notifications
+Route::prefix('push')->group(function () {
+    Route::get('/public-key', [PushSubscriptionController::class, 'publicKey']);
+    Route::middleware('web')->group(function () {
+        Route::post('/subscribe', [PushSubscriptionController::class, 'store']);
+        Route::post('/unsubscribe', [PushSubscriptionController::class, 'destroy']);
+    });
 });
