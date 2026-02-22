@@ -151,40 +151,6 @@
         </div>
     </section>
 
-    <!-- How it works -->
-    <section id="how-it-works" class="py-20 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-14">
-                <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['how_it_works_title'] ?? 'Comment ça marche' }}</h2>
-                <p class="mt-3 text-gray-500">{{ $homeContent['how_it_works_subtitle'] ?? 'En 3 étapes simples' }}</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div class="text-center p-8">
-                    <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">1. Recherchez</h3>
-                    <p class="text-gray-500">Parcourez les véhicules disponibles et comparez les offres des loueurs.</p>
-                </div>
-                <div class="text-center p-8">
-                    <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">2. Réservez</h3>
-                    <p class="text-gray-500">Choisissez vos dates et envoyez votre demande de réservation.</p>
-                </div>
-                <div class="text-center p-8">
-                    <div class="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-5">
-                        <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">3. Roulez</h3>
-                    <p class="text-gray-500">Récupérez le véhicule et profitez de votre trajet en toute sérénité.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
     <section class="py-20 bg-gradient-to-b from-amber-50 to-white">
@@ -216,23 +182,92 @@
     </section>
     @endif
 
-    <!-- Featured Vehicles -->
-    @if($featuredVehicles->count() > 0)
+    <!-- Citadines - Véhicules économiques -->
+    @if(isset($vehiclesByCategory['citadine']) && $vehiclesByCategory['citadine']->count() > 0)
     <section class="py-20 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between mb-10">
                 <div>
-                    <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['vehicles_title'] ?? 'Véhicules disponibles' }}</h2>
-                    <p class="mt-2 text-gray-500">{{ $homeContent['vehicles_subtitle'] ?? 'Les meilleures offres du moment' }}</p>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-green-100 rounded-lg">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900">Citadines</h2>
+                    </div>
+                    <p class="text-gray-500">Économiques et pratiques pour la ville</p>
                 </div>
-                <a href="{{ route('vehicles.index') }}" class="text-red-600 font-semibold hover:text-red-700 transition flex items-center gap-1">
+                <a href="{{ route('vehicles.index', ['category' => 'citadine']) }}" class="text-green-600 font-semibold hover:text-green-700 transition flex items-center gap-1">
                     Voir tout
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 </a>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                @foreach($featuredVehicles as $vehicle)
+                @foreach($vehiclesByCategory['citadine'] as $vehicle)
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Berlines - Confort et élégance -->
+    @if(isset($vehiclesByCategory['berline']) && $vehiclesByCategory['berline']->count() > 0)
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-10">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-blue-100 rounded-lg">
+                            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900">Berlines</h2>
+                    </div>
+                    <p class="text-gray-500">Confort et élégance pour vos trajets</p>
+                </div>
+                <a href="{{ route('vehicles.index', ['category' => 'berline']) }}" class="text-blue-600 font-semibold hover:text-blue-700 transition flex items-center gap-1">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($vehiclesByCategory['berline'] as $vehicle)
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                @endforeach
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- SUV - Puissance et polyvalence -->
+    @if(isset($vehiclesByCategory['suv']) && $vehiclesByCategory['suv']->count() > 0)
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-10">
+                <div>
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="p-2 bg-red-100 rounded-lg">
+                            <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+                            </svg>
+                        </div>
+                        <h2 class="text-3xl font-bold text-gray-900">SUV</h2>
+                    </div>
+                    <p class="text-gray-500">Puissance et polyvalence pour tous vos trajets</p>
+                </div>
+                <a href="{{ route('vehicles.index', ['category' => 'suv']) }}" class="text-red-600 font-semibold hover:text-red-700 transition flex items-center gap-1">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                @foreach($vehiclesByCategory['suv'] as $vehicle)
                     @include('front.components.vehicle-card', ['vehicle' => $vehicle])
                 @endforeach
             </div>

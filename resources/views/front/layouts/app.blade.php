@@ -95,7 +95,6 @@
                 <div class="hidden md:flex items-center gap-8">
                     <a href="{{ route('home') }}" class="text-gray-700 hover:text-red-600 transition font-medium">Accueil</a>
                     <a href="{{ route('vehicles.index') }}" class="text-gray-700 hover:text-red-600 transition font-medium">Véhicules</a>
-                    <a href="#how-it-works" class="text-gray-700 hover:text-red-600 transition font-medium">Comment ça marche</a>
                 </div>
 
                 <!-- CTA -->
@@ -141,7 +140,6 @@
                 <div class="flex flex-col gap-2">
                     <a href="{{ route('home') }}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Accueil</a>
                     <a href="{{ route('vehicles.index') }}" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Véhicules</a>
-                    <a href="#how-it-works" class="px-3 py-2 rounded-lg text-gray-700 hover:bg-gray-100 font-medium">Comment ça marche</a>
                     <div class="border-t border-gray-100 my-2"></div>
                     @auth
                         @if(Auth::user()->loueur)

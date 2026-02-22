@@ -24,25 +24,21 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
 
-        // Véhicules populaires (boostés + featured + récents)
-        $featuredVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
-            ->where('vehicles.is_active', true)
-            ->where('vehicles.status', 'available')
-            ->leftJoin('vehicle_boosts', function ($join) {
-                $join->on('vehicles.id', '=', 'vehicle_boosts.vehicle_id')
-                    ->where('vehicle_boosts.status', '=', 'active')
-                    ->where('vehicle_boosts.ends_at', '>=', now());
-            })
-            ->select('vehicles.*')
-            ->selectRaw('CASE WHEN vehicle_boosts.id IS NOT NULL THEN 1 ELSE 0 END as has_boost')
-            ->orderByDesc('has_boost')
-            ->orderByDesc('is_featured')
-            ->orderByDesc('vehicles.created_at')
-            ->limit(8)
-            ->get();
+        // Véhicules par catégorie, triés par prix (du moins cher au plus cher)
+        $categories = Category::active()->ordered()->get();
+
+        $vehiclesByCategory = [];
+        foreach ($categories as $category) {
+            $vehiclesByCategory[$category->slug] = Vehicle::with(['brand', 'category', 'loueur.settings'])
+                ->where('is_active', true)
+                ->where('status', 'available')
+                ->where('category_id', $category->id)
+                ->orderBy('price_per_day', 'asc')
+                ->limit(8)
+                ->get();
+        }
 
         $brands = Brand::orderBy('name')->get();
-        $categories = Category::orderBy('name')->get();
 
         $loueurs = Loueur::where('is_active', true)
             ->withCount('vehicles')
@@ -84,7 +80,7 @@ class HomeController extends Controller
 
         return view('front.pages.home', compact(
             'selectedVehicles',
-            'featuredVehicles',
+            'vehiclesByCategory',
             'brands',
             'categories',
             'loueurs',
