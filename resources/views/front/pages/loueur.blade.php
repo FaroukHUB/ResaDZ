@@ -38,7 +38,12 @@ if ($loueur->total_reviews > 0) {
             <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent"></div>
         </div>
     @else
-        <div class="h-32 md:h-40 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900"></div>
+        <div class="h-32 md:h-40 bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 flex items-center justify-center">
+            <div class="text-center">
+                <span class="text-gray-600 font-black text-sm tracking-widest">PARTENAIRE</span>
+                <span class="text-gray-500 font-black text-2xl md:text-3xl tracking-wide ml-2">ResaDZ</span>
+            </div>
+        </div>
     @endif
 
     <!-- Hero -->
@@ -57,8 +62,24 @@ if ($loueur->total_reviews > 0) {
                 @endif
 
                 <div class="flex-1">
-                    <div class="flex flex-wrap items-center gap-3">
+                    @php
+                        $isTopLoueur = $loueur->rating >= 4.5 && $loueur->total_reviews >= 10;
+                        $isExperienced = ($loueur->total_rentals ?? 0) >= 50;
+                    @endphp
+                    <div class="flex flex-wrap items-center gap-2">
                         <h1 class="text-2xl md:text-3xl font-bold text-gray-900">{{ $loueur->company_name }}</h1>
+                        @if($isTopLoueur)
+                            <span class="inline-flex items-center gap-1 text-sm font-medium text-amber-700 bg-gradient-to-r from-amber-50 to-yellow-50 px-3 py-1 rounded-full border border-amber-200 shadow-sm">
+                                <svg class="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                Top Loueur
+                            </span>
+                        @endif
+                        @if($isExperienced)
+                            <span class="inline-flex items-center gap-1 text-sm font-medium text-purple-700 bg-purple-50 px-3 py-1 rounded-full border border-purple-200">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>
+                                Expérimenté
+                            </span>
+                        @endif
                         @if($loueur->is_verified)
                             <span class="inline-flex items-center gap-1 text-sm font-medium text-green-700 bg-green-50 px-3 py-1 rounded-full">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
