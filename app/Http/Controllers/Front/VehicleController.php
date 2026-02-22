@@ -42,6 +42,14 @@ class VehicleController extends Controller
             $query->whereHas('loueur', fn ($q) => $q->where('wilaya', $request->wilaya));
         }
 
+        // Filtre aéroport : prioriser les loueurs avec livraison aéroport
+        if ($request->filled('airport') && $request->airport == '1') {
+            $query->whereHas('loueur.settings', function ($q) {
+                $q->where('key', 'badge_airport')
+                  ->where('value', 'true');
+            });
+        }
+
         // Filtrage par disponibilité (dates de réservation)
         $pickupDate = null;
         $returnDate = null;

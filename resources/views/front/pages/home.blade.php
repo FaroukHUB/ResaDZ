@@ -315,6 +315,9 @@
     </section>
     @endif
 
+    <!-- Airport Search Section -->
+    @include('front.components.airport-search')
+
     <!-- Loueurs Section -->
     @if($loueurs->count() > 0)
     <section class="py-20 bg-white">
