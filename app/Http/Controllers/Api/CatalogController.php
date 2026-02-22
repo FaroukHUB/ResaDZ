@@ -110,15 +110,15 @@ class CatalogController extends Controller
             'success' => true,
             'data' => [
                 'site' => [
-                    'name' => Setting::get('site_name', 'ResaDZ'),
-                    'description' => Setting::get('site_description'),
+                    'name' => Setting::get('company_name', 'ResaDZ'),
+                    'description' => Setting::get('company_tagline', 'Marketplace de location de voitures'),
                     'currency' => Setting::get('currency', 'DZD'),
                 ],
                 'contact' => [
-                    'email' => Setting::get('email'),
-                    'phone' => Setting::get('phone'),
+                    'email' => Setting::get('company_email', ''),
+                    'phone' => Setting::get('company_phone', ''),
                     'whatsapp' => Setting::get('whatsapp'),
-                    'address' => Setting::get('address'),
+                    'address' => Setting::get('company_address', ''),
                 ],
                 'booking' => [
                     'min_rental_days' => (int) Setting::get('min_rental_days', 1),

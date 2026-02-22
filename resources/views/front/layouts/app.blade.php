@@ -1,3 +1,8 @@
+@php
+    $siteName = \App\Models\Setting::get('company_name', 'ResaDZ');
+    $siteSlogan = \App\Models\Setting::get('company_slogan', 'Location de véhicules en Algérie');
+    $siteDescription = \App\Models\Setting::get('company_tagline', 'Marketplace de location de voitures');
+@endphp
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
 <head>
@@ -5,11 +10,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', 'ResaDZ - Location de voitures en Algérie')</title>
-    <meta name="description" content="@yield('meta_description', 'ResaDZ, la marketplace de location de voitures en Algérie. Trouvez et réservez votre véhicule en quelques clics.')">
+    <title>@yield('title', $siteName . ' - ' . $siteSlogan)</title>
+    <meta name="description" content="@yield('meta_description', $siteName . ', la marketplace de location de voitures en Algérie. Trouvez et réservez votre véhicule en quelques clics.')">
 
     <!-- Open Graph -->
-    <meta property="og:title" content="@yield('og_title', 'ResaDZ - Location de voitures en Algérie')">
+    <meta property="og:title" content="@yield('og_title', $siteName . ' - ' . $siteSlogan)">
     <meta property="og:description" content="@yield('og_description', 'Trouvez et réservez votre véhicule en quelques clics.')">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
@@ -77,12 +82,12 @@
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
                     {{-- Logo image - placez votre logo dans public/assets/logo.png --}}
                     @if(file_exists(public_path('assets/logo.png')))
-                        <img src="{{ asset('assets/logo.png') }}" alt="ResaDZ" class="h-10 w-auto">
+                        <img src="{{ asset('assets/logo.png') }}" alt="{{ $siteName }}" class="h-10 w-auto">
                     @elseif(file_exists(public_path('assets/logo.jpeg')))
-                        <img src="{{ asset('assets/logo.jpeg') }}" alt="ResaDZ" class="h-10 w-auto">
+                        <img src="{{ asset('assets/logo.jpeg') }}" alt="{{ $siteName }}" class="h-10 w-auto">
                     @else
                         {{-- Fallback text logo --}}
-                        <span class="text-2xl font-black text-gray-900">Resa<span class="text-red-600">DZ</span></span>
+                        <span class="text-2xl font-black text-gray-900">{{ $siteName }}</span>
                     @endif
                 </a>
 
@@ -168,11 +173,11 @@
                 <div class="col-span-1 md:col-span-2">
                     <div class="flex items-center gap-3 mb-4">
                         @if(file_exists(public_path('assets/logo.png')))
-                            <img src="{{ asset('assets/logo.png') }}" alt="ResaDZ" class="h-10 w-auto brightness-0 invert">
+                            <img src="{{ asset('assets/logo.png') }}" alt="{{ $siteName }}" class="h-10 w-auto brightness-0 invert">
                         @elseif(file_exists(public_path('assets/logo.jpeg')))
-                            <img src="{{ asset('assets/logo.jpeg') }}" alt="ResaDZ" class="h-10 w-auto brightness-0 invert">
+                            <img src="{{ asset('assets/logo.jpeg') }}" alt="{{ $siteName }}" class="h-10 w-auto brightness-0 invert">
                         @else
-                            <span class="text-2xl font-black text-white">Resa<span class="text-red-500">DZ</span></span>
+                            <span class="text-2xl font-black text-white">{{ $siteName }}</span>
                         @endif
                     </div>
                     <p class="text-gray-400 max-w-sm">La marketplace de location de voitures en Algérie. Trouvez le véhicule idéal auprès de loueurs vérifiés.</p>
@@ -194,7 +199,7 @@
             </div>
 
             <div class="border-t border-gray-800 mt-10 pt-8 text-center text-sm">
-                <p>&copy; {{ date('Y') }} ResaDZ. Tous droits réservés.</p>
+                <p>&copy; {{ date('Y') }} {{ $siteName }}. Tous droits réservés.</p>
             </div>
         </div>
     </footer>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Availability;
 use App\Models\Booking;
 use App\Models\Loueur;
+use App\Models\Setting;
 use Carbon\Carbon;
 use Illuminate\Http\Response;
 use Illuminate\Support\Str;
@@ -91,7 +92,7 @@ class CalendarController extends Controller
 
         foreach ($bookings as $booking) {
             $events[] = [
-                'uid' => 'booking-' . $booking->id . '@resadz.com',
+                'uid' => 'booking-' . $booking->id . '@' . parse_url(config('app.url'), PHP_URL_HOST),
                 'summary' => 'Réservation: ' . $booking->client_name . ' - ' . ($booking->vehicle->full_name ?? 'Véhicule'),
                 'description' => implode('\n', [
                     'Référence: ' . $booking->reference,
@@ -124,7 +125,7 @@ class CalendarController extends Controller
 
         foreach ($availabilities as $availability) {
             $events[] = [
-                'uid' => 'block-' . $availability->id . '@resadz.com',
+                'uid' => 'block-' . $availability->id . '@' . parse_url(config('app.url'), PHP_URL_HOST),
                 'summary' => $availability->type_label . ': ' . ($availability->vehicle->full_name ?? 'Véhicule'),
                 'description' => implode('\n', [
                     'Type: ' . $availability->type_label,
@@ -153,10 +154,10 @@ class CalendarController extends Controller
         $ical = [
             'BEGIN:VCALENDAR',
             'VERSION:2.0',
-            'PRODID:-//ResaDZ//Calendrier Loueur//FR',
+            'PRODID:-//' . Setting::get('company_name', 'ResaDZ') . '//Calendrier Loueur//FR',
             'CALSCALE:GREGORIAN',
             'METHOD:PUBLISH',
-            'X-WR-CALNAME:' . $this->escapeIcal($loueur->company_name . ' - ResaDZ'),
+            'X-WR-CALNAME:' . $this->escapeIcal($loueur->company_name . ' - ' . Setting::get('company_name', 'ResaDZ')),
             'X-WR-TIMEZONE:Africa/Algiers',
         ];
 

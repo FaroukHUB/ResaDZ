@@ -186,8 +186,8 @@ class Conversation extends Model
             ],
             'support' => [
                 'welcome' => [
-                    'subject' => 'Bienvenue sur ResaDZ !',
-                    'message' => "Bonjour et bienvenue sur ResaDZ !\n\nNous sommes ravis de vous compter parmi nos loueurs partenaires.\n\nN'hésitez pas à nous contacter si vous avez des questions.\n\nCordialement,",
+                    'subject' => 'Bienvenue sur ' . Setting::get('company_name', 'ResaDZ') . ' !',
+                    'message' => "Bonjour et bienvenue sur " . Setting::get('company_name', 'ResaDZ') . " !\n\nNous sommes ravis de vous compter parmi nos loueurs partenaires.\n\nN'hésitez pas à nous contacter si vous avez des questions.\n\nCordialement,",
                 ],
                 'account_verified' => [
                     'subject' => 'Votre compte a été vérifié',
@@ -217,7 +217,7 @@ class Conversation extends Model
                 ],
                 'new_feature' => [
                     'subject' => 'Nouvelle fonctionnalité',
-                    'message' => "Bonjour,\n\nNous avons le plaisir de vous annoncer une nouvelle fonctionnalité sur ResaDZ !\n\n\n\nN'hésitez pas à l'essayer.\n\nCordialement,",
+                    'message' => "Bonjour,\n\nNous avons le plaisir de vous annoncer une nouvelle fonctionnalité sur " . Setting::get('company_name', 'ResaDZ') . " !\n\n\n\nN'hésitez pas à l'essayer.\n\nCordialement,",
                 ],
                 'thank_you' => [
                     'subject' => 'Merci !',

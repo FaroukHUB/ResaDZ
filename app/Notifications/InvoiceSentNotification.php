@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Invoice;
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -24,7 +25,7 @@ class InvoiceSentNotification extends Notification implements ShouldQueue
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Facture ' . $this->invoice->invoice_number . ' - ResaDZ')
+            ->subject('Facture ' . $this->invoice->invoice_number . ' - ' . Setting::get('company_name', 'ResaDZ'))
             ->greeting('Bonjour ' . ($this->invoice->billing_name ?? '') . ',')
             ->line('Veuillez trouver ci-joint votre facture:')
             ->line('**Facture N°:** ' . $this->invoice->invoice_number)
@@ -33,7 +34,7 @@ class InvoiceSentNotification extends Notification implements ShouldQueue
             ->line('**Montant total:** ' . number_format($this->invoice->total, 2, ',', ' ') . ' DA')
             ->action('Voir ma facture', url('/loueur/invoices/' . $this->invoice->id))
             ->line('Merci de votre confiance.')
-            ->salutation('L\'équipe ResaDZ');
+            ->salutation('L\'équipe ' . Setting::get('company_name', 'ResaDZ'));
     }
 
     public function toArray(object $notifiable): array

@@ -50,7 +50,24 @@ class ReservationController extends Controller
         $days = $startDate->diffInDays($endDate) + 1;
 
         $basePrice = $vehicle->price_per_day * $days;
-        $optionsPrice = 0; // TODO: calculer le prix des options
+
+        // Calculer le prix des options
+        $optionsPrice = 0;
+        $selectedOptions = $validated['selected_options'] ?? [];
+        if (!empty($selectedOptions) && $vehicle->loueur) {
+            $rentalOptions = $vehicle->loueur->getSetting('rental_options', []);
+            foreach ($rentalOptions as $option) {
+                $optionName = $option['name'] ?? '';
+                if (in_array($optionName, $selectedOptions)) {
+                    $isFree = ($option['is_free'] ?? false) || (($option['price'] ?? 0) == 0);
+                    if (!$isFree) {
+                        $price = (float) ($option['price'] ?? 0);
+                        $per = $option['per'] ?? 'day';
+                        $optionsPrice += ($per === 'day') ? $price * $days : $price;
+                    }
+                }
+            }
+        }
 
         $totalPrice = $basePrice + $optionsPrice;
 

@@ -43,7 +43,7 @@ class AdminPanelProvider extends PanelProvider
                 'Utilisateurs',
                 'Paramètres',
             ])
-            ->brandName('ResaDZ Admin')
+            ->brandName(\App\Models\Setting::get('company_name', 'ResaDZ') . ' Admin')
             ->favicon('/favicon.ico')
             ->sidebarCollapsibleOnDesktop()
             ->middleware([

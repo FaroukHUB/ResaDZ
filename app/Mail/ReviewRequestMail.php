@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Booking;
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Mail\Mailables\Content;
@@ -20,7 +21,7 @@ class ReviewRequestMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Comment s\'est passée votre location ? - ResaDZ',
+            subject: 'Comment s\'est passée votre location ? - ' . Setting::get('company_name', 'ResaDZ'),
         );
     }
 

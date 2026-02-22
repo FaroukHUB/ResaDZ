@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'ResaDZ - Location de voitures en Algérie')
+@section('title', \App\Models\Setting::get('company_name', 'ResaDZ') . ' - ' . \App\Models\Setting::get('company_slogan', 'Location de véhicules en Algérie'))
 @section('meta_description', 'Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés partout en Algérie.')
 
 @section('content')
@@ -143,7 +143,7 @@
                         <div class="text-sm text-gray-300 mt-1">Loueurs</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-3xl lg:text-4xl font-bold text-white">48</div>
+                        <div class="text-3xl lg:text-4xl font-bold text-white">{{ $wilayas->count() }}+</div>
                         <div class="text-sm text-gray-300 mt-1">Wilayas</div>
                     </div>
                 </div>

@@ -278,7 +278,6 @@ class BookingController extends Controller
             'loueur_id' => $vehicle->loueur_id,
             'vehicle_id' => $vehicle->id,
             'client_id' => auth()->id(),
-            'reference' => Setting::get('booking_reference_prefix', 'RES') . '-' . strtoupper(Str::random(8)),
             'status' => 'pending',
             'start_date' => $request->start_date,
             'end_date' => $request->end_date,

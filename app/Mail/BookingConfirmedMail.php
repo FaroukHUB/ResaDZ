@@ -3,6 +3,7 @@
 namespace App\Mail;
 
 use App\Models\Booking;
+use App\Models\Setting;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
@@ -29,7 +30,7 @@ class BookingConfirmedMail extends Mailable
         $vehicleName = $this->booking->vehicle?->full_name ?? 'votre véhicule';
 
         return new Envelope(
-            subject: 'Votre réservation ' . $this->booking->reference . ' est confirmée - ResaDZ',
+            subject: 'Votre réservation ' . $this->booking->reference . ' est confirmée - ' . Setting::get('company_name', 'ResaDZ'),
         );
     }
 

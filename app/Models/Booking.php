@@ -124,7 +124,8 @@ class Booking extends Model
 
         static::creating(function ($booking) {
             if (empty($booking->reference)) {
-                $booking->reference = 'RDZ-' . date('Y') . '-' . strtoupper(Str::random(6));
+                $prefix = Setting::get('booking_reference_prefix', 'RES');
+                $booking->reference = $prefix . '-' . strtoupper(Str::random(8));
             }
             if (empty($booking->confirmation_token)) {
                 $booking->confirmation_token = Str::random(64);

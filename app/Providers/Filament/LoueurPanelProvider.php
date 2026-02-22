@@ -32,7 +32,7 @@ class LoueurPanelProvider extends PanelProvider
                 'success' => Color::Green,
                 'warning' => Color::Orange,
             ])
-            ->brandName('ResaDZ - Espace Loueur')
+            ->brandName(\App\Models\Setting::get('company_name', 'ResaDZ') . ' - Espace Loueur')
             ->favicon('/favicon.ico')
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Loueur/Resources'), for: 'App\\Filament\\Loueur\\Resources')

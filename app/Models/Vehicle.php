@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Models\Setting;
 use Illuminate\Support\Str;
 
 class Vehicle extends Model
@@ -226,9 +227,6 @@ class Vehicle extends Model
         return $query->orderBy('sort_order')->orderBy('full_name');
     }
 
-    // Commission ResaDZ par jour (en DA)
-    public const COMMISSION_PER_DAY = 250;
-
     // Calculer le prix selon la durée avec prix dégressif et commission
     public function calculatePrice(int $days, string $currency = 'DZD'): array
     {
@@ -255,7 +253,7 @@ class Vehicle extends Model
         $loueurTotal = $pricePerDay * $days;
 
         // Commission ResaDZ (uniquement en DZD)
-        $commissionPerDay = $currency === 'EUR' ? 0 : self::COMMISSION_PER_DAY;
+        $commissionPerDay = $currency === 'EUR' ? 0 : (int) Setting::get('commission_per_day_dzd', 250);
         $commissionTotal = $commissionPerDay * $days;
 
         // Prix affiché au client (loueur + commission)
@@ -282,7 +280,7 @@ class Vehicle extends Model
 
         return $currency === 'EUR'
             ? $basePrice
-            : $basePrice + self::COMMISSION_PER_DAY;
+            : $basePrice + (int) Setting::get('commission_per_day_dzd', 250);
     }
 
     // Helpers

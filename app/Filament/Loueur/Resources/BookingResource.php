@@ -4,6 +4,7 @@ namespace App\Filament\Loueur\Resources;
 
 use App\Filament\Loueur\Resources\BookingResource\Pages;
 use App\Models\Booking;
+use App\Models\Setting;
 use App\Models\Vehicle;
 use App\Models\DeliveryZone;
 use Filament\Forms;
@@ -574,7 +575,7 @@ class BookingResource extends Resource
                             "🚗 " . ($record->vehicle->full_name ?? 'Véhicule') . "\n" .
                             "💰 Total: " . number_format($record->total_price, 0, ',', ' ') . " DA\n\n" .
                             "À bientôt !\n" .
-                            "ResaDZ"
+                            Setting::get('company_name', 'ResaDZ')
                         ))
                         ->openUrlInNewTab(),
                     Tables\Actions\Action::make('whatsappReminder')
@@ -588,7 +589,7 @@ class BookingResource extends Resource
                             "📅 " . $record->start_date->format('d/m/Y') . " à " . ($record->pickup_time ?? '09:00') . "\n" .
                             "🚗 " . ($record->vehicle->full_name ?? 'Véhicule') . "\n\n" .
                             "N'oubliez pas votre permis et pièce d'identité !\n\n" .
-                            "ResaDZ"
+                            Setting::get('company_name', 'ResaDZ')
                         ))
                         ->openUrlInNewTab(),
                     Tables\Actions\Action::make('whatsappReview')
@@ -602,7 +603,7 @@ class BookingResource extends Resource
                             "Votre avis compte beaucoup. Pourriez-vous nous laisser un commentaire ?\n\n" .
                             "👉 " . route('review.create', $record->confirmation_token) . "\n\n" .
                             "Merci !\n" .
-                            "ResaDZ"
+                            Setting::get('company_name', 'ResaDZ')
                         ))
                         ->openUrlInNewTab(),
                 ])->label('WhatsApp')
