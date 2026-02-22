@@ -4,195 +4,190 @@
     $degressivePricing = $vehicle->degressive_pricing;
     $showSelectionBorder = $showSelectionBorder ?? false;
     $hasGoldenBorder = $vehicle->is_boosted || $showSelectionBorder;
-
-    // Check if badges already show these features to avoid duplicates
-    $hasBadgeDegressive = $loueur && $loueur->getSetting('badge_degressive', false);
-    $hasBadgeKmUnlimited = $loueur && $loueur->getSetting('badge_km_unlimited', false);
 @endphp
 
-<article class="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group {{ $hasGoldenBorder ? 'border-2 border-amber-400 ring-1 ring-amber-200' : 'border border-gray-100' }}">
-    {{-- Head: Brand logo + Model name + Year --}}
-    <div class="flex items-center justify-between px-4 py-3 bg-gray-900">
-        <div class="flex items-center gap-3 min-w-0">
-            @if($vehicle->brand && $vehicle->brand->logo)
-                <img src="{{ asset('storage/' . $vehicle->brand->logo) }}" alt="{{ $vehicle->brand->name }}" class="w-8 h-8 object-contain bg-white rounded-full p-1 shrink-0" loading="lazy">
-            @elseif($vehicle->brand)
-                <div class="w-8 h-8 bg-white rounded-full flex items-center justify-center shrink-0">
-                    <span class="text-gray-900 text-xs font-bold">{{ strtoupper(substr($vehicle->brand->name, 0, 2)) }}</span>
-                </div>
-            @endif
-            <h4 class="text-white text-sm font-semibold truncate">
-                @if($vehicle->brand){{ $vehicle->brand->name }}@endif
-                {{ $vehicle->model ?? '' }}
-            </h4>
-        </div>
-        @if($vehicle->year)
-            <span class="text-xs text-gray-400 bg-gray-800 px-2 py-1 rounded-full shrink-0">{{ $vehicle->year }}</span>
-        @endif
-    </div>
+<article class="rounded-3xl overflow-hidden flex flex-col group transition-all duration-500 hover:scale-[1.02] {{ $hasGoldenBorder ? 'ring-2 ring-amber-400 ring-offset-2 ring-offset-black' : '' }}" style="background: linear-gradient(145deg, #1a1a1a 0%, #0d0d0d 100%);">
 
-    {{-- Photo --}}
+    {{-- Image Section --}}
     <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative">
-        <div class="aspect-[16/10] bg-gray-100 overflow-hidden">
+        <div class="aspect-[16/10] overflow-hidden">
             @if($vehicle->image)
                 <img src="{{ asset('storage/' . $vehicle->image) }}" alt="{{ $vehicle->full_name }}"
-                     class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy">
+                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" loading="lazy">
             @else
-                <div class="w-full h-full flex items-center justify-center bg-gray-100">
-                    <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v4.5c0 .621.504 1.125 1.125 1.125z"/></svg>
+                <div class="w-full h-full flex items-center justify-center bg-neutral-900">
+                    <svg class="w-16 h-16 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v4.5c0 .621.504 1.125 1.125 1.125z"/></svg>
                 </div>
             @endif
+            {{-- Dark gradient overlay --}}
+            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
         </div>
-        {{-- Loueur watermark --}}
-        @if($loueur && $loueur->company_name)
-            <div class="absolute bottom-2 left-2 bg-black/60 backdrop-blur-sm px-2 py-1 rounded text-xs text-white font-medium">
-                {{ $loueur->company_name }}
+
+        {{-- Brand badge top left --}}
+        <div class="absolute top-3 left-3 flex items-center gap-2 bg-black/70 backdrop-blur-xl rounded-full pl-1 pr-3 py-1">
+            @if($vehicle->brand && $vehicle->brand->logo)
+                <img src="{{ asset('storage/' . $vehicle->brand->logo) }}" alt="{{ $vehicle->brand->name }}" class="w-6 h-6 object-contain bg-white rounded-full p-0.5" loading="lazy">
+            @else
+                <div class="w-6 h-6 bg-white rounded-full flex items-center justify-center">
+                    <span class="text-black text-[10px] font-black">{{ strtoupper(substr($vehicle->brand->name ?? 'V', 0, 2)) }}</span>
+                </div>
+            @endif
+            <span class="text-white text-xs font-semibold">{{ $vehicle->brand->name ?? '' }}</span>
+        </div>
+
+        {{-- Year badge top right --}}
+        @if($vehicle->year)
+            <div class="absolute top-3 right-3 bg-white/10 backdrop-blur-xl rounded-full px-3 py-1">
+                <span class="text-white text-xs font-bold">{{ $vehicle->year }}</span>
             </div>
         @endif
+
         {{-- Sponsored Badge --}}
         @if($vehicle->is_boosted)
-            <div class="absolute top-2 left-2 bg-gradient-to-r from-amber-500 to-yellow-400 px-2.5 py-1 rounded-full shadow-md">
-                <span class="text-xs font-bold text-white tracking-wide flex items-center gap-1">
-                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    Sponsorisé
-                </span>
+            <div class="absolute top-12 left-3 bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1 rounded-full">
+                <span class="text-[10px] font-black text-white uppercase tracking-wider">Sponsorisé</span>
             </div>
         @endif
+
         {{-- Special Offer Badge --}}
         @if($vehicle->activeOffer)
-            <div class="absolute top-2 right-2 bg-gradient-to-r from-red-600 to-orange-500 px-3 py-1.5 rounded-full shadow-lg animate-pulse">
-                <span class="text-xs font-black text-white tracking-wide">{{ $vehicle->activeOffer->badge_text }}</span>
+            <div class="absolute top-12 right-3 bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 rounded-full animate-pulse">
+                <span class="text-[10px] font-black text-white uppercase tracking-wider">{{ $vehicle->activeOffer->badge_text }}</span>
             </div>
         @endif
+
+        {{-- Model name overlay bottom --}}
+        <div class="absolute bottom-0 left-0 right-0 p-4">
+            <h4 class="text-white text-lg font-bold leading-tight drop-shadow-lg">
+                {{ $vehicle->model ?? $vehicle->full_name }}
+            </h4>
+            @if($loueur && $loueur->company_name)
+                <p class="text-white/60 text-xs mt-1">{{ $loueur->company_name }}</p>
+            @endif
+        </div>
     </a>
 
-    {{-- Price bar --}}
-    <div class="px-4 py-3 bg-gray-900 flex items-baseline justify-between">
+    {{-- Price Section --}}
+    <div class="px-5 py-4 flex items-end justify-between border-b border-white/5">
         <div>
-            <span class="text-2xl font-black text-white">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }}</span>
-            <span class="text-sm text-gray-400 ml-1">DA/jour</span>
+            <span class="text-3xl font-black text-white tracking-tight">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }}</span>
+            <span class="text-white/40 text-sm ml-1">DA/j</span>
         </div>
         @if($vehicle->price_per_day_eur)
-            <span class="text-sm font-semibold text-gray-400">{{ number_format($vehicle->price_per_day_eur, 0) }} &euro;/j</span>
+            <span class="text-white/50 text-sm font-medium">{{ number_format($vehicle->price_per_day_eur, 0) }}&euro;</span>
         @endif
     </div>
 
-    {{-- Specs grid --}}
-    <div class="grid grid-cols-2 gap-px bg-gray-100 text-sm">
-        {{-- Boîte --}}
-        <div class="flex items-center gap-2 px-3 py-2.5 bg-white">
-            <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <div class="min-w-0">
-                <div class="text-xs text-gray-400">Boîte</div>
-                <div class="text-gray-800 font-medium truncate">{{ $vehicle->transmission === 'automatic' ? 'Automatique' : 'Manuelle' }}</div>
+    {{-- Specs Icons Row --}}
+    <div class="px-5 py-4 flex items-center justify-between gap-2">
+        {{-- Transmission --}}
+        <div class="flex flex-col items-center gap-1.5 flex-1">
+            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                @if($vehicle->transmission === 'automatic')
+                    {{-- Auto/A icon --}}
+                    <span class="text-white font-black text-sm">A</span>
+                @else
+                    {{-- Manual/M icon --}}
+                    <span class="text-white font-black text-sm">M</span>
+                @endif
             </div>
+            <span class="text-white/50 text-[10px] font-medium uppercase tracking-wide">{{ $vehicle->transmission === 'automatic' ? 'Auto' : 'Manuel' }}</span>
         </div>
 
-        {{-- Carburant --}}
-        <div class="flex items-center gap-2 px-3 py-2.5 bg-white">
-            <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 18.657A8 8 0 016.343 7.343S7 9 9 10c0-2 .5-5 2.986-7C14 5 16.09 5.777 17.656 7.343A7.975 7.975 0 0120 13a7.975 7.975 0 01-2.343 5.657z"/></svg>
-            <div class="min-w-0">
-                <div class="text-xs text-gray-400">Carburant</div>
-                <div class="text-gray-800 font-medium truncate">{{ ucfirst($vehicle->fuel_type ?? 'Diesel') }}</div>
+        {{-- Fuel --}}
+        <div class="flex flex-col items-center gap-1.5 flex-1">
+            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                @if(strtolower($vehicle->fuel_type ?? 'diesel') === 'diesel')
+                    <svg class="w-5 h-5 text-amber-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+                @elseif(strtolower($vehicle->fuel_type ?? '') === 'essence')
+                    <svg class="w-5 h-5 text-green-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+                @else
+                    <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5zm6 0c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z"/></svg>
+                @endif
             </div>
+            <span class="text-white/50 text-[10px] font-medium uppercase tracking-wide">{{ ucfirst($vehicle->fuel_type ?? 'Diesel') }}</span>
         </div>
 
-        {{-- Places --}}
-        <div class="flex items-center gap-2 px-3 py-2.5 bg-white">
-            <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <div class="min-w-0">
-                <div class="text-xs text-gray-400">Capacité</div>
-                <div class="text-gray-800 font-medium">{{ $vehicle->seats ?? 5 }} places</div>
+        {{-- Seats --}}
+        <div class="flex flex-col items-center gap-1.5 flex-1">
+            <div class="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center">
+                <svg class="w-5 h-5 text-white/80" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             </div>
+            <span class="text-white/50 text-[10px] font-medium uppercase tracking-wide">{{ $vehicle->seats ?? 5 }} places</span>
         </div>
 
-        {{-- Km/jour --}}
-        <div class="flex items-center gap-2 px-3 py-2.5 bg-white">
-            <svg class="w-4 h-4 text-gray-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/></svg>
-            <div class="min-w-0">
-                <div class="text-xs text-gray-400">Km/jour</div>
-                <div class="text-gray-800 font-medium">
-                    @if($vehicle->mileage_limit_per_day)
-                        {{ $vehicle->mileage_limit_per_day }} km
-                    @elseif(!$hasBadgeKmUnlimited)
-                        {{-- Only show "Illimité" if the badge doesn't already show it --}}
-                        <span class="text-green-600">Illimité</span>
-                    @else
-                        <span class="text-gray-400">-</span>
-                    @endif
-                </div>
+        {{-- Air Conditioning --}}
+        <div class="flex flex-col items-center gap-1.5 flex-1">
+            <div class="w-10 h-10 rounded-xl {{ $vehicle->has_air_conditioning ? 'bg-cyan-500/20' : 'bg-white/5' }} flex items-center justify-center">
+                <svg class="w-5 h-5 {{ $vehicle->has_air_conditioning ? 'text-cyan-400' : 'text-white/30' }}" viewBox="0 0 24 24" fill="currentColor"><path d="M22 11h-4.17l3.24-3.24-1.41-1.42L15 11h-2V9l4.66-4.66-1.42-1.41L13 6.17V2h-2v4.17L7.76 2.93 6.34 4.34 11 9v2H9L4.34 6.34 2.93 7.76 6.17 11H2v2h4.17l-3.24 3.24 1.41 1.42L9 13h2v2l-4.66 4.66 1.42 1.41L11 17.83V22h2v-4.17l3.24 3.24 1.42-1.41L13 15v-2h2l4.66 4.66 1.41-1.42L17.83 13H22z"/></svg>
             </div>
+            <span class="text-[10px] font-medium uppercase tracking-wide {{ $vehicle->has_air_conditioning ? 'text-cyan-400' : 'text-white/30' }}">Clim</span>
         </div>
     </div>
 
-    {{-- Clim indicator --}}
-    @if($vehicle->has_air_conditioning)
-        <div class="px-4 py-2 bg-blue-50 border-t border-blue-100 flex items-center gap-2">
-            <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-            <span class="text-xs text-blue-700 font-semibold">Climatisation</span>
-        </div>
-    @endif
+    {{-- Features Pills --}}
+    @php
+        $features = [];
+        if($vehicle->mileage_limit_per_day) {
+            $features[] = ['text' => $vehicle->mileage_limit_per_day . ' km/j', 'color' => 'white/10'];
+        } else {
+            $features[] = ['text' => 'Km illimité', 'color' => 'emerald'];
+        }
+        if(!empty($degressivePricing) && is_array($degressivePricing) && count($degressivePricing) > 0) {
+            $features[] = ['text' => 'Prix dégressif', 'color' => 'amber'];
+        }
+    @endphp
 
-    {{-- Badges (loueur features) --}}
-    @if(count($badges) > 0)
-        <div class="px-4 py-3 flex flex-wrap gap-1.5 bg-white border-t border-gray-100">
-            @foreach($badges as $badge)
+    @if(count($features) > 0 || count($badges) > 0)
+        <div class="px-5 pb-4 flex flex-wrap gap-2">
+            @foreach($features as $feature)
                 @php
-                    $pillBg = match($badge['color'] ?? 'gray') {
-                        'green' => 'bg-green-50 text-green-700',
-                        'blue' => 'bg-blue-50 text-blue-700',
-                        'amber' => 'bg-amber-50 text-amber-700',
-                        'red' => 'bg-red-50 text-red-700',
-                        default => 'bg-gray-50 text-gray-700',
+                    $pillClass = match($feature['color']) {
+                        'emerald' => 'bg-emerald-500/20 text-emerald-400',
+                        'amber' => 'bg-amber-500/20 text-amber-400',
+                        default => 'bg-white/10 text-white/70',
                     };
                 @endphp
-                <span class="inline-flex items-center gap-1 {{ $pillBg }} text-xs font-medium px-2 py-1 rounded-full">
-                    @if(($badge['icon'] ?? '') === 'check')
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                    @elseif(($badge['icon'] ?? '') === 'plane')
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3l14 9-14 9V3z"/></svg>
-                    @elseif(($badge['icon'] ?? '') === 'truck')
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 17h8M8 17H5.236a2 2 0 01-1.789-1.106l-.894-1.788A2 2 0 013 13.382V7a2 2 0 012-2h10a2 2 0 012 2v6m-9 4h8m0 0h2.764a2 2 0 001.789-1.106l.894-1.788A2 2 0 0021 13.382V11a2 2 0 00-2-2h-2"/></svg>
-                    @elseif(($badge['icon'] ?? '') === 'arrow-down')
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-                    @elseif(($badge['icon'] ?? '') === 'infinity')
-                        <span class="text-xs font-bold">&infin;</span>
-                    @elseif(($badge['icon'] ?? '') === 'star')
-                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                    @endif
+                <span class="inline-flex items-center gap-1 {{ $pillClass }} text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide">
+                    {{ $feature['text'] }}
+                </span>
+            @endforeach
+            @foreach($badges as $badge)
+                @php
+                    $badgeClass = match($badge['color'] ?? 'gray') {
+                        'green' => 'bg-emerald-500/20 text-emerald-400',
+                        'blue' => 'bg-blue-500/20 text-blue-400',
+                        'amber' => 'bg-amber-500/20 text-amber-400',
+                        'red' => 'bg-red-500/20 text-red-400',
+                        default => 'bg-white/10 text-white/70',
+                    };
+                @endphp
+                <span class="inline-flex items-center gap-1 {{ $badgeClass }} text-[10px] font-semibold px-2.5 py-1 rounded-full uppercase tracking-wide">
                     {{ $badge['text'] ?? $badge }}
                 </span>
             @endforeach
         </div>
     @endif
 
-    {{-- Degressive pricing hint - only show if badge doesn't already show it --}}
-    @if(!empty($degressivePricing) && is_array($degressivePricing) && count($degressivePricing) > 0 && !$hasBadgeDegressive)
-        <div class="px-4 py-2 bg-amber-50 border-t border-amber-100 flex items-center gap-2">
-            <svg class="w-4 h-4 text-amber-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
-            <span class="text-xs text-amber-700 font-medium">Prix dégressif disponible</span>
-        </div>
-    @endif
-
     {{-- Actions --}}
-    <div class="flex items-center gap-2 px-4 py-3 bg-white border-t border-gray-100 mt-auto">
+    <div class="flex items-center gap-3 p-4 mt-auto">
         @if($loueur && $loueur->phone)
             <a href="tel:{{ $loueur->phone }}"
                data-track="phone"
                data-vehicle-id="{{ $vehicle->id }}"
                data-loueur-id="{{ $loueur->id }}"
                data-phone="{{ $loueur->phone }}"
-               class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-gray-900 text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                Appeler
+               class="w-12 h-12 flex items-center justify-center bg-white/10 hover:bg-white/20 rounded-xl transition-all">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
             </a>
         @endif
         <a href="{{ route('vehicles.show', $vehicle->slug) }}"
            data-track="view_details"
            data-vehicle-id="{{ $vehicle->id }}"
            data-loueur-id="{{ $loueur?->id }}"
-           class="flex-1 flex items-center justify-center gap-2 py-2.5 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition">
+           class="flex-1 flex items-center justify-center gap-2 h-12 bg-white text-black text-sm font-bold rounded-xl hover:bg-white/90 transition-all">
             Réserver
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
         </a>
     </div>
 </article>
