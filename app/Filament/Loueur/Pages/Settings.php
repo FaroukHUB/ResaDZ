@@ -268,7 +268,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                         Forms\Components\Repeater::make('rental_options')
                                             ->label('')
                                             ->schema([
-                                                Forms\Components\Grid::make(3)
+                                                Forms\Components\Grid::make(4)
                                                     ->schema([
                                                         Forms\Components\TextInput::make('name')
                                                             ->label('Nom de l\'option')
@@ -289,6 +289,12 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                                                 'booking' => 'Par location',
                                                             ])
                                                             ->default('day'),
+                                                        Forms\Components\TextInput::make('quantity')
+                                                            ->label('Quantité')
+                                                            ->numeric()
+                                                            ->minValue(1)
+                                                            ->default(1)
+                                                            ->helperText('Stock disponible'),
                                                     ]),
                                                 Forms\Components\Grid::make(2)
                                                     ->schema([
@@ -314,7 +320,8 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->collapsible()
                                             ->itemLabel(fn (array $state): ?string =>
                                                 ($state['name'] ?? 'Nouvelle option') .
-                                                (($state['is_free'] ?? false) ? ' (Offert)' : (isset($state['price']) && $state['price'] > 0 ? ' - ' . number_format($state['price'], 0, ',', ' ') . ' DA' : ''))
+                                                (isset($state['quantity']) && $state['quantity'] > 1 ? ' (x' . $state['quantity'] . ')' : '') .
+                                                (($state['is_free'] ?? false) ? ' - Offert' : (isset($state['price']) && $state['price'] > 0 ? ' - ' . number_format($state['price'], 0, ',', ' ') . ' DA' : ''))
                                             ),
                                     ]),
                                 Forms\Components\Section::make('Exemples d\'options')

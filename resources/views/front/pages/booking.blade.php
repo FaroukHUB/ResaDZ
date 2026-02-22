@@ -154,28 +154,33 @@
                     @if(count($rentalOptions) > 0 || $fuelReturnFee > 0 || $washReturnFee > 0)
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Options</h2>
-                        <div class="space-y-3">
+                        @error('options') <p class="text-red-500 text-sm mb-3">{{ $message }}</p> @enderror
+                        <div class="space-y-3" id="optionsContainer">
                             @foreach($rentalOptions as $option)
                                 @php
                                     $isFree = ($option['is_free'] ?? false) || (($option['price'] ?? 0) == 0);
                                     $optionPrice = (float) ($option['price'] ?? 0);
+                                    $optionName = $option['name'] ?? '';
                                 @endphp
-                                <label class="flex items-center justify-between p-4 rounded-xl {{ $isFree ? 'bg-green-50 hover:bg-green-100 border-green-200' : 'bg-gray-50 hover:bg-amber-50 border-transparent hover:border-amber-200' }} cursor-pointer transition border">
+                                <label class="option-label flex items-center justify-between p-4 rounded-xl {{ $isFree ? 'bg-green-50 hover:bg-green-100 border-green-200' : 'bg-gray-50 hover:bg-amber-50 border-transparent hover:border-amber-200' }} cursor-pointer transition border"
+                                       data-option-name="{{ $optionName }}">
                                     <div class="flex items-center gap-4">
-                                        <input type="checkbox" name="options[]" value="{{ $option['name'] }}"
+                                        <input type="checkbox" name="options[]" value="{{ $optionName }}"
                                                data-price="{{ $optionPrice }}"
                                                data-per="{{ $option['per'] ?? 'day' }}"
                                                data-free="{{ $isFree ? '1' : '0' }}"
-                                               class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox">
+                                               data-option-name="{{ $optionName }}"
+                                               class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500 option-checkbox rental-option">
                                         @if(!empty($option['image']))
-                                            <img src="{{ asset('storage/' . $option['image']) }}" alt="{{ $option['name'] }}" class="w-12 h-12 rounded-lg object-cover">
+                                            <img src="{{ asset('storage/' . $option['image']) }}" alt="{{ $optionName }}" class="w-12 h-12 rounded-lg object-cover">
                                         @endif
                                         <div>
                                             <div class="flex items-center gap-2">
-                                                <span class="font-medium text-gray-900">{{ $option['name'] }}</span>
+                                                <span class="font-medium text-gray-900 option-name">{{ $optionName }}</span>
                                                 @if($isFree)
                                                     <span class="px-2 py-0.5 bg-green-500 text-white text-xs font-bold rounded-full">OFFERT</span>
                                                 @endif
+                                                <span class="unavailable-badge hidden px-2 py-0.5 bg-red-100 text-red-600 text-xs font-medium rounded-full">Indisponible</span>
                                             </div>
                                             @if(!empty($option['description']))
                                                 <p class="text-xs text-gray-500 mt-0.5">{{ $option['description'] }}</p>
@@ -271,6 +276,7 @@
 <script>
     const vehicleId = {{ $vehicle->id }};
     const calcUrl = '{{ route("booking.calculate") }}';
+    const checkOptionsUrl = '{{ route("booking.check-options") }}';
     const csrfToken = '{{ csrf_token() }}';
     const returnMarginHours = {{ $returnMarginHours ?? 2 }};
 
@@ -283,6 +289,7 @@
     const returnFields = document.getElementById('return_fields');
     const sameReturnLocation = document.getElementById('same_return_location');
     const optionBoxes = document.querySelectorAll('.option-checkbox');
+    const rentalOptions = document.querySelectorAll('.rental-option');
     const priceBreakdown = document.getElementById('priceBreakdown');
     const submitBtn = document.getElementById('submitBtn');
     const returnTimeInfo = document.getElementById('returnTimeInfo');
@@ -323,6 +330,67 @@
         returnDateDisplay.textContent = formattedDate;
         returnTimeDisplay.textContent = String(returnHour).padStart(2, '0') + ':00';
         returnTimeInfo.classList.remove('hidden');
+    }
+
+    // Vérifier la disponibilité des options
+    function checkOptionAvailability() {
+        if (!startDate.value || !endDate.value) return;
+
+        fetch(checkOptionsUrl, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken,
+                'Accept': 'application/json',
+            },
+            body: JSON.stringify({
+                vehicle_id: vehicleId,
+                start_date: startDate.value,
+                end_date: endDate.value,
+            })
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.options) {
+                // Créer un map des options disponibles
+                const availabilityMap = {};
+                data.options.forEach(opt => {
+                    availabilityMap[opt.name] = opt.is_available;
+                });
+
+                // Mettre à jour l'UI
+                rentalOptions.forEach(checkbox => {
+                    const optionName = checkbox.dataset.optionName;
+                    const label = checkbox.closest('.option-label');
+                    const badge = label ? label.querySelector('.unavailable-badge') : null;
+
+                    if (availabilityMap[optionName] === false) {
+                        // Option indisponible
+                        checkbox.disabled = true;
+                        checkbox.checked = false;
+                        if (label) {
+                            label.classList.add('opacity-50', 'cursor-not-allowed');
+                            label.classList.remove('cursor-pointer', 'hover:bg-amber-50', 'hover:bg-green-100');
+                        }
+                        if (badge) badge.classList.remove('hidden');
+                    } else {
+                        // Option disponible
+                        checkbox.disabled = false;
+                        if (label) {
+                            label.classList.remove('opacity-50', 'cursor-not-allowed');
+                            label.classList.add('cursor-pointer');
+                            if (checkbox.dataset.free === '1') {
+                                label.classList.add('hover:bg-green-100');
+                            } else {
+                                label.classList.add('hover:bg-amber-50');
+                            }
+                        }
+                        if (badge) badge.classList.add('hidden');
+                    }
+                });
+            }
+        })
+        .catch(() => {});
     }
 
     function recalculate() {
@@ -389,9 +457,13 @@
         return new Intl.NumberFormat('fr-DZ', { maximumFractionDigits: 0 }).format(n);
     }
 
+    // Recalculer quand les champs changent
     [startDate, endDate, pickupTime].forEach(el => el.addEventListener('change', recalculate));
     if (pickupZone) pickupZone.addEventListener('change', recalculate);
     if (returnZone) returnZone.addEventListener('change', recalculate);
     optionBoxes.forEach(cb => cb.addEventListener('change', recalculate));
+
+    // Vérifier disponibilité des options quand les dates changent
+    [startDate, endDate].forEach(el => el.addEventListener('change', checkOptionAvailability));
 </script>
 @endsection

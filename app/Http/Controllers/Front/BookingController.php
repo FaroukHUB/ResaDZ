@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\DeliveryZone;
 use App\Models\Setting;
 use App\Models\Vehicle;
+use App\Services\OptionAvailabilityService;
 use App\Services\PricingService;
 use App\Services\WebPushService;
 use Illuminate\Http\Request;
@@ -157,9 +158,36 @@ class BookingController extends Controller
     }
 
     /**
+     * Vérifie la disponibilité des options pour les dates sélectionnées.
+     */
+    public function checkOptions(Request $request, OptionAvailabilityService $optionService)
+    {
+        $request->validate([
+            'vehicle_id' => 'required|exists:vehicles,id',
+            'start_date' => 'required|date|after_or_equal:today',
+            'end_date' => 'required|date|after:start_date',
+        ]);
+
+        $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
+        $loueur = $vehicle->loueur;
+
+        if (!$loueur) {
+            return response()->json(['options' => []]);
+        }
+
+        $options = $optionService->getAvailableOptions(
+            $loueur,
+            $request->start_date,
+            $request->end_date
+        );
+
+        return response()->json(['options' => $options]);
+    }
+
+    /**
      * Enregistre la demande de réservation (formulaire simplifié).
      */
-    public function store(Request $request, PricingService $pricingService)
+    public function store(Request $request, PricingService $pricingService, OptionAvailabilityService $optionService)
     {
         $request->validate([
             'vehicle_id' => 'required|exists:vehicles,id',
@@ -195,6 +223,24 @@ class BookingController extends Controller
         // Un véhicule sans loueur ne peut pas être réservé
         if (!$vehicle->loueur_id || !$loueur) {
             return back()->withErrors(['vehicle_id' => 'Ce véhicule n\'est pas disponible à la réservation.'])->withInput();
+        }
+
+        // Vérifier la disponibilité des options sélectionnées
+        $selectedOptions = $request->options ?? [];
+        if (!empty($selectedOptions)) {
+            $optionValidation = $optionService->validateOptions(
+                $loueur,
+                $selectedOptions,
+                $request->start_date,
+                $request->end_date
+            );
+
+            if (!$optionValidation['valid']) {
+                $unavailableList = implode(', ', $optionValidation['unavailable']);
+                return back()->withErrors([
+                    'options' => "Les options suivantes ne sont plus disponibles pour ces dates : {$unavailableList}"
+                ])->withInput();
+            }
         }
 
         // Vérifier le nombre minimum de jours (configuré par le loueur)

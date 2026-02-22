@@ -30,6 +30,7 @@ Route::get('/loueur/{slug}', [LoueurController::class, 'show'])->name('loueur.sh
 // Réservation
 Route::get('/reserver/{slug}', [BookingController::class, 'create'])->name('booking.create');
 Route::post('/reserver/calculer', [BookingController::class, 'calculatePrice'])->name('booking.calculate');
+Route::post('/reserver/options', [BookingController::class, 'checkOptions'])->name('booking.check-options');
 Route::post('/reserver', [BookingController::class, 'store'])->name('booking.store');
 Route::get('/reservation/{reference}', [BookingController::class, 'confirmation'])->name('booking.confirmation');
 
