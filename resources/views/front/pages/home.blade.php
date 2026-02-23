@@ -318,30 +318,44 @@
     <!-- Airport Search Section -->
     @include('front.components.airport-search')
 
-    <!-- Blog Section -->
+    <!-- Blog Section - Actualités -->
     @if(isset($blogPosts) && $blogPosts->count() > 0)
-    <section class="py-20 bg-neutral-950">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-10">
+    <section class="relative py-24 bg-gradient-to-b from-neutral-900 via-neutral-950 to-black overflow-hidden">
+        {{-- Decorative elements --}}
+        <div class="absolute inset-0 opacity-30">
+            <div class="absolute top-0 left-1/4 w-96 h-96 bg-green-500/10 rounded-full blur-3xl"></div>
+            <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/5 rounded-full blur-3xl"></div>
+        </div>
+        <div class="absolute inset-0 opacity-5">
+            <div class="absolute inset-0" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 40px 40px;"></div>
+        </div>
+
+        <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-12">
                 <div>
-                    <h2 class="text-3xl font-bold text-white">Actualités & Promotions</h2>
-                    <p class="mt-2 text-white/50">Restez informé de nos offres et conseils</p>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-1 h-8 bg-gradient-to-b from-green-400 to-green-600 rounded-full"></div>
+                        <span class="text-green-400 text-sm font-semibold uppercase tracking-wider">ResaDZ Magazine</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black text-white">Actualités</h2>
+                    <p class="mt-2 text-white/50">Promotions, guides et conseils pour votre location</p>
                 </div>
-                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 text-white text-sm font-semibold hover:text-amber-400 transition">
-                    Voir tout
+                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 px-6 py-3 bg-white/10 hover:bg-white/20 text-white text-sm font-semibold rounded-full transition backdrop-blur-sm border border-white/10">
+                    Tout voir
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach($blogPosts as $post)
                     @include('front.components.blog-card', ['post' => $post])
                 @endforeach
             </div>
 
-            <div class="mt-8 text-center sm:hidden">
-                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-black text-sm font-bold rounded-full">
-                    Voir tous les articles
+            <div class="mt-10 text-center sm:hidden">
+                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-500 text-white text-sm font-bold rounded-full transition">
+                    Voir toutes les actualités
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
         </div>

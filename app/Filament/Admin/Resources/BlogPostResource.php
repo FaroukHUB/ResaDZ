@@ -17,7 +17,7 @@ class BlogPostResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
 
-    protected static ?string $navigationLabel = 'Blog';
+    protected static ?string $navigationLabel = 'Actualités';
 
     protected static ?string $modelLabel = 'Article';
 
