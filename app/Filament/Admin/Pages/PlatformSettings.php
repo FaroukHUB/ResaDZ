@@ -81,6 +81,11 @@ class PlatformSettings extends Page
             'featured_section_title' => Setting::get('featured_section_title', 'Notre sélection pour vous'),
             'categories_section_title' => Setting::get('categories_section_title', 'Parcourir par catégorie'),
             'loueurs_section_title' => Setting::get('loueurs_section_title', 'Nos loueurs partenaires'),
+
+            // Social Media
+            'facebook' => Setting::get('facebook', ''),
+            'instagram' => Setting::get('instagram', ''),
+            'whatsapp' => Setting::get('whatsapp', ''),
         ]);
     }
 
@@ -346,6 +351,34 @@ class PlatformSettings extends Page
                                             ->helperText('Nombre de jours d\'essai gratuit pour les nouveaux loueurs'),
                                     ]),
                             ]),
+
+                        // Social Media Tab
+                        Forms\Components\Tabs\Tab::make('Réseaux sociaux')
+                            ->icon('heroicon-o-share')
+                            ->schema([
+                                Forms\Components\Section::make('Liens réseaux sociaux')
+                                    ->description('Ces liens apparaissent dans le footer du site')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('facebook')
+                                            ->label('Facebook')
+                                            ->url()
+                                            ->placeholder('https://facebook.com/votrepage')
+                                            ->prefixIcon('heroicon-o-link')
+                                            ->helperText('URL complète de votre page Facebook'),
+                                        Forms\Components\TextInput::make('instagram')
+                                            ->label('Instagram')
+                                            ->url()
+                                            ->placeholder('https://instagram.com/votrecompte')
+                                            ->prefixIcon('heroicon-o-link')
+                                            ->helperText('URL complète de votre profil Instagram'),
+                                        Forms\Components\TextInput::make('whatsapp')
+                                            ->label('WhatsApp')
+                                            ->tel()
+                                            ->placeholder('+213656697788')
+                                            ->prefixIcon('heroicon-o-phone')
+                                            ->helperText('Numéro WhatsApp avec indicatif pays (+213...)'),
+                                    ]),
+                            ]),
                     ])
                     ->columnSpanFull(),
             ])
@@ -404,6 +437,11 @@ class PlatformSettings extends Page
 
         // Trial
         Setting::set('trial_days', $data['trial_days'], 'trial', 'number');
+
+        // Social Media
+        Setting::set('facebook', $data['facebook'] ?? '', 'social', 'text');
+        Setting::set('instagram', $data['instagram'] ?? '', 'social', 'text');
+        Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
 
         Notification::make()
             ->title('Paramètres enregistrés')
