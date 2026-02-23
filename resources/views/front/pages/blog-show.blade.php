@@ -77,7 +77,7 @@
             @endif
 
             {{-- Content --}}
-            <div class="mt-10 prose prose-lg max-w-none prose-headings:font-bold prose-a:text-red-600 prose-img:rounded-lg">
+            <div class="mt-10 prose prose-lg max-w-none prose-headings:font-bold prose-a:text-green-600 prose-a:font-semibold prose-a:underline prose-a:decoration-2 hover:prose-a:text-green-500 prose-img:rounded-lg">
                 {!! $post->content !!}
             </div>
 
