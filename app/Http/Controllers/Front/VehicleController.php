@@ -50,6 +50,12 @@ class VehicleController extends Controller
             });
         }
 
+        // Filtre sélection (véhicules mis en avant)
+        if ($request->filled('selection') && $request->selection == '1') {
+            $query->where('vehicles.is_in_selection', true)
+                  ->orderBy('vehicles.selection_order');
+        }
+
         // Filtrage par disponibilité (dates de réservation)
         $pickupDate = null;
         $returnDate = null;

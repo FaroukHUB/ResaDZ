@@ -154,10 +154,12 @@
                     <h2 class="text-2xl lg:text-4xl font-black text-white tracking-tight">{{ $homeContent['selection_title'] ?? 'Notre sélection' }}</h2>
                     <p class="mt-2 text-white/50 text-sm lg:text-base">{{ $homeContent['selection_subtitle'] ?? 'Les véhicules que nous recommandons' }}</p>
                 </div>
-                <a href="{{ route('vehicles.index') }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white text-sm font-semibold rounded-full transition border border-white/10">
+                @if($selectedVehicles->count() > 4)
+                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-white/10 hover:bg-white/15 text-white text-sm font-semibold rounded-full transition border border-white/10">
                     Voir tout
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
+                @endif
             </div>
 
             <div class="hidden lg:grid grid-cols-4 gap-6">
@@ -174,12 +176,14 @@
                     @endforeach
                 </div>
             </div>
+            @if($selectedVehicles->count() > 4)
             <div class="mt-8 text-center sm:hidden">
-                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-full transition border border-white/10">
+                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-full transition border border-white/10">
                     Voir tout
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
+            @endif
         </div>
     </section>
 
