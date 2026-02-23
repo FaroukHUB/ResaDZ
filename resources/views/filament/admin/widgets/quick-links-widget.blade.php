@@ -6,19 +6,28 @@
                 <span class="w-2 h-2 rounded-full bg-amber-500"></span>
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Gestion</h3>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <a href="/admin/loueurs" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
-                        <x-heroicon-o-building-storefront class="w-4 h-4 text-amber-600 dark:text-amber-400"/>
+                        @svg('heroicon-o-building-storefront', 'w-4 h-4 text-amber-600 dark:text-amber-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Loueurs</span>
                         <p class="text-xs text-gray-500 dark:text-gray-400">{{ \App\Models\Loueur::count() }} loueurs</p>
                     </div>
                 </a>
+                <a href="/admin/bookings" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
+                    <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
+                        @svg('heroicon-o-calendar-days', 'w-4 h-4 text-amber-600 dark:text-amber-400')
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Réservations</span>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">{{ \App\Models\Booking::count() }} réservations</p>
+                    </div>
+                </a>
                 <a href="/admin/revenues" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-100 dark:bg-amber-500/20 flex items-center justify-center">
-                        <x-heroicon-o-currency-dollar class="w-4 h-4 text-amber-600 dark:text-amber-400"/>
+                        @svg('heroicon-o-currency-dollar', 'w-4 h-4 text-amber-600 dark:text-amber-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Revenus</span>
@@ -34,10 +43,10 @@
                 <span class="w-2 h-2 rounded-full bg-blue-500"></span>
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Catalogue</h3>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <a href="/admin/vehicles" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
-                        <x-heroicon-o-truck class="w-4 h-4 text-blue-600 dark:text-blue-400"/>
+                        @svg('heroicon-o-truck', 'w-4 h-4 text-blue-600 dark:text-blue-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Véhicules</span>
@@ -46,7 +55,7 @@
                 </a>
                 <a href="/admin/brands" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
-                        <x-heroicon-o-bookmark class="w-4 h-4 text-blue-600 dark:text-blue-400"/>
+                        @svg('heroicon-o-bookmark', 'w-4 h-4 text-blue-600 dark:text-blue-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Marques</span>
@@ -55,7 +64,7 @@
                 </a>
                 <a href="/admin/categories" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-blue-100 dark:bg-blue-500/20 flex items-center justify-center">
-                        <x-heroicon-o-tag class="w-4 h-4 text-blue-600 dark:text-blue-400"/>
+                        @svg('heroicon-o-tag', 'w-4 h-4 text-blue-600 dark:text-blue-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Catégories</span>
@@ -71,10 +80,10 @@
                 <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Contenu</h3>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <a href="/admin/blog-posts" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
-                        <x-heroicon-o-newspaper class="w-4 h-4 text-emerald-600 dark:text-emerald-400"/>
+                        @svg('heroicon-o-newspaper', 'w-4 h-4 text-emerald-600 dark:text-emerald-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Actualités</span>
@@ -83,7 +92,7 @@
                 </a>
                 <a href="/admin/hero-slides" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
-                        <x-heroicon-o-photo class="w-4 h-4 text-emerald-600 dark:text-emerald-400"/>
+                        @svg('heroicon-o-photo', 'w-4 h-4 text-emerald-600 dark:text-emerald-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Slides Hero</span>
@@ -92,7 +101,7 @@
                 </a>
                 <a href="/admin/popups" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-emerald-100 dark:bg-emerald-500/20 flex items-center justify-center">
-                        <x-heroicon-o-window class="w-4 h-4 text-emerald-600 dark:text-emerald-400"/>
+                        @svg('heroicon-o-window', 'w-4 h-4 text-emerald-600 dark:text-emerald-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Popups</span>
@@ -108,10 +117,10 @@
                 <span class="w-2 h-2 rounded-full bg-purple-500"></span>
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Analytics</h3>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <a href="/admin/statistics" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
-                        <x-heroicon-o-chart-bar class="w-4 h-4 text-purple-600 dark:text-purple-400"/>
+                        @svg('heroicon-o-chart-bar', 'w-4 h-4 text-purple-600 dark:text-purple-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Statistiques</span>
@@ -120,7 +129,7 @@
                 </a>
                 <a href="/admin/leads" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
-                        <x-heroicon-o-user-plus class="w-4 h-4 text-purple-600 dark:text-purple-400"/>
+                        @svg('heroicon-o-user-plus', 'w-4 h-4 text-purple-600 dark:text-purple-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Leads</span>
@@ -129,7 +138,7 @@
                 </a>
                 <a href="/admin/newsletter-subscribers" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-purple-100 dark:bg-purple-500/20 flex items-center justify-center">
-                        <x-heroicon-o-envelope class="w-4 h-4 text-purple-600 dark:text-purple-400"/>
+                        @svg('heroicon-o-envelope', 'w-4 h-4 text-purple-600 dark:text-purple-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Newsletter</span>
@@ -145,10 +154,10 @@
                 <span class="w-2 h-2 rounded-full bg-gray-500"></span>
                 <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Configuration</h3>
             </div>
-            <div class="space-y-2">
+            <div class="space-y-1">
                 <a href="/admin/platform-settings" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-500/20 flex items-center justify-center">
-                        <x-heroicon-o-cog-8-tooth class="w-4 h-4 text-gray-600 dark:text-gray-400"/>
+                        @svg('heroicon-o-cog-8-tooth', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Paramètres</span>
@@ -157,7 +166,7 @@
                 </a>
                 <a href="/admin/lead-capture-settings" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-500/20 flex items-center justify-center">
-                        <x-heroicon-o-cursor-arrow-ripple class="w-4 h-4 text-gray-600 dark:text-gray-400"/>
+                        @svg('heroicon-o-cursor-arrow-ripple', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Lead Capture</span>
@@ -166,7 +175,7 @@
                 </a>
                 <a href="/admin/boost-packages" class="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 transition-colors group">
                     <div class="flex-shrink-0 w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-500/20 flex items-center justify-center">
-                        <x-heroicon-o-rocket-launch class="w-4 h-4 text-gray-600 dark:text-gray-400"/>
+                        @svg('heroicon-o-rocket-launch', 'w-4 h-4 text-gray-600 dark:text-gray-400')
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Packs Boost</span>
