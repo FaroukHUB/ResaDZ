@@ -174,12 +174,17 @@
                     @endforeach
                 </div>
             </div>
-            <a href="{{ route('vehicles.index') }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-white hover:text-green-400 transition">
-                Voir tout
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-full transition border border-white/10">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
         </div>
     </section>
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
     @endif
 
     <!-- Citadines -->
@@ -218,12 +223,17 @@
                     @endforeach
                 </div>
             </div>
-            <a href="{{ route('vehicles.index', ['category' => 'citadine']) }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-white hover:text-green-400 transition">
-                Voir tout
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('vehicles.index', ['category' => 'citadine']) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-full transition border border-white/10">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
         </div>
     </section>
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
     @endif
 
     <!-- Berlines -->
@@ -262,12 +272,17 @@
                     @endforeach
                 </div>
             </div>
-            <a href="{{ route('vehicles.index', ['category' => 'berline']) }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-white hover:text-green-400 transition">
-                Voir tout
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('vehicles.index', ['category' => 'berline']) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-full transition border border-white/10">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
         </div>
     </section>
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
     @endif
 
     <!-- SUV -->
@@ -306,16 +321,24 @@
                     @endforeach
                 </div>
             </div>
-            <a href="{{ route('vehicles.index', ['category' => 'suv']) }}" class="sm:hidden mt-6 flex items-center justify-center gap-2 text-sm font-semibold text-white hover:text-green-400 transition">
-                Voir tout
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-            </a>
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('vehicles.index', ['category' => 'suv']) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-white/5 hover:bg-white/10 text-white text-sm font-semibold rounded-full transition border border-white/10">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
         </div>
     </section>
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
     @endif
 
     <!-- Airport Search Section -->
     @include('front.components.airport-search')
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
 
     <!-- Blog Section - Actualités -->
     @if(isset($blogPosts) && $blogPosts->count() > 0)
@@ -358,6 +381,9 @@
             </div>
         </div>
     </section>
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
     @endif
 
     <!-- Loueurs Section -->
@@ -431,6 +457,9 @@
             </div>
         </div>
     </section>
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
     @endif
 
     <!-- CTA -->
