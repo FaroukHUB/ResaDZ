@@ -86,6 +86,10 @@ class PlatformSettings extends Page
             'facebook' => Setting::get('facebook', ''),
             'instagram' => Setting::get('instagram', ''),
             'whatsapp' => Setting::get('whatsapp', ''),
+
+            // Logos
+            'logo_light' => Setting::get('logo_light', ''),
+            'logo_dark' => Setting::get('logo_dark', ''),
         ]);
     }
 
@@ -124,6 +128,41 @@ class PlatformSettings extends Page
                                             ->label('Adresse')
                                             ->rows(2)
                                             ->maxLength(500),
+                                    ])
+                                    ->columns(2),
+                            ]),
+
+                        // Appearance Tab
+                        Forms\Components\Tabs\Tab::make('Apparence')
+                            ->icon('heroicon-o-paint-brush')
+                            ->schema([
+                                Forms\Components\Section::make('Logos')
+                                    ->description('Uploadez vos logos pour le header et le footer')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('logo_light')
+                                            ->label('Logo fond clair (header)')
+                                            ->image()
+                                            ->directory('logos')
+                                            ->disk('public')
+                                            ->imageResizeMode('contain')
+                                            ->imageCropAspectRatio(null)
+                                            ->imageResizeTargetWidth('400')
+                                            ->imageResizeTargetHeight('120')
+                                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp'])
+                                            ->maxSize(2048)
+                                            ->helperText('Logo pour le header (fond blanc). PNG transparent recommandé. Max 2MB.'),
+                                        Forms\Components\FileUpload::make('logo_dark')
+                                            ->label('Logo fond sombre (footer)')
+                                            ->image()
+                                            ->directory('logos')
+                                            ->disk('public')
+                                            ->imageResizeMode('contain')
+                                            ->imageCropAspectRatio(null)
+                                            ->imageResizeTargetWidth('400')
+                                            ->imageResizeTargetHeight('120')
+                                            ->acceptedFileTypes(['image/png', 'image/jpeg', 'image/svg+xml', 'image/webp'])
+                                            ->maxSize(2048)
+                                            ->helperText('Logo pour le footer (fond noir). PNG transparent ou version blanche recommandé. Max 2MB.'),
                                     ])
                                     ->columns(2),
                             ]),
@@ -442,6 +481,10 @@ class PlatformSettings extends Page
         Setting::set('facebook', $data['facebook'] ?? '', 'social', 'text');
         Setting::set('instagram', $data['instagram'] ?? '', 'social', 'text');
         Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
+
+        // Logos
+        Setting::set('logo_light', $data['logo_light'] ?? '', 'appearance', 'text');
+        Setting::set('logo_dark', $data['logo_dark'] ?? '', 'appearance', 'text');
 
         Notification::make()
             ->title('Paramètres enregistrés')

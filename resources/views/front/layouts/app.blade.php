@@ -7,6 +7,10 @@
     $socialFacebook = \App\Models\Setting::get('facebook', '');
     $socialInstagram = \App\Models\Setting::get('instagram', '');
     $socialWhatsapp = \App\Models\Setting::get('whatsapp', '');
+
+    // Logos
+    $logoLight = \App\Models\Setting::get('logo_light', '');
+    $logoDark = \App\Models\Setting::get('logo_dark', '');
 @endphp
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
@@ -93,11 +97,8 @@
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
-                    {{-- Logo image - placez votre logo dans public/assets/logo.png --}}
-                    @if(file_exists(public_path('assets/logo.png')))
-                        <img src="{{ asset('assets/logo.png') }}" alt="{{ $siteName }}" class="h-10 w-auto">
-                    @elseif(file_exists(public_path('assets/logo.jpeg')))
-                        <img src="{{ asset('assets/logo.jpeg') }}" alt="{{ $siteName }}" class="h-10 w-auto">
+                    @if($logoLight)
+                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-10 w-auto">
                     @else
                         {{-- Fallback text logo --}}
                         <span class="text-2xl font-black text-gray-900">{{ $siteName }}</span>
@@ -197,10 +198,10 @@
                     {{-- Brand Column --}}
                     <div class="lg:col-span-4">
                         <div class="flex items-center gap-3 mb-6">
-                            @if(file_exists(public_path('assets/logo.png')))
-                                <img src="{{ asset('assets/logo.png') }}" alt="{{ $siteName }}" class="h-12 w-auto brightness-0 invert">
-                            @elseif(file_exists(public_path('assets/logo.jpeg')))
-                                <img src="{{ asset('assets/logo.jpeg') }}" alt="{{ $siteName }}" class="h-12 w-auto brightness-0 invert">
+                            @if($logoDark)
+                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-12 w-auto">
+                            @elseif($logoLight)
+                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-12 w-auto brightness-0 invert">
                             @else
                                 <span class="text-3xl font-black text-white">{{ $siteName }}</span>
                             @endif
