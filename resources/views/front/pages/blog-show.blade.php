@@ -16,56 +16,50 @@
 @section('content')
 
     {{-- Hero Section --}}
-    <section class="relative bg-gradient-to-br from-neutral-900 via-black to-neutral-900 overflow-hidden">
-        {{-- Decorative blurs --}}
-        <div class="absolute inset-0 opacity-30">
-            <div class="absolute top-0 right-1/4 w-96 h-96 bg-green-500/20 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl"></div>
-        </div>
-
+    <section class="relative bg-gradient-to-b from-neutral-900 via-neutral-900 to-neutral-800">
+        {{-- Featured Image --}}
         @if($post->featured_image)
-            <div class="relative h-72 md:h-[28rem]">
+            <div class="relative h-64 md:h-80 lg:h-96">
                 <img src="{{ asset('storage/' . $post->featured_image) }}" alt="{{ $post->title }}"
-                     class="w-full h-full object-cover opacity-60">
-                <div class="absolute inset-0 bg-gradient-to-t from-neutral-900 via-neutral-900/60 to-transparent"></div>
+                     class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-b from-neutral-900/30 via-transparent to-neutral-900"></div>
 
+                {{-- Badge sur l'image --}}
                 @if($post->badge_text || $post->badge_value)
-                    <div class="absolute bottom-8 left-8 md:left-12">
-                        <div class="border-2 border-white/80 px-5 py-4 text-center bg-black/60 backdrop-blur-md rounded-lg">
+                    <div class="absolute top-6 left-6 md:top-8 md:left-8">
+                        <div class="border-2 border-white px-4 py-3 text-center bg-black/70 backdrop-blur-sm rounded-lg">
                             @if($post->badge_text)
-                                <span class="block text-white text-xs font-bold uppercase tracking-wider">{{ $post->badge_text }}</span>
+                                <span class="block text-white text-[10px] font-bold uppercase tracking-wider">{{ $post->badge_text }}</span>
                             @endif
                             @if($post->badge_value)
-                                <span class="block text-white text-3xl font-black leading-tight">{{ $post->badge_value }}</span>
+                                <span class="block text-white text-2xl font-black leading-tight">{{ $post->badge_value }}</span>
                             @endif
                         </div>
                     </div>
                 @endif
             </div>
-        @else
-            <div class="h-32 md:h-48"></div>
         @endif
 
-        {{-- Title overlay --}}
-        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 {{ $post->featured_image ? '-mt-32 pb-12' : 'py-16' }}">
+        {{-- Title Section --}}
+        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
             {{-- Breadcrumb --}}
-            <nav class="flex items-center gap-2 text-sm text-white/50 mb-6">
+            <nav class="flex flex-wrap items-center gap-2 text-sm text-white/50 mb-6">
                 <a href="{{ route('home') }}" class="hover:text-white transition">Accueil</a>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 <a href="{{ route('blog.index') }}" class="hover:text-white transition">Actualités</a>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                 <span class="text-white/70">{{ Str::limit($post->title, 30) }}</span>
             </nav>
 
             {{-- Meta --}}
-            <div class="flex flex-wrap items-center gap-4 mb-4">
+            <div class="flex flex-wrap items-center gap-3 mb-5">
                 @if($post->category)
                     @php
                         $catColors = [
-                            'promo' => 'bg-amber-500/20 text-amber-400',
-                            'guide' => 'bg-blue-500/20 text-blue-400',
-                            'news' => 'bg-green-500/20 text-green-400',
-                            'destination' => 'bg-purple-500/20 text-purple-400',
+                            'promo' => 'bg-amber-500 text-black',
+                            'guide' => 'bg-blue-500 text-white',
+                            'news' => 'bg-green-500 text-white',
+                            'destination' => 'bg-purple-500 text-white',
                         ];
                         $catLabels = [
                             'promo' => 'Promotion',
@@ -74,67 +68,61 @@
                             'destination' => 'Destination',
                         ];
                     @endphp
-                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider {{ $catColors[$post->category] ?? 'bg-green-500/20 text-green-400' }}">{{ $catLabels[$post->category] ?? $post->category }}</span>
+                    <span class="px-3 py-1 rounded-full text-xs font-bold uppercase {{ $catColors[$post->category] ?? 'bg-green-500 text-white' }}">{{ $catLabels[$post->category] ?? $post->category }}</span>
                 @endif
                 @if($post->published_at)
-                    <span class="text-white/50 text-sm flex items-center gap-1.5">
+                    <span class="text-white/60 text-sm flex items-center gap-1.5">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                         {{ $post->published_at->translatedFormat('d F Y') }}
                     </span>
                 @endif
-                <span class="text-white/50 text-sm flex items-center gap-1.5">
+                <span class="text-white/60 text-sm flex items-center gap-1.5">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                     {{ $post->read_time }} min
                 </span>
             </div>
 
             {{-- Title --}}
-            <h1 class="text-3xl md:text-5xl font-black text-white leading-tight">{{ $post->title }}</h1>
+            <h1 class="text-2xl md:text-4xl lg:text-5xl font-black text-white leading-tight">{{ $post->title }}</h1>
 
             @if($post->excerpt)
-                <p class="text-xl text-white/60 mt-4 leading-relaxed">{{ $post->excerpt }}</p>
+                <p class="text-lg md:text-xl text-white/60 mt-4 leading-relaxed">{{ $post->excerpt }}</p>
             @endif
         </div>
     </section>
 
     {{-- Article Content --}}
-    <article class="relative bg-gradient-to-b from-neutral-100 to-white">
-        {{-- Smooth transition from dark to light --}}
-        <div class="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-neutral-900 to-transparent -mt-1"></div>
-
-        <div class="relative max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-            {{-- Content Card --}}
-            <div class="bg-white rounded-2xl shadow-xl shadow-black/5 p-8 md:p-12 -mt-20 relative z-10">
-                {{-- Content --}}
-                <div class="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-green-600 prose-a:font-semibold prose-a:underline prose-a:decoration-2 hover:prose-a:text-green-500 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-green-500 prose-blockquote:bg-green-50 prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:rounded-r-lg">
-                    {!! $post->content !!}
-                </div>
-
-                {{-- CTA --}}
-                @if($post->cta_text && $post->cta_link)
-                    <div class="mt-12 p-8 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-center">
-                        <a href="{{ $post->cta_link }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-green-700 font-bold rounded-full hover:bg-green-50 transition text-lg shadow-lg shadow-green-900/20">
-                            {{ $post->cta_text }}
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                        </a>
-                    </div>
-                @endif
-
-                {{-- Tags --}}
-                @if($post->tags && count($post->tags) > 0)
-                    <div class="mt-10 pt-8 border-t border-gray-100">
-                        <div class="flex items-center gap-3 flex-wrap">
-                            <span class="text-gray-400 text-sm font-medium">Tags:</span>
-                            @foreach($post->tags as $tag)
-                                <span class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm rounded-full transition cursor-default">{{ $tag }}</span>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+    <article class="bg-white">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+            {{-- Content --}}
+            <div class="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-gray-900 prose-p:text-gray-600 prose-a:text-green-600 prose-a:font-semibold prose-a:underline prose-a:decoration-2 hover:prose-a:text-green-500 prose-img:rounded-xl prose-img:shadow-lg prose-blockquote:border-l-green-500 prose-blockquote:bg-green-50 prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:rounded-r-lg">
+                {!! $post->content !!}
             </div>
 
+            {{-- CTA --}}
+            @if($post->cta_text && $post->cta_link)
+                <div class="mt-12 p-8 bg-gradient-to-r from-green-600 to-green-700 rounded-xl text-center">
+                    <a href="{{ $post->cta_link }}" class="inline-flex items-center gap-3 px-8 py-4 bg-white text-green-700 font-bold rounded-full hover:bg-green-50 transition text-lg shadow-lg shadow-green-900/20">
+                        {{ $post->cta_text }}
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            @endif
+
+            {{-- Tags --}}
+            @if($post->tags && count($post->tags) > 0)
+                <div class="mt-10 pt-8 border-t border-gray-200">
+                    <div class="flex items-center gap-3 flex-wrap">
+                        <span class="text-gray-400 text-sm font-medium">Tags:</span>
+                        @foreach($post->tags as $tag)
+                            <span class="px-4 py-1.5 bg-gray-100 hover:bg-gray-200 text-gray-600 text-sm rounded-full transition cursor-default">{{ $tag }}</span>
+                        @endforeach
+                    </div>
+                </div>
+            @endif
+
             {{-- Share buttons --}}
-            <div class="flex items-center justify-center gap-4 mt-10">
+            <div class="flex items-center justify-center gap-4 mt-10 pt-8 border-t border-gray-200">
                 <span class="text-gray-400 text-sm">Partager:</span>
                 <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->url()) }}" target="_blank" class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 hover:bg-blue-500 hover:text-white text-gray-500 transition">
                     <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
