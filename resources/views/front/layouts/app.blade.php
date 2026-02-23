@@ -230,10 +230,10 @@
                     <div class="lg:col-span-2">
                         <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-6">Wilayas populaires</h4>
                         <ul class="space-y-4">
-                            <li><a href="{{ route('vehicles.byWilaya', 'alger') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Alger</a></li>
-                            <li><a href="{{ route('vehicles.byWilaya', 'oran') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Oran</a></li>
-                            <li><a href="{{ route('vehicles.byWilaya', 'constantine') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Constantine</a></li>
-                            <li><a href="{{ route('vehicles.byWilaya', 'annaba') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Annaba</a></li>
+                            <li><a href="{{ route('vehicles.by-wilaya', 'alger') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Alger</a></li>
+                            <li><a href="{{ route('vehicles.by-wilaya', 'oran') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Oran</a></li>
+                            <li><a href="{{ route('vehicles.by-wilaya', 'constantine') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Constantine</a></li>
+                            <li><a href="{{ route('vehicles.by-wilaya', 'annaba') }}" class="text-white/50 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Annaba</a></li>
                         </ul>
                     </div>
 
