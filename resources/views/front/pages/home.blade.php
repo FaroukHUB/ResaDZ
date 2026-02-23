@@ -318,6 +318,36 @@
     <!-- Airport Search Section -->
     @include('front.components.airport-search')
 
+    <!-- Blog Section -->
+    @if(isset($blogPosts) && $blogPosts->count() > 0)
+    <section class="py-20 bg-neutral-950">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-10">
+                <div>
+                    <h2 class="text-3xl font-bold text-white">Actualités & Promotions</h2>
+                    <p class="mt-2 text-white/50">Restez informé de nos offres et conseils</p>
+                </div>
+                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 text-white text-sm font-semibold hover:text-amber-400 transition">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                @foreach($blogPosts as $post)
+                    @include('front.components.blog-card', ['post' => $post])
+                @endforeach
+            </div>
+
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-black text-sm font-bold rounded-full">
+                    Voir tous les articles
+                </a>
+            </div>
+        </div>
+    </section>
+    @endif
+
     <!-- Loueurs Section -->
     @if($loueurs->count() > 0)
     <section class="py-20 bg-white">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlogPost;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\HeroSlide;
@@ -62,6 +63,12 @@ class HomeController extends Controller
         // Get active hero slides
         $heroSlides = HeroSlide::active()->ordered()->get();
 
+        // Blog posts for homepage
+        $blogPosts = BlogPost::published()
+            ->orderBy('published_at', 'desc')
+            ->limit(3)
+            ->get();
+
         // Get homepage content from settings
         $homeContent = [
             'hero_title' => Setting::get('hero_title', 'Louez votre voiture'),
@@ -90,7 +97,8 @@ class HomeController extends Controller
             'totalLoueurs',
             'wilayas',
             'heroSlides',
-            'homeContent'
+            'homeContent',
+            'blogPosts'
         ));
     }
 }

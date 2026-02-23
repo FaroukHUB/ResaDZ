@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Front\BookingController;
+use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoueurController;
 use App\Http\Controllers\Front\ReviewController;
@@ -26,6 +27,10 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/vehicules', [VehicleController::class, 'index'])->name('vehicles.index');
 Route::get('/vehicule/{slug}', [VehicleController::class, 'show'])->name('vehicles.show');
 Route::get('/loueur/{slug}', [LoueurController::class, 'show'])->name('loueur.show');
+
+// Blog
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Réservation
 Route::get('/reserver/{slug}', [BookingController::class, 'create'])->name('booking.create');
