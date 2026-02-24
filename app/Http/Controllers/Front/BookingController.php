@@ -225,6 +225,11 @@ class BookingController extends Controller
             return back()->withErrors(['vehicle_id' => 'Ce véhicule n\'est pas disponible à la réservation.'])->withInput();
         }
 
+        // Vérifier la disponibilité du véhicule (blocages, maintenance)
+        if (!$vehicle->isAvailableForDates($request->start_date, $request->end_date)) {
+            return back()->withErrors(['start_date' => 'Ce véhicule n\'est pas disponible pour les dates sélectionnées.'])->withInput();
+        }
+
         // Vérifier la disponibilité des options sélectionnées
         $selectedOptions = $request->options ?? [];
         if (!empty($selectedOptions)) {
