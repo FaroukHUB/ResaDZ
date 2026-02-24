@@ -98,7 +98,7 @@
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
                     @if($logoLight)
-                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-10 w-auto">
+                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-14 w-auto">
                     @else
                         {{-- Fallback text logo --}}
                         <span class="text-2xl font-black text-gray-900">{{ $siteName }}</span>
@@ -199,9 +199,9 @@
                     <div class="lg:col-span-4">
                         <div class="flex items-center gap-3 mb-6">
                             @if($logoDark)
-                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-12 w-auto">
+                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-16 w-auto">
                             @elseif($logoLight)
-                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-12 w-auto brightness-0 invert">
+                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-16 w-auto brightness-0 invert">
                             @else
                                 <span class="text-3xl font-black text-white">{{ $siteName }}</span>
                             @endif
