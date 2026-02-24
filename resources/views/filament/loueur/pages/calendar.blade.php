@@ -1,134 +1,210 @@
 <x-filament-panels::page>
-    <div class="space-y-4" x-data="{
+    <style>
+        .cal-grid { display: grid; gap: 0; }
+        .cal-cell {
+            width: 44px; height: 44px;
+            border-radius: 8px;
+            margin: 1px;
+            transition: all 0.15s ease;
+            position: relative;
+            cursor: default;
+        }
+        .cal-cell-free {
+            background: #d1fae5;
+            cursor: pointer;
+        }
+        .cal-cell-free:hover {
+            background: #6ee7b7;
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+            z-index: 2;
+        }
+        .cal-cell-past { background: #f3f4f6; }
+        .cal-cell-pending { background: #fbbf24; }
+        .cal-cell-confirmed { background: #3b82f6; }
+        .cal-cell-active { background: #8b5cf6; }
+        .cal-cell-blocked {
+            background: repeating-linear-gradient(
+                45deg, #374151, #374151 4px, #4b5563 4px, #4b5563 8px
+            );
+            cursor: pointer;
+        }
+        .cal-cell-blocked:hover {
+            opacity: 0.7;
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 2;
+        }
+        .cal-cell-maintenance {
+            background: repeating-linear-gradient(
+                45deg, #f59e0b, #f59e0b 4px, #fbbf24 4px, #fbbf24 8px
+            );
+        }
+        .cal-cell-booking:hover {
+            transform: scale(1.08);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            z-index: 2;
+        }
+        .cal-vehicle-card {
+            min-width: 220px;
+            max-width: 220px;
+        }
+        .cal-day-header {
+            width: 46px; min-width: 46px;
+            text-align: center;
+            padding: 6px 0;
+        }
+        .cal-row {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        .cal-row:last-child { border-bottom: none; }
+        .dark .cal-cell-free { background: #065f46; }
+        .dark .cal-cell-free:hover { background: #059669; }
+        .dark .cal-cell-past { background: #1f2937; }
+        .dark .cal-cell-blocked {
+            background: repeating-linear-gradient(45deg, #9ca3af, #9ca3af 4px, #d1d5db 4px, #d1d5db 8px);
+        }
+        .dark .cal-row { border-bottom-color: #374151; }
+
+        @media (max-width: 640px) {
+            .cal-cell { width: 36px; height: 36px; border-radius: 6px; }
+            .cal-day-header { width: 38px; min-width: 38px; }
+            .cal-vehicle-card { min-width: 160px; max-width: 160px; }
+        }
+    </style>
+
+    <div class="space-y-5" x-data="{
         showImportModal: false,
         importVehicleId: null,
         importUrl: '',
         importVehicleName: '',
-        openImport(vehicleId, vehicleName) {
-            this.importVehicleId = vehicleId;
-            this.importVehicleName = vehicleName;
+        openImport(id, name) {
+            this.importVehicleId = id;
+            this.importVehicleName = name;
             this.importUrl = '';
             this.showImportModal = true;
         }
     }">
 
-        {{-- Header --}}
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-200 dark:border-gray-700">
-            <div class="flex items-center gap-3">
-                <button wire:click="previousMonth" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-500 dark:text-gray-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        {{-- Header bar --}}
+        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-2">
+                <button wire:click="previousMonth" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition text-gray-600 dark:text-gray-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-                <h2 class="text-lg font-bold text-gray-900 dark:text-white capitalize min-w-[160px] text-center">{{ $monthName }}</h2>
-                <button wire:click="nextMonth" class="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-500 dark:text-gray-400">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <div class="px-4">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white capitalize">{{ $monthName }}</h2>
+                </div>
+                <button wire:click="nextMonth" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition text-gray-600 dark:text-gray-300">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </button>
-                <button wire:click="goToToday" class="ml-2 px-3 py-1.5 text-xs font-medium rounded-lg bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-400 hover:bg-primary-100 dark:hover:bg-primary-900/40 transition">
+                <button wire:click="goToToday" class="ml-3 px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition shadow-sm">
                     Aujourd'hui
                 </button>
             </div>
-
-            <div class="flex items-center gap-2">
-                {{-- iCal export --}}
-                <div x-data="{ copied: false }" class="relative">
+            <div class="flex items-center gap-3">
+                <div x-data="{ copied: false }">
                     <button
                         @click="navigator.clipboard.writeText('{{ $icalUrl }}'); copied = true; setTimeout(() => copied = false, 2000)"
-                        class="flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition"
+                        class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
                     >
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                        <span x-text="copied ? 'Copié !' : 'Lien iCal'"></span>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
+                        <span x-text="copied ? 'Lien copié !' : 'Copier lien iCal'"></span>
                     </button>
                 </div>
             </div>
         </div>
 
         {{-- Legend --}}
-        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 px-1 text-xs">
-            <div class="flex items-center gap-1.5">
-                <div class="w-3 h-3 rounded-sm bg-emerald-100 dark:bg-emerald-900/30 border border-emerald-300 dark:border-emerald-700"></div>
-                <span class="text-gray-600 dark:text-gray-400">Disponible</span>
+        <div class="flex flex-wrap items-center gap-4 text-sm px-1">
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md bg-[#d1fae5]"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">Disponible</span>
             </div>
-            <div class="flex items-center gap-1.5">
-                <div class="w-3 h-3 rounded-sm bg-amber-400"></div>
-                <span class="text-gray-600 dark:text-gray-400">En attente</span>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md bg-[#fbbf24]"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">En attente</span>
             </div>
-            <div class="flex items-center gap-1.5">
-                <div class="w-3 h-3 rounded-sm bg-blue-500"></div>
-                <span class="text-gray-600 dark:text-gray-400">Confirmée</span>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md bg-[#3b82f6]"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">Confirmée</span>
             </div>
-            <div class="flex items-center gap-1.5">
-                <div class="w-3 h-3 rounded-sm bg-violet-500"></div>
-                <span class="text-gray-600 dark:text-gray-400">En cours</span>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md bg-[#8b5cf6]"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">En cours</span>
             </div>
-            <div class="flex items-center gap-1.5">
-                <div class="w-3 h-3 rounded-sm bg-gray-800 dark:bg-gray-300"></div>
-                <span class="text-gray-600 dark:text-gray-400">Bloqué</span>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md" style="background: repeating-linear-gradient(45deg, #374151, #374151 3px, #4b5563 3px, #4b5563 6px)"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">Bloqué</span>
             </div>
-            <div class="flex items-center gap-1.5">
-                <div class="w-3 h-3 rounded-sm bg-orange-400"></div>
-                <span class="text-gray-600 dark:text-gray-400">Maintenance</span>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md" style="background: repeating-linear-gradient(45deg, #f59e0b, #f59e0b 3px, #fbbf24 3px, #fbbf24 6px)"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">Maintenance</span>
             </div>
-            <span class="text-gray-400 dark:text-gray-500">|</span>
-            <span class="text-gray-500 dark:text-gray-400 italic">Cliquez sur une date libre pour la bloquer</span>
         </div>
 
-        {{-- Calendar Grid --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+        {{-- Calendar --}}
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="w-full border-collapse" style="min-width: {{ 180 + (count($days) * 36) }}px;">
-                    <thead>
-                        <tr>
-                            <th class="sticky left-0 z-20 bg-gray-50 dark:bg-gray-900 border-b border-r border-gray-200 dark:border-gray-700 px-3 py-2 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider" style="min-width: 180px;">
-                                Véhicule
-                            </th>
-                            @foreach($days as $day)
-                                @php
-                                    $isToday = $day->format('Y-m-d') === $today;
-                                    $isWeekend = $day->isWeekend();
-                                @endphp
-                                <th class="border-b border-gray-200 dark:border-gray-700 px-0 py-1.5 text-center w-[34px] min-w-[34px]
-                                    {{ $isToday ? 'bg-primary-50 dark:bg-primary-900/20' : ($isWeekend ? 'bg-gray-50/50 dark:bg-gray-900/30' : '') }}">
-                                    <div class="text-[10px] font-medium {{ $isWeekend ? 'text-red-400' : 'text-gray-400 dark:text-gray-500' }}">
-                                        {{ mb_substr($day->translatedFormat('D'), 0, 2) }}
-                                    </div>
-                                    <div class="text-xs font-bold {{ $isToday ? 'text-primary-600 dark:text-primary-400' : ($isWeekend ? 'text-red-500 dark:text-red-400' : 'text-gray-700 dark:text-gray-300') }}
-                                        {{ $isToday ? 'bg-primary-600 dark:bg-primary-500 text-white rounded-full w-5 h-5 flex items-center justify-center mx-auto' : '' }}">
-                                        {{ $day->format('d') }}
-                                    </div>
-                                </th>
-                            @endforeach
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($vehicles as $vehicle)
-                            <tr class="group" wire:key="vehicle-{{ $vehicle->id }}">
-                                {{-- Vehicle info --}}
-                                <td class="sticky left-0 z-10 bg-white dark:bg-gray-800 border-b border-r border-gray-200 dark:border-gray-700 px-3 py-2 group-hover:bg-gray-50 dark:group-hover:bg-gray-750 transition">
-                                    <div class="flex items-center gap-2.5">
-                                        @if($vehicle->image)
-                                            <img src="{{ asset('storage/' . $vehicle->image) }}" alt="" class="w-9 h-9 rounded-lg object-cover flex-shrink-0">
-                                        @else
-                                            <div class="w-9 h-9 bg-gray-100 dark:bg-gray-700 rounded-lg flex items-center justify-center flex-shrink-0">
-                                                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H6.375c-.621 0-1.125-.504-1.125-1.125V11.25"/></svg>
-                                            </div>
-                                        @endif
-                                        <div class="min-w-0">
-                                            <div class="text-sm font-medium text-gray-900 dark:text-white truncate">{{ $vehicle->full_name }}</div>
-                                            <div class="flex items-center gap-2 mt-0.5">
-                                                <span class="text-[11px] text-gray-500 dark:text-gray-400">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA/j</span>
-                                                <button
-                                                    @click="openImport({{ $vehicle->id }}, '{{ addslashes($vehicle->full_name) }}')"
-                                                    class="text-[10px] text-primary-600 dark:text-primary-400 hover:underline"
-                                                    title="Importer Google Calendar"
-                                                >
-                                                    <svg class="w-3 h-3 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
-                                                    iCal
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </td>
+                <div style="min-width: {{ 220 + (count($days) * 48) }}px;">
 
-                                {{-- Day cells --}}
+                    {{-- Days header --}}
+                    <div class="flex items-end border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-20">
+                        <div class="cal-vehicle-card px-4 py-3">
+                            <span class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest">Véhicule</span>
+                        </div>
+                        @foreach($days as $day)
+                            @php
+                                $isToday = $day->format('Y-m-d') === $today;
+                                $isWeekend = $day->isWeekend();
+                            @endphp
+                            <div class="cal-day-header {{ $isToday ? 'relative' : '' }}">
+                                @if($isToday)
+                                    <div class="absolute inset-x-1 -bottom-px h-[3px] bg-primary-500 rounded-t-full"></div>
+                                @endif
+                                <div class="text-[10px] font-semibold uppercase {{ $isWeekend ? 'text-red-400' : 'text-gray-400 dark:text-gray-500' }}">
+                                    {{ mb_substr($day->translatedFormat('D'), 0, 2) }}
+                                </div>
+                                <div class="text-sm font-bold {{ $isToday ? 'text-white bg-primary-600 rounded-full w-7 h-7 flex items-center justify-center mx-auto' : ($isWeekend ? 'text-red-500 dark:text-red-400' : 'text-gray-700 dark:text-gray-300') }}">
+                                    {{ $day->format('j') }}
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+
+                    {{-- Vehicle rows --}}
+                    @forelse($vehicles as $vehicle)
+                        <div class="cal-row" wire:key="row-{{ $vehicle->id }}">
+                            {{-- Vehicle card --}}
+                            <div class="cal-vehicle-card px-4 flex items-center gap-3">
+                                @if($vehicle->image)
+                                    <img src="{{ asset('storage/' . $vehicle->image) }}" alt="" class="w-11 h-11 rounded-xl object-cover flex-shrink-0 shadow-sm">
+                                @else
+                                    <div class="w-11 h-11 bg-gradient-to-br from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H6.375c-.621 0-1.125-.504-1.125-1.125V11.25"/></svg>
+                                    </div>
+                                @endif
+                                <div class="min-w-0 flex-1">
+                                    <div class="text-sm font-semibold text-gray-900 dark:text-white truncate" title="{{ $vehicle->full_name }}">{{ $vehicle->full_name }}</div>
+                                    <div class="flex items-center gap-2 mt-0.5">
+                                        <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA/j</span>
+                                        <button
+                                            @click="openImport({{ $vehicle->id }}, '{{ addslashes($vehicle->full_name) }}')"
+                                            class="text-[11px] text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium flex items-center gap-0.5"
+                                            title="Importer un calendrier externe"
+                                        >
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                            Importer
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Day cells --}}
+                            <div class="flex items-center">
                                 @foreach($days as $day)
                                     @php
                                         $dateStr = $day->format('Y-m-d');
@@ -137,181 +213,172 @@
                                         $block = $blockMap[$key] ?? null;
                                         $isToday = $dateStr === $today;
                                         $isPast = $day->isPast() && !$isToday;
-                                        $isWeekend = $day->isWeekend();
-
-                                        if ($booking) {
-                                            $cellClass = match($booking->status) {
-                                                'pending' => 'bg-amber-400 dark:bg-amber-500',
-                                                'confirmed' => 'bg-blue-500 dark:bg-blue-600',
-                                                'active' => 'bg-violet-500 dark:bg-violet-600',
-                                                default => 'bg-gray-400',
-                                            };
-                                            $cellType = 'booking';
-                                        } elseif ($block) {
-                                            $cellClass = match($block->type) {
-                                                'blocked' => 'bg-gray-800 dark:bg-gray-300',
-                                                'maintenance' => 'bg-orange-400 dark:bg-orange-500',
-                                                default => 'bg-gray-400',
-                                            };
-                                            $cellType = $block->type;
-                                        } else {
-                                            $cellClass = $isPast
-                                                ? 'bg-gray-50 dark:bg-gray-900/20'
-                                                : 'bg-emerald-50 dark:bg-emerald-900/10 hover:bg-emerald-200 dark:hover:bg-emerald-800/30';
-                                            $cellType = 'free';
-                                        }
                                     @endphp
-                                    <td
-                                        class="border-b border-gray-100 dark:border-gray-700/50 p-0 text-center
-                                            {{ $isToday ? 'ring-1 ring-inset ring-primary-400 dark:ring-primary-500' : '' }}"
-                                        wire:key="cell-{{ $key }}"
-                                    >
-                                        @if($cellType === 'booking')
-                                            <a
-                                                href="{{ route('filament.loueur.resources.bookings.edit', $booking->id) }}"
-                                                class="block w-full h-8 {{ $cellClass }} relative group/cell"
-                                                title="{{ $booking->client_name }} ({{ $booking->status }})"
-                                            >
-                                                <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition">
-                                                    <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
-                                                </span>
-                                            </a>
-                                        @elseif($cellType === 'blocked')
-                                            <button
-                                                wire:click="toggleBlock({{ $vehicle->id }}, '{{ $dateStr }}')"
-                                                wire:loading.attr="disabled"
-                                                class="block w-full h-8 {{ $cellClass }} cursor-pointer relative group/cell transition-all hover:opacity-80"
-                                                title="Cliquez pour débloquer"
-                                            >
-                                                <span class="absolute inset-0 flex items-center justify-center opacity-0 group-hover/cell:opacity-100 transition">
-                                                    <svg class="w-3 h-3 text-white dark:text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                                                </span>
-                                            </button>
-                                        @elseif($cellType === 'maintenance')
-                                            <div class="block w-full h-8 {{ $cellClass }}" title="Maintenance : {{ $block->reason ?? '' }}"></div>
-                                        @elseif(!$isPast)
-                                            <button
-                                                wire:click="toggleBlock({{ $vehicle->id }}, '{{ $dateStr }}')"
-                                                wire:loading.attr="disabled"
-                                                class="block w-full h-8 {{ $cellClass }} cursor-pointer transition-all"
-                                                title="Cliquez pour bloquer"
-                                            ></button>
-                                        @else
-                                            <div class="block w-full h-8 {{ $cellClass }}"></div>
-                                        @endif
-                                    </td>
+
+                                    @if($booking)
+                                        {{-- Booked cell --}}
+                                        <a
+                                            href="{{ route('filament.loueur.resources.bookings.edit', $booking->id) }}"
+                                            class="cal-cell cal-cell-booking cal-cell-{{ $booking->status }} flex items-center justify-center {{ $isToday ? 'ring-2 ring-primary-400 ring-offset-1' : '' }}"
+                                            title="{{ $booking->client_name }} — {{ $booking->start_date->format('d/m') }} → {{ $booking->end_date->format('d/m') }}"
+                                            wire:key="c-{{ $key }}"
+                                        >
+                                            <svg class="w-4 h-4 text-white opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                                        </a>
+                                    @elseif($block && $block->type === 'blocked')
+                                        {{-- Blocked cell --}}
+                                        <button
+                                            wire:click="toggleBlock({{ $vehicle->id }}, '{{ $dateStr }}')"
+                                            wire:loading.attr="disabled"
+                                            class="cal-cell cal-cell-blocked flex items-center justify-center {{ $isToday ? 'ring-2 ring-primary-400 ring-offset-1' : '' }}"
+                                            title="Bloqué — Cliquez pour débloquer"
+                                            wire:key="c-{{ $key }}"
+                                        >
+                                            <svg class="w-4 h-4 text-white opacity-70" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                                        </button>
+                                    @elseif($block && $block->type === 'maintenance')
+                                        {{-- Maintenance cell --}}
+                                        <div
+                                            class="cal-cell cal-cell-maintenance flex items-center justify-center {{ $isToday ? 'ring-2 ring-primary-400 ring-offset-1' : '' }}"
+                                            title="Maintenance{{ $block->reason ? ' : ' . $block->reason : '' }}"
+                                            wire:key="c-{{ $key }}"
+                                        >
+                                            <svg class="w-4 h-4 text-white opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.66-5.66a2 2 0 112.83-2.83l5.66 5.66m-1.42 1.42l5.66 5.66a2 2 0 11-2.83 2.83l-5.66-5.66"/></svg>
+                                        </div>
+                                    @elseif($isPast)
+                                        {{-- Past cell --}}
+                                        <div class="cal-cell cal-cell-past" wire:key="c-{{ $key }}"></div>
+                                    @else
+                                        {{-- Free cell --}}
+                                        <button
+                                            wire:click="toggleBlock({{ $vehicle->id }}, '{{ $dateStr }}')"
+                                            wire:loading.attr="disabled"
+                                            class="cal-cell cal-cell-free {{ $isToday ? 'ring-2 ring-primary-400 ring-offset-1' : '' }}"
+                                            title="{{ $day->translatedFormat('l j F') }} — Cliquez pour bloquer"
+                                            wire:key="c-{{ $key }}"
+                                        ></button>
+                                    @endif
                                 @endforeach
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="{{ count($days) + 1 }}" class="px-6 py-12 text-center">
-                                    <div class="flex flex-col items-center gap-2">
-                                        <svg class="w-12 h-12 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H6.375c-.621 0-1.125-.504-1.125-1.125V11.25"/></svg>
-                                        <p class="text-gray-500 dark:text-gray-400 font-medium">Aucun véhicule actif</p>
-                                        <p class="text-sm text-gray-400 dark:text-gray-500">Ajoutez des véhicules pour voir le calendrier</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        {{-- Quick tips --}}
-        <div class="bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-800/30 rounded-xl p-4">
-            <div class="flex gap-3">
-                <svg class="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                <div class="text-sm text-blue-800 dark:text-blue-300 space-y-1">
-                    <p class="font-medium">Astuce</p>
-                    <p>Cliquez sur une case verte pour bloquer la date (le véhicule ne sera plus disponible). Cliquez sur une case noire pour la débloquer. Vous pouvez aussi importer un Google Calendar en cliquant sur le lien "iCal" sous chaque véhicule.</p>
+                            </div>
+                        </div>
+                    @empty
+                        <div class="flex flex-col items-center justify-center py-16 text-center">
+                            <div class="w-20 h-20 bg-gray-100 dark:bg-gray-700 rounded-2xl flex items-center justify-center mb-4">
+                                <svg class="w-10 h-10 text-gray-300 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H6.375c-.621 0-1.125-.504-1.125-1.125V11.25"/></svg>
+                            </div>
+                            <p class="text-lg font-semibold text-gray-500 dark:text-gray-400">Aucun véhicule actif</p>
+                            <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Ajoutez des véhicules pour utiliser le calendrier</p>
+                        </div>
+                    @endforelse
                 </div>
             </div>
         </div>
 
-        {{-- Sync info --}}
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <div>
-                    <h3 class="text-sm font-semibold text-gray-900 dark:text-white">Synchronisation externe</h3>
-                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Abonnez Google Agenda, Apple Calendar ou Outlook à votre calendrier ResaDZ</p>
+        {{-- Info bar --}}
+        <div class="flex flex-col lg:flex-row gap-4">
+            {{-- Tip --}}
+            <div class="flex-1 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border border-blue-100 dark:border-blue-800/30 rounded-2xl p-5">
+                <div class="flex gap-3">
+                    <div class="w-10 h-10 bg-blue-100 dark:bg-blue-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900 dark:text-white text-sm">Comment ça marche ?</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                            Cliquez sur une case <span class="inline-block w-3 h-3 rounded bg-[#d1fae5] align-middle"></span> verte pour la bloquer.
+                            Cliquez sur une case <span class="inline-block w-3 h-3 rounded align-middle" style="background: repeating-linear-gradient(45deg, #374151, #374151 2px, #4b5563 2px, #4b5563 4px)"></span> hachurée pour la débloquer.
+                            Les cases colorées sont des réservations — cliquez dessus pour voir les détails.
+                        </p>
+                    </div>
                 </div>
-                <div x-data="{ show: false }" class="relative flex-shrink-0">
-                    <button @click="show = !show" class="flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"/></svg>
-                        Voir le lien iCal
+            </div>
+
+            {{-- Sync card --}}
+            <div class="lg:w-80 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    </div>
+                    <div>
+                        <p class="font-semibold text-gray-900 dark:text-white text-sm">Synchronisation</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Google Agenda, Apple, Outlook</p>
+                    </div>
+                </div>
+                <div x-data="{ showUrl: false }">
+                    <button @click="showUrl = !showUrl" class="w-full text-left text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium">
+                        <span x-text="showUrl ? 'Masquer le lien' : 'Afficher le lien d\'abonnement'"></span> &rarr;
                     </button>
-                    <div x-show="show" @click.outside="show = false" x-transition
-                         class="absolute right-0 top-full mt-2 w-80 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-4 z-30">
-                        <p class="text-xs text-gray-600 dark:text-gray-400 mb-2">Copiez ce lien dans votre application de calendrier :</p>
-                        <div class="flex gap-2">
-                            <input type="text" value="{{ $icalUrl }}" readonly class="flex-1 text-xs bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded px-2 py-1.5 text-gray-600 dark:text-gray-400" />
-                            <button
-                                @click="navigator.clipboard.writeText('{{ $icalUrl }}')"
-                                class="px-2 py-1.5 text-xs bg-primary-600 text-white rounded hover:bg-primary-700 transition"
-                            >Copier</button>
+                    <div x-show="showUrl" x-transition class="mt-2 space-y-2">
+                        <div class="flex gap-1.5">
+                            <input type="text" value="{{ $icalUrl }}" readonly class="flex-1 text-[11px] bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg px-2.5 py-2 text-gray-500 dark:text-gray-400 font-mono" />
+                            <button @click="navigator.clipboard.writeText('{{ $icalUrl }}')" class="px-3 py-2 text-xs bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition font-medium">Copier</button>
                         </div>
-                        <div class="mt-2 text-[10px] text-gray-400 dark:text-gray-500 space-y-0.5">
-                            <p><strong>Google Agenda :</strong> + > A partir de l'URL > Collez le lien</p>
-                            <p><strong>Apple Calendar :</strong> Fichier > Nouvel abonnement > Collez le lien</p>
-                            <p><strong>Outlook :</strong> Ajouter un calendrier > A partir d'Internet</p>
-                        </div>
+                        <p class="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
+                            Collez ce lien dans <strong>Google Agenda</strong> (+ > URL), <strong>Apple Calendar</strong> (Fichier > Abonnement) ou <strong>Outlook</strong>.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
-        {{-- Google Calendar Import Modal --}}
-        <div x-show="showImportModal" x-transition.opacity class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50" @keydown.escape.window="showImportModal = false">
-            <div @click.outside="showImportModal = false" x-transition x-show="showImportModal"
-                 class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md p-6 space-y-4">
-                <div class="flex items-center justify-between">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Importer Google Calendar</h3>
-                    <button @click="showImportModal = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
-                    </button>
-                </div>
+        {{-- Import Modal --}}
+        <template x-teleport="body">
+            <div x-show="showImportModal" x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="display:none;">
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showImportModal = false"></div>
+                <div x-show="showImportModal" x-transition
+                     class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Importer un calendrier</h3>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                                Véhicule : <strong x-text="importVehicleName" class="text-gray-900 dark:text-white"></strong>
+                            </p>
+                        </div>
+                        <button @click="showImportModal = false" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
 
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    Véhicule : <strong x-text="importVehicleName" class="text-gray-900 dark:text-white"></strong>
-                </p>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Lien iCal</label>
+                        <input
+                            x-model="importUrl"
+                            type="url"
+                            placeholder="https://calendar.google.com/calendar/ical/..."
+                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 px-4 py-3"
+                        />
+                        <div class="mt-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl p-3 text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                            <p class="font-semibold text-gray-700 dark:text-gray-300">Comment obtenir le lien :</p>
+                            <p>1. Ouvrez <strong>Google Agenda</strong></p>
+                            <p>2. Paramètres du calendrier > <strong>Adresse publique au format iCal</strong></p>
+                            <p>3. Copiez le lien et collez-le ci-dessus</p>
+                        </div>
+                    </div>
 
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Lien iCal (Google Calendar)</label>
-                    <input
-                        x-model="importUrl"
-                        type="url"
-                        placeholder="https://calendar.google.com/calendar/ical/..."
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-primary-500 focus:border-primary-500"
-                    />
-                    <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                        Dans Google Agenda : Paramètres du calendrier > Adresse publique au format iCal
-                    </p>
-                </div>
-
-                <div class="flex gap-2 justify-end">
-                    <button @click="showImportModal = false" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition">
-                        Annuler
-                    </button>
-                    <button
-                        @click="if(importUrl && importVehicleId) { $wire.importGoogleCalendar(importVehicleId, importUrl); showImportModal = false; }"
-                        class="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition"
-                    >
-                        Importer
-                    </button>
+                    <div class="flex gap-3 pt-1">
+                        <button @click="showImportModal = false" class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            Annuler
+                        </button>
+                        <button
+                            @click="if(importUrl && importVehicleId) { $wire.importGoogleCalendar(importVehicleId, importUrl); showImportModal = false; }"
+                            class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition shadow-sm"
+                        >
+                            Importer
+                        </button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </template>
     </div>
 
-    {{-- Loading overlay --}}
-    <div wire:loading.flex class="fixed inset-0 z-[60] items-center justify-center bg-black/20">
-        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg px-6 py-4 flex items-center gap-3">
-            <svg class="animate-spin h-5 w-5 text-primary-600" fill="none" viewBox="0 0 24 24">
+    {{-- Loading --}}
+    <div wire:loading.flex class="fixed inset-0 z-[110] items-center justify-center bg-black/20 backdrop-blur-[2px]">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl px-8 py-5 flex items-center gap-4">
+            <svg class="animate-spin h-6 w-6 text-primary-600" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
-            <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Mise à jour...</span>
+            <span class="text-sm font-semibold text-gray-700 dark:text-gray-300">Mise à jour du calendrier...</span>
         </div>
     </div>
 </x-filament-panels::page>
