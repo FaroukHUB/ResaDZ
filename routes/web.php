@@ -8,6 +8,7 @@ use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoueurController;
 use App\Http\Controllers\Front\ReviewController;
 use App\Http\Controllers\Front\SitemapController;
+use App\Http\Controllers\Front\TransferController;
 use App\Http\Controllers\Front\VehicleController;
 use App\Http\Controllers\Auth\AuthController;
 use Illuminate\Support\Facades\Route;
@@ -99,6 +100,11 @@ Route::middleware(['auth'])->prefix('boost')->group(function () {
 // PayPal Webhook (no auth - called by PayPal)
 Route::post('/webhook/paypal', [\App\Http\Controllers\BoostPaymentController::class, 'paypalWebhook'])
     ->name('boost.paypal.webhook');
+
+// Transferts / Taxi
+Route::get('/transferts', [TransferController::class, 'search'])->name('transfers.search');
+Route::post('/transferts/reserver', [TransferController::class, 'book'])->name('transfers.book');
+Route::get('/transfert/{reference}', [TransferController::class, 'confirmation'])->name('transfers.confirmation');
 
 // Admin Invoice PDF
 Route::middleware(['auth'])->prefix('admin')->group(function () {

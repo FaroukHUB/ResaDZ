@@ -344,6 +344,12 @@
     {{-- Separator --}}
     <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
 
+    <!-- Transfer/Taxi Section -->
+    @include('front.components.transfer-section')
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-50"></div>
+
     <!-- Blog Section - Actualités -->
     @if(isset($blogPosts) && $blogPosts->count() > 0)
     <section class="relative py-24 bg-gradient-to-b from-neutral-900 via-neutral-950 to-black overflow-hidden">

@@ -81,6 +81,14 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'deposit_payment_methods' => $loueur->getSetting('deposit_payment_methods', []),
                 // Rental options (siège bébé, GPS, etc.)
                 'rental_options' => $loueur->getSetting('rental_options', []),
+                // Transfer settings
+                'transfer_enabled' => $loueur->getSetting('transfer_enabled', false),
+                'transfer_airports' => $loueur->getSetting('transfer_airports', []),
+                'transfer_cities' => $loueur->getSetting('transfer_cities', []),
+                'transfer_routes' => $loueur->getSetting('transfer_routes', []),
+                'transfer_description' => $loueur->getSetting('transfer_description', ''),
+                'transfer_24h' => $loueur->getSetting('transfer_24h', false),
+                'transfer_luggage' => $loueur->getSetting('transfer_luggage', true),
             ]);
         }
     }
@@ -506,6 +514,104 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
                                             ->helperText('Copiez ce lien et collez-le dans Google Agenda'),
                                     ]),
                             ]),
+                        Forms\Components\Tabs\Tab::make('Transferts')
+                            ->icon('heroicon-o-truck')
+                            ->schema([
+                                Forms\Components\Section::make('Service de transfert')
+                                    ->description('Proposez un service de transfert/taxi gratuit sur ResaDZ pour attirer plus de clients.')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('transfer_enabled')
+                                            ->label('Activer le service de transfert')
+                                            ->helperText('Votre agence apparaîtra dans les résultats de recherche de transfert')
+                                            ->live(),
+                                    ]),
+                                Forms\Components\Section::make('Zones desservies')
+                                    ->visible(fn ($get) => $get('transfer_enabled'))
+                                    ->schema([
+                                        Forms\Components\CheckboxList::make('transfer_airports')
+                                            ->label('Aéroports desservis')
+                                            ->options([
+                                                'Aéroport Houari Boumediene (Alger)' => 'Aéroport Houari Boumediene (Alger)',
+                                                'Aéroport Ahmed Ben Bella (Oran)' => 'Aéroport Ahmed Ben Bella (Oran)',
+                                                'Aéroport Mohamed Boudiaf (Constantine)' => 'Aéroport Mohamed Boudiaf (Constantine)',
+                                                'Aéroport Rabah Bitat (Annaba)' => 'Aéroport Rabah Bitat (Annaba)',
+                                                'Aéroport Messali El Hadj (Tlemcen)' => 'Aéroport Messali El Hadj (Tlemcen)',
+                                                'Aéroport Ain El Bey (Constantine)' => 'Aéroport Ain El Bey (Constantine)',
+                                                'Aéroport de Béjaïa' => 'Aéroport de Béjaïa',
+                                                'Aéroport de Sétif' => 'Aéroport de Sétif',
+                                            ])
+                                            ->columns(2),
+                                        Forms\Components\TagsInput::make('transfer_cities')
+                                            ->label('Villes desservies')
+                                            ->placeholder('Ajouter une ville...')
+                                            ->helperText('Ajoutez les villes que vous desservez (ex: Alger, Blida, Boumerdès...)'),
+                                    ]),
+                                Forms\Components\Section::make('Tarifs de transfert')
+                                    ->description('Définissez vos tarifs forfaitaires par trajet')
+                                    ->visible(fn ($get) => $get('transfer_enabled'))
+                                    ->schema([
+                                        Forms\Components\Repeater::make('transfer_routes')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\Grid::make(3)
+                                                    ->schema([
+                                                        Forms\Components\TextInput::make('from')
+                                                            ->label('Départ')
+                                                            ->required()
+                                                            ->placeholder('Ex: Aéroport Alger'),
+                                                        Forms\Components\TextInput::make('to')
+                                                            ->label('Arrivée')
+                                                            ->required()
+                                                            ->placeholder('Ex: Alger centre'),
+                                                        Forms\Components\TextInput::make('price')
+                                                            ->label('Prix forfaitaire')
+                                                            ->numeric()
+                                                            ->required()
+                                                            ->suffix('DA')
+                                                            ->placeholder('3000'),
+                                                    ]),
+                                                Forms\Components\Grid::make(2)
+                                                    ->schema([
+                                                        Forms\Components\Select::make('vehicle_type')
+                                                            ->label('Type de véhicule')
+                                                            ->options([
+                                                                'berline' => 'Berline (4 places)',
+                                                                'suv' => 'SUV (5 places)',
+                                                                'van' => 'Van (7 places)',
+                                                                'minibus' => 'Minibus (9+ places)',
+                                                            ])
+                                                            ->default('berline'),
+                                                        Forms\Components\TextInput::make('max_passengers')
+                                                            ->label('Passagers max')
+                                                            ->numeric()
+                                                            ->default(4)
+                                                            ->minValue(1)
+                                                            ->maxValue(20),
+                                                    ]),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Ajouter un trajet')
+                                            ->reorderable()
+                                            ->collapsible()
+                                            ->itemLabel(fn (array $state): ?string =>
+                                                ($state['from'] ?? '?') . ' → ' . ($state['to'] ?? '?') . ' : ' . number_format($state['price'] ?? 0, 0, ',', ' ') . ' DA'
+                                            ),
+                                    ]),
+                                Forms\Components\Section::make('Informations complémentaires')
+                                    ->visible(fn ($get) => $get('transfer_enabled'))
+                                    ->schema([
+                                        Forms\Components\Textarea::make('transfer_description')
+                                            ->label('Description du service')
+                                            ->rows(3)
+                                            ->placeholder('Ex: Service de transfert professionnel avec chauffeur expérimenté. Véhicule climatisé, WiFi à bord...'),
+                                        Forms\Components\Toggle::make('transfer_24h')
+                                            ->label('Disponible 24h/24')
+                                            ->helperText('Le service est disponible même la nuit'),
+                                        Forms\Components\Toggle::make('transfer_luggage')
+                                            ->label('Bagages inclus')
+                                            ->helperText('Les bagages sont pris en charge sans frais supplémentaires'),
+                                    ]),
+                            ]),
                         Forms\Components\Tabs\Tab::make('SEO')
                             ->icon('heroicon-o-magnifying-glass')
                             ->schema([
@@ -640,6 +746,15 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
 
         // Rental options
         $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
+
+        // Transfer settings
+        $loueur->setSetting('transfer_enabled', $data['transfer_enabled'] ?? false, 'boolean');
+        $loueur->setSetting('transfer_airports', $data['transfer_airports'] ?? [], 'json');
+        $loueur->setSetting('transfer_cities', $data['transfer_cities'] ?? [], 'json');
+        $loueur->setSetting('transfer_routes', $data['transfer_routes'] ?? [], 'json');
+        $loueur->setSetting('transfer_description', $data['transfer_description'] ?? '', 'text');
+        $loueur->setSetting('transfer_24h', $data['transfer_24h'] ?? false, 'boolean');
+        $loueur->setSetting('transfer_luggage', $data['transfer_luggage'] ?? true, 'boolean');
 
         // Handle password update
         $user = Auth::user();
