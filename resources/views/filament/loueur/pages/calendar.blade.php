@@ -90,10 +90,8 @@
         showImportModal: false,
         importVehicleId: null,
         importUrl: '',
-        importVehicleName: '',
-        openImport(id, name) {
-            this.importVehicleId = id;
-            this.importVehicleName = name;
+        openImport() {
+            this.importVehicleId = null;
             this.importUrl = '';
             this.showImportModal = true;
         }
@@ -116,6 +114,13 @@
                 </button>
             </div>
             <div class="flex items-center gap-3">
+                <button
+                    @click="openImport()"
+                    class="flex items-center gap-2 px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+                >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    Importer
+                </button>
                 <div x-data="{ copied: false }">
                     <button
                         @click="navigator.clipboard.writeText('{{ $icalUrl }}'); copied = true; setTimeout(() => copied = false, 2000)"
@@ -205,14 +210,6 @@
                                     <div class="text-sm font-semibold text-gray-900 dark:text-white truncate" title="{{ $vehicle->full_name }}">{{ $vehicle->full_name }}</div>
                                     <div class="flex items-center gap-2 mt-0.5">
                                         <span class="text-xs text-gray-500 dark:text-gray-400 font-medium">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA/j</span>
-                                        <button
-                                            @click="openImport({{ $vehicle->id }}, '{{ addslashes($vehicle->full_name) }}')"
-                                            class="text-[11px] text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium flex items-center gap-0.5"
-                                            title="Importer un calendrier externe"
-                                        >
-                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                                            Importer
-                                        </button>
                                     </div>
                                     @if($vehicle->available_from || $vehicle->available_until)
                                         <div class="text-[10px] text-red-500 dark:text-red-400 mt-0.5 truncate">
@@ -366,28 +363,41 @@
                     <div class="flex items-start justify-between">
                         <div>
                             <h3 class="text-lg font-bold text-gray-900 dark:text-white">Importer un calendrier</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                                Véhicule : <strong x-text="importVehicleName" class="text-gray-900 dark:text-white"></strong>
-                            </p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Importer les blocages depuis un calendrier externe</p>
                         </div>
                         <button @click="showImportModal = false" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                         </button>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Lien iCal</label>
-                        <input
-                            x-model="importUrl"
-                            type="url"
-                            placeholder="https://calendar.google.com/calendar/ical/..."
-                            class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 px-4 py-3"
-                        />
-                        <div class="mt-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl p-3 text-xs text-gray-500 dark:text-gray-400 space-y-1">
-                            <p class="font-semibold text-gray-700 dark:text-gray-300">Comment obtenir le lien :</p>
-                            <p>1. Ouvrez <strong>Google Agenda</strong></p>
-                            <p>2. Paramètres du calendrier > <strong>Adresse publique au format iCal</strong></p>
-                            <p>3. Copiez le lien et collez-le ci-dessus</p>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Véhicule</label>
+                            <select
+                                x-model="importVehicleId"
+                                class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 px-4 py-3"
+                            >
+                                <option value="">-- Sélectionnez un véhicule --</option>
+                                @foreach($vehicles as $v)
+                                    <option value="{{ $v->id }}">{{ $v->full_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Lien iCal</label>
+                            <input
+                                x-model="importUrl"
+                                type="url"
+                                placeholder="https://calendar.google.com/calendar/ical/..."
+                                class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 px-4 py-3"
+                            />
+                            <div class="mt-3 bg-gray-50 dark:bg-gray-900/50 rounded-xl p-3 text-xs text-gray-500 dark:text-gray-400 space-y-1">
+                                <p class="font-semibold text-gray-700 dark:text-gray-300">Comment obtenir le lien :</p>
+                                <p>1. Ouvrez <strong>Google Agenda</strong></p>
+                                <p>2. Paramètres du calendrier > <strong>Adresse publique au format iCal</strong></p>
+                                <p>3. Copiez le lien et collez-le ci-dessus</p>
+                            </div>
                         </div>
                     </div>
 
@@ -398,6 +408,8 @@
                         <button
                             @click="if(importUrl && importVehicleId) { $wire.importGoogleCalendar(importVehicleId, importUrl); showImportModal = false; }"
                             class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition shadow-sm"
+                            :class="{ 'opacity-50 cursor-not-allowed': !importUrl || !importVehicleId }"
+                            :disabled="!importUrl || !importVehicleId"
                         >
                             Importer
                         </button>
