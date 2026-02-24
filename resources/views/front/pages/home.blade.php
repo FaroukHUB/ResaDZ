@@ -138,6 +138,12 @@
         </div>
     </section>
 
+    <!-- Transfer/Taxi Section -->
+    @include('front.components.transfer-section')
+
+    {{-- Separator --}}
+    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
+
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
     <section class="relative py-16 lg:py-24 bg-gradient-to-b from-neutral-950 via-neutral-900 to-neutral-950">
@@ -340,15 +346,6 @@
 
     <!-- Airport Search Section -->
     @include('front.components.airport-search')
-
-    {{-- Separator --}}
-    <div class="h-px bg-gradient-to-r from-transparent via-green-500 to-transparent opacity-50"></div>
-
-    <!-- Transfer/Taxi Section -->
-    @include('front.components.transfer-section')
-
-    {{-- Separator --}}
-    <div class="h-px bg-gradient-to-r from-transparent via-amber-500 to-transparent opacity-50"></div>
 
     <!-- Blog Section - Actualités -->
     @if(isset($blogPosts) && $blogPosts->count() > 0)
