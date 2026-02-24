@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\DB;
 
 class Loueur extends Model
 {
@@ -122,6 +123,87 @@ class Loueur extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    /**
+     * Get the wilaya codes for this loueur.
+     */
+    public function getWilayaCodes(): array
+    {
+        return DB::table('loueur_wilaya')
+            ->where('loueur_id', $this->id)
+            ->pluck('wilaya_code')
+            ->toArray();
+    }
+
+    /**
+     * Get the wilaya names for this loueur.
+     */
+    public function getWilayaNames(): array
+    {
+        $codes = $this->getWilayaCodes();
+        $wilayas = config('resadz.wilayas', []);
+
+        return array_map(fn($code) => $wilayas[$code] ?? $code, $codes);
+    }
+
+    /**
+     * Get the wilayas as a formatted string.
+     */
+    public function getWilayasString(): string
+    {
+        return implode(', ', $this->getWilayaNames());
+    }
+
+    /**
+     * Sync the wilayas for this loueur.
+     */
+    public function syncWilayas(array $wilayaCodes): void
+    {
+        DB::table('loueur_wilaya')->where('loueur_id', $this->id)->delete();
+
+        foreach ($wilayaCodes as $code) {
+            DB::table('loueur_wilaya')->insert([
+                'loueur_id' => $this->id,
+                'wilaya_code' => $code,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+        }
+    }
+
+    /**
+     * Check if loueur operates in a specific wilaya.
+     */
+    public function operatesInWilaya(string $wilayaCode): bool
+    {
+        return in_array($wilayaCode, $this->getWilayaCodes());
+    }
+
+    /**
+     * Scope to filter loueurs by wilaya.
+     */
+    public function scopeInWilaya($query, string $wilayaCode)
+    {
+        return $query->whereExists(function ($q) use ($wilayaCode) {
+            $q->select(DB::raw(1))
+                ->from('loueur_wilaya')
+                ->whereColumn('loueur_wilaya.loueur_id', 'loueurs.id')
+                ->where('loueur_wilaya.wilaya_code', $wilayaCode);
+        });
+    }
+
+    /**
+     * Scope to filter loueurs by multiple wilayas.
+     */
+    public function scopeInWilayas($query, array $wilayaCodes)
+    {
+        return $query->whereExists(function ($q) use ($wilayaCodes) {
+            $q->select(DB::raw(1))
+                ->from('loueur_wilaya')
+                ->whereColumn('loueur_wilaya.loueur_id', 'loueurs.id')
+                ->whereIn('loueur_wilaya.wilaya_code', $wilayaCodes);
+        });
     }
 
     public function unreadConversationsCount(): int

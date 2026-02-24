@@ -20,6 +20,8 @@ class EditLoueur extends EditRecord
         ];
     }
 
+    protected array $wilayasToSync = [];
+
     protected function mutateFormDataBeforeSave(array $data): array
     {
         // Mettre à jour l'email de l'utilisateur si modifié
@@ -36,10 +38,19 @@ class EditLoueur extends EditRecord
             ]);
         }
 
+        // Sauvegarder les wilayas pour synchronisation après sauvegarde
+        $this->wilayasToSync = $data['wilayas'] ?? [];
+
         // Nettoyer les champs qui ne sont pas dans la table loueurs
-        unset($data['user_email'], $data['user_password']);
+        unset($data['user_email'], $data['user_password'], $data['wilayas']);
 
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        // Synchroniser les wilayas
+        $this->record->syncWilayas($this->wilayasToSync);
     }
 
     protected function getRedirectUrl(): string

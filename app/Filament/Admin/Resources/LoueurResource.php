@@ -82,9 +82,20 @@ class LoueurResource extends Resource
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('city')
-                                                    ->label('Ville'),
-                                                Forms\Components\TextInput::make('wilaya')
-                                                    ->label('Wilaya'),
+                                                    ->label('Ville principale'),
+                                                Forms\Components\Select::make('wilayas')
+                                                    ->label('Wilayas d\'activité')
+                                                    ->multiple()
+                                                    ->options(config('resadz.wilayas'))
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->helperText('Le loueur peut opérer dans plusieurs wilayas')
+                                                    ->afterStateHydrated(function ($component, $record) {
+                                                        if ($record) {
+                                                            $component->state($record->getWilayaCodes());
+                                                        }
+                                                    })
+                                                    ->dehydrated(false),
                                             ]),
                                         Forms\Components\TextInput::make('address')
                                             ->label('Adresse'),
@@ -227,9 +238,11 @@ class LoueurResource extends Resource
                 Tables\Columns\TextColumn::make('phone')
                     ->label('Téléphone')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('wilaya')
-                    ->label('Wilaya')
-                    ->placeholder('-'),
+                Tables\Columns\TextColumn::make('wilayas_display')
+                    ->label('Wilayas')
+                    ->state(fn (Loueur $record) => $record->getWilayasString() ?: '-')
+                    ->wrap()
+                    ->limit(30),
                 Tables\Columns\TextColumn::make('vehicles_count')
                     ->label('Véhicules')
                     ->counts('vehicles')
@@ -313,8 +326,9 @@ class LoueurResource extends Resource
                             ->label('Agence'),
                         Infolists\Components\TextEntry::make('phone')
                             ->label('Téléphone'),
-                        Infolists\Components\TextEntry::make('wilaya')
-                            ->label('Wilaya'),
+                        Infolists\Components\TextEntry::make('wilayas_display')
+                            ->label('Wilayas')
+                            ->state(fn (Loueur $record) => $record->getWilayasString() ?: '-'),
                         Infolists\Components\TextEntry::make('city')
                             ->label('Ville'),
                         Infolists\Components\IconEntry::make('is_active')

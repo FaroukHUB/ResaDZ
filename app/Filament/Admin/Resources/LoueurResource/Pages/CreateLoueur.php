@@ -13,6 +13,8 @@ class CreateLoueur extends CreateRecord
 {
     protected static string $resource = LoueurResource::class;
 
+    protected array $wilayasToSync = [];
+
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         // Créer l'utilisateur avec l'email et mot de passe fournis
@@ -38,14 +40,22 @@ class CreateLoueur extends CreateRecord
             $data['trial_ends_at'] = now()->addDays($trialDays);
         }
 
+        // Sauvegarder les wilayas pour synchronisation après création
+        $this->wilayasToSync = $data['wilayas'] ?? [];
+
         // Nettoyer les champs qui ne sont pas dans la table loueurs
-        unset($data['user_email'], $data['user_password']);
+        unset($data['user_email'], $data['user_password'], $data['wilayas']);
 
         return $data;
     }
 
     protected function afterCreate(): void
     {
+        // Synchroniser les wilayas
+        if (!empty($this->wilayasToSync)) {
+            $this->record->syncWilayas($this->wilayasToSync);
+        }
+
         // Notification de succès avec les infos de connexion
         Notification::make()
             ->title('Loueur créé avec succès')
