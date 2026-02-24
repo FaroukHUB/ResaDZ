@@ -50,43 +50,8 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: { sans: ['Cairo', 'sans-serif'] },
-                    colors: {
-                        'resadz': {
-                            50: '#fef2f2',
-                            100: '#fee2e2',
-                            200: '#fecaca',
-                            300: '#fca5a5',
-                            400: '#f87171',
-                            500: '#ef4444',
-                            600: '#dc2626',
-                            700: '#b91c1c',
-                            800: '#991b1b',
-                            900: '#7f1d1d',
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        /* Hide scrollbar for mobile sliders */
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-    </style>
+    <!-- Tailwind CSS + App -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     @yield('head')
 </head>
@@ -99,7 +64,7 @@
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
                     @if($logoLight)
-                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-28 w-auto">
+                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-28 w-auto" width="140" height="112">
                     @else
                         {{-- Fallback text logo --}}
                         <span class="text-2xl font-black text-gray-900">{{ $siteName }}</span>
@@ -200,9 +165,9 @@
                     <div class="lg:col-span-4">
                         <div class="flex items-center gap-3 mb-6">
                             @if($logoDark)
-                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-32 w-auto">
+                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-32 w-auto" width="160" height="128">
                             @elseif($logoLight)
-                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-32 w-auto brightness-0 invert">
+                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-32 w-auto brightness-0 invert" width="160" height="128">
                             @else
                                 <span class="text-3xl font-black text-white">{{ $siteName }}</span>
                             @endif
@@ -315,7 +280,7 @@
     @yield('scripts')
 
     {{-- Analytics Tracking --}}
-    <script src="{{ asset('js/tracking.js') }}"></script>
+    <script defer src="{{ asset('js/tracking.js') }}"></script>
 
     {{-- Popup Component --}}
     <x-popup :page-type="$pageType ?? null" />
