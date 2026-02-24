@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\Availability;
 use App\Models\Booking;
 use App\Models\Brand;
 use App\Models\Category;
@@ -68,19 +69,39 @@ class VehicleController extends Controller
                 // Exclure les véhicules qui ont des réservations confirmées/en attente pendant cette période
                 $bookedVehicleIds = Booking::whereIn('status', ['pending', 'confirmed'])
                     ->where(function ($q) use ($pickupDate, $returnDate) {
-                        // Réservation qui chevauche la période demandée
-                        $q->where(function ($sub) use ($pickupDate, $returnDate) {
-                            $sub->where('start_date', '<=', $returnDate)
-                                ->where('end_date', '>=', $pickupDate);
-                        });
+                        $q->where('start_date', '<=', $returnDate)
+                           ->where('end_date', '>=', $pickupDate);
                     })
                     ->pluck('vehicle_id')
                     ->unique()
                     ->toArray();
 
-                if (!empty($bookedVehicleIds)) {
-                    $query->whereNotIn('vehicles.id', $bookedVehicleIds);
+                // Exclure les véhicules bloqués/en maintenance sur cette période (calendrier)
+                $blockedVehicleIds = Availability::whereIn('type', ['blocked', 'maintenance'])
+                    ->where(function ($q) use ($pickupDate, $returnDate) {
+                        $q->where('start_date', '<=', $returnDate)
+                           ->where('end_date', '>=', $pickupDate);
+                    })
+                    ->pluck('vehicle_id')
+                    ->unique()
+                    ->toArray();
+
+                $unavailableIds = array_unique(array_merge($bookedVehicleIds, $blockedVehicleIds));
+
+                if (!empty($unavailableIds)) {
+                    $query->whereNotIn('vehicles.id', $unavailableIds);
                 }
+
+                // Exclure les véhicules hors de leur période de disponibilité (available_from / available_until)
+                $query->where(function ($q) use ($pickupDate, $returnDate) {
+                    $q->where(function ($sub) use ($pickupDate) {
+                        $sub->whereNull('vehicles.available_from')
+                            ->orWhere('vehicles.available_from', '<=', $pickupDate);
+                    })->where(function ($sub) use ($returnDate) {
+                        $sub->whereNull('vehicles.available_until')
+                            ->orWhere('vehicles.available_until', '>=', $returnDate);
+                    });
+                });
             } catch (\Exception $e) {
                 // Ignorer les dates invalides
             }
