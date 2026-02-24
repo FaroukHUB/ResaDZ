@@ -9,6 +9,7 @@ use Filament\Pages\Page;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 class Settings extends Page implements Forms\Contracts\HasForms
 {
@@ -518,6 +519,51 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
                                     ->maxLength(160)
                                     ->helperText('Description affichée dans les résultats de recherche (max 160 caractères)'),
                             ]),
+                        Forms\Components\Tabs\Tab::make('Sécurité')
+                            ->icon('heroicon-o-lock-closed')
+                            ->schema([
+                                Forms\Components\Section::make('Mot de passe')
+                                    ->description(function () {
+                                        $user = Auth::user();
+                                        if (empty($user->password)) {
+                                            return 'Vous vous êtes inscrit via Google. Définissez un mot de passe pour pouvoir aussi vous connecter avec votre email.';
+                                        }
+                                        return 'Modifiez votre mot de passe de connexion.';
+                                    })
+                                    ->schema([
+                                        Forms\Components\TextInput::make('current_password')
+                                            ->label('Mot de passe actuel')
+                                            ->password()
+                                            ->revealable()
+                                            ->visible(fn () => !empty(Auth::user()->password))
+                                            ->helperText('Requis pour modifier votre mot de passe'),
+                                        Forms\Components\TextInput::make('new_password')
+                                            ->label('Nouveau mot de passe')
+                                            ->password()
+                                            ->revealable()
+                                            ->minLength(8)
+                                            ->helperText('Minimum 8 caractères'),
+                                        Forms\Components\TextInput::make('new_password_confirmation')
+                                            ->label('Confirmer le nouveau mot de passe')
+                                            ->password()
+                                            ->revealable()
+                                            ->same('new_password'),
+                                    ]),
+                                Forms\Components\Section::make('Connexion')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('login_methods')
+                                            ->label('Méthodes de connexion disponibles')
+                                            ->content(function () {
+                                                $user = Auth::user();
+                                                $methods = [];
+                                                if (!empty($user->password)) {
+                                                    $methods[] = '✓ Email + Mot de passe';
+                                                }
+                                                $methods[] = '✓ Google (toujours disponible)';
+                                                return implode("\n", $methods);
+                                            }),
+                                    ]),
+                            ]),
                     ])
                     ->columnSpanFull(),
             ])
@@ -594,6 +640,32 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
 
         // Rental options
         $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
+
+        // Handle password update
+        $user = Auth::user();
+        if (!empty($data['new_password'])) {
+            // If user has a password, verify current password
+            if (!empty($user->password)) {
+                if (empty($data['current_password']) || !Hash::check($data['current_password'], $user->password)) {
+                    Notification::make()
+                        ->title('Erreur')
+                        ->body('Le mot de passe actuel est incorrect.')
+                        ->danger()
+                        ->send();
+                    return;
+                }
+            }
+
+            // Update password
+            $user->password = Hash::make($data['new_password']);
+            $user->save();
+
+            Notification::make()
+                ->title('Mot de passe mis à jour')
+                ->body('Votre mot de passe a été défini avec succès. Vous pouvez maintenant vous connecter avec votre email et mot de passe.')
+                ->success()
+                ->send();
+        }
 
         Notification::make()
             ->title('Paramètres enregistrés')
