@@ -241,6 +241,11 @@ class Booking extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function conversation()
+    {
+        return $this->hasOne(BookingConversation::class);
+    }
+
     // Helpers
     public function getClientDisplayName(): string
     {

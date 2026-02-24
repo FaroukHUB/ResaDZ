@@ -90,6 +90,11 @@ class Loueur extends Model
         return $this->hasMany(Booking::class);
     }
 
+    public function bookingConversations(): HasMany
+    {
+        return $this->hasMany(BookingConversation::class);
+    }
+
     public function deliveryZones(): HasMany
     {
         return $this->hasMany(DeliveryZone::class);

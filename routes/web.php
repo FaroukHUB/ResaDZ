@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Front\BookingController;
 use App\Http\Controllers\Front\BlogController;
+use App\Http\Controllers\Front\ClientAreaController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoueurController;
 use App\Http\Controllers\Front\ReviewController;
@@ -42,6 +43,14 @@ Route::get('/reservation/{reference}', [BookingController::class, 'confirmation'
 // Confirmation client (lien unique envoyé par email)
 Route::get('/ma-reservation/{token}', [BookingController::class, 'clientConfirmation'])->name('booking.client-confirmation');
 Route::post('/ma-reservation/{token}/documents', [BookingController::class, 'uploadDocuments'])->name('booking.upload-documents');
+
+// Espace client (dashboard + messagerie)
+Route::prefix('espace-client/{token}')->group(function () {
+    Route::get('/', [ClientAreaController::class, 'dashboard'])->name('client.dashboard');
+    Route::get('/messages', [ClientAreaController::class, 'conversation'])->name('client.conversation');
+    Route::post('/messages', [ClientAreaController::class, 'sendMessage'])->name('client.send-message');
+    Route::get('/messages/refresh', [ClientAreaController::class, 'refreshMessages'])->name('client.refresh-messages');
+});
 
 // Avis clients
 Route::get('/avis/{token}', [ReviewController::class, 'create'])->name('review.create');
