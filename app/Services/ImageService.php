@@ -10,16 +10,25 @@ class ImageService
 {
     /**
      * Convert an uploaded file to WebP format
+     * Supports both storage/app/public and public/ directories
      */
     public static function convertToWebp(string $path, int $quality = 85): ?string
     {
         $disk = Storage::disk('public');
 
-        if (!$disk->exists($path)) {
+        // Check if file exists in storage/app/public
+        if ($disk->exists($path)) {
+            $fullPath = $disk->path($path);
+            $isInStorage = true;
+        }
+        // Check if file exists in public/ directory (for legacy assets/)
+        elseif (file_exists(public_path($path))) {
+            $fullPath = public_path($path);
+            $isInStorage = false;
+        } else {
             return null;
         }
 
-        $fullPath = $disk->path($path);
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
 
         // Skip if already WebP
@@ -55,7 +64,12 @@ class ImageService
 
             // Generate new WebP path
             $newPath = preg_replace('/\.[^.]+$/', '.webp', $path);
-            $newFullPath = $disk->path($newPath);
+
+            if ($isInStorage) {
+                $newFullPath = $disk->path($newPath);
+            } else {
+                $newFullPath = public_path($newPath);
+            }
 
             // Ensure directory exists
             $directory = dirname($newFullPath);
@@ -69,7 +83,11 @@ class ImageService
 
             if ($success) {
                 // Delete original file
-                $disk->delete($path);
+                if ($isInStorage) {
+                    $disk->delete($path);
+                } else {
+                    @unlink($fullPath);
+                }
                 return $newPath;
             }
 
