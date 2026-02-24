@@ -20,6 +20,16 @@
             z-index: 2;
         }
         .cal-cell-past { background: #f3f4f6; }
+        .cal-cell-unavailable {
+            background: repeating-linear-gradient(
+                -45deg, #fee2e2, #fee2e2 4px, #fecaca 4px, #fecaca 8px
+            );
+        }
+        .dark .cal-cell-unavailable {
+            background: repeating-linear-gradient(
+                -45deg, #7f1d1d, #7f1d1d 4px, #991b1b 4px, #991b1b 8px
+            );
+        }
         .cal-cell-pending { background: #fbbf24; }
         .cal-cell-confirmed { background: #3b82f6; }
         .cal-cell-active { background: #8b5cf6; }
@@ -144,6 +154,10 @@
                 <div class="w-5 h-5 rounded-md" style="background: repeating-linear-gradient(45deg, #f59e0b, #f59e0b 3px, #fbbf24 3px, #fbbf24 6px)"></div>
                 <span class="text-gray-600 dark:text-gray-400 font-medium">Maintenance</span>
             </div>
+            <div class="flex items-center gap-2">
+                <div class="w-5 h-5 rounded-md" style="background: repeating-linear-gradient(-45deg, #fee2e2, #fee2e2 3px, #fecaca 3px, #fecaca 6px)"></div>
+                <span class="text-gray-600 dark:text-gray-400 font-medium">Hors période</span>
+            </div>
         </div>
 
         {{-- Calendar --}}
@@ -200,6 +214,17 @@
                                             Importer
                                         </button>
                                     </div>
+                                    @if($vehicle->available_from || $vehicle->available_until)
+                                        <div class="text-[10px] text-red-500 dark:text-red-400 mt-0.5 truncate">
+                                            @if($vehicle->available_from && $vehicle->available_until)
+                                                {{ $vehicle->available_from->format('d/m/Y') }} → {{ $vehicle->available_until->format('d/m/Y') }}
+                                            @elseif($vehicle->available_from)
+                                                Dès le {{ $vehicle->available_from->format('d/m/Y') }}
+                                            @else
+                                                Jusqu'au {{ $vehicle->available_until->format('d/m/Y') }}
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
 
@@ -211,6 +236,7 @@
                                         $key = $vehicle->id . '_' . $dateStr;
                                         $booking = $bookingMap[$key] ?? null;
                                         $block = $blockMap[$key] ?? null;
+                                        $isUnavailable = isset($unavailableMap[$key]);
                                         $isToday = $dateStr === $today;
                                         $isPast = $day->isPast() && !$isToday;
                                     @endphp
@@ -244,6 +270,15 @@
                                             wire:key="c-{{ $key }}"
                                         >
                                             <svg class="w-4 h-4 text-white opacity-70" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11.42 15.17l-5.66-5.66a2 2 0 112.83-2.83l5.66 5.66m-1.42 1.42l5.66 5.66a2 2 0 11-2.83 2.83l-5.66-5.66"/></svg>
+                                        </div>
+                                    @elseif($isUnavailable)
+                                        {{-- Outside available_from / available_until --}}
+                                        <div
+                                            class="cal-cell cal-cell-unavailable flex items-center justify-center"
+                                            title="Hors période de disponibilité{{ $vehicle->available_from ? ' (dès le ' . $vehicle->available_from->format('d/m/Y') . ')' : '' }}{{ $vehicle->available_until ? ' (jusqu\'au ' . $vehicle->available_until->format('d/m/Y') . ')' : '' }}"
+                                            wire:key="c-{{ $key }}"
+                                        >
+                                            <svg class="w-3.5 h-3.5 text-red-300 dark:text-red-800 opacity-60" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"/></svg>
                                         </div>
                                     @elseif($isPast)
                                         {{-- Past cell --}}
@@ -288,6 +323,7 @@
                             Cliquez sur une case <span class="inline-block w-3 h-3 rounded bg-[#d1fae5] align-middle"></span> verte pour la bloquer.
                             Cliquez sur une case <span class="inline-block w-3 h-3 rounded align-middle" style="background: repeating-linear-gradient(45deg, #374151, #374151 2px, #4b5563 2px, #4b5563 4px)"></span> hachurée pour la débloquer.
                             Les cases colorées sont des réservations — cliquez dessus pour voir les détails.
+                            Les cases <span class="inline-block w-3 h-3 rounded align-middle" style="background: repeating-linear-gradient(-45deg, #fee2e2, #fee2e2 2px, #fecaca 2px, #fecaca 4px)"></span> rouges sont hors de la période de disponibilité du véhicule.
                         </p>
                     </div>
                 </div>

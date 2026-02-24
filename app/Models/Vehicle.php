@@ -305,6 +305,17 @@ class Vehicle extends Model
 
     public function isAvailableForDates($startDate, $endDate): bool
     {
+        $start = \Carbon\Carbon::parse($startDate);
+        $end = \Carbon\Carbon::parse($endDate);
+
+        // Vérifier available_from / available_until
+        if ($this->available_from && $start->lt($this->available_from)) {
+            return false;
+        }
+        if ($this->available_until && $end->gt($this->available_until)) {
+            return false;
+        }
+
         // Vérifier s'il n'y a pas de blocage sur ces dates
         $hasBlocking = $this->availabilities()
             ->where(function ($query) use ($startDate, $endDate) {

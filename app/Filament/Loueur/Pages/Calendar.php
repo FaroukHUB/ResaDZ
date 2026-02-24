@@ -72,6 +72,26 @@ class Calendar extends Page
 
         $dateObj = Carbon::parse($date);
 
+        // Check if date is outside vehicle availability range
+        if ($vehicle->available_from && $dateObj->lt($vehicle->available_from)) {
+            Notification::make()
+                ->title('Hors période')
+                ->body('Ce véhicule n\'est disponible qu\'à partir du ' . $vehicle->available_from->format('d/m/Y'))
+                ->warning()
+                ->duration(3000)
+                ->send();
+            return;
+        }
+        if ($vehicle->available_until && $dateObj->gt($vehicle->available_until)) {
+            Notification::make()
+                ->title('Hors période')
+                ->body('Ce véhicule n\'est disponible que jusqu\'au ' . $vehicle->available_until->format('d/m/Y'))
+                ->warning()
+                ->duration(3000)
+                ->send();
+            return;
+        }
+
         // Check if there's already an availability block for this exact date
         $existingBlock = Availability::where('vehicle_id', $vehicleId)
             ->where('type', 'blocked')
@@ -468,6 +488,26 @@ class Calendar extends Page
             }
         }
 
+        // Build unavailable map for dates outside available_from/available_until
+        $unavailableMap = [];
+        foreach ($vehicles as $vehicle) {
+            if ($vehicle->available_from || $vehicle->available_until) {
+                $monthPeriod = CarbonPeriod::create($startOfMonth, $endOfMonth);
+                foreach ($monthPeriod as $date) {
+                    $outOfRange = false;
+                    if ($vehicle->available_from && $date->lt($vehicle->available_from)) {
+                        $outOfRange = true;
+                    }
+                    if ($vehicle->available_until && $date->gt($vehicle->available_until)) {
+                        $outOfRange = true;
+                    }
+                    if ($outOfRange) {
+                        $unavailableMap[$vehicle->id . '_' . $date->format('Y-m-d')] = true;
+                    }
+                }
+            }
+        }
+
         // Generate days array
         $days = [];
         $period = CarbonPeriod::create($startOfMonth, $endOfMonth);
@@ -483,6 +523,7 @@ class Calendar extends Page
             'vehicles' => $vehicles,
             'bookingMap' => $bookingMap,
             'blockMap' => $blockMap,
+            'unavailableMap' => $unavailableMap,
             'days' => $days,
             'currentMonth' => $this->currentMonth,
             'currentYear' => $this->currentYear,
