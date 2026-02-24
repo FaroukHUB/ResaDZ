@@ -13,6 +13,8 @@ use Carbon\Carbon;
 
 class StatsOverviewWidget extends BaseWidget
 {
+    protected static bool $isLazy = false;
+
     protected static ?int $sort = 1;
 
     protected function getStats(): array
