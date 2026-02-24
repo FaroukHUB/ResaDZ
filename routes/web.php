@@ -50,6 +50,11 @@ Route::prefix('espace-client/{token}')->group(function () {
     Route::get('/messages', [ClientAreaController::class, 'conversation'])->name('client.conversation');
     Route::post('/messages', [ClientAreaController::class, 'sendMessage'])->name('client.send-message');
     Route::get('/messages/refresh', [ClientAreaController::class, 'refreshMessages'])->name('client.refresh-messages');
+    // Support
+    Route::get('/support', [ClientAreaController::class, 'support'])->name('client.support');
+    Route::post('/support', [ClientAreaController::class, 'createSupportTicket'])->name('client.support.create');
+    Route::get('/support/{conversation}', [ClientAreaController::class, 'showSupportConversation'])->name('client.support.show');
+    Route::post('/support/{conversation}', [ClientAreaController::class, 'replySupportConversation'])->name('client.support.reply');
 });
 
 // Avis clients

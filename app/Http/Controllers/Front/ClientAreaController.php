@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Booking;
 use App\Models\BookingConversation;
 use App\Models\BookingMessage;
+use App\Models\ClientSupportConversation;
 use Illuminate\Http\Request;
 
 class ClientAreaController extends Controller
@@ -111,5 +112,110 @@ class ClientAreaController extends Controller
                 'is_mine' => $m->sender_type === 'client',
             ]),
         ]);
+    }
+
+    /**
+     * Show support page with conversation list and form.
+     */
+    public function support(string $token)
+    {
+        $booking = Booking::where('confirmation_token', $token)
+            ->with(['vehicle.brand', 'loueur'])
+            ->firstOrFail();
+
+        // Get support conversations for this client email
+        $conversations = ClientSupportConversation::where('client_email', $booking->client_email)
+            ->with('latestMessage')
+            ->orderByDesc('last_message_at')
+            ->get();
+
+        return view('front.pages.client-area.support', [
+            'booking' => $booking,
+            'conversations' => $conversations,
+            'categories' => ClientSupportConversation::getCategories(),
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Create a new support conversation.
+     */
+    public function createSupportTicket(Request $request, string $token)
+    {
+        $request->validate([
+            'subject' => 'required|string|max:255',
+            'category' => 'required|string|in:general,booking,payment,complaint,other',
+            'message' => 'required|string|max:5000',
+            'booking_id' => 'nullable|exists:bookings,id',
+        ]);
+
+        $booking = Booking::where('confirmation_token', $token)->firstOrFail();
+
+        $conversation = ClientSupportConversation::create([
+            'client_id' => $booking->client_id,
+            'client_email' => $booking->client_email,
+            'client_name' => $booking->client_name,
+            'subject' => $request->subject,
+            'category' => $request->category,
+            'booking_id' => $request->booking_id,
+            'last_message_at' => now(),
+        ]);
+
+        $conversation->addMessage($request->message, 'client', $booking->client_id);
+
+        return redirect()->route('client.support.show', [$token, $conversation->id])
+            ->with('success', 'Votre demande a été envoyée. Nous vous répondrons dans les plus brefs délais.');
+    }
+
+    /**
+     * Show a specific support conversation.
+     */
+    public function showSupportConversation(string $token, int $conversationId)
+    {
+        $booking = Booking::where('confirmation_token', $token)
+            ->with(['vehicle.brand', 'loueur'])
+            ->firstOrFail();
+
+        $conversation = ClientSupportConversation::where('id', $conversationId)
+            ->where('client_email', $booking->client_email)
+            ->with('messages')
+            ->firstOrFail();
+
+        $conversation->markAsReadByClient();
+
+        return view('front.pages.client-area.support-conversation', [
+            'booking' => $booking,
+            'conversation' => $conversation,
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * Reply to a support conversation.
+     */
+    public function replySupportConversation(Request $request, string $token, int $conversationId)
+    {
+        $request->validate([
+            'message' => 'required|string|max:5000',
+        ]);
+
+        $booking = Booking::where('confirmation_token', $token)->firstOrFail();
+
+        $conversation = ClientSupportConversation::where('id', $conversationId)
+            ->where('client_email', $booking->client_email)
+            ->firstOrFail();
+
+        if ($conversation->status === 'closed') {
+            return back()->with('error', 'Cette conversation est fermée.');
+        }
+
+        $conversation->addMessage($request->message, 'client', $booking->client_id);
+
+        // Reopen if resolved
+        if ($conversation->status === 'resolved') {
+            $conversation->update(['status' => 'open']);
+        }
+
+        return back()->with('success', 'Message envoyé.');
     }
 }
