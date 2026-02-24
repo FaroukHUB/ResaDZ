@@ -10,11 +10,19 @@ use Carbon\Carbon;
 class PricingService
 {
     /**
-     * Get commission per day from settings
+     * Get loueur commission per day from settings (charged to loueur)
      */
-    private function getCommissionPerDay(): int
+    private function getLoueurCommissionPerDay(): int
     {
-        return (int) Setting::get('commission_per_day_dzd', 250);
+        return (int) Setting::get('loueur_commission_per_day_dzd', 150);
+    }
+
+    /**
+     * Get client service fee per day from settings (charged to client)
+     */
+    private function getClientServiceFeePerDay(): int
+    {
+        return (int) Setting::get('client_service_fee_per_day_dzd', 100);
     }
 
     /**
@@ -63,14 +71,23 @@ class PricingService
             }
         }
 
-        // 3. Commission ResaDZ (uniquement en DZD) - from settings
-        $commissionPerDay = $currency === 'EUR' ? 0 : $this->getCommissionPerDay();
-        $commissionTotal = $commissionPerDay * $totalDays;
+        // 3. Frais ResaDZ (uniquement en DZD)
+        // Commission loueur = ce que ResaDZ prélève au loueur
+        $loueurCommissionPerDay = $currency === 'EUR' ? 0 : $this->getLoueurCommissionPerDay();
+        $loueurCommissionTotal = $loueurCommissionPerDay * $totalDays;
 
-        // Prix de base pour le client = prix loueur + commission
-        $clientDailyRate = $loueurDailyRate + $commissionPerDay;
+        // Frais de service client = ce que le client paie en plus
+        $clientServiceFeePerDay = $currency === 'EUR' ? 0 : $this->getClientServiceFeePerDay();
+        $clientServiceFeeTotal = $clientServiceFeePerDay * $totalDays;
+
+        // Prix de base pour le client = prix loueur + frais de service
+        $clientDailyRate = $loueurDailyRate + $clientServiceFeePerDay;
         $basePrice = $clientDailyRate * $totalDays;
+
+        // Ce que le loueur reçoit réellement = prix affiché - commission ResaDZ
+        $loueurNetDailyRate = $loueurDailyRate - $loueurCommissionPerDay;
         $loueurBasePrice = $loueurDailyRate * $totalDays;
+        $loueurNetBasePrice = $loueurNetDailyRate * $totalDays;
 
         // NOTE: Les remises par durée sont remplacées par le prix dégressif
         // On garde la structure pour la compatibilité mais on la désactive
@@ -148,8 +165,8 @@ class PricingService
         $subtotal = $basePrice - $durationDiscount + $seasonSurcharge + $weekendSurcharge;
         $total = $subtotal + $deliveryFee + $returnFee + $optionsTotal;
 
-        // Calcul pour le loueur (sans commission)
-        $loueurSubtotal = $loueurBasePrice - $durationDiscount + $seasonSurcharge + $weekendSurcharge;
+        // Calcul pour le loueur (ce qu'il reçoit après commission ResaDZ)
+        $loueurSubtotal = $loueurNetBasePrice - $durationDiscount + $seasonSurcharge + $weekendSurcharge;
         $loueurTotal = $loueurSubtotal + $deliveryFee + $returnFee + $optionsTotal;
 
         // 9. Acompte (configuré par le loueur dans ses settings)
@@ -175,15 +192,23 @@ class PricingService
             'subtotal' => $subtotal,
             'total' => $total,
 
-            // Prix pour le loueur (sans commission)
+            // Prix affiché par le loueur (avant commission)
             'loueur_daily_rate' => $loueurDailyRate,
             'loueur_base_price' => $loueurBasePrice,
+
+            // Ce que le loueur reçoit réellement (après commission ResaDZ)
+            'loueur_net_daily_rate' => $loueurNetDailyRate,
+            'loueur_net_base_price' => $loueurNetBasePrice,
             'loueur_subtotal' => $loueurSubtotal,
             'loueur_total' => $loueurTotal,
 
-            // Commission ResaDZ
-            'commission_per_day' => $commissionPerDay,
-            'commission_total' => $commissionTotal,
+            // Commission ResaDZ (prélevée au loueur)
+            'loueur_commission_per_day' => $loueurCommissionPerDay,
+            'loueur_commission_total' => $loueurCommissionTotal,
+
+            // Frais de service (facturés au client)
+            'client_service_fee_per_day' => $clientServiceFeePerDay,
+            'client_service_fee_total' => $clientServiceFeeTotal,
 
             'duration_discount' => $durationDiscount,
             'duration_discount_percent' => $durationDiscountPercent,
@@ -200,7 +225,8 @@ class PricingService
             'deposit_currency' => $depositCurrency,
             'formatted_total' => number_format($total, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_loueur_total' => number_format($loueurTotal, 0, ',', ' ') . ' ' . $currencySymbol,
-            'formatted_commission' => number_format($commissionTotal, 0, ',', ' ') . ' ' . $currencySymbol,
+            'formatted_loueur_commission' => number_format($loueurCommissionTotal, 0, ',', ' ') . ' ' . $currencySymbol,
+            'formatted_client_service_fee' => number_format($clientServiceFeeTotal, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_advance' => number_format($advanceAmount, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_deposit' => number_format($depositAmount, 0, ',', ' ') . ' ' . ($depositCurrency === 'EUR' ? '€' : 'DA'),
         ];

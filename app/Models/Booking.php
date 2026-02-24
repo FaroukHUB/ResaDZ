@@ -39,6 +39,7 @@ class Booking extends Model
         'discount_amount',
         'total_price',
         'commission_amount',
+        'client_service_fee',
         'commission_rate',
         'commission_paid',
         'commission_paid_at',

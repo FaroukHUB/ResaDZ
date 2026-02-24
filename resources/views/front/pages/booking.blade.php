@@ -422,7 +422,14 @@
         .then(data => {
             if (data.total !== undefined) {
                 let html = '';
-                html += `<div class="flex justify-between"><span class="text-gray-600">${data.total_days} jour(s) x ${fmt(data.daily_rate)} DA</span><span class="font-medium">${fmt(data.base_price)} DA</span></div>`;
+                // Prix de base (sans frais de service)
+                const basePriceWithoutFees = data.base_price - (data.client_service_fee_total || 0);
+                html += `<div class="flex justify-between"><span class="text-gray-600">${data.total_days} jour(s) x ${fmt(data.loueur_daily_rate)} DA</span><span class="font-medium">${fmt(basePriceWithoutFees)} DA</span></div>`;
+
+                // Frais de service ResaDZ
+                if (data.client_service_fee_total > 0) {
+                    html += `<div class="flex justify-between text-gray-600"><span>Frais de service <span class="text-xs text-gray-400">(${data.total_days}j x ${fmt(data.client_service_fee_per_day)} DA)</span></span><span class="font-medium">${fmt(data.client_service_fee_total)} DA</span></div>`;
+                }
 
                 if (data.duration_discount > 0) {
                     html += `<div class="flex justify-between text-green-600"><span>Remise durée</span><span>-${fmt(data.duration_discount)} DA</span></div>`;
@@ -441,6 +448,14 @@
                 }
 
                 html += `<div class="border-t border-gray-200 pt-3 mt-3 flex justify-between text-lg"><span class="font-bold text-gray-900">Total</span><span class="font-black text-amber-600">${data.formatted_total}</span></div>`;
+
+                // Info frais de service
+                if (data.client_service_fee_total > 0) {
+                    html += `<div class="text-xs text-gray-400 mt-2 p-2 bg-gray-50 rounded-lg">
+                        <span class="font-medium text-gray-500">Pourquoi des frais de service ?</span><br>
+                        Ces frais couvrent : vérification des loueurs, support client 7j/7, paiement sécurisé et protection de vos données.
+                    </div>`;
+                }
 
                 if (data.deposit_amount > 0) {
                     html += `<div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Caution (remboursable)</span><span class="font-semibold">${data.formatted_deposit}</span></div>`;

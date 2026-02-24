@@ -249,29 +249,39 @@ class Vehicle extends Model
             }
         }
 
-        // Prix du loueur (ce qu'il reçoit)
-        $loueurTotal = $pricePerDay * $days;
+        // Prix du loueur (ce qu'il affiche)
+        $loueurGrossTotal = $pricePerDay * $days;
 
-        // Commission ResaDZ (uniquement en DZD)
-        $commissionPerDay = $currency === 'EUR' ? 0 : (int) Setting::get('commission_per_day_dzd', 250);
-        $commissionTotal = $commissionPerDay * $days;
+        // Commission ResaDZ prélevée au loueur (uniquement en DZD)
+        $loueurCommissionPerDay = $currency === 'EUR' ? 0 : (int) Setting::get('loueur_commission_per_day_dzd', 150);
+        $loueurCommissionTotal = $loueurCommissionPerDay * $days;
 
-        // Prix affiché au client (loueur + commission)
-        $clientTotal = $loueurTotal + $commissionTotal;
+        // Ce que le loueur reçoit réellement
+        $loueurNetTotal = $loueurGrossTotal - $loueurCommissionTotal;
+
+        // Frais de service facturés au client (uniquement en DZD)
+        $clientServiceFeePerDay = $currency === 'EUR' ? 0 : (int) Setting::get('client_service_fee_per_day_dzd', 100);
+        $clientServiceFeeTotal = $clientServiceFeePerDay * $days;
+
+        // Prix affiché au client (prix loueur + frais de service)
+        $clientTotal = $loueurGrossTotal + $clientServiceFeeTotal;
 
         return [
             'price_per_day_loueur' => $pricePerDay,
-            'price_per_day_client' => $pricePerDay + $commissionPerDay,
-            'loueur_total' => $loueurTotal,
-            'commission_per_day' => $commissionPerDay,
-            'commission_total' => $commissionTotal,
+            'price_per_day_client' => $pricePerDay + $clientServiceFeePerDay,
+            'loueur_gross_total' => $loueurGrossTotal,
+            'loueur_commission_per_day' => $loueurCommissionPerDay,
+            'loueur_commission_total' => $loueurCommissionTotal,
+            'loueur_net_total' => $loueurNetTotal,
+            'client_service_fee_per_day' => $clientServiceFeePerDay,
+            'client_service_fee_total' => $clientServiceFeeTotal,
             'client_total' => $clientTotal,
             'days' => $days,
             'currency' => $currency,
         ];
     }
 
-    // Prix affiché au client (avec commission)
+    // Prix affiché au client (avec frais de service)
     public function getClientPricePerDay(string $currency = 'DZD'): float
     {
         $basePrice = $currency === 'EUR'
@@ -280,7 +290,7 @@ class Vehicle extends Model
 
         return $currency === 'EUR'
             ? $basePrice
-            : $basePrice + (int) Setting::get('commission_per_day_dzd', 250);
+            : $basePrice + (int) Setting::get('client_service_fee_per_day_dzd', 100);
     }
 
     // Helpers

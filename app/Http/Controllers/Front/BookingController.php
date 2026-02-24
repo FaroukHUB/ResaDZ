@@ -353,6 +353,8 @@ class BookingController extends Controller
             'extra_fees' => 0,
             'selected_options' => $selectedOptions,
             'total_price' => $totalPrice,
+            'commission_amount' => $pricing['loueur_commission_total'] ?? 0,
+            'client_service_fee' => $pricing['client_service_fee_total'] ?? 0,
             'advance_amount' => $pricing['advance_amount'],
             'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : null,
             'advance_expires_at' => $timerHours ? now()->addHours($timerHours) : null,

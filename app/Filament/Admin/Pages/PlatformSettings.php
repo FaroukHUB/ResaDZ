@@ -36,8 +36,9 @@ class PlatformSettings extends Page
             'company_address' => Setting::get('company_address', ''),
 
             // Commission & Pricing
-            'commission_per_day_dzd' => Setting::get('commission_per_day_dzd', 250),
-            'commission_rate_percent' => Setting::get('commission_rate_percent', 5.0),
+            'loueur_commission_per_day_dzd' => Setting::get('loueur_commission_per_day_dzd', 150),
+            'client_service_fee_per_day_dzd' => Setting::get('client_service_fee_per_day_dzd', 100),
+            'commission_rate_percent' => Setting::get('commission_rate_percent', 0),
             'dzd_to_usd_rate' => Setting::get('dzd_to_usd_rate', 0.0074),
             'min_paypal_amount_usd' => Setting::get('min_paypal_amount_usd', 1),
 
@@ -172,21 +173,30 @@ class PlatformSettings extends Page
                             ->icon('heroicon-o-currency-dollar')
                             ->schema([
                                 Forms\Components\Section::make('Commission ResaDZ')
+                                    ->description('Frais prélevés sur chaque réservation')
                                     ->schema([
-                                        Forms\Components\TextInput::make('commission_per_day_dzd')
-                                            ->label('Commission par jour (DA)')
+                                        Forms\Components\TextInput::make('loueur_commission_per_day_dzd')
+                                            ->label('Commission loueur (DA/jour)')
                                             ->numeric()
                                             ->required()
+                                            ->default(150)
                                             ->suffix('DA/jour')
-                                            ->helperText('Commission fixe prélevée par jour de location'),
+                                            ->helperText('Commission prélevée au loueur par jour de location'),
+                                        Forms\Components\TextInput::make('client_service_fee_per_day_dzd')
+                                            ->label('Frais de service client (DA/jour)')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(100)
+                                            ->suffix('DA/jour')
+                                            ->helperText('Frais de service facturés au client par jour de location'),
                                         Forms\Components\TextInput::make('commission_rate_percent')
                                             ->label('Taux de commission (%)')
                                             ->numeric()
                                             ->required()
                                             ->suffix('%')
-                                            ->helperText('Pourcentage sur le montant total'),
+                                            ->helperText('Pourcentage additionnel sur le montant total (optionnel)'),
                                     ])
-                                    ->columns(2),
+                                    ->columns(3),
 
                                 Forms\Components\Section::make('Conversion de devises')
                                     ->schema([
@@ -437,7 +447,8 @@ class PlatformSettings extends Page
         Setting::set('company_address', $data['company_address'], 'company', 'text');
 
         // Commission & Pricing
-        Setting::set('commission_per_day_dzd', $data['commission_per_day_dzd'], 'pricing', 'number');
+        Setting::set('loueur_commission_per_day_dzd', $data['loueur_commission_per_day_dzd'], 'pricing', 'number');
+        Setting::set('client_service_fee_per_day_dzd', $data['client_service_fee_per_day_dzd'], 'pricing', 'number');
         Setting::set('commission_rate_percent', $data['commission_rate_percent'], 'pricing', 'number');
         Setting::set('dzd_to_usd_rate', $data['dzd_to_usd_rate'], 'pricing', 'number');
         Setting::set('min_paypal_amount_usd', $data['min_paypal_amount_usd'], 'pricing', 'number');
