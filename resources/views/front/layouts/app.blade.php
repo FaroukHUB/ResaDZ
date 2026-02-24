@@ -94,11 +94,11 @@
     <!-- Navigation -->
     <nav class="bg-white shadow-sm border-b border-gray-100 sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16">
+            <div class="flex justify-between items-center h-24">
                 <!-- Logo -->
                 <a href="{{ route('home') }}" class="flex items-center gap-3">
                     @if($logoLight)
-                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-14 w-auto">
+                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-20 w-auto">
                     @else
                         {{-- Fallback text logo --}}
                         <span class="text-2xl font-black text-gray-900">{{ $siteName }}</span>
@@ -199,9 +199,9 @@
                     <div class="lg:col-span-4">
                         <div class="flex items-center gap-3 mb-6">
                             @if($logoDark)
-                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-16 w-auto">
+                                <img src="{{ Storage::url($logoDark) }}" alt="{{ $siteName }}" class="h-24 w-auto">
                             @elseif($logoLight)
-                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-16 w-auto brightness-0 invert">
+                                <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-24 w-auto brightness-0 invert">
                             @else
                                 <span class="text-3xl font-black text-white">{{ $siteName }}</span>
                             @endif
