@@ -69,7 +69,7 @@
                 <span class="text-white/60 text-lg font-semibold">/ {{ number_format($vehicle->price_per_day_eur, 0) }} €</span>
             @endif
         </div>
-        <p class="text-white/50 text-sm mt-1">Prix / jour</p>
+        <p class="text-white/60 text-sm mt-1">Prix / jour</p>
     </div>
 
     {{-- Badges Section (only if loueur has badges configured) --}}

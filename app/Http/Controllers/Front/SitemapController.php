@@ -3,26 +3,115 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Models\BlogPost;
 use App\Models\Loueur;
 use App\Models\Vehicle;
 use Illuminate\Http\Response;
+use Illuminate\Support\Str;
 
 class SitemapController extends Controller
 {
-    public function index()
+    public function index(): Response
     {
+        $urls = [];
+
+        // Homepage - highest priority
+        $urls[] = [
+            'loc' => url('/'),
+            'changefreq' => 'daily',
+            'priority' => '1.0',
+        ];
+
+        // Vehicles list page
+        $urls[] = [
+            'loc' => route('vehicles.index'),
+            'changefreq' => 'daily',
+            'priority' => '0.8',
+        ];
+
+        // Blog index page
+        $urls[] = [
+            'loc' => route('blog.index'),
+            'changefreq' => 'weekly',
+            'priority' => '0.8',
+        ];
+
+        // Individual vehicle pages
         $vehicles = Vehicle::where('is_active', true)
             ->where('status', 'available')
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->get(['slug', 'updated_at']);
 
+        foreach ($vehicles as $vehicle) {
+            $urls[] = [
+                'loc' => route('vehicles.show', $vehicle->slug),
+                'lastmod' => $vehicle->updated_at->toW3cString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ];
+        }
+
+        // Blog posts
+        $posts = BlogPost::published()
+            ->orderBy('published_at', 'desc')
+            ->get(['slug', 'published_at', 'updated_at']);
+
+        foreach ($posts as $post) {
+            $urls[] = [
+                'loc' => route('blog.show', $post->slug),
+                'lastmod' => $post->updated_at->toW3cString(),
+                'changefreq' => 'monthly',
+                'priority' => '0.7',
+            ];
+        }
+
+        // Loueur pages
         $loueurs = Loueur::where('is_active', true)
+            ->where('is_suspended', false)
             ->orderBy('updated_at', 'desc')
-            ->get();
+            ->get(['slug', 'updated_at']);
 
-        $content = view('front.pages.sitemap', compact('vehicles', 'loueurs'))->render();
+        foreach ($loueurs as $loueur) {
+            $urls[] = [
+                'loc' => route('loueur.show', $loueur->slug),
+                'lastmod' => $loueur->updated_at->toW3cString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ];
+        }
 
-        return response($content, 200)
+        // Vehicles by wilaya pages
+        $wilayas = config('resadz.wilayas', []);
+
+        foreach ($wilayas as $code => $name) {
+            $wilayaSlug = Str::slug($name);
+            $urls[] = [
+                'loc' => route('vehicles.by-wilaya', $wilayaSlug),
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ];
+        }
+
+        // Build XML
+        $xml = '<?xml version="1.0" encoding="UTF-8"?>' . "\n";
+        $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' . "\n";
+
+        foreach ($urls as $url) {
+            $xml .= '    <url>' . "\n";
+            $xml .= '        <loc>' . htmlspecialchars($url['loc'], ENT_XML1, 'UTF-8') . '</loc>' . "\n";
+
+            if (isset($url['lastmod'])) {
+                $xml .= '        <lastmod>' . $url['lastmod'] . '</lastmod>' . "\n";
+            }
+
+            $xml .= '        <changefreq>' . $url['changefreq'] . '</changefreq>' . "\n";
+            $xml .= '        <priority>' . $url['priority'] . '</priority>' . "\n";
+            $xml .= '    </url>' . "\n";
+        }
+
+        $xml .= '</urlset>' . "\n";
+
+        return response($xml, 200)
             ->header('Content-Type', 'text/xml; charset=utf-8');
     }
 

@@ -3,6 +3,39 @@
 @section('title', \App\Models\Setting::get('company_name', 'ResaDZ') . ' - ' . \App\Models\Setting::get('company_slogan', 'Location de véhicules en Algérie'))
 @section('meta_description', 'Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés partout en Algérie.')
 
+@section('meta_extra')
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "Organization",
+    "name": "{{ \App\Models\Setting::get('company_name', 'ResaDZ') }}",
+    "url": "{{ config('app.url') }}",
+    "logo": "{{ \App\Models\Setting::get('logo_light') ? asset('storage/' . \App\Models\Setting::get('logo_light')) : asset('assets/favicon.png') }}",
+    "description": "Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés.",
+    "address": {
+        "@@type": "PostalAddress",
+        "addressCountry": "DZ"
+    },
+    "sameAs": [
+        @if(\App\Models\Setting::get('facebook'))"{{ \App\Models\Setting::get('facebook') }}"@endif
+    ]
+}
+</script>
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "WebSite",
+    "name": "{{ \App\Models\Setting::get('company_name', 'ResaDZ') }}",
+    "url": "{{ config('app.url') }}",
+    "potentialAction": {
+        "@@type": "SearchAction",
+        "target": "{{ route('vehicles.index') }}?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+    }
+}
+</script>
+@endsection
+
 @section('content')
 
     <!-- Hero Section with Slider -->
@@ -20,7 +53,7 @@
                 @if($heroSlides->count() > 1)
                     <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
                         @foreach($heroSlides as $index => $slide)
-                            <button onclick="goToSlide({{ $index }})" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70' }}" data-index="{{ $index }}"></button>
+                            <button onclick="goToSlide({{ $index }})" aria-label="Slide {{ $index + 1 }}" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70' }}" data-index="{{ $index }}"></button>
                         @endforeach
                     </div>
                 @endif
@@ -75,13 +108,13 @@
                     <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                             <div>
-                                <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
+                                <label for="hero-wilaya" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
                                 <div class="relative">
-                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                     </svg>
-                                    <select name="wilaya" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer">
+                                    <select name="wilaya" id="hero-wilaya" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer">
                                         <option value="">Wilaya, ville...</option>
                                         @if(isset($wilayas))
                                             @foreach($wilayas as $wilaya)
@@ -92,21 +125,21 @@
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
+                                <label for="hero-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
                                 <div class="relative">
-                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <input type="date" name="pickup_date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
+                                    <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
                                 </div>
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
+                                <label for="hero-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
                                 <div class="relative">
-                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                                     </svg>
-                                    <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
+                                    <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
                                 </div>
                             </div>
                             <div>

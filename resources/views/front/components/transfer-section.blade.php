@@ -87,26 +87,26 @@
                     <form action="{{ route('transfers.search') }}" method="GET" class="space-y-4">
                         {{-- Départ --}}
                         <div>
-                            <label class="block text-sm font-medium text-white/70 mb-1">Lieu de départ</label>
+                            <label for="transfer-departure" class="block text-sm font-medium text-white/70 mb-1">Lieu de départ</label>
                             <div class="relative">
-                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
-                                <input type="text" name="departure" placeholder="Ex: Aéroport Houari Boumediene"
+                                <input type="text" name="departure" id="transfer-departure" placeholder="Ex: Aéroport Houari Boumediene"
                                        class="w-full pl-11 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                         </div>
 
                         {{-- Destination --}}
                         <div>
-                            <label class="block text-sm font-medium text-white/70 mb-1">Destination</label>
+                            <label for="transfer-destination" class="block text-sm font-medium text-white/70 mb-1">Destination</label>
                             <div class="relative">
-                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
-                                <input type="text" name="destination" placeholder="Ex: Alger centre, Hôtel..."
+                                <input type="text" name="destination" id="transfer-destination" placeholder="Ex: Alger centre, Hôtel..."
                                        class="w-full pl-11 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                         </div>
@@ -114,13 +114,13 @@
                         {{-- Date & Heure --}}
                         <div class="grid grid-cols-2 gap-3">
                             <div>
-                                <label class="block text-sm font-medium text-white/70 mb-1">Date</label>
-                                <input type="date" name="date" min="{{ date('Y-m-d') }}"
+                                <label for="transfer-date" class="block text-sm font-medium text-white/70 mb-1">Date</label>
+                                <input type="date" name="date" id="transfer-date" min="{{ date('Y-m-d') }}"
                                        class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-white/70 mb-1">Heure</label>
-                                <select name="time" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                <label for="transfer-time" class="block text-sm font-medium text-white/70 mb-1">Heure</label>
+                                <select name="time" id="transfer-time" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                     @for($h = 0; $h <= 23; $h++)
                                         <option value="{{ sprintf('%02d:00', $h) }}" {{ $h == 10 ? 'selected' : '' }}>{{ sprintf('%02d:00', $h) }}</option>
                                     @endfor
@@ -130,8 +130,8 @@
 
                         {{-- Passagers --}}
                         <div>
-                            <label class="block text-sm font-medium text-white/70 mb-1">Passagers</label>
-                            <select name="passengers" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                            <label for="transfer-passengers" class="block text-sm font-medium text-white/70 mb-1">Passagers</label>
+                            <select name="passengers" id="transfer-passengers" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent">
                                 @for($i = 1; $i <= 10; $i++)
                                     <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? 'passagers' : 'passager' }}</option>
                                 @endfor

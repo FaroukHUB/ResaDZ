@@ -28,9 +28,10 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         {{-- Date d'arrivée --}}
                         <div>
-                            <label class="block text-sm font-medium text-white mb-2">Date d'arrivée</label>
+                            <label for="airport-pickup-date" class="block text-sm font-medium text-white mb-2">Date d'arrivée</label>
                             <input type="date"
                                    name="pickup_date"
+                                   id="airport-pickup-date"
                                    value="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                    min="{{ date('Y-m-d') }}"
                                    class="w-full px-4 py-4 bg-[#1a1a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors">
@@ -38,8 +39,9 @@
 
                         {{-- Heure d'arrivée --}}
                         <div>
-                            <label class="block text-sm font-medium text-white mb-2">Heure d'arrivée</label>
+                            <label for="airport-pickup-time" class="block text-sm font-medium text-white mb-2">Heure d'arrivée</label>
                             <select name="pickup_time"
+                                    id="airport-pickup-time"
                                     class="w-full px-4 py-4 bg-[#1a1a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors appearance-none cursor-pointer">
                                 <option value="">Sélectionner l'heure</option>
                                 @for($h = 0; $h < 24; $h++)
@@ -50,9 +52,10 @@
 
                         {{-- Date de retour --}}
                         <div>
-                            <label class="block text-sm font-medium text-white mb-2">Date de retour</label>
+                            <label for="airport-return-date" class="block text-sm font-medium text-white mb-2">Date de retour</label>
                             <input type="date"
                                    name="return_date"
+                                   id="airport-return-date"
                                    value="{{ date('Y-m-d', strtotime('+5 days')) }}"
                                    min="{{ date('Y-m-d', strtotime('+1 day')) }}"
                                    class="w-full px-4 py-4 bg-[#1a1a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors">
@@ -60,8 +63,9 @@
 
                         {{-- Aéroport --}}
                         <div>
-                            <label class="block text-sm font-medium text-white mb-2">Aéroport</label>
+                            <label for="airport-wilaya" class="block text-sm font-medium text-white mb-2">Aéroport</label>
                             <select name="wilaya"
+                                    id="airport-wilaya"
                                     class="w-full px-4 py-4 bg-[#1a1a1a] border border-gray-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition-colors appearance-none cursor-pointer">
                                 <option value="">Choisir un aéroport</option>
                                 <option value="Alger">Alger - Houari Boumediene</option>
