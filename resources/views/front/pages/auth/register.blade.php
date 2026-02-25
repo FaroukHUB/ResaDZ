@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'Créer un compte loueur - ResaDZ')
+@section('title', 'Créer un compte - ResaDZ')
 
 @section('content')
 <div class="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
@@ -8,8 +8,8 @@
         <!-- Header -->
         <div class="text-center">
             <a href="{{ route('home') }}" class="text-3xl font-black text-gray-900">Resa<span class="text-red-600">DZ</span></a>
-            <h2 class="mt-4 text-2xl font-bold text-gray-900">Devenir loueur</h2>
-            <p class="mt-2 text-gray-500">Créez votre compte en 2 minutes et commencez à louer</p>
+            <h2 class="mt-4 text-2xl font-bold text-gray-900">Rejoindre ResaDZ</h2>
+            <p class="mt-2 text-gray-500">Créez votre compte en 2 minutes</p>
         </div>
 
         <!-- Google Register -->
@@ -47,6 +47,29 @@
                 </div>
             @endif
 
+            <!-- Account Type Selector -->
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Je suis</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="account_type" value="loueur" class="peer sr-only" {{ old('account_type', 'loueur') === 'loueur' ? 'checked' : '' }} required>
+                        <div class="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-xl peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-gray-300 transition">
+                            <svg class="w-8 h-8 text-gray-400 peer-checked:text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0H21M3.375 14.25h17.25M21 12.75V14.25M3.375 14.25V5.625m0 0A1.125 1.125 0 0 1 4.5 4.5h9.375"/></svg>
+                            <span class="text-sm font-semibold text-gray-700">Loueur</span>
+                            <span class="text-xs text-gray-400 text-center">Location de véhicules</span>
+                        </div>
+                    </label>
+                    <label class="relative cursor-pointer">
+                        <input type="radio" name="account_type" value="taxi" class="peer sr-only" {{ old('account_type') === 'taxi' ? 'checked' : '' }}>
+                        <div class="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-xl peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-gray-300 transition">
+                            <svg class="w-8 h-8 text-gray-400 peer-checked:text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
+                            <span class="text-sm font-semibold text-gray-700">Taxi / VTC</span>
+                            <span class="text-xs text-gray-400 text-center">Transfert & livraison</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                     <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Votre nom</label>
@@ -63,7 +86,7 @@
             </div>
 
             <div>
-                <label for="company_name" class="block text-sm font-medium text-gray-700 mb-1">Nom de votre agence / entreprise</label>
+                <label for="company_name" id="company_label" class="block text-sm font-medium text-gray-700 mb-1">Nom de votre agence / entreprise</label>
                 <input type="text" id="company_name" name="company_name" value="{{ old('company_name') }}" required
                     class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-red-500 transition"
                     placeholder="Ex: AutoLoc Alger">
@@ -124,3 +147,34 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const radios = document.querySelectorAll('input[name="account_type"]');
+    const label = document.getElementById('company_label');
+    const input = document.getElementById('company_name');
+    const submitBtn = document.querySelector('button[type="submit"]');
+
+    function updateForm(type) {
+        if (type === 'taxi') {
+            label.textContent = 'Votre nom commercial';
+            input.placeholder = 'Ex: Taxi Mohamed Alger';
+            submitBtn.textContent = 'Créer mon compte chauffeur';
+        } else {
+            label.textContent = 'Nom de votre agence / entreprise';
+            input.placeholder = 'Ex: AutoLoc Alger';
+            submitBtn.textContent = 'Créer mon compte gratuitement';
+        }
+    }
+
+    radios.forEach(function(radio) {
+        radio.addEventListener('change', function() { updateForm(this.value); });
+    });
+
+    // Init
+    const checked = document.querySelector('input[name="account_type"]:checked');
+    if (checked) updateForm(checked.value);
+});
+</script>
+@endpush

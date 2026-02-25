@@ -23,6 +23,12 @@ class BoostVehicle extends Page implements HasForms
     protected static ?string $navigationGroup = 'Catalogue';
     protected static ?int $navigationSort = 5;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        $loueur = Auth::user()?->loueur;
+        return $loueur && $loueur->isLoueur();
+    }
+
     protected static string $view = 'filament.loueur.pages.boost-vehicle';
 
     public ?array $data = [];

@@ -21,7 +21,16 @@ class Settings extends Page implements Forms\Contracts\HasForms
 
     protected static ?string $navigationLabel = 'Paramètres';
 
-    protected static ?string $title = 'Paramètres de mon agence';
+    protected static ?string $title = 'Paramètres';
+
+    public function getTitle(): string
+    {
+        $loueur = Auth::user()->loueur;
+        if ($loueur && $loueur->isTaxi()) {
+            return 'Paramètres de mon activité';
+        }
+        return 'Paramètres de mon agence';
+    }
 
     protected static ?int $navigationSort = 10;
 
@@ -81,14 +90,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'deposit_payment_methods' => $loueur->getSetting('deposit_payment_methods', []),
                 // Rental options (siège bébé, GPS, etc.)
                 'rental_options' => $loueur->getSetting('rental_options', []),
-                // Transfer settings
-                'transfer_enabled' => $loueur->getSetting('transfer_enabled', false),
-                'transfer_airports' => $loueur->getSetting('transfer_airports', []),
-                'transfer_cities' => $loueur->getSetting('transfer_cities', []),
-                'transfer_routes' => $loueur->getSetting('transfer_routes', []),
-                'transfer_description' => $loueur->getSetting('transfer_description', ''),
-                'transfer_24h' => $loueur->getSetting('transfer_24h', false),
-                'transfer_luggage' => $loueur->getSetting('transfer_luggage', true),
+                // Services
+                'offers_transfer' => $loueur->offers_transfer,
+                'offers_delivery' => $loueur->offers_delivery,
             ]);
         }
     }
@@ -181,6 +185,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ]),
                         Forms\Components\Tabs\Tab::make('Réservations')
                             ->icon('heroicon-o-calendar')
+                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
                                 Forms\Components\Section::make('Délais et acomptes')
                                     ->description('Configurez les règles de réservation')
@@ -270,6 +275,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ]),
                         Forms\Components\Tabs\Tab::make('Options')
                             ->icon('heroicon-o-squares-plus')
+                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
                                 Forms\Components\Section::make('Options de location')
                                     ->description('Configurez les options payantes ou offertes que vous proposez à vos clients (siège bébé, GPS, chauffeur, etc.)')
@@ -366,6 +372,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ]),
                         Forms\Components\Tabs\Tab::make('Badges')
                             ->icon('heroicon-o-tag')
+                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
                                 Forms\Components\Section::make('Badges des cartes véhicules')
                                     ->description('Sélectionnez les badges à afficher sur vos cartes véhicules. Ces badges apparaissent sur le marketplace pour rassurer les clients.')
@@ -405,6 +412,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ]),
                         Forms\Components\Tabs\Tab::make('Conditions')
                             ->icon('heroicon-o-clipboard-document-list')
+                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
                                 Forms\Components\Section::make('Conditions de location')
                                     ->description('Définissez vos conditions de location. Ces informations seront affichées aux clients sur la page de détail du véhicule.')
@@ -486,6 +494,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ]),
                         Forms\Components\Tabs\Tab::make('Synchronisation')
                             ->icon('heroicon-o-arrow-path')
+                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
                                 Forms\Components\Section::make('Synchronisation Google Agenda')
                                     ->description('Synchronisez vos réservations et blocages avec Google Agenda, Apple Calendar ou Outlook.')
@@ -514,102 +523,30 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
                                             ->helperText('Copiez ce lien et collez-le dans Google Agenda'),
                                     ]),
                             ]),
-                        Forms\Components\Tabs\Tab::make('Transferts')
-                            ->icon('heroicon-o-truck')
+                        Forms\Components\Tabs\Tab::make('Services')
+                            ->icon('heroicon-o-squares-plus')
                             ->schema([
-                                Forms\Components\Section::make('Service de transfert')
-                                    ->description('Proposez un service de transfert/taxi gratuit sur ResaDZ pour attirer plus de clients.')
+                                Forms\Components\Section::make('Services proposés')
+                                    ->description(function () {
+                                        $loueur = Auth::user()->loueur;
+                                        if ($loueur && $loueur->isTaxi()) {
+                                            return 'Activez les services que vous proposez. Gérez vos trajets et tarifs depuis les menus Transferts et Livraison.';
+                                        }
+                                        return 'En plus de la location, vous pouvez proposer un service de transfert. Gérez vos trajets depuis le menu Transferts.';
+                                    })
                                     ->schema([
-                                        Forms\Components\Toggle::make('transfer_enabled')
-                                            ->label('Activer le service de transfert')
-                                            ->helperText('Votre agence apparaîtra dans les résultats de recherche de transfert')
-                                            ->live(),
-                                    ]),
-                                Forms\Components\Section::make('Zones desservies')
-                                    ->visible(fn ($get) => $get('transfer_enabled'))
-                                    ->schema([
-                                        Forms\Components\CheckboxList::make('transfer_airports')
-                                            ->label('Aéroports desservis')
-                                            ->options([
-                                                'Aéroport Houari Boumediene (Alger)' => 'Aéroport Houari Boumediene (Alger)',
-                                                'Aéroport Ahmed Ben Bella (Oran)' => 'Aéroport Ahmed Ben Bella (Oran)',
-                                                'Aéroport Mohamed Boudiaf (Constantine)' => 'Aéroport Mohamed Boudiaf (Constantine)',
-                                                'Aéroport Rabah Bitat (Annaba)' => 'Aéroport Rabah Bitat (Annaba)',
-                                                'Aéroport Messali El Hadj (Tlemcen)' => 'Aéroport Messali El Hadj (Tlemcen)',
-                                                'Aéroport Ain El Bey (Constantine)' => 'Aéroport Ain El Bey (Constantine)',
-                                                'Aéroport de Béjaïa' => 'Aéroport de Béjaïa',
-                                                'Aéroport de Sétif' => 'Aéroport de Sétif',
-                                            ])
-                                            ->columns(2),
-                                        Forms\Components\TagsInput::make('transfer_cities')
-                                            ->label('Villes desservies')
-                                            ->placeholder('Ajouter une ville...')
-                                            ->helperText('Ajoutez les villes que vous desservez (ex: Alger, Blida, Boumerdès...)'),
-                                    ]),
-                                Forms\Components\Section::make('Tarifs de transfert')
-                                    ->description('Définissez vos tarifs forfaitaires par trajet')
-                                    ->visible(fn ($get) => $get('transfer_enabled'))
-                                    ->schema([
-                                        Forms\Components\Repeater::make('transfer_routes')
+                                        Forms\Components\Toggle::make('offers_transfer')
+                                            ->label('Service de transfert')
+                                            ->helperText('Proposez des trajets vers les aéroports, gares et villes. Gérez vos trajets et tarifs dans le menu "Transferts".')
+                                            ->visible(fn () => Auth::user()->loueur?->isLoueur()),
+                                        Forms\Components\Toggle::make('offers_delivery')
+                                            ->label('Service de livraison')
+                                            ->helperText('Proposez la livraison de colis, documents et repas. Gérez vos tarifs dans le menu "Livraison".')
+                                            ->visible(fn () => Auth::user()->loueur?->isTaxi()),
+                                        Forms\Components\Placeholder::make('taxi_transfer_info')
                                             ->label('')
-                                            ->schema([
-                                                Forms\Components\Grid::make(3)
-                                                    ->schema([
-                                                        Forms\Components\TextInput::make('from')
-                                                            ->label('Départ')
-                                                            ->required()
-                                                            ->placeholder('Ex: Aéroport Alger'),
-                                                        Forms\Components\TextInput::make('to')
-                                                            ->label('Arrivée')
-                                                            ->required()
-                                                            ->placeholder('Ex: Alger centre'),
-                                                        Forms\Components\TextInput::make('price')
-                                                            ->label('Prix forfaitaire')
-                                                            ->numeric()
-                                                            ->required()
-                                                            ->suffix('DA')
-                                                            ->placeholder('3000'),
-                                                    ]),
-                                                Forms\Components\Grid::make(2)
-                                                    ->schema([
-                                                        Forms\Components\Select::make('vehicle_type')
-                                                            ->label('Type de véhicule')
-                                                            ->options([
-                                                                'berline' => 'Berline (4 places)',
-                                                                'suv' => 'SUV (5 places)',
-                                                                'van' => 'Van (7 places)',
-                                                                'minibus' => 'Minibus (9+ places)',
-                                                            ])
-                                                            ->default('berline'),
-                                                        Forms\Components\TextInput::make('max_passengers')
-                                                            ->label('Passagers max')
-                                                            ->numeric()
-                                                            ->default(4)
-                                                            ->minValue(1)
-                                                            ->maxValue(20),
-                                                    ]),
-                                            ])
-                                            ->defaultItems(0)
-                                            ->addActionLabel('Ajouter un trajet')
-                                            ->reorderable()
-                                            ->collapsible()
-                                            ->itemLabel(fn (array $state): ?string =>
-                                                ($state['from'] ?? '?') . ' → ' . ($state['to'] ?? '?') . ' : ' . number_format($state['price'] ?? 0, 0, ',', ' ') . ' DA'
-                                            ),
-                                    ]),
-                                Forms\Components\Section::make('Informations complémentaires')
-                                    ->visible(fn ($get) => $get('transfer_enabled'))
-                                    ->schema([
-                                        Forms\Components\Textarea::make('transfer_description')
-                                            ->label('Description du service')
-                                            ->rows(3)
-                                            ->placeholder('Ex: Service de transfert professionnel avec chauffeur expérimenté. Véhicule climatisé, WiFi à bord...'),
-                                        Forms\Components\Toggle::make('transfer_24h')
-                                            ->label('Disponible 24h/24')
-                                            ->helperText('Le service est disponible même la nuit'),
-                                        Forms\Components\Toggle::make('transfer_luggage')
-                                            ->label('Bagages inclus')
-                                            ->helperText('Les bagages sont pris en charge sans frais supplémentaires'),
+                                            ->content('Le service de transfert est activé par défaut pour les comptes Taxi/VTC.')
+                                            ->visible(fn () => Auth::user()->loueur?->isTaxi()),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('SEO')
@@ -747,14 +684,13 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         // Rental options
         $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
 
-        // Transfer settings
-        $loueur->setSetting('transfer_enabled', $data['transfer_enabled'] ?? false, 'boolean');
-        $loueur->setSetting('transfer_airports', $data['transfer_airports'] ?? [], 'json');
-        $loueur->setSetting('transfer_cities', $data['transfer_cities'] ?? [], 'json');
-        $loueur->setSetting('transfer_routes', $data['transfer_routes'] ?? [], 'json');
-        $loueur->setSetting('transfer_description', $data['transfer_description'] ?? '', 'text');
-        $loueur->setSetting('transfer_24h', $data['transfer_24h'] ?? false, 'boolean');
-        $loueur->setSetting('transfer_luggage', $data['transfer_luggage'] ?? true, 'boolean');
+        // Services
+        if ($loueur->isLoueur()) {
+            $loueur->update(['offers_transfer' => $data['offers_transfer'] ?? false]);
+        }
+        if ($loueur->isTaxi()) {
+            $loueur->update(['offers_delivery' => $data['offers_delivery'] ?? false]);
+        }
 
         // Handle password update
         $user = Auth::user();

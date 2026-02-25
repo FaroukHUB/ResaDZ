@@ -56,8 +56,11 @@ class AuthController extends Controller
             'phone' => 'required|string|max:20',
             'company_name' => 'required|string|max:255',
             'wilaya' => 'required|string|max:100',
+            'account_type' => 'required|in:loueur,taxi',
             'password' => 'required|string|min:6|confirmed',
         ]);
+
+        $isTaxi = $validated['account_type'] === 'taxi';
 
         $user = User::create([
             'name' => $validated['name'],
@@ -66,20 +69,26 @@ class AuthController extends Controller
             'role' => 'loueur',
         ]);
 
-        // Create loueur profile
+        // Create loueur/taxi profile
         Loueur::create([
             'user_id' => $user->id,
+            'account_type' => $validated['account_type'],
             'company_name' => $validated['company_name'],
             'slug' => Str::slug($validated['company_name']) . '-' . Str::random(4),
             'phone' => $validated['phone'],
             'wilaya' => $validated['wilaya'],
             'is_active' => true,
+            'offers_transfer' => $isTaxi, // Taxis have transfer enabled by default
             'trial_ends_at' => now()->addDays(config('resadz.trial_days', 30)),
         ]);
 
         Auth::login($user);
 
-        return redirect('/loueur')->with('success', 'Bienvenue sur ResaDZ ! Votre espace loueur est prêt.');
+        $message = $isTaxi
+            ? 'Bienvenue sur ResaDZ ! Votre espace chauffeur est prêt.'
+            : 'Bienvenue sur ResaDZ ! Votre espace loueur est prêt.';
+
+        return redirect('/loueur')->with('success', $message);
     }
 
     // Google OAuth

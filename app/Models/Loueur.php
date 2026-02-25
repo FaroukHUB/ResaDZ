@@ -56,6 +56,9 @@ class Loueur extends Model
         'commission_rate',
         'commission_paid_until',
         'commission_notes',
+        'account_type',
+        'offers_transfer',
+        'offers_delivery',
     ];
 
     protected $casts = [
@@ -63,6 +66,8 @@ class Loueur extends Model
         'is_active' => 'boolean',
         'is_verified' => 'boolean',
         'is_suspended' => 'boolean',
+        'offers_transfer' => 'boolean',
+        'offers_delivery' => 'boolean',
         'verified_at' => 'datetime',
         'subscription_expires_at' => 'datetime',
         'trial_ends_at' => 'date',
@@ -128,6 +133,36 @@ class Loueur extends Model
     public function invoices(): HasMany
     {
         return $this->hasMany(Invoice::class);
+    }
+
+    public function transferRoutes(): HasMany
+    {
+        return $this->hasMany(TransferRoute::class);
+    }
+
+    public function transferBookings(): HasMany
+    {
+        return $this->hasMany(TransferBooking::class);
+    }
+
+    public function deliveryRates(): HasMany
+    {
+        return $this->hasMany(DeliveryRate::class);
+    }
+
+    public function deliveryBookings(): HasMany
+    {
+        return $this->hasMany(DeliveryBooking::class);
+    }
+
+    public function isTaxi(): bool
+    {
+        return $this->account_type === 'taxi';
+    }
+
+    public function isLoueur(): bool
+    {
+        return $this->account_type === 'loueur';
     }
 
     /**

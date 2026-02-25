@@ -29,6 +29,12 @@ class OfferResource extends Resource
 
     protected static ?int $navigationSort = 10;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        $loueur = Auth::user()?->loueur;
+        return $loueur && $loueur->isLoueur();
+    }
+
     // Filter to show only offers for the connected loueur
     public static function getEloquentQuery(): Builder
     {

@@ -30,6 +30,12 @@ class VehicleResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    public static function shouldRegisterNavigation(): bool
+    {
+        $loueur = Auth::user()?->loueur;
+        return $loueur && $loueur->isLoueur();
+    }
+
     // Filtrer pour n'afficher que les véhicules du loueur connecté
     public static function getEloquentQuery(): Builder
     {
