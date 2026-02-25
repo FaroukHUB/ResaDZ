@@ -216,6 +216,14 @@
                 </a>
             </div>
             @endif
+
+            {{-- Bouton voir tous les véhicules --}}
+            <div class="mt-10 text-center">
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full transition shadow-lg shadow-green-600/20 text-lg">
+                    Voir tous nos véhicules
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
         </div>
     </section>
     @endif

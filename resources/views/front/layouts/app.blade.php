@@ -79,9 +79,6 @@
 
                 <!-- CTA -->
                 <div class="flex items-center gap-3">
-                    <a href="{{ route('vehicles.index') }}" class="hidden sm:inline-flex items-center px-5 py-2.5 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition shadow-sm">
-                        Réserver
-                    </a>
                     @auth
                         @if(Auth::user()->loueur)
                             <a href="/loueur" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition text-sm">
@@ -100,10 +97,40 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white font-medium rounded-lg hover:bg-gray-800 transition text-sm">
+                        <a href="{{ route('login') }}" class="inline-flex items-center gap-2 px-4 py-2 text-gray-700 font-medium rounded-lg hover:bg-gray-100 transition text-sm">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                             Connexion
                         </a>
+                        {{-- S'inscrire dropdown --}}
+                        <div class="relative hidden sm:block" x-data="{ open: false }">
+                            <button @click="open = !open" @click.outside="open = false"
+                                    class="inline-flex items-center gap-2 px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition shadow-sm">
+                                S'inscrire
+                                <svg class="w-4 h-4 transition-transform" :class="open && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+                            <div x-show="open" x-transition:enter="transition ease-out duration-100" x-transition:enter-start="opacity-0 scale-95" x-transition:enter-end="opacity-100 scale-100" x-transition:leave="transition ease-in duration-75" x-transition:leave-start="opacity-100 scale-100" x-transition:leave-end="opacity-0 scale-95"
+                                 class="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50">
+                                <a href="{{ route('register') }}?type=loueur" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition">
+                                    <div class="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900 text-sm">Loueur</div>
+                                        <div class="text-xs text-gray-500">Location de véhicules</div>
+                                    </div>
+                                </a>
+                                <div class="border-t border-gray-100"></div>
+                                <a href="{{ route('register') }}?type=taxi" class="flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition">
+                                    <div class="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                                    </div>
+                                    <div>
+                                        <div class="font-semibold text-gray-900 text-sm">Chauffeur / Taxi</div>
+                                        <div class="text-xs text-gray-500">Transfert & livraison</div>
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
                     @endauth
 
                     <!-- Mobile Menu Button -->
@@ -131,7 +158,8 @@
                         </form>
                     @else
                         <a href="{{ route('login') }}" class="px-3 py-2 rounded-lg bg-gray-900 text-white text-center font-medium">Connexion</a>
-                        <a href="{{ route('register') }}" class="px-3 py-2 rounded-lg bg-red-600 text-white text-center font-medium">Créer un compte loueur</a>
+                        <a href="{{ route('register') }}?type=loueur" class="px-3 py-2 rounded-lg bg-green-600 text-white text-center font-medium">S'inscrire en tant que Loueur</a>
+                        <a href="{{ route('register') }}?type=taxi" class="px-3 py-2 rounded-lg bg-amber-600 text-white text-center font-medium">S'inscrire en tant que Chauffeur</a>
                     @endauth
                 </div>
             </div>
