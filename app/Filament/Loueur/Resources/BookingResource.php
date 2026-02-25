@@ -75,6 +75,7 @@ class BookingResource extends Resource
                                                 'active' => 'En cours',
                                                 'completed' => 'Terminée',
                                                 'cancelled' => 'Annulée',
+                                                'expired' => 'Expirée',
                                             ])
                                             ->required(),
                                     ]),
@@ -425,7 +426,7 @@ class BookingResource extends Resource
                         'info' => 'confirmed',
                         'success' => 'active',
                         'gray' => 'completed',
-                        'danger' => 'cancelled',
+                        'danger' => fn ($state) => in_array($state, ['cancelled', 'expired']),
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'pending' => 'En attente',
@@ -433,6 +434,7 @@ class BookingResource extends Resource
                         'active' => 'En cours',
                         'completed' => 'Terminée',
                         'cancelled' => 'Annulée',
+                        'expired' => 'Expirée',
                         default => $state,
                     }),
                 Tables\Columns\BadgeColumn::make('payment_status')
@@ -460,6 +462,7 @@ class BookingResource extends Resource
                         'active' => 'En cours',
                         'completed' => 'Terminée',
                         'cancelled' => 'Annulée',
+                        'expired' => 'Expirée',
                     ]),
                 Tables\Filters\SelectFilter::make('payment_status')
                     ->label('Paiement')

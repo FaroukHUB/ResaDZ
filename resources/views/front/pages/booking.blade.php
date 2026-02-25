@@ -285,6 +285,53 @@
                         </div>
                         @endif
 
+                        <!-- Choix méthode de paiement acompte -->
+                        @if(!empty($advancePaymentMethods))
+                        <div id="advancePaymentSection" class="border-t border-gray-200 pt-4 mt-2 hidden">
+                            <p class="font-semibold text-gray-900 text-sm mb-2">Comment souhaitez-vous payer l'acompte ?</p>
+                            <p class="text-xs text-gray-500 mb-3">Le délai de réservation dépend du mode de paiement choisi.</p>
+                            <input type="hidden" name="advance_payment_method" id="advance_payment_method" value="">
+                            <div class="space-y-2">
+                                @php
+                                    $methodLabels = [
+                                        'cash' => ['label' => 'Espèces (sur place)', 'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z'],
+                                        'cib' => ['label' => 'CIB (carte bancaire)', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
+                                        'dahabia' => ['label' => 'Dahabia', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
+                                        'baridimob' => ['label' => 'BaridiMob', 'icon' => 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z'],
+                                        'paypal' => ['label' => 'PayPal', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
+                                        'bank_transfer' => ['label' => 'Virement bancaire', 'icon' => 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z'],
+                                    ];
+                                @endphp
+                                @foreach($advancePaymentMethods as $apm)
+                                    @php $method = $apm['method'] ?? ''; $timer = $apm['timer_hours'] ?? 24; $info = $methodLabels[$method] ?? null; @endphp
+                                    @if($info)
+                                    <label class="advance-method-label flex items-center justify-between p-3 rounded-xl bg-gray-50 cursor-pointer transition border-2 border-transparent hover:border-amber-200 hover:bg-amber-50"
+                                           data-method="{{ $method }}" data-timer="{{ $timer }}">
+                                        <div class="flex items-center gap-3">
+                                            <input type="radio" name="advance_payment_method_radio" value="{{ $method }}"
+                                                   class="w-4 h-4 text-amber-600 focus:ring-amber-500 advance-method-radio">
+                                            <div>
+                                                <span class="font-medium text-gray-900 text-sm">{{ $info['label'] }}</span>
+                                                <p class="text-xs text-gray-500">Délai : {{ $timer }}h pour payer</p>
+                                            </div>
+                                        </div>
+                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
+                                    </label>
+                                    @endif
+                                @endforeach
+                            </div>
+                            <div id="advanceTimerInfo" class="hidden mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                                <div class="flex items-start gap-2">
+                                    <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <p class="text-xs text-amber-800">
+                                        Vous aurez <strong id="timerDisplay">-</strong> heures pour régler l'acompte de <strong id="advanceAmountDisplay">-</strong>.
+                                        Passé ce délai, la réservation sera automatiquement annulée et le véhicule remis en disponibilité.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        @endif
+
                         <!-- Submit -->
                         <button type="submit" id="submitBtn" disabled
                                 class="w-full py-4 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition shadow-lg shadow-amber-600/20 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -502,6 +549,19 @@
                 }
 
                 priceBreakdown.innerHTML = html;
+
+                // Afficher/masquer la section choix méthode de paiement acompte
+                const advSection = document.getElementById('advancePaymentSection');
+                const advAmountDisplay = document.getElementById('advanceAmountDisplay');
+                if (advSection) {
+                    if (data.advance_amount > 0) {
+                        advSection.classList.remove('hidden');
+                        if (advAmountDisplay) advAmountDisplay.textContent = data.formatted_advance;
+                    } else {
+                        advSection.classList.add('hidden');
+                    }
+                }
+
                 submitBtn.disabled = false;
             }
         })
@@ -520,5 +580,37 @@
 
     // Vérifier disponibilité des options quand les dates changent
     [startDate, endDate].forEach(el => el.addEventListener('change', checkOptionAvailability));
+
+    // Gestion du choix de méthode de paiement d'acompte
+    const advanceMethodRadios = document.querySelectorAll('.advance-method-radio');
+    const advanceMethodLabels = document.querySelectorAll('.advance-method-label');
+    const advanceMethodInput = document.getElementById('advance_payment_method');
+    const advanceTimerInfo = document.getElementById('advanceTimerInfo');
+    const timerDisplay = document.getElementById('timerDisplay');
+
+    advanceMethodRadios.forEach(radio => {
+        radio.addEventListener('change', function() {
+            // Mettre à jour le hidden input
+            if (advanceMethodInput) advanceMethodInput.value = this.value;
+
+            // Highlight la méthode sélectionnée
+            advanceMethodLabels.forEach(label => {
+                label.classList.remove('border-amber-500', 'bg-amber-50');
+                label.classList.add('border-transparent');
+            });
+            const parentLabel = this.closest('.advance-method-label');
+            if (parentLabel) {
+                parentLabel.classList.remove('border-transparent');
+                parentLabel.classList.add('border-amber-500', 'bg-amber-50');
+            }
+
+            // Afficher le délai correspondant
+            const timer = parentLabel ? parentLabel.dataset.timer : null;
+            if (timer && advanceTimerInfo && timerDisplay) {
+                timerDisplay.textContent = timer;
+                advanceTimerInfo.classList.remove('hidden');
+            }
+        });
+    });
 </script>
 @endsection

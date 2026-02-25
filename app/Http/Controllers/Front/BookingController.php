@@ -39,10 +39,10 @@ class BookingController extends Controller
             ? $vehicle->loueur->getSetting('rental_options', [])
             : [];
 
-        // Timer configuré par le loueur (en heures)
-        $timerHours = $vehicle->loueur
-            ? $vehicle->loueur->getSetting('reservation_timer_hours', null)
-            : null;
+        // Méthodes de paiement d'acompte configurées par le loueur (avec timers)
+        $advancePaymentMethods = $vehicle->loueur
+            ? $vehicle->loueur->getSetting('advance_payment_methods', [])
+            : [];
 
         // Return options settings
         $fuelReturnFee = $vehicle->loueur
@@ -75,7 +75,7 @@ class BookingController extends Controller
             'vehicle',
             'deliveryZones',
             'rentalOptions',
-            'timerHours',
+            'advancePaymentMethods',
             'fuelReturnFee',
             'washReturnFee',
             'returnMarginHours',
@@ -208,6 +208,7 @@ class BookingController extends Controller
             'same_return_location' => 'nullable|in:0,1',
             'options' => 'nullable|array',
             'currency' => 'nullable|in:DZD,EUR',
+            'advance_payment_method' => 'nullable|string|in:cash,cib,dahabia,baridimob,paypal,bank_transfer',
             'internal_notes' => 'nullable|string|max:1000',
         ]);
 
@@ -325,11 +326,22 @@ class BookingController extends Controller
             currency: $request->currency ?? 'DZD'
         );
 
-        // Timer configuré par le loueur
-        $timerHours = $loueur ? $loueur->getSetting('reservation_timer_hours', null) : null;
-
         // Total avec frais d'options
         $totalPrice = $pricing['total'] + $optionsFees;
+
+        // Timer basé sur la méthode de paiement choisie par le client
+        $advancePaymentMethod = $request->advance_payment_method;
+        $timerHours = null;
+        $advancePaymentMethods = $loueur ? $loueur->getSetting('advance_payment_methods', []) : [];
+
+        if ($advancePaymentMethod && $pricing['advance_amount'] > 0 && !empty($advancePaymentMethods)) {
+            foreach ($advancePaymentMethods as $apm) {
+                if (($apm['method'] ?? '') === $advancePaymentMethod) {
+                    $timerHours = (int) ($apm['timer_hours'] ?? 24);
+                    break;
+                }
+            }
+        }
 
         // Créer la réservation
         $booking = Booking::create([
@@ -363,6 +375,7 @@ class BookingController extends Controller
             'client_service_fee' => $pricing['client_service_fee_total'] ?? 0,
             'advance_amount' => $pricing['advance_amount'],
             'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : null,
+            'advance_payment_method' => $advancePaymentMethod,
             'advance_expires_at' => $timerHours ? now()->addHours($timerHours) : null,
             'deposit_amount' => $pricing['deposit_amount'],
             'deposit_currency' => $pricing['deposit_currency'],
@@ -401,10 +414,7 @@ class BookingController extends Controller
             ->where('reference', $reference)
             ->firstOrFail();
 
-        $loueur = $booking->vehicle->loueur;
-        $timerHours = $loueur ? $loueur->getSetting('reservation_timer_hours', null) : null;
-
-        return view('front.pages.booking-confirmation', compact('booking', 'timerHours'));
+        return view('front.pages.booking-confirmation', compact('booking'));
     }
 
     /**

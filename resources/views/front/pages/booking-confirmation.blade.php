@@ -75,14 +75,37 @@
                 @endif
             </div>
 
-            <!-- Timer -->
-            @if($timerHours && $booking->advance_expires_at)
-                <div class="bg-blue-50 rounded-xl p-4 text-center">
-                    <p class="text-blue-800 font-medium">Délai de confirmation</p>
-                    <p class="text-blue-600 text-sm mt-1">
-                        Vous avez jusqu'au <strong>{{ \Carbon\Carbon::parse($booking->advance_expires_at)->format('d/m/Y à H:i') }}</strong> pour confirmer.
-                    </p>
-                    <div id="countdown" class="text-2xl font-bold text-blue-700 mt-3" data-expires="{{ $booking->advance_expires_at }}"></div>
+            <!-- Timer & Payment Method -->
+            @if($booking->advance_expires_at && $booking->advance_amount > 0)
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-5">
+                    <div class="text-center">
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                            <p class="text-blue-800 font-bold">Délai de paiement de l'acompte</p>
+                        </div>
+                        <div id="countdown" class="text-3xl font-black text-blue-700 my-3" data-expires="{{ $booking->advance_expires_at }}"></div>
+                        <p class="text-blue-600 text-sm">
+                            Vous avez jusqu'au <strong>{{ \Carbon\Carbon::parse($booking->advance_expires_at)->format('d/m/Y à H:i') }}</strong> pour régler l'acompte.
+                        </p>
+                        @if($booking->advance_payment_method)
+                            @php
+                                $methodLabels = [
+                                    'cash' => 'Espèces (sur place)',
+                                    'cib' => 'CIB (carte bancaire)',
+                                    'dahabia' => 'Dahabia',
+                                    'baridimob' => 'BaridiMob',
+                                    'paypal' => 'PayPal',
+                                    'bank_transfer' => 'Virement bancaire',
+                                ];
+                            @endphp
+                            <p class="text-blue-700 text-sm mt-2 font-medium">
+                                Mode de paiement choisi : {{ $methodLabels[$booking->advance_payment_method] ?? $booking->advance_payment_method }}
+                            </p>
+                        @endif
+                        <p class="text-blue-500 text-xs mt-3">
+                            Passé ce délai, la réservation sera automatiquement annulée et le véhicule remis en disponibilité.
+                        </p>
+                    </div>
                 </div>
             @endif
 
@@ -100,7 +123,7 @@
 @endsection
 
 @section('scripts')
-@if($timerHours && $booking->advance_expires_at)
+@if($booking->advance_expires_at && $booking->advance_amount > 0)
 <script>
     const countdownEl = document.getElementById('countdown');
     const expires = new Date(countdownEl.dataset.expires).getTime();
@@ -111,6 +134,7 @@
 
         if (diff <= 0) {
             countdownEl.textContent = 'Délai expiré';
+            countdownEl.classList.remove('text-blue-700');
             countdownEl.classList.add('text-red-600');
             return;
         }

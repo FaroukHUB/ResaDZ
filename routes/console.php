@@ -14,6 +14,11 @@ Schedule::command('invoices:generate-monthly')
     ->description('Generate monthly commission invoices for loueurs')
     ->emailOutputOnFailure(config('mail.admin_email'));
 
+// Expire overdue bookings (advance payment deadline passed) - runs every 5 minutes
+Schedule::command('bookings:expire-overdue')
+    ->everyFiveMinutes()
+    ->description('Expire les réservations dont le délai de paiement d\'acompte est dépassé');
+
 // Send review request emails 2 days after booking completion (daily at 10:00 AM)
 Schedule::command('reviews:send-requests')
     ->dailyAt('10:00')

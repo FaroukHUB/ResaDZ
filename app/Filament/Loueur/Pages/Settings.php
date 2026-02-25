@@ -63,9 +63,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'meta_title' => $loueur->meta_title,
                 'meta_description' => $loueur->meta_description,
                 // Settings from loueur_settings table
-                'reservation_timer_hours' => $loueur->getSetting('reservation_timer_hours', 24),
                 'advance_percentage' => $loueur->getSetting('advance_percentage', 30),
                 'min_advance_amount' => $loueur->getSetting('min_advance_amount', 0),
+                'advance_payment_methods' => $loueur->getSetting('advance_payment_methods', []),
                 'cancellation_deadline_hours' => $loueur->getSetting('cancellation_deadline_hours', 48),
                 'auto_confirm_bookings' => $loueur->getSetting('auto_confirm_bookings', false),
                 'require_documents' => $loueur->getSetting('require_documents', true),
@@ -86,9 +86,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'return_margin_hours' => $loueur->getSetting('return_margin_hours', 2),
                 'fuel_return_fee' => $loueur->getSetting('fuel_return_fee', 0),
                 'wash_return_fee' => $loueur->getSetting('wash_return_fee', 0),
-                // Deposit settings
-                'deposit_required' => $loueur->getSetting('deposit_required', false),
-                'deposit_payment_methods' => $loueur->getSetting('deposit_payment_methods', []),
                 // Rental options (siège bébé, GPS, etc.)
                 'rental_options' => $loueur->getSetting('rental_options', []),
                 // Services
@@ -188,22 +185,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ->icon('heroicon-o-calendar')
                             ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
-                                Forms\Components\Section::make('Délais et acomptes')
-                                    ->description('Configurez les règles de réservation')
+                                Forms\Components\Section::make('Acompte')
+                                    ->description('Configurez le montant de l\'acompte demandé au client')
                                     ->schema([
-                                        Forms\Components\Grid::make(2)
-                                            ->schema([
-                                                Forms\Components\TextInput::make('reservation_timer_hours')
-                                                    ->label('Délai de confirmation (heures)')
-                                                    ->numeric()
-                                                    ->minValue(1)
-                                                    ->helperText('Temps accordé au client pour confirmer sa réservation'),
-                                                Forms\Components\TextInput::make('cancellation_deadline_hours')
-                                                    ->label('Délai d\'annulation (heures)')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->helperText('Heures avant le début de la location'),
-                                            ]),
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('advance_percentage')
@@ -212,7 +196,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                                     ->minValue(0)
                                                     ->maxValue(100)
                                                     ->suffix('%')
-                                                    ->helperText('Ex: 30 = 30% du total'),
+                                                    ->helperText('Ex: 30 = 30% du total. 0 = pas d\'acompte.'),
                                                 Forms\Components\TextInput::make('min_advance_amount')
                                                     ->label('Acompte minimum (DA)')
                                                     ->numeric()
@@ -220,6 +204,47 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                                     ->suffix('DA')
                                                     ->helperText('0 = pas de minimum'),
                                             ]),
+                                    ]),
+                                Forms\Components\Section::make('Méthodes de paiement de l\'acompte')
+                                    ->description('Pour chaque méthode acceptée, définissez le délai accordé au client. Si le délai est dépassé, la réservation est automatiquement annulée.')
+                                    ->schema([
+                                        Forms\Components\Repeater::make('advance_payment_methods')
+                                            ->label('')
+                                            ->schema([
+                                                Forms\Components\Select::make('method')
+                                                    ->label('Méthode de paiement')
+                                                    ->options([
+                                                        'cash' => 'Espèces (sur place)',
+                                                        'cib' => 'CIB (carte bancaire)',
+                                                        'dahabia' => 'Dahabia',
+                                                        'baridimob' => 'BaridiMob',
+                                                        'paypal' => 'PayPal',
+                                                        'bank_transfer' => 'Virement bancaire',
+                                                    ])
+                                                    ->required()
+                                                    ->distinct(),
+                                                Forms\Components\TextInput::make('timer_hours')
+                                                    ->label('Délai accordé (heures)')
+                                                    ->numeric()
+                                                    ->minValue(1)
+                                                    ->maxValue(168)
+                                                    ->required()
+                                                    ->suffix('h')
+                                                    ->helperText('Ex: 4 = le client a 4h pour payer'),
+                                            ])
+                                            ->columns(2)
+                                            ->defaultItems(0)
+                                            ->addActionLabel('Ajouter une méthode')
+                                            ->reorderable(false)
+                                            ->helperText('Exemples : Espèces → 4h, PayPal → 24h. Si aucune méthode n\'est configurée, pas de timer ni de choix de méthode pour le client.'),
+                                    ]),
+                                Forms\Components\Section::make('Délais')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('cancellation_deadline_hours')
+                                            ->label('Délai d\'annulation (heures)')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->helperText('Heures avant le début de la location où l\'annulation est possible'),
                                     ]),
                                 Forms\Components\Section::make('Options')
                                     ->schema([
@@ -255,23 +280,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                                     ->suffix('DA')
                                                     ->helperText('Frais si le client rend le véhicule non lavé (0 = option désactivée)'),
                                             ]),
-                                    ]),
-                                Forms\Components\Section::make('Acompte en ligne')
-                                    ->description('Permettre aux clients de régler un acompte pour garantir leur réservation')
-                                    ->schema([
-                                        Forms\Components\Toggle::make('deposit_required')
-                                            ->label('Proposer le paiement d\'un acompte')
-                                            ->helperText('Le client pourra payer un acompte pour confirmer sa réservation')
-                                            ->live(),
-                                        Forms\Components\CheckboxList::make('deposit_payment_methods')
-                                            ->label('Méthodes de paiement acceptées pour l\'acompte')
-                                            ->options([
-                                                'paypal' => 'PayPal',
-                                                'cash' => 'Espèces (sur place)',
-                                            ])
-                                            ->columns(2)
-                                            ->visible(fn ($get) => $get('deposit_required'))
-                                            ->helperText('Le client pourra choisir parmi ces méthodes'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Options')
@@ -666,9 +674,9 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         ]);
 
         // Update settings
-        $loueur->setSetting('reservation_timer_hours', $data['reservation_timer_hours'] ?? 24, 'integer');
-        $loueur->setSetting('advance_percentage', $data['advance_percentage'] ?? 30, 'integer');
+        $loueur->setSetting('advance_percentage', $data['advance_percentage'] ?? 0, 'integer');
         $loueur->setSetting('min_advance_amount', $data['min_advance_amount'] ?? 0, 'decimal');
+        $loueur->setSetting('advance_payment_methods', $data['advance_payment_methods'] ?? [], 'json');
         $loueur->setSetting('cancellation_deadline_hours', $data['cancellation_deadline_hours'] ?? 48, 'integer');
         $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
         $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
@@ -693,9 +701,6 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         $loueur->setSetting('fuel_return_fee', $data['fuel_return_fee'] ?? 0, 'decimal');
         $loueur->setSetting('wash_return_fee', $data['wash_return_fee'] ?? 0, 'decimal');
 
-        // Deposit settings
-        $loueur->setSetting('deposit_required', $data['deposit_required'] ?? false, 'boolean');
-        $loueur->setSetting('deposit_payment_methods', $data['deposit_payment_methods'] ?? [], 'json');
 
         // Rental options
         $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');

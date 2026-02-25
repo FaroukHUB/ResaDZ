@@ -37,6 +37,9 @@ class ListBookings extends ListRecords
             'completed' => Tab::make('Terminées')
                 ->icon('heroicon-o-check-circle')
                 ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'completed')),
+            'expired' => Tab::make('Expirées')
+                ->icon('heroicon-o-x-circle')
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('status', 'expired')),
         ];
     }
 }
