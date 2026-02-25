@@ -63,7 +63,7 @@
                         <input type="radio" name="account_type" value="taxi" class="peer sr-only" {{ old('account_type') === 'taxi' ? 'checked' : '' }}>
                         <div class="flex flex-col items-center gap-2 p-4 border-2 border-gray-200 rounded-xl peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-gray-300 transition">
                             <svg class="w-8 h-8 text-gray-400 peer-checked:text-red-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10.5a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z"/></svg>
-                            <span class="text-sm font-semibold text-gray-700">Taxi / VTC</span>
+                            <span class="text-sm font-semibold text-gray-700">Chauffeur</span>
                             <span class="text-xs text-gray-400 text-center">Transfert & livraison</span>
                         </div>
                     </label>
