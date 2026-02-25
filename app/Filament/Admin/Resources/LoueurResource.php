@@ -179,16 +179,8 @@ class LoueurResource extends Resource
                                             ->helperText('Pendant l\'essai, aucune commission n\'est prélevée'),
                                     ]),
                                 Forms\Components\Section::make('Commission')
-                                    ->description('Taux personnalisé (optionnel)')
+                                    ->description('Suivi des paiements')
                                     ->schema([
-                                        Forms\Components\TextInput::make('commission_rate')
-                                            ->label('Taux de commission')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->maxValue(100)
-                                            ->suffix('%')
-                                            ->placeholder(Loueur::DEFAULT_COMMISSION_RATE . '% (par défaut)')
-                                            ->helperText('Laissez vide pour utiliser le taux global'),
                                         Forms\Components\DatePicker::make('commission_paid_until')
                                             ->label('Commission payée jusqu\'au'),
                                         Forms\Components\Textarea::make('commission_notes')
@@ -347,11 +339,6 @@ class LoueurResource extends Resource
                             ->date('d/m/Y')
                             ->color(fn (Loueur $record) => $record->isInTrial() ? 'success' : 'warning')
                             ->badge(),
-                        Infolists\Components\TextEntry::make('commission_rate_display')
-                            ->label('Taux de commission')
-                            ->state(fn (Loueur $record) => $record->getCommissionRate() . '%')
-                            ->badge()
-                            ->color('info'),
                         Infolists\Components\TextEntry::make('unpaid_commission')
                             ->label('Commission impayée')
                             ->state(fn (Loueur $record) => number_format($record->getUnpaidCommission(), 0, ',', ' ') . ' DA')

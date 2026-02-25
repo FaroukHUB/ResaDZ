@@ -24,7 +24,6 @@ class Transaction extends Model
         'payment_method',
         'payment_reference',
         'is_commission',
-        'commission_rate',
         'transaction_date',
         'status',
     ];
@@ -32,7 +31,6 @@ class Transaction extends Model
     protected $casts = [
         'amount' => 'decimal:2',
         'amount_eur' => 'decimal:2',
-        'commission_rate' => 'decimal:2',
         'is_commission' => 'boolean',
         'transaction_date' => 'date',
     ];

@@ -72,8 +72,7 @@
             <x-heroicon-o-information-circle class="w-5 h-5 text-primary-600 dark:text-primary-400 mt-0.5" />
             <div>
                 <p class="text-sm text-primary-800 dark:text-primary-200">
-                    <strong>Taux de commission global :</strong> {{ $globalCommissionRate }}%
-                    <span class="text-primary-600 dark:text-primary-400 ml-2">(modifiable par loueur)</span>
+                    <strong>Commission :</strong> frais fixes par jour de location (configurable dans Paramètres plateforme)
                 </p>
                 <p class="text-xs text-primary-600 dark:text-primary-400 mt-1">
                     Les loueurs en période d'essai ne paient pas de commission. La commission est calculée automatiquement sur chaque réservation confirmée.

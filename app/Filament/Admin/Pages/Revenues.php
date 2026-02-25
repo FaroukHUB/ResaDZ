@@ -59,9 +59,6 @@ class Revenues extends Page implements HasForms, HasTable
         $loueursActive = Loueur::active()->count();
         $loueursSuspended = Loueur::suspended()->count();
 
-        // Commission rate global (from config or default)
-        $globalCommissionRate = config('resadz.commission_rate', Loueur::DEFAULT_COMMISSION_RATE);
-
         return [
             'totalCommissionDue' => $totalCommissionDue,
             'totalCommissionPaid' => $totalCommissionPaid,
@@ -69,7 +66,6 @@ class Revenues extends Page implements HasForms, HasTable
             'loueursInTrial' => $loueursInTrial,
             'loueursActive' => $loueursActive,
             'loueursSuspended' => $loueursSuspended,
-            'globalCommissionRate' => $globalCommissionRate,
         ];
     }
 
@@ -101,12 +97,6 @@ class Revenues extends Page implements HasForms, HasTable
                     ->date('d/m/Y')
                     ->color(fn ($record) => $record->isInTrial() ? 'success' : ($record->isTrialExpired() ? 'warning' : 'gray'))
                     ->description(fn ($record) => $record->isInTrial() ? 'En cours' : ($record->trial_ends_at ? 'Expiré' : 'Non défini')),
-
-                TextColumn::make('commission_rate')
-                    ->label('Taux')
-                    ->formatStateUsing(fn ($record) => $record->getCommissionRate() . '%')
-                    ->badge()
-                    ->color('info'),
 
                 TextColumn::make('unpaid_bookings_count')
                     ->label('Résas impayées')
@@ -173,25 +163,6 @@ class Revenues extends Page implements HasForms, HasTable
                         ->action(function ($record, array $data) {
                             $record->update(['trial_ends_at' => $data['trial_ends_at']]);
                             Notification::make()->success()->title('Essai prolongé')->send();
-                        }),
-
-                    Action::make('set_commission_rate')
-                        ->label('Modifier taux')
-                        ->icon('heroicon-o-percent-badge')
-                        ->color('info')
-                        ->form([
-                            TextInput::make('commission_rate')
-                                ->label('Taux de commission (%)')
-                                ->numeric()
-                                ->minValue(0)
-                                ->maxValue(100)
-                                ->default(fn ($record) => $record->commission_rate ?? Loueur::DEFAULT_COMMISSION_RATE)
-                                ->suffix('%')
-                                ->required(),
-                        ])
-                        ->action(function ($record, array $data) {
-                            $record->update(['commission_rate' => $data['commission_rate']]);
-                            Notification::make()->success()->title('Taux modifié')->send();
                         }),
 
                     Action::make('mark_paid')

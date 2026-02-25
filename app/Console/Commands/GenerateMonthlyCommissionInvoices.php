@@ -89,12 +89,11 @@ class GenerateMonthlyCommissionInvoices extends Command
 
         $totalBookings = $bookings->sum('total_price');
         $totalCommission = $bookings->sum('commission_amount');
-        $avgRate = $bookings->avg('commission_rate');
 
         $this->info("  [{$loueur->company_name}]");
         $this->line("    - Bookings: {$bookings->count()}");
         $this->line("    - Total revenue: " . number_format($totalBookings, 2) . " DZD");
-        $this->line("    - Commission ({$avgRate}%): " . number_format($totalCommission, 2) . " DZD");
+        $this->line("    - Commission: " . number_format($totalCommission, 2) . " DZD");
 
         if ($dryRun) {
             return ['commission' => $totalCommission];
@@ -117,7 +116,7 @@ class GenerateMonthlyCommissionInvoices extends Command
 
         // Add summary line item
         $invoice->addItem(
-            description: "Commission sur {$bookings->count()} location(s) - {$startDate->format('F Y')}\nTotal des locations: " . number_format($totalBookings, 2) . " DZD\nTaux moyen: {$avgRate}%",
+            description: "Commission sur {$bookings->count()} location(s) - {$startDate->format('F Y')}\nTotal des locations: " . number_format($totalBookings, 2) . " DZD",
             unitPrice: $totalCommission,
             quantity: 1,
             type: 'commission'
@@ -126,7 +125,7 @@ class GenerateMonthlyCommissionInvoices extends Command
         // Add individual booking details as separate items (optional, for transparency)
         foreach ($bookings as $booking) {
             $invoice->addItem(
-                description: "Location #{$booking->reference} - {$booking->vehicle->full_name ?? 'Véhicule'}\n{$booking->start_date->format('d/m/Y')} - {$booking->end_date->format('d/m/Y')}\nMontant: " . number_format($booking->total_price, 2) . " DZD × {$booking->commission_rate}%",
+                description: "Location #{$booking->reference} - {$booking->vehicle->full_name ?? 'Véhicule'}\n{$booking->start_date->format('d/m/Y')} - {$booking->end_date->format('d/m/Y')}\nMontant: " . number_format($booking->total_price, 2) . " DZD - Commission: " . number_format($booking->commission_amount, 2) . " DZD",
                 unitPrice: $booking->commission_amount,
                 quantity: 1,
                 type: 'commission_detail',

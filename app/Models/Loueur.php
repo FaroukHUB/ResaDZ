@@ -53,7 +53,6 @@ class Loueur extends Model
         'trial_ends_at',
         'is_suspended',
         'suspension_reason',
-        'commission_rate',
         'commission_paid_until',
         'commission_notes',
         'account_type',
@@ -72,12 +71,8 @@ class Loueur extends Model
         'subscription_expires_at' => 'datetime',
         'trial_ends_at' => 'date',
         'commission_paid_until' => 'date',
-        'commission_rate' => 'decimal:2',
         'rating' => 'decimal:2',
     ];
-
-    // Commission par défaut (5%)
-    public const DEFAULT_COMMISSION_RATE = 5.00;
 
     // Relations
     public function user(): BelongsTo
@@ -340,14 +335,6 @@ class Loueur extends Model
     }
 
     /**
-     * Get the commission rate for this loueur (custom or default).
-     */
-    public function getCommissionRate(): float
-    {
-        return $this->commission_rate ?? self::DEFAULT_COMMISSION_RATE;
-    }
-
-    /**
      * Check if loueur is in trial period.
      */
     public function isInTrial(): bool
@@ -361,14 +348,6 @@ class Loueur extends Model
     public function isTrialExpired(): bool
     {
         return $this->trial_ends_at && $this->trial_ends_at->isPast();
-    }
-
-    /**
-     * Check if loueur should pay commission (trial expired).
-     */
-    public function shouldPayCommission(): bool
-    {
-        return !$this->isInTrial();
     }
 
     /**

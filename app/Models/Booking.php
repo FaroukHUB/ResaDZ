@@ -40,7 +40,6 @@ class Booking extends Model
         'total_price',
         'commission_amount',
         'client_service_fee',
-        'commission_rate',
         'commission_paid',
         'commission_paid_at',
         'currency',
@@ -110,7 +109,6 @@ class Booking extends Model
         'discount_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
         'commission_amount' => 'decimal:2',
-        'commission_rate' => 'decimal:2',
         'commission_paid' => 'boolean',
         'commission_paid_at' => 'date',
         'deposit_amount' => 'decimal:2',
@@ -132,16 +130,9 @@ class Booking extends Model
                 $booking->confirmation_token = Str::random(64);
             }
 
-            // Calculer la commission automatiquement
-            $booking->calculateCommission();
         });
 
         static::updating(function ($booking) {
-            // Recalculer si le prix total change
-            if ($booking->isDirty('total_price')) {
-                $booking->calculateCommission();
-            }
-
             // Créer une transaction d'entrée automatique quand le statut passe à "completed"
             if ($booking->isDirty('status') && $booking->status === 'completed') {
                 $booking->createIncomeTransaction();
@@ -175,24 +166,6 @@ class Booking extends Model
             'transaction_date' => now(),
             'status' => 'completed',
         ]);
-    }
-
-    /**
-     * Calculate commission based on loueur's rate.
-     */
-    public function calculateCommission(): void
-    {
-        $loueur = $this->loueur ?? Loueur::find($this->loueur_id);
-
-        if ($loueur && $loueur->shouldPayCommission()) {
-            $rate = $loueur->getCommissionRate();
-            $this->commission_rate = $rate;
-            $this->commission_amount = round(($this->total_price * $rate) / 100, 2);
-        } else {
-            // En période d'essai = pas de commission
-            $this->commission_rate = 0;
-            $this->commission_amount = 0;
-        }
     }
 
     /**
