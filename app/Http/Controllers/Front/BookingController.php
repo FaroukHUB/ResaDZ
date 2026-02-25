@@ -67,6 +67,10 @@ class BookingController extends Controller
         $operatingHoursStart = (int) Setting::get('operating_hours_start', 7);
         $operatingHoursEnd = (int) Setting::get('operating_hours_end', 21);
 
+        // Conditions du loueur
+        $rentalConditions = $vehicle->loueur ? $vehicle->loueur->getSetting('rental_conditions', []) : [];
+        $conditionsPdf = $vehicle->loueur ? $vehicle->loueur->getSetting('conditions_pdf', null) : null;
+
         return view('front.pages.booking', compact(
             'vehicle',
             'deliveryZones',
@@ -78,7 +82,9 @@ class BookingController extends Controller
             'depositRequired',
             'depositPaymentMethods',
             'operatingHoursStart',
-            'operatingHoursEnd'
+            'operatingHoursEnd',
+            'rentalConditions',
+            'conditionsPdf'
         ));
     }
 
@@ -412,6 +418,7 @@ class BookingController extends Controller
 
         // Récupérer les conditions de location du loueur
         $rentalConditions = $booking->loueur ? $booking->loueur->getSetting('rental_conditions', []) : [];
+        $conditionsPdf = $booking->loueur ? $booking->loueur->getSetting('conditions_pdf', null) : null;
 
         // Vérifier si des documents sont requis
         $requireDocuments = $booking->loueur ? $booking->loueur->getSetting('require_documents', true) : true;
@@ -423,6 +430,7 @@ class BookingController extends Controller
         return view('front.pages.client-confirmation', compact(
             'booking',
             'rentalConditions',
+            'conditionsPdf',
             'requireDocuments',
             'depositRequired',
             'depositPaymentMethods'

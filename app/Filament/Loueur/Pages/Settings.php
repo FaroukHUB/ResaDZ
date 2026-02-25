@@ -80,6 +80,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'badge_km_unlimited' => $loueur->getSetting('badge_km_unlimited', false),
                 'custom_badges' => $loueur->getSetting('custom_badges', []),
                 // Conditions
+                'conditions_pdf' => $loueur->getSetting('conditions_pdf', null),
                 'rental_conditions' => $loueur->getSetting('rental_conditions', []),
                 // Return options
                 'return_margin_hours' => $loueur->getSetting('return_margin_hours', 2),
@@ -414,6 +415,19 @@ class Settings extends Page implements Forms\Contracts\HasForms
                             ->icon('heroicon-o-clipboard-document-list')
                             ->visible(fn () => Auth::user()->loueur?->isLoueur())
                             ->schema([
+                                Forms\Components\Section::make('Conditions de location (PDF)')
+                                    ->description('Si vous disposez déjà d\'un document PDF avec vos conditions, uploadez-le ici. Il sera téléchargeable par les clients.')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('conditions_pdf')
+                                            ->label('Document PDF des conditions')
+                                            ->acceptedFileTypes(['application/pdf'])
+                                            ->maxSize(5120)
+                                            ->directory('conditions-pdf')
+                                            ->visibility('public')
+                                            ->downloadable()
+                                            ->openable()
+                                            ->helperText('Format PDF uniquement, 5 Mo maximum.'),
+                                    ]),
                                 Forms\Components\Section::make('Conditions de location')
                                     ->description('Définissez vos conditions de location. Ces informations seront affichées aux clients sur la page de détail du véhicule.')
                                     ->schema([
@@ -670,6 +684,7 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
 
         // Conditions
+        $loueur->setSetting('conditions_pdf', $data['conditions_pdf'] ?? null, 'string');
         $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
 
         // Return options

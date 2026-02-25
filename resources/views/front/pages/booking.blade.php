@@ -257,6 +257,34 @@
                             <p class="text-gray-500 text-center py-4">Sélectionnez vos dates pour voir le prix</p>
                         </div>
 
+                        <!-- Conditions du loueur -->
+                        @if(!empty($conditionsPdf) || count($rentalConditions ?? []) > 0)
+                        <div class="border-t border-gray-200 pt-4 mt-2">
+                            <p class="font-semibold text-gray-900 text-sm mb-3">Conditions du loueur</p>
+                            @if(!empty($conditionsPdf))
+                                <a href="{{ asset('storage/' . $conditionsPdf) }}" target="_blank" rel="noopener" class="flex items-center gap-2.5 p-3 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition mb-3">
+                                    <div class="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center flex-shrink-0">
+                                        <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                                    </div>
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-gray-900">Conditions générales (PDF)</p>
+                                        <p class="text-xs text-gray-500">Télécharger le document</p>
+                                    </div>
+                                    <svg class="w-4 h-4 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+                                </a>
+                            @endif
+                            @foreach($rentalConditions ?? [] as $condition)
+                                <div class="flex gap-2 mb-2 last:mb-0">
+                                    <svg class="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <div>
+                                        <p class="text-xs font-semibold text-gray-800">{{ $condition['title'] === 'Autre' ? ($condition['custom_title'] ?? 'Condition') : $condition['title'] }}</p>
+                                        <p class="text-xs text-gray-500">{{ $condition['description'] }}</p>
+                                    </div>
+                                </div>
+                            @endforeach
+                        </div>
+                        @endif
+
                         <!-- Submit -->
                         <button type="submit" id="submitBtn" disabled
                                 class="w-full py-4 bg-amber-600 text-white font-bold rounded-xl hover:bg-amber-700 transition shadow-lg shadow-amber-600/20 disabled:opacity-50 disabled:cursor-not-allowed">
