@@ -230,6 +230,7 @@
                             <li><a href="{{ route('home') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Accueil</a></li>
                             <li><a href="{{ route('vehicles.index') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Véhicules</a></li>
                             <li><a href="{{ route('blog.index') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Actualités</a></li>
+                            <li><a href="{{ route('comment-ca-marche') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Comment ça marche</a></li>
                         </ul>
                     </div>
 

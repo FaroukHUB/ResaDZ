@@ -239,6 +239,12 @@
                 </div>
                 <h2 class="text-3xl lg:text-4xl font-black text-white">Qui sommes-nous ?</h2>
                 <p class="mt-3 text-white/50 max-w-2xl mx-auto">La première marketplace algérienne dédiée à la location de véhicules et aux transferts</p>
+                <div class="mt-4 inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-1.5">
+                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                    <span class="text-green-400 text-sm font-medium">Service gratuit pour les locataires</span>
+                    <span class="text-white/30">|</span>
+                    <a href="{{ route('comment-ca-marche') }}" class="text-white/50 hover:text-green-400 text-sm transition">En savoir plus</a>
+                </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

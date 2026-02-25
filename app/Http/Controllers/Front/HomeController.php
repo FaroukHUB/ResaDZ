@@ -101,4 +101,9 @@ class HomeController extends Controller
             'blogPosts'
         ));
     }
+
+    public function commentCaMarche()
+    {
+        return view('front.pages.comment-ca-marche');
+    }
 }
