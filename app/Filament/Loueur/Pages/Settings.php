@@ -422,10 +422,11 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->label('Document PDF des conditions')
                                             ->acceptedFileTypes(['application/pdf'])
                                             ->maxSize(5120)
+                                            ->disk('public')
                                             ->directory('conditions-pdf')
-                                            ->visibility('public')
                                             ->downloadable()
                                             ->openable()
+                                            ->previewable(false)
                                             ->helperText('Format PDF uniquement, 5 Mo maximum.'),
                                     ]),
                                 Forms\Components\Section::make('Conditions de location')
