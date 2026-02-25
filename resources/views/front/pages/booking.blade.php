@@ -489,6 +489,18 @@
                     html += `<div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Caution (remboursable)</span><span class="font-semibold">${data.formatted_deposit}</span></div>`;
                 }
 
+                if (data.advance_amount > 0) {
+                    html += `<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <span class="text-blue-800 font-semibold text-sm">Acompte à verser</span>
+                                <p class="text-blue-600 text-xs mt-0.5">${data.advance_percentage}% du total à payer à la réservation</p>
+                            </div>
+                            <span class="font-bold text-blue-700 text-lg">${data.formatted_advance}</span>
+                        </div>
+                    </div>`;
+                }
+
                 priceBreakdown.innerHTML = html;
                 submitBtn.disabled = false;
             }
