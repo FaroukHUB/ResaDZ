@@ -7,11 +7,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\DB;
 
 class Loueur extends Model
 {
-    use HasFactory, HasWebpImages;
+    use HasFactory, HasWebpImages, Notifiable;
 
     public function getWebpImageFields(): array
     {
@@ -277,6 +278,15 @@ class Loueur extends Model
                 'type' => $type,
             ]
         );
+    }
+
+    /**
+     * Route notifications for the mail channel.
+     */
+    public function routeNotificationForMail(): ?string
+    {
+        // Utiliser l'email de contact du loueur, sinon l'email de l'utilisateur associé
+        return $this->email_contact ?: ($this->user?->email);
     }
 
     /**

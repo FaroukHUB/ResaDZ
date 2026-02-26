@@ -7,6 +7,7 @@ use App\Models\Booking;
 use App\Models\DeliveryZone;
 use App\Models\Setting;
 use App\Models\Vehicle;
+use App\Notifications\NewBookingNotification;
 use App\Services\OptionAvailabilityService;
 use App\Services\PricingService;
 use App\Services\WebPushService;
@@ -406,6 +407,16 @@ class BookingController extends Controller
             } catch (\Exception $e) {
                 // Silently fail - don't block booking creation
                 \Log::warning('Push notification failed: ' . $e->getMessage());
+            }
+        }
+
+        // Send email notification to loueur if enabled
+        if ($loueur && $loueur->getSetting('notify_email', true)) {
+            try {
+                $loueur->notify(new NewBookingNotification($booking));
+            } catch (\Exception $e) {
+                // Silently fail - don't block booking creation
+                \Log::warning('Email notification failed: ' . $e->getMessage());
             }
         }
 
