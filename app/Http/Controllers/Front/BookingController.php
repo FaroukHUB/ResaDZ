@@ -113,8 +113,9 @@ class BookingController extends Controller
         $end = \Carbon\Carbon::parse($request->end_date);
         $totalDays = max(1, $start->diffInDays($end));
 
-        // Calculer les frais d'options
+        // Calculer les frais d'options avec détails
         $optionsFees = 0;
+        $optionsDetail = [];
 
         // Options de retour (plein/lavage)
         $fuelReturnFee = $loueur ? (float) $loueur->getSetting('fuel_return_fee', 0) : 0;
@@ -122,9 +123,11 @@ class BookingController extends Controller
 
         if (in_array('Retour sans plein', $selectedOptions) && $fuelReturnFee > 0) {
             $optionsFees += $fuelReturnFee;
+            $optionsDetail[] = ['name' => 'Retour sans plein', 'total' => $fuelReturnFee];
         }
         if (in_array('Retour sans lavage', $selectedOptions) && $washReturnFee > 0) {
             $optionsFees += $washReturnFee;
+            $optionsDetail[] = ['name' => 'Retour sans lavage', 'total' => $washReturnFee];
         }
 
         // Options de location du loueur (siège bébé, GPS, etc.)
@@ -136,11 +139,9 @@ class BookingController extends Controller
                 if (!$isFree) {
                     $price = (float) ($option['price'] ?? 0);
                     $per = $option['per'] ?? 'day';
-                    if ($per === 'day') {
-                        $optionsFees += $price * $totalDays;
-                    } else {
-                        $optionsFees += $price;
-                    }
+                    $optionTotal = ($per === 'day') ? $price * $totalDays : $price;
+                    $optionsFees += $optionTotal;
+                    $optionsDetail[] = ['name' => $optionName, 'total' => $optionTotal];
                 }
             }
         }
@@ -158,8 +159,14 @@ class BookingController extends Controller
 
         // Ajouter les frais d'options au total
         $pricing['options_total'] = $optionsFees;
+        $pricing['options_detail'] = $optionsDetail;
         $pricing['total'] = $pricing['total'] + $optionsFees;
         $pricing['formatted_total'] = number_format($pricing['total'], 0, ',', ' ') . ' ' . ($pricing['currency'] === 'EUR' ? '€' : 'DA');
+
+        // Recalculer l'acompte avec le nouveau total (incluant options)
+        $advancePercentage = $loueur ? $loueur->getSetting('advance_percentage', 0) : 0;
+        $pricing['advance_amount'] = round($pricing['total'] * $advancePercentage / 100);
+        $pricing['formatted_advance'] = number_format($pricing['advance_amount'], 0, ',', ' ') . ' ' . ($pricing['currency'] === 'EUR' ? '€' : 'DA');
 
         return response()->json($pricing);
     }

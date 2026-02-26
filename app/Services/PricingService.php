@@ -57,6 +57,10 @@ class PricingService
 
         // 2. Appliquer le prix dégressif si configuré
         $degressivePricing = $vehicle->degressive_pricing ?? [];
+        $degressiveApplied = false;
+        $degressiveFromDays = null;
+        $originalDailyRate = $loueurDailyRate;
+
         if (!empty($degressivePricing)) {
             // Trier par from_days descendant pour prendre le meilleur palier applicable
             $applicableTier = collect($degressivePricing)
@@ -68,6 +72,8 @@ class PricingService
                 $loueurDailyRate = $currency === 'EUR'
                     ? (float)($applicableTier['price_per_day_eur'] ?? $loueurDailyRate)
                     : (float)($applicableTier['price_per_day'] ?? $loueurDailyRate);
+                $degressiveApplied = true;
+                $degressiveFromDays = (int)($applicableTier['from_days'] ?? 0);
             }
         }
 
@@ -212,6 +218,8 @@ class PricingService
 
             'duration_discount' => $durationDiscount,
             'duration_discount_percent' => $durationDiscountPercent,
+            'degressive_applied' => $degressiveApplied,
+            'degressive_from_days' => $degressiveFromDays,
             'season_surcharge' => $seasonSurcharge,
             'season_name' => $seasonName,
             'weekend_surcharge' => $weekendSurcharge,

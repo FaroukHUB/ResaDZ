@@ -95,27 +95,24 @@
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Vos coordonnées</h2>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Nom complet *</label>
                                 <input type="text" name="client_name" required
                                        value="{{ old('client_name', auth()->user()->name ?? '') }}"
                                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
-                                       placeholder="Votre nom et prénom">
+                                       placeholder="Nom complet *">
                                 @error('client_name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Téléphone *</label>
                                 <input type="tel" name="client_phone" required
                                        value="{{ old('client_phone') }}"
                                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
-                                       placeholder="0X XX XX XX XX">
+                                       placeholder="Téléphone *">
                                 @error('client_phone') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div class="sm:col-span-2">
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
                                 <input type="email" name="client_email" required
                                        value="{{ old('client_email', auth()->user()->email ?? '') }}"
                                        class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
-                                       placeholder="votre@email.com">
+                                       placeholder="Email *">
                                 <p class="text-xs text-gray-500 mt-1">Vous recevrez la confirmation par email</p>
                                 @error('client_email') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
@@ -253,7 +250,7 @@
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Une remarque ?</h2>
                         <textarea name="internal_notes" rows="3"
                                   class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
-                                  placeholder="Ex: Je voyage avec un bébé, auriez-vous un siège auto ?..."></textarea>
+                                  placeholder="Informations complémentaires pour le loueur (optionnel)"></textarea>
                     </div>
                 </div>
 
@@ -516,29 +513,39 @@
         .then(data => {
             if (data.total !== undefined) {
                 let html = '';
-                // Prix de base (sans frais de service)
+                const symbol = data.currency === 'EUR' ? '€' : 'DA';
+
+                // Prix de base (sans frais de service) avec indication prix réduit
                 const basePriceWithoutFees = data.base_price - (data.client_service_fee_total || 0);
-                html += `<div class="flex justify-between"><span class="text-gray-600">${data.total_days} jour(s) x ${fmt(data.loueur_daily_rate)} DA</span><span class="font-medium">${fmt(basePriceWithoutFees)} DA</span></div>`;
+                let priceLabel = `${data.total_days} jour(s) x ${fmt(data.loueur_daily_rate)} ${symbol}`;
+                if (data.degressive_applied && data.degressive_from_days) {
+                    priceLabel = `<span class="text-green-600 font-medium">Prix réduit ${data.degressive_from_days}j+</span> · ${data.total_days} jour(s) x ${fmt(data.loueur_daily_rate)} ${symbol}`;
+                }
+                html += `<div class="flex justify-between"><span class="text-gray-600">${priceLabel}</span><span class="font-medium">${fmt(basePriceWithoutFees)} ${symbol}</span></div>`;
 
                 // Frais de service ResaDZ
                 if (data.client_service_fee_total > 0) {
-                    html += `<div class="flex justify-between text-gray-600"><span>Frais de service <span class="text-xs text-gray-400">(${data.total_days}j x ${fmt(data.client_service_fee_per_day)} DA)</span></span><span class="font-medium">${fmt(data.client_service_fee_total)} DA</span></div>`;
+                    html += `<div class="flex justify-between text-gray-600"><span>Frais de service <span class="text-xs text-gray-400">(${data.total_days}j x ${fmt(data.client_service_fee_per_day)} ${symbol})</span></span><span class="font-medium">${fmt(data.client_service_fee_total)} ${symbol}</span></div>`;
                 }
 
                 if (data.duration_discount > 0) {
-                    html += `<div class="flex justify-between text-green-600"><span>Remise durée</span><span>-${fmt(data.duration_discount)} DA</span></div>`;
+                    html += `<div class="flex justify-between text-green-600"><span>Remise durée</span><span>-${fmt(data.duration_discount)} ${symbol}</span></div>`;
                 }
                 if (data.season_surcharge > 0) {
-                    html += `<div class="flex justify-between text-orange-600"><span>${data.season_name || 'Haute saison'}</span><span>+${fmt(data.season_surcharge)} DA</span></div>`;
+                    html += `<div class="flex justify-between text-orange-600"><span>${data.season_name || 'Haute saison'}</span><span>+${fmt(data.season_surcharge)} ${symbol}</span></div>`;
                 }
                 if (data.delivery_fee > 0) {
-                    html += `<div class="flex justify-between"><span class="text-gray-600">Livraison</span><span>+${fmt(data.delivery_fee)} DA</span></div>`;
+                    html += `<div class="flex justify-between"><span class="text-gray-600">Livraison</span><span>+${fmt(data.delivery_fee)} ${symbol}</span></div>`;
                 }
                 if (data.return_fee > 0) {
-                    html += `<div class="flex justify-between"><span class="text-gray-600">Retour</span><span>+${fmt(data.return_fee)} DA</span></div>`;
+                    html += `<div class="flex justify-between"><span class="text-gray-600">Retour</span><span>+${fmt(data.return_fee)} ${symbol}</span></div>`;
                 }
-                if (data.options_total > 0) {
-                    html += `<div class="flex justify-between"><span class="text-gray-600">Options</span><span>+${fmt(data.options_total)} DA</span></div>`;
+
+                // Afficher chaque option par son nom
+                if (data.options_detail && data.options_detail.length > 0) {
+                    data.options_detail.forEach(opt => {
+                        html += `<div class="flex justify-between"><span class="text-gray-600">${opt.name}</span><span>+${fmt(opt.total)} ${symbol}</span></div>`;
+                    });
                 }
 
                 html += `<div class="border-t border-gray-200 pt-3 mt-3 flex justify-between text-lg"><span class="font-bold text-gray-900">Total</span><span class="font-black text-amber-600">${data.formatted_total}</span></div>`;
