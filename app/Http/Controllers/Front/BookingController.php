@@ -208,9 +208,15 @@ class BookingController extends Controller
             'same_return_location' => 'nullable|in:0,1',
             'options' => 'nullable|array',
             'currency' => 'nullable|in:DZD,EUR',
-            'advance_payment_method' => 'nullable|string|in:cash,cib,dahabia,baridimob,paypal,bank_transfer',
+            'advance_payment_method' => 'nullable|string|max:50',
             'internal_notes' => 'nullable|string|max:1000',
         ]);
+
+        // Valider la méthode d'acompte si fournie (convertir chaîne vide en null)
+        $advancePaymentMethod = $request->advance_payment_method ?: null;
+        if ($advancePaymentMethod && !in_array($advancePaymentMethod, ['cash', 'cib', 'dahabia', 'baridimob', 'paypal', 'bank_transfer'])) {
+            $advancePaymentMethod = null;
+        }
 
         // Si retour au même endroit, copier la zone de pickup vers return
         $returnZoneId = $request->return_zone_id;
@@ -330,7 +336,6 @@ class BookingController extends Controller
         $totalPrice = $pricing['total'] + $optionsFees;
 
         // Timer basé sur la méthode de paiement choisie par le client
-        $advancePaymentMethod = $request->advance_payment_method;
         $timerHours = null;
         $advancePaymentMethods = $loueur ? $loueur->getSetting('advance_payment_methods', []) : [];
 
