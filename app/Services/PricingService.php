@@ -170,10 +170,10 @@ class PricingService
         $loueurTotal = $loueurSubtotal + $deliveryFee + $returnFee + $optionsTotal;
 
         // 9. Acompte (configuré par le loueur dans ses settings)
+        // Calculé en pourcentage du total, dans la devise de la réservation (DZD ou EUR)
         $loueur = $vehicle->loueur;
         $advancePercentage = $loueur ? $loueur->getSetting('advance_percentage', 0) : 0;
-        $minAdvance = $loueur ? $loueur->getSetting('min_advance_amount', 0) : 0;
-        $advanceAmount = max($minAdvance, round($total * $advancePercentage / 100));
+        $advanceAmount = round($total * $advancePercentage / 100);
 
         // 10. Caution (configurée par véhicule)
         $depositAmount = $vehicle->deposit_amount ?? 0;

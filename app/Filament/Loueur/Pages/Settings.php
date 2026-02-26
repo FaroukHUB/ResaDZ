@@ -64,7 +64,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'meta_description' => $loueur->meta_description,
                 // Settings from loueur_settings table
                 'advance_percentage' => $loueur->getSetting('advance_percentage', 30),
-                'min_advance_amount' => $loueur->getSetting('min_advance_amount', 0),
                 'advance_payment_methods' => $loueur->getSetting('advance_payment_methods', []),
                 'cancellation_deadline_hours' => $loueur->getSetting('cancellation_deadline_hours', 48),
                 'auto_confirm_bookings' => $loueur->getSetting('auto_confirm_bookings', false),
@@ -188,22 +187,13 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                 Forms\Components\Section::make('Acompte')
                                     ->description('Configurez le montant de l\'acompte demandé au client')
                                     ->schema([
-                                        Forms\Components\Grid::make(2)
-                                            ->schema([
-                                                Forms\Components\TextInput::make('advance_percentage')
-                                                    ->label('Pourcentage d\'acompte')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->maxValue(100)
-                                                    ->suffix('%')
-                                                    ->helperText('Ex: 30 = 30% du total. 0 = pas d\'acompte.'),
-                                                Forms\Components\TextInput::make('min_advance_amount')
-                                                    ->label('Acompte minimum (DA)')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->suffix('DA')
-                                                    ->helperText('0 = pas de minimum'),
-                                            ]),
+                                        Forms\Components\TextInput::make('advance_percentage')
+                                            ->label('Pourcentage d\'acompte')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->suffix('%')
+                                            ->helperText('Ex: 30 = 30% du total. 0 = pas d\'acompte. L\'acompte sera calculé automatiquement en DA ou € selon la devise de la réservation.'),
                                     ]),
                                 Forms\Components\Section::make('Méthodes de paiement de l\'acompte')
                                     ->description('Pour chaque méthode acceptée, définissez le délai accordé au client. Si le délai est dépassé, la réservation est automatiquement annulée.')
@@ -675,7 +665,6 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
 
         // Update settings
         $loueur->setSetting('advance_percentage', $data['advance_percentage'] ?? 0, 'integer');
-        $loueur->setSetting('min_advance_amount', $data['min_advance_amount'] ?? 0, 'decimal');
         $loueur->setSetting('advance_payment_methods', $data['advance_payment_methods'] ?? [], 'json');
         $loueur->setSetting('cancellation_deadline_hours', $data['cancellation_deadline_hours'] ?? 48, 'integer');
         $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
