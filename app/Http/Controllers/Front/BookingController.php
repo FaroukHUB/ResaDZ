@@ -203,7 +203,7 @@ class BookingController extends Controller
             'client_name' => 'required|string|max:255',
             'client_phone' => 'required|string|max:50',
             'client_email' => 'required|email|max:255',
-            'pickup_zone_id' => 'required|exists:delivery_zones,id',
+            'pickup_zone_id' => 'nullable|exists:delivery_zones,id',
             'return_zone_id' => 'nullable|exists:delivery_zones,id',
             'same_return_location' => 'nullable|in:0,1',
             'options' => 'nullable|array',
