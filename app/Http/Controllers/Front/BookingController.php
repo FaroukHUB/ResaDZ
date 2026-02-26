@@ -195,6 +195,7 @@ class BookingController extends Controller
      */
     public function store(Request $request, PricingService $pricingService, OptionAvailabilityService $optionService)
     {
+        try {
         $request->validate([
             'vehicle_id' => 'required|exists:vehicles,id',
             'start_date' => 'required|date|after_or_equal:today',
@@ -219,13 +220,14 @@ class BookingController extends Controller
         }
 
         // Si retour au même endroit, copier la zone de pickup vers return
-        $returnZoneId = $request->return_zone_id;
+        $pickupZoneId = $request->pickup_zone_id ? (int) $request->pickup_zone_id : null;
+        $returnZoneId = $request->return_zone_id ? (int) $request->return_zone_id : null;
         if ($request->input('same_return_location', '1') === '1') {
-            $returnZoneId = $request->pickup_zone_id;
+            $returnZoneId = $pickupZoneId;
         }
 
         // Récupérer les noms des zones pour les adresses
-        $pickupZone = DeliveryZone::find($request->pickup_zone_id);
+        $pickupZone = $pickupZoneId ? DeliveryZone::find($pickupZoneId) : null;
         $returnZone = $returnZoneId ? DeliveryZone::find($returnZoneId) : $pickupZone;
         $pickupAddress = $pickupZone?->name ?? '';
         $returnAddress = $returnZone?->name ?? $pickupAddress;
@@ -326,7 +328,7 @@ class BookingController extends Controller
             vehicle: $vehicle,
             startDate: $request->start_date,
             endDate: $request->end_date,
-            pickupZoneId: $request->pickup_zone_id,
+            pickupZoneId: $pickupZoneId,
             returnZoneId: $returnZoneId,
             selectedOptions: [], // Options calculées manuellement
             currency: $request->currency ?? 'DZD'
@@ -360,7 +362,7 @@ class BookingController extends Controller
             'client_name' => $request->client_name,
             'client_phone' => $request->client_phone,
             'client_email' => $request->client_email,
-            'pickup_zone_id' => $request->pickup_zone_id,
+            'pickup_zone_id' => $pickupZoneId,
             'return_zone_id' => $returnZoneId,
             'pickup_address' => $pickupAddress,
             'pickup_time' => $request->pickup_time,
@@ -408,6 +410,15 @@ class BookingController extends Controller
         }
 
         return redirect()->route('booking.confirmation', $booking->reference);
+        } catch (\Exception $e) {
+            \Log::error('Booking creation failed: ' . $e->getMessage(), [
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'trace' => $e->getTraceAsString(),
+                'request' => $request->all()
+            ]);
+            return back()->withErrors(['error' => 'Une erreur est survenue: ' . $e->getMessage()])->withInput();
+        }
     }
 
     /**
