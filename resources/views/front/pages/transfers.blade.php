@@ -217,13 +217,23 @@
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Passagers *</label>
-                <select name="passengers" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
-                    @for($i = 1; $i <= 10; $i++)
-                        <option value="{{ $i }}" {{ $passengers == $i ? 'selected' : '' }}>{{ $i }}</option>
-                    @endfor
-                </select>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Passagers *</label>
+                    <select name="passengers" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
+                        @for($i = 1; $i <= 10; $i++)
+                            <option value="{{ $i }}" {{ $passengers == $i ? 'selected' : '' }}>{{ $i }}</option>
+                        @endfor
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Bagages *</label>
+                    <select name="luggage_count" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
+                        @for($i = 0; $i <= 10; $i++)
+                            <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? 'bagages' : 'bagage' }}</option>
+                        @endfor
+                    </select>
+                </div>
             </div>
 
             <div>

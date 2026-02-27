@@ -55,6 +55,10 @@
                     <span class="font-medium text-gray-900">{{ $transfer->passengers }}</span>
                 </div>
                 <div class="flex justify-between">
+                    <span class="text-gray-500">Bagages</span>
+                    <span class="font-medium text-gray-900">{{ $transfer->luggage_count }}</span>
+                </div>
+                <div class="flex justify-between">
                     <span class="text-gray-500">Prestataire</span>
                     <span class="font-medium text-gray-900">{{ $transfer->loueur->company_name }}</span>
                 </div>

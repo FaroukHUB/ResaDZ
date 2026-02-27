@@ -16,6 +16,7 @@ class TransferBooking extends Model
         'transfer_date',
         'transfer_time',
         'passengers',
+        'luggage_count',
         'price',
         'vehicle_type',
         'client_name',

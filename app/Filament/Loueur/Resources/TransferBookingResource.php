@@ -97,6 +97,12 @@ class TransferBookingResource extends Resource
                             ->numeric()
                             ->required(),
 
+                        Forms\Components\TextInput::make('luggage_count')
+                            ->label('Bagages')
+                            ->numeric()
+                            ->default(0)
+                            ->required(),
+
                         Forms\Components\TextInput::make('price')
                             ->label('Prix (DA)')
                             ->numeric()
@@ -191,6 +197,10 @@ class TransferBookingResource extends Resource
 
                 Tables\Columns\TextColumn::make('passengers')
                     ->label('Passagers')
+                    ->alignCenter(),
+
+                Tables\Columns\TextColumn::make('luggage_count')
+                    ->label('Bagages')
                     ->alignCenter(),
 
                 Tables\Columns\TextColumn::make('price')
