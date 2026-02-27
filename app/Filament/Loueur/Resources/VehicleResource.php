@@ -49,231 +49,251 @@ class VehicleResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Tabs::make('Véhicule')
-                    ->tabs([
-                        Forms\Components\Tabs\Tab::make('Informations')
-                            ->icon('heroicon-o-information-circle')
+                // Section 1: Informations du véhicule
+                Forms\Components\Section::make('Informations du véhicule')
+                    ->icon('heroicon-o-truck')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Grid::make(2)
                             ->schema([
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\Select::make('brand_id')
-                                            ->label('Marque')
-                                            ->options(Brand::pluck('name', 'id'))
-                                            ->searchable()
-                                            ->required(),
-                                        Forms\Components\Select::make('category_id')
-                                            ->label('Catégorie')
-                                            ->options(Category::pluck('name', 'id'))
-                                            ->required(),
+                                Forms\Components\Select::make('brand_id')
+                                    ->label('Marque')
+                                    ->options(Brand::pluck('name', 'id'))
+                                    ->searchable()
+                                    ->required(),
+                                Forms\Components\Select::make('category_id')
+                                    ->label('Catégorie')
+                                    ->options(Category::pluck('name', 'id'))
+                                    ->required(),
+                            ]),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('model')
+                                    ->label('Modèle')
+                                    ->required()
+                                    ->maxLength(255),
+                                Forms\Components\TextInput::make('full_name')
+                                    ->label('Nom complet')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->helperText('Ex: VW Tiguan 2024 Noir'),
+                            ]),
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\TextInput::make('year')
+                                    ->label('Année')
+                                    ->numeric()
+                                    ->minValue(2000)
+                                    ->maxValue(date('Y') + 1),
+                                Forms\Components\Select::make('transmission')
+                                    ->label('Transmission')
+                                    ->options([
+                                        'manual' => 'Manuelle',
+                                        'automatic' => 'Automatique',
                                     ]),
-                                Forms\Components\Grid::make(2)
+                                Forms\Components\Select::make('fuel_type')
+                                    ->label('Carburant')
+                                    ->options([
+                                        'essence' => 'Essence',
+                                        'diesel' => 'Diesel',
+                                        'hybrid' => 'Hybride',
+                                        'electric' => 'Électrique',
+                                    ]),
+                                Forms\Components\TextInput::make('color')
+                                    ->label('Couleur'),
+                            ]),
+                        Forms\Components\Grid::make(4)
+                            ->schema([
+                                Forms\Components\TextInput::make('seats')
+                                    ->label('Places')
+                                    ->numeric()
+                                    ->minValue(2)
+                                    ->maxValue(9),
+                                Forms\Components\TextInput::make('doors')
+                                    ->label('Portes')
+                                    ->numeric()
+                                    ->minValue(2)
+                                    ->maxValue(5),
+                                Forms\Components\TextInput::make('mileage')
+                                    ->label('Kilométrage')
+                                    ->numeric()
+                                    ->suffix('km'),
+                                Forms\Components\TextInput::make('luggage_capacity')
+                                    ->label('Bagages')
+                                    ->numeric()
+                                    ->suffix('valises'),
+                            ]),
+                        Forms\Components\Toggle::make('has_air_conditioning')
+                            ->label('Climatisation')
+                            ->default(true),
+                    ]),
+
+                // Section 2: Tarification
+                Forms\Components\Section::make('Tarification')
+                    ->icon('heroicon-o-currency-euro')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('price_per_day')
+                                    ->label('Votre prix / jour (DA)')
+                                    ->numeric()
+                                    ->required()
+                                    ->suffix('DA')
+                                    ->live(onBlur: true),
+                                Forms\Components\TextInput::make('price_per_day_eur')
+                                    ->label('Votre prix / jour (EUR)')
+                                    ->numeric()
+                                    ->suffix('€')
+                                    ->helperText('Pour clients diaspora'),
+                            ]),
+                        // Commission info box - always visible
+                        Forms\Components\Placeholder::make('commission_info')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-xl">
+                                    <div class="flex items-start gap-3">
+                                        <svg class="w-6 h-6 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        <div>
+                                            <p class="font-semibold text-blue-900 dark:text-blue-100">Commission ResaDZ</p>
+                                            <p class="text-sm text-blue-800 dark:text-blue-200 mt-1">
+                                                ResaDZ prélève <strong>150 DA/jour</strong> (ou <strong>1€/jour</strong> pour les prix en EUR) sur chaque réservation.
+                                            </p>
+                                            <p class="text-xs text-blue-600 dark:text-blue-300 mt-2">
+                                                <strong>Pourquoi ?</strong> Cette commission couvre : visibilité sur la plateforme, gestion des réservations, support client 7j/7, paiements sécurisés et protection de vos données.
+                                            </p>
+                                            <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">
+                                                <strong>Exemple :</strong> Vous fixez 5 000 DA/jour → Vous recevez 4 850 DA/jour après commission.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ')),
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\TextInput::make('deposit_amount')
+                                    ->label('Caution en DA')
+                                    ->numeric()
+                                    ->suffix('DA'),
+                                Forms\Components\TextInput::make('deposit_amount_eur')
+                                    ->label('Caution en EUR')
+                                    ->numeric()
+                                    ->suffix('€'),
+                            ]),
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\TextInput::make('min_rental_days')
+                                    ->label('Durée min')
+                                    ->numeric()
+                                    ->default(1)
+                                    ->minValue(1)
+                                    ->suffix('jours'),
+                                Forms\Components\TextInput::make('max_rental_days')
+                                    ->label('Durée max')
+                                    ->numeric()
+                                    ->suffix('jours')
+                                    ->placeholder('Illimité'),
+                                Forms\Components\TextInput::make('mileage_limit_per_day')
+                                    ->label('Km/jour max')
+                                    ->numeric()
+                                    ->suffix('km')
+                                    ->placeholder('Illimité'),
+                            ]),
+                    ]),
+
+                // Section 3: Prix dégressifs (optionnel)
+                Forms\Components\Section::make('Prix dégressifs (optionnel)')
+                    ->icon('heroicon-o-arrow-trending-down')
+                    ->description('Proposez des réductions pour les locations longue durée')
+                    ->collapsed()
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Repeater::make('degressive_pricing')
+                            ->label('')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
                                     ->schema([
-                                        Forms\Components\TextInput::make('model')
-                                            ->label('Modèle')
+                                        Forms\Components\TextInput::make('from_days')
+                                            ->label('À partir de')
+                                            ->numeric()
                                             ->required()
-                                            ->maxLength(255),
-                                        Forms\Components\TextInput::make('full_name')
-                                            ->label('Nom complet')
+                                            ->minValue(2)
+                                            ->suffix('jours'),
+                                        Forms\Components\TextInput::make('price_per_day')
+                                            ->label('Prix / jour (DA)')
+                                            ->numeric()
                                             ->required()
-                                            ->maxLength(255)
-                                            ->helperText('Ex: VW Tiguan 2024 Noir'),
+                                            ->suffix('DA'),
+                                        Forms\Components\TextInput::make('price_per_day_eur')
+                                            ->label('Prix / jour (EUR)')
+                                            ->numeric()
+                                            ->suffix('€'),
                                     ]),
-                                Forms\Components\Grid::make(4)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('year')
-                                            ->label('Année')
-                                            ->numeric()
-                                            ->minValue(2000)
-                                            ->maxValue(date('Y') + 1),
-                                        Forms\Components\Select::make('transmission')
-                                            ->label('Transmission')
-                                            ->options([
-                                                'manual' => 'Manuelle',
-                                                'automatic' => 'Automatique',
-                                            ]),
-                                        Forms\Components\Select::make('fuel_type')
-                                            ->label('Carburant')
-                                            ->options([
-                                                'essence' => 'Essence',
-                                                'diesel' => 'Diesel',
-                                                'hybrid' => 'Hybride',
-                                                'electric' => 'Électrique',
-                                            ]),
-                                        Forms\Components\TextInput::make('mileage')
-                                            ->label('Kilométrage')
-                                            ->numeric()
-                                            ->suffix('km'),
-                                    ]),
-                                Forms\Components\Grid::make(4)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('seats')
-                                            ->label('Places')
-                                            ->numeric()
-                                            ->minValue(2)
-                                            ->maxValue(9),
-                                        Forms\Components\TextInput::make('doors')
-                                            ->label('Portes')
-                                            ->numeric()
-                                            ->minValue(2)
-                                            ->maxValue(5),
-                                        Forms\Components\TextInput::make('color')
-                                            ->label('Couleur'),
-                                        Forms\Components\TextInput::make('luggage_capacity')
-                                            ->label('Bagages')
-                                            ->numeric()
-                                            ->suffix('valises'),
-                                    ]),
-                                Forms\Components\Toggle::make('has_air_conditioning')
-                                    ->label('Climatisation')
+                            ])
+                            ->defaultItems(0)
+                            ->addActionLabel('Ajouter un palier')
+                            ->itemLabel(fn (array $state): ?string =>
+                                isset($state['from_days']) && isset($state['price_per_day'])
+                                    ? "À partir de {$state['from_days']} jours : {$state['price_per_day']} DA/jour"
+                                    : null
+                            ),
+                    ]),
+
+                // Section 4: Photos
+                Forms\Components\Section::make('Photos')
+                    ->icon('heroicon-o-photo')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\FileUpload::make('image')
+                            ->label('Photo principale')
+                            ->image()
+                            ->directory('vehicles')
+                            ->visibility('public')
+                            ->helperText('Cette photo sera affichée en premier'),
+                        Forms\Components\FileUpload::make('gallery')
+                            ->label('Galerie (optionnel)')
+                            ->image()
+                            ->multiple()
+                            ->directory('vehicles/gallery')
+                            ->visibility('public')
+                            ->reorderable()
+                            ->helperText('Photos supplémentaires du véhicule'),
+                    ]),
+
+                // Section 5: Disponibilité
+                Forms\Components\Section::make('Disponibilité')
+                    ->icon('heroicon-o-calendar')
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Select::make('status')
+                                    ->label('Statut')
+                                    ->options([
+                                        'available' => 'Disponible',
+                                        'rented' => 'En location',
+                                        'maintenance' => 'En maintenance',
+                                        'unavailable' => 'Indisponible',
+                                    ])
+                                    ->default('available')
+                                    ->required(),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Visible sur le site')
                                     ->default(true)
-                                    ->helperText('Ce véhicule dispose de la climatisation'),
+                                    ->helperText('Désactivez pour masquer temporairement'),
                             ]),
-                        Forms\Components\Tabs\Tab::make('Tarification')
-                            ->icon('heroicon-o-currency-euro')
+                        Forms\Components\Grid::make(2)
                             ->schema([
-                                Forms\Components\Section::make('Prix de base')
-                                    ->description('Le prix affiché au client inclura automatiquement les frais de service (+250 DA/jour)')
-                                    ->schema([
-                                        Forms\Components\Grid::make(2)
-                                            ->schema([
-                                                Forms\Components\TextInput::make('price_per_day')
-                                                    ->label('Votre prix / jour (DA)')
-                                                    ->numeric()
-                                                    ->required()
-                                                    ->suffix('DA')
-                                                    ->helperText('Ce que vous recevez')
-                                                    ->live(onBlur: true),
-                                                Forms\Components\TextInput::make('price_per_day_eur')
-                                                    ->label('Votre prix / jour (EUR)')
-                                                    ->numeric()
-                                                    ->suffix('€')
-                                                    ->helperText('Pour clients diaspora'),
-                                            ]),
-                                        Forms\Components\Placeholder::make('client_price_info')
-                                            ->label('')
-                                            ->content(fn ($record) => $record && $record->price_per_day
-                                                ? '💡 Prix affiché au client : ' . number_format($record->price_per_day + 250, 0, ',', ' ') . ' DA/jour (votre prix + 250 DA de frais de service)'
-                                                : '💡 Le prix affiché au client sera votre prix + 250 DA/jour de frais de service'),
-                                    ]),
-                                Forms\Components\Section::make('Prix dégressifs')
-                                    ->description('Proposez des réductions pour les locations longue durée')
-                                    ->schema([
-                                        Forms\Components\Repeater::make('degressive_pricing')
-                                            ->label('')
-                                            ->schema([
-                                                Forms\Components\Grid::make(3)
-                                                    ->schema([
-                                                        Forms\Components\TextInput::make('from_days')
-                                                            ->label('À partir de (jours)')
-                                                            ->numeric()
-                                                            ->required()
-                                                            ->minValue(2),
-                                                        Forms\Components\TextInput::make('price_per_day')
-                                                            ->label('Prix / jour (DA)')
-                                                            ->numeric()
-                                                            ->required()
-                                                            ->suffix('DA'),
-                                                        Forms\Components\TextInput::make('price_per_day_eur')
-                                                            ->label('Prix / jour (EUR)')
-                                                            ->numeric()
-                                                            ->suffix('€'),
-                                                    ]),
-                                            ])
-                                            ->defaultItems(0)
-                                            ->addActionLabel('Ajouter un palier')
-                                            ->collapsible()
-                                            ->itemLabel(fn (array $state): ?string =>
-                                                isset($state['from_days']) && isset($state['price_per_day'])
-                                                    ? "À partir de {$state['from_days']} jours : {$state['price_per_day']} DA/jour (client: " . ((int)$state['price_per_day'] + 250) . " DA)"
-                                                    : null
-                                            ),
-                                    ]),
-                                Forms\Components\Section::make('Caution')
-                                    ->description('Définissez le montant de la caution en DA et/ou en EUR pour laisser le choix au client')
-                                    ->schema([
-                                        Forms\Components\Grid::make(2)
-                                            ->schema([
-                                                Forms\Components\TextInput::make('deposit_amount')
-                                                    ->label('Caution en DA')
-                                                    ->numeric()
-                                                    ->suffix('DA')
-                                                    ->helperText('Montant en Dinars algériens'),
-                                                Forms\Components\TextInput::make('deposit_amount_eur')
-                                                    ->label('Caution en EUR')
-                                                    ->numeric()
-                                                    ->suffix('€')
-                                                    ->helperText('Montant en Euros (optionnel)'),
-                                            ]),
-                                    ]),
-                                Forms\Components\Section::make('Limites')
-                                    ->schema([
-                                        Forms\Components\Grid::make(3)
-                                            ->schema([
-                                                Forms\Components\TextInput::make('min_rental_days')
-                                                    ->label('Min jours')
-                                                    ->numeric()
-                                                    ->default(1)
-                                                    ->minValue(1),
-                                                Forms\Components\TextInput::make('max_rental_days')
-                                                    ->label('Max jours')
-                                                    ->numeric()
-                                                    ->helperText('Vide = illimité'),
-                                                Forms\Components\TextInput::make('mileage_limit_per_day')
-                                                    ->label('Km/jour max')
-                                                    ->numeric()
-                                                    ->suffix('km')
-                                                    ->helperText('Vide = illimité'),
-                                            ]),
-                                    ]),
+                                Forms\Components\DatePicker::make('available_from')
+                                    ->label('Disponible à partir de'),
+                                Forms\Components\DatePicker::make('available_until')
+                                    ->label('Disponible jusqu\'au'),
                             ]),
-                        Forms\Components\Tabs\Tab::make('Photos')
-                            ->icon('heroicon-o-photo')
-                            ->schema([
-                                Forms\Components\FileUpload::make('image')
-                                    ->label('Photo principale')
-                                    ->image()
-                                    ->directory('vehicles')
-                                    ->visibility('public'),
-                                Forms\Components\FileUpload::make('gallery')
-                                    ->label('Galerie')
-                                    ->image()
-                                    ->multiple()
-                                    ->directory('vehicles/gallery')
-                                    ->visibility('public')
-                                    ->reorderable(),
-                            ]),
-                        Forms\Components\Tabs\Tab::make('Statut')
-                            ->icon('heroicon-o-check-circle')
-                            ->schema([
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\Select::make('status')
-                                            ->label('Statut')
-                                            ->options([
-                                                'available' => 'Disponible',
-                                                'rented' => 'En location',
-                                                'maintenance' => 'En maintenance',
-                                                'unavailable' => 'Indisponible',
-                                            ])
-                                            ->default('available')
-                                            ->required(),
-                                        Forms\Components\Toggle::make('is_active')
-                                            ->label('Actif sur le site')
-                                            ->default(true),
-                                    ]),
-                                Forms\Components\Toggle::make('is_featured')
-                                    ->label('Mettre en avant')
-                                    ->helperText('Affiché sur la page d\'accueil dans sa catégorie'),
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\DatePicker::make('available_from')
-                                            ->label('Disponible à partir de'),
-                                        Forms\Components\DatePicker::make('available_until')
-                                            ->label('Disponible jusqu\'au'),
-                                    ]),
-                            ]),
-                    ])
-                    ->columnSpanFull(),
+                        Forms\Components\Toggle::make('is_featured')
+                            ->label('Mettre en avant sur la page d\'accueil'),
+                    ]),
             ]);
     }
 
@@ -296,8 +316,8 @@ class VehicleResource extends Resource
                     ->badge(),
                 Tables\Columns\TextColumn::make('price_per_day')
                     ->label('Prix/jour')
-                    ->formatStateUsing(fn ($state) => number_format($state + 250, 0, ',', ' ') . ' DA')
-                    ->description(fn ($record) => 'Vous: ' . number_format($record->price_per_day, 0, ',', ' ') . ' DA')
+                    ->formatStateUsing(fn ($state) => number_format($state, 0, ',', ' ') . ' DA')
+                    ->description(fn ($record) => 'Net: ' . number_format($record->price_per_day - 150, 0, ',', ' ') . ' DA')
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Statut')
