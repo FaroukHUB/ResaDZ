@@ -554,7 +554,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             $loueur->update(['onboarding_step' => $this->currentStep]);
         }
 
-        return $this->redirect(route('filament.loueur.pages.onboarding'));
+        $this->redirect(route('filament.loueur.pages.onboarding'));
     }
 
     protected function saveCurrentStep(): void
@@ -640,7 +640,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             ->success()
             ->send();
 
-        return $this->redirect(route('filament.loueur.pages.dashboard'));
+        $this->redirect(route('filament.loueur.pages.dashboard'));
     }
 
     public function skipOnboarding(): void
