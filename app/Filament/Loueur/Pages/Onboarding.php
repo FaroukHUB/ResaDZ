@@ -495,13 +495,66 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public function nextStep(): void
     {
-        $this->saveCurrentStep();
+        $loueur = Auth::user()->loueur;
+        $data = $this->data;
 
-        if ($this->currentStep < $this->totalSteps) {
-            $this->currentStep++;
+        // Save current step data
+        switch ($this->currentStep) {
+            case 1:
+                $loueur->update([
+                    'company_name' => $data['company_name'] ?? $loueur->company_name,
+                    'description' => $data['description'] ?? null,
+                    'phone' => $data['phone'] ?? null,
+                    'whatsapp' => $data['whatsapp'] ?? null,
+                    'email_contact' => $data['email_contact'] ?? null,
+                    'address' => $data['address'] ?? null,
+                    'city' => $data['city'] ?? null,
+                    'wilaya' => $data['wilaya'] ?? null,
+                ]);
+                break;
+
+            case 3:
+                $loueur->setSetting('advance_percentage', $data['advance_percentage'] ?? 0, 'integer');
+                $loueur->setSetting('advance_payment_methods', $data['advance_payment_methods'] ?? [], 'json');
+                $loueur->setSetting('cancellation_deadline_hours', $data['cancellation_deadline_hours'] ?? 48, 'integer');
+                $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
+                $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
+                break;
+
+            case 4:
+                $loueur->setSetting('return_margin_hours', $data['return_margin_hours'] ?? 2, 'integer');
+                $loueur->setSetting('fuel_return_fee', $data['fuel_return_fee'] ?? 0, 'decimal');
+                $loueur->setSetting('wash_return_fee', $data['wash_return_fee'] ?? 0, 'decimal');
+                $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
+                break;
+
+            case 5:
+                $loueur->setSetting('conditions_pdf', $data['conditions_pdf'] ?? null, 'string');
+                $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
+                break;
+
+            case 6:
+                $loueur->setSetting('badge_insurance', $data['badge_insurance'] ?? false, 'boolean');
+                $loueur->setSetting('badge_delivery', $data['badge_delivery'] ?? false, 'boolean');
+                $loueur->setSetting('badge_degressive', $data['badge_degressive'] ?? false, 'boolean');
+                $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
+                $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
+                $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
+                break;
+
+            case 7:
+                $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
+                $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
+                $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');
+                break;
         }
 
-        $this->redirect(route('filament.loueur.pages.onboarding'));
+        // Update progress to next step
+        if ($this->currentStep < $this->totalSteps) {
+            $loueur->update(['onboarding_step' => $this->currentStep]);
+        }
+
+        return $this->redirect(route('filament.loueur.pages.onboarding'));
     }
 
     protected function saveCurrentStep(): void
@@ -571,10 +624,14 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public function completeOnboarding(): void
     {
-        $this->validate();
-        $this->saveCurrentStep();
-
         $loueur = Auth::user()->loueur;
+        $data = $this->data;
+
+        // Save notifications settings
+        $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
+        $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
+        $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');
+
         $loueur->completeOnboarding();
 
         Notification::make()
@@ -583,7 +640,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             ->success()
             ->send();
 
-        redirect()->route('filament.loueur.pages.dashboard');
+        return $this->redirect(route('filament.loueur.pages.dashboard'));
     }
 
     public function skipOnboarding(): void
