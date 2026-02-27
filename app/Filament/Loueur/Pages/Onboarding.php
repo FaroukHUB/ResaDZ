@@ -486,27 +486,28 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
     public function previousStep(): void
     {
         if ($this->currentStep > 1) {
-            $this->saveCurrentStep();
-            $this->currentStep--;
-            $this->form->fill($this->loadStepData(Auth::user()->loueur));
+            $loueur = Auth::user()->loueur;
+            $loueur->update(['onboarding_step' => $this->currentStep - 2]);
         }
+
+        $this->redirect(route('filament.loueur.pages.onboarding'));
     }
 
     public function nextStep(): void
     {
-        $this->validate();
         $this->saveCurrentStep();
 
         if ($this->currentStep < $this->totalSteps) {
             $this->currentStep++;
-            $this->form->fill($this->loadStepData(Auth::user()->loueur));
         }
+
+        $this->redirect(route('filament.loueur.pages.onboarding'));
     }
 
     protected function saveCurrentStep(): void
     {
         $loueur = Auth::user()->loueur;
-        $data = $this->form->getState();
+        $data = $this->data;
 
         switch ($this->currentStep) {
             case 1:
