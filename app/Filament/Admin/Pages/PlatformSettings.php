@@ -37,7 +37,9 @@ class PlatformSettings extends Page
 
             // Commission & Pricing
             'loueur_commission_per_day_dzd' => Setting::get('loueur_commission_per_day_dzd', 150),
+            'loueur_commission_per_day_eur' => Setting::get('loueur_commission_per_day_eur', 1),
             'client_service_fee_per_day_dzd' => Setting::get('client_service_fee_per_day_dzd', 100),
+            'client_service_fee_per_day_eur' => Setting::get('client_service_fee_per_day_eur', 0.75),
             'dzd_to_usd_rate' => Setting::get('dzd_to_usd_rate', 0.0074),
             'dzd_to_eur_rate' => Setting::get('dzd_to_eur_rate', 0.0068),
             'min_paypal_amount_usd' => Setting::get('min_paypal_amount_usd', 1),
@@ -172,8 +174,8 @@ class PlatformSettings extends Page
                         Forms\Components\Tabs\Tab::make('Commission & Tarifs')
                             ->icon('heroicon-o-currency-dollar')
                             ->schema([
-                                Forms\Components\Section::make('Commission ResaDZ')
-                                    ->description('Frais prélevés sur chaque réservation')
+                                Forms\Components\Section::make('Commission ResaDZ (Dinar)')
+                                    ->description('Frais prélevés sur chaque réservation en dinars')
                                     ->schema([
                                         Forms\Components\TextInput::make('loueur_commission_per_day_dzd')
                                             ->label('Commission loueur (DA/jour)')
@@ -189,6 +191,28 @@ class PlatformSettings extends Page
                                             ->default(100)
                                             ->suffix('DA/jour')
                                             ->helperText('Frais de service facturés au client par jour de location'),
+                                    ])
+                                    ->columns(2),
+
+                                Forms\Components\Section::make('Commission ResaDZ (Euro)')
+                                    ->description('Frais prélevés sur chaque réservation en euros (pour clients payant en EUR)')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('loueur_commission_per_day_eur')
+                                            ->label('Commission loueur (€/jour)')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(1)
+                                            ->step(0.01)
+                                            ->suffix('€/jour')
+                                            ->helperText('Commission prélevée au loueur par jour de location (paiement en euros)'),
+                                        Forms\Components\TextInput::make('client_service_fee_per_day_eur')
+                                            ->label('Frais de service client (€/jour)')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(0.75)
+                                            ->step(0.01)
+                                            ->suffix('€/jour')
+                                            ->helperText('Frais de service facturés au client par jour de location (paiement en euros)'),
                                     ])
                                     ->columns(2),
 
@@ -448,7 +472,9 @@ class PlatformSettings extends Page
 
         // Commission & Pricing
         Setting::set('loueur_commission_per_day_dzd', $data['loueur_commission_per_day_dzd'], 'pricing', 'number');
+        Setting::set('loueur_commission_per_day_eur', $data['loueur_commission_per_day_eur'], 'pricing', 'number');
         Setting::set('client_service_fee_per_day_dzd', $data['client_service_fee_per_day_dzd'], 'pricing', 'number');
+        Setting::set('client_service_fee_per_day_eur', $data['client_service_fee_per_day_eur'], 'pricing', 'number');
         Setting::set('dzd_to_usd_rate', $data['dzd_to_usd_rate'], 'pricing', 'number');
         Setting::set('dzd_to_eur_rate', $data['dzd_to_eur_rate'], 'pricing', 'number');
         Setting::set('min_paypal_amount_usd', $data['min_paypal_amount_usd'], 'pricing', 'number');

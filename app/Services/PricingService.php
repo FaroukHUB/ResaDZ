@@ -12,17 +12,23 @@ class PricingService
     /**
      * Get loueur commission per day from settings (charged to loueur)
      */
-    private function getLoueurCommissionPerDay(): int
+    private function getLoueurCommissionPerDay(string $currency = 'DZD'): float
     {
-        return (int) Setting::get('loueur_commission_per_day_dzd', 150);
+        if ($currency === 'EUR') {
+            return (float) Setting::get('loueur_commission_per_day_eur', 1);
+        }
+        return (float) Setting::get('loueur_commission_per_day_dzd', 150);
     }
 
     /**
      * Get client service fee per day from settings (charged to client)
      */
-    private function getClientServiceFeePerDay(): int
+    private function getClientServiceFeePerDay(string $currency = 'DZD'): float
     {
-        return (int) Setting::get('client_service_fee_per_day_dzd', 100);
+        if ($currency === 'EUR') {
+            return (float) Setting::get('client_service_fee_per_day_eur', 0.75);
+        }
+        return (float) Setting::get('client_service_fee_per_day_dzd', 100);
     }
 
     /**
@@ -93,13 +99,13 @@ class PricingService
             }
         }
 
-        // 3. Frais ResaDZ (uniquement en DZD)
+        // 3. Frais ResaDZ (en DZD ou EUR selon la devise)
         // Commission loueur = ce que ResaDZ prélève au loueur
-        $loueurCommissionPerDay = $currency === 'EUR' ? 0 : $this->getLoueurCommissionPerDay();
+        $loueurCommissionPerDay = $this->getLoueurCommissionPerDay($currency);
         $loueurCommissionTotal = $loueurCommissionPerDay * $totalDays;
 
         // Frais de service client = ce que le client paie en plus
-        $clientServiceFeePerDay = $currency === 'EUR' ? 0 : $this->getClientServiceFeePerDay();
+        $clientServiceFeePerDay = $this->getClientServiceFeePerDay($currency);
         $clientServiceFeeTotal = $clientServiceFeePerDay * $totalDays;
 
         // Prix de base pour le client = prix loueur + frais de service

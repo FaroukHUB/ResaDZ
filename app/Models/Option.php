@@ -15,6 +15,7 @@ class Option extends Model
         'slug',
         'description',
         'price',
+        'price_eur',
         'price_type',
         'icon',
         'is_active',
@@ -23,6 +24,7 @@ class Option extends Model
 
     protected $casts = [
         'price' => 'decimal:2',
+        'price_eur' => 'decimal:2',
         'is_active' => 'boolean',
     ];
 
@@ -55,5 +57,24 @@ class Option extends Model
 
         $suffix = $this->price_type === 'per_day' ? '/jour' : '';
         return number_format($this->price, 0, ',', ' ') . ' DA' . $suffix;
+    }
+
+    public function getFormattedPriceEurAttribute(): string
+    {
+        if ($this->price_type === 'free' || !$this->price_eur) {
+            return '';
+        }
+
+        $suffix = $this->price_type === 'per_day' ? '/jour' : '';
+        return number_format($this->price_eur, 0, ',', ' ') . ' €' . $suffix;
+    }
+
+    public function getPrice(string $currency = 'DZD'): ?float
+    {
+        if ($this->price_type === 'free') {
+            return 0;
+        }
+
+        return $currency === 'EUR' ? $this->price_eur : $this->price;
     }
 }
