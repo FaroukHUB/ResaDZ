@@ -42,8 +42,13 @@ class EnsureUserIsLoueur
                 ->with('error', 'Votre compte loueur est désactivé. Contactez l\'administrateur.');
         }
 
-        // Redirige vers l'onboarding si non complété (sauf si déjà sur la page)
-        if (!$loueur->hasCompletedOnboarding() && !$request->routeIs('filament.loueur.pages.onboarding') && !$request->routeIs('filament.loueur.resources.delivery-zones.*')) {
+        // Redirige vers l'onboarding si non complété (sauf si déjà sur la page ou requête Livewire/AJAX)
+        if (!$loueur->hasCompletedOnboarding()
+            && !$request->routeIs('filament.loueur.pages.onboarding')
+            && !$request->routeIs('filament.loueur.resources.delivery-zones.*')
+            && !$request->is('livewire/*')
+            && !$request->ajax()
+        ) {
             return redirect()->route('filament.loueur.pages.onboarding');
         }
 
