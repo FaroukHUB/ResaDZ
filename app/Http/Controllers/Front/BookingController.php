@@ -72,9 +72,6 @@ class BookingController extends Controller
         $rentalConditions = $vehicle->loueur ? $vehicle->loueur->getSetting('rental_conditions', []) : [];
         $conditionsPdf = $vehicle->loueur ? $vehicle->loueur->getSetting('conditions_pdf', null) : null;
 
-        // EUR conversion rate
-        $dzdToEurRate = (float) Setting::get('dzd_to_eur_rate', 0.0068);
-
         return view('front.pages.booking', compact(
             'vehicle',
             'deliveryZones',
@@ -88,8 +85,7 @@ class BookingController extends Controller
             'operatingHoursStart',
             'operatingHoursEnd',
             'rentalConditions',
-            'conditionsPdf',
-            'dzdToEurRate'
+            'conditionsPdf'
         ));
     }
 
@@ -172,12 +168,13 @@ class BookingController extends Controller
         $pricing['advance_amount'] = round($pricing['total'] * $advancePercentage / 100);
         $pricing['formatted_advance'] = number_format($pricing['advance_amount'], 0, ',', ' ') . ' ' . ($pricing['currency'] === 'EUR' ? '€' : 'DA');
 
-        // Recalculate EUR equivalents with the updated total
-        $eurRate = (float) Setting::get('dzd_to_eur_rate', 0.0068);
-        $pricing['total_eur'] = $pricing['currency'] === 'EUR' ? $pricing['total'] : round($pricing['total'] * $eurRate, 2);
-        $pricing['advance_amount_eur'] = $pricing['currency'] === 'EUR' ? $pricing['advance_amount'] : round($pricing['advance_amount'] * $eurRate, 2);
-        $pricing['formatted_total_eur'] = number_format($pricing['total_eur'], 2, ',', ' ') . ' €';
-        $pricing['formatted_advance_eur'] = number_format($pricing['advance_amount_eur'], 2, ',', ' ') . ' €';
+        // EUR amounts are calculated in PricingService based on vehicle's price_per_day_eur
+        // Format advance EUR if available
+        if (isset($pricing['advance_amount_eur']) && $pricing['advance_amount_eur'] > 0) {
+            $pricing['formatted_advance_eur'] = number_format($pricing['advance_amount_eur'], 0, ',', ' ') . ' €';
+        } else {
+            $pricing['formatted_advance_eur'] = '';
+        }
 
         return response()->json($pricing);
     }
@@ -397,13 +394,16 @@ class BookingController extends Controller
             'extra_fees' => 0,
             'selected_options' => $selectedOptions,
             'total_price' => $totalPrice,
+            'total_price_eur' => $pricing['total_eur'] ?? 0,
             'commission_amount' => $pricing['loueur_commission_total'] ?? 0,
             'client_service_fee' => $pricing['client_service_fee_total'] ?? 0,
             'advance_amount' => $pricing['advance_amount'],
+            'advance_amount_eur' => $pricing['advance_amount_eur'] ?? 0,
             'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : null,
             'advance_payment_method' => $advancePaymentMethod,
             'advance_expires_at' => $timerHours ? now()->addHours($timerHours) : null,
-            'deposit_amount' => $pricing['deposit_amount'],
+            'deposit_amount' => $pricing['deposit_amount_da'] ?? $pricing['deposit_amount'] ?? 0,
+            'deposit_amount_eur' => $pricing['deposit_amount_eur'] ?? 0,
             'deposit_currency' => $pricing['deposit_currency'],
             'payment_status' => 'pending',
             'amount_paid' => 0,

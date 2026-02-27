@@ -550,7 +550,7 @@
 
                 html += `<div class="border-t border-gray-200 pt-3 mt-3 flex justify-between text-lg"><span class="font-bold text-gray-900">Total</span><span class="font-black text-amber-600">${data.formatted_total}</span></div>`;
                 if (data.currency !== 'EUR' && data.formatted_total_eur) {
-                    html += `<div class="flex justify-between text-sm text-gray-500"><span></span><span>≈ ${data.formatted_total_eur}</span></div>`;
+                    html += `<div class="flex justify-between text-sm text-gray-500"><span></span><span>ou ${data.formatted_total_eur}</span></div>`;
                 }
 
                 // Info frais de service
@@ -561,10 +561,17 @@
                     </div>`;
                 }
 
-                if (data.deposit_amount > 0) {
-                    let depositHtml = `<div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Caution (remboursable)</span><span class="font-semibold">${data.formatted_deposit}`;
-                    if (data.deposit_currency !== 'EUR' && data.formatted_deposit_eur) {
-                        depositHtml += ` <span class="text-gray-400">(≈ ${data.formatted_deposit_eur})</span>`;
+                // Caution - afficher les deux montants si disponibles
+                if (data.deposit_amount_da > 0 || data.deposit_amount_eur > 0) {
+                    let depositHtml = `<div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Caution (remboursable)</span><span class="font-semibold">`;
+                    if (data.formatted_deposit_da) {
+                        depositHtml += data.formatted_deposit_da;
+                    }
+                    if (data.formatted_deposit_da && data.formatted_deposit_eur) {
+                        depositHtml += ` <span class="text-gray-400">ou</span> `;
+                    }
+                    if (data.formatted_deposit_eur) {
+                        depositHtml += data.formatted_deposit_eur;
                     }
                     depositHtml += `</span></div>`;
                     html += depositHtml;
@@ -573,7 +580,7 @@
                 if (data.advance_amount > 0) {
                     let advanceEurHtml = '';
                     if (data.currency !== 'EUR' && data.formatted_advance_eur) {
-                        advanceEurHtml = `<span class="text-blue-500 text-sm ml-1">(≈ ${data.formatted_advance_eur})</span>`;
+                        advanceEurHtml = `<span class="text-blue-500 text-sm ml-1">(ou ${data.formatted_advance_eur})</span>`;
                     }
                     html += `<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
                         <div class="flex justify-between items-center">
@@ -597,7 +604,7 @@
                         advSection.classList.remove('hidden');
                         if (advAmountDisplay) advAmountDisplay.textContent = data.formatted_advance;
                         if (advAmountEurDisplay && data.currency !== 'EUR' && data.formatted_advance_eur) {
-                            advAmountEurDisplay.textContent = ` (≈ ${data.formatted_advance_eur})`;
+                            advAmountEurDisplay.textContent = ` (ou ${data.formatted_advance_eur})`;
                         } else if (advAmountEurDisplay) {
                             advAmountEurDisplay.textContent = '';
                         }

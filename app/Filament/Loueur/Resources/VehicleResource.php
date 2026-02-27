@@ -189,20 +189,20 @@ class VehicleResource extends Resource
                                             ),
                                     ]),
                                 Forms\Components\Section::make('Caution')
+                                    ->description('Définissez le montant de la caution en DA et/ou en EUR pour laisser le choix au client')
                                     ->schema([
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('deposit_amount')
-                                                    ->label('Montant caution')
+                                                    ->label('Caution en DA')
                                                     ->numeric()
-                                                    ->suffix('DA'),
-                                                Forms\Components\Select::make('deposit_currency')
-                                                    ->label('Devise caution')
-                                                    ->options([
-                                                        'DZD' => 'Dinar (DA)',
-                                                        'EUR' => 'Euro (€)',
-                                                    ])
-                                                    ->default('DZD'),
+                                                    ->suffix('DA')
+                                                    ->helperText('Montant en Dinars algériens'),
+                                                Forms\Components\TextInput::make('deposit_amount_eur')
+                                                    ->label('Caution en EUR')
+                                                    ->numeric()
+                                                    ->suffix('€')
+                                                    ->helperText('Montant en Euros (optionnel)'),
                                             ]),
                                     ]),
                                 Forms\Components\Section::make('Limites')

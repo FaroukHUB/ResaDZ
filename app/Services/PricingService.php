@@ -197,17 +197,39 @@ class PricingService
         $advancePercentage = $loueur ? $loueur->getSetting('advance_percentage', 0) : 0;
         $advanceAmount = round($total * $advancePercentage / 100);
 
-        // 10. Caution (configurée par véhicule)
-        $depositAmount = $vehicle->deposit_amount ?? 0;
-        $depositCurrency = $vehicle->deposit_currency ?? $currency;
+        // 10. Caution (configurée par véhicule - montants DA et EUR définis par le loueur)
+        $depositAmountDa = $vehicle->deposit_amount ?? 0;
+        $depositAmountEur = $vehicle->deposit_amount_eur ?? 0;
+
+        // Pour la compatibilité, on garde deposit_amount et deposit_currency basés sur la devise de réservation
+        $depositAmount = $currency === 'EUR' ? $depositAmountEur : $depositAmountDa;
+        $depositCurrency = $currency;
 
         $currencySymbol = $currency === 'EUR' ? '€' : 'DA';
 
-        // Calculate EUR equivalents for DZD amounts
-        $eurRate = $this->getDzdToEurRate();
-        $totalEur = $currency === 'EUR' ? $total : round($total * $eurRate, 2);
-        $advanceAmountEur = $currency === 'EUR' ? $advanceAmount : round($advanceAmount * $eurRate, 2);
-        $depositAmountEur = $depositCurrency === 'EUR' ? $depositAmount : round($depositAmount * $eurRate, 2);
+        // Calcul du total en EUR (si le véhicule a un prix EUR)
+        // On calcule le total EUR en utilisant price_per_day_eur si disponible
+        $pricePerDayEur = $vehicle->price_per_day_eur ?? 0;
+        $totalEur = 0;
+        $advanceAmountEur = 0;
+
+        if ($pricePerDayEur > 0) {
+            // Calculer le total EUR de la même manière que le total DA
+            $totalEur = $pricePerDayEur * $totalDays;
+            // Appliquer le prix dégressif si applicable
+            if ($degressiveApplied && !empty($vehicle->degressive_pricing)) {
+                $applicableTier = collect($vehicle->degressive_pricing)
+                    ->filter(fn($tier) => isset($tier['from_days']) && $totalDays >= (int)$tier['from_days'])
+                    ->sortByDesc('from_days')
+                    ->first();
+                if ($applicableTier && isset($applicableTier['price_per_day_eur'])) {
+                    $totalEur = (float)$applicableTier['price_per_day_eur'] * $totalDays;
+                }
+            }
+            // Ajouter les frais (delivery, return, options) - pour simplifier, on les garde en DA
+            // Note: les frais de livraison/retour/options sont en DA, pas convertis
+            $advanceAmountEur = round($totalEur * $advancePercentage / 100);
+        }
 
         return [
             'currency' => $currency,
@@ -251,7 +273,10 @@ class PricingService
             'options_detail' => $optionsDetail,
             'advance_percentage' => $advancePercentage,
             'advance_amount' => $advanceAmount,
+            'advance_amount_eur' => $advanceAmountEur,
             'deposit_amount' => $depositAmount,
+            'deposit_amount_da' => $depositAmountDa,
+            'deposit_amount_eur' => $depositAmountEur,
             'deposit_currency' => $depositCurrency,
             'formatted_total' => number_format($total, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_loueur_total' => number_format($loueurTotal, 0, ',', ' ') . ' ' . $currencySymbol,
@@ -260,14 +285,12 @@ class PricingService
             'formatted_advance' => number_format($advanceAmount, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_deposit' => number_format($depositAmount, 0, ',', ' ') . ' ' . ($depositCurrency === 'EUR' ? '€' : 'DA'),
 
-            // EUR equivalents (for display purposes)
-            'dzd_to_eur_rate' => $eurRate,
+            // Both currency amounts (defined by loueur, not converted)
             'total_eur' => $totalEur,
-            'advance_amount_eur' => $advanceAmountEur,
-            'deposit_amount_eur' => $depositAmountEur,
-            'formatted_total_eur' => number_format($totalEur, 2, ',', ' ') . ' €',
-            'formatted_advance_eur' => number_format($advanceAmountEur, 2, ',', ' ') . ' €',
-            'formatted_deposit_eur' => number_format($depositAmountEur, 2, ',', ' ') . ' €',
+            'formatted_total_eur' => $totalEur > 0 ? number_format($totalEur, 0, ',', ' ') . ' €' : '',
+            'formatted_advance_eur' => $advanceAmountEur > 0 ? number_format($advanceAmountEur, 0, ',', ' ') . ' €' : '',
+            'formatted_deposit_da' => $depositAmountDa > 0 ? number_format($depositAmountDa, 0, ',', ' ') . ' DA' : '',
+            'formatted_deposit_eur' => $depositAmountEur > 0 ? number_format($depositAmountEur, 0, ',', ' ') . ' €' : '',
         ];
     }
 

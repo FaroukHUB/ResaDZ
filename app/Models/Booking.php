@@ -38,6 +38,7 @@ class Booking extends Model
         'extra_fees',
         'discount_amount',
         'total_price',
+        'total_price_eur',
         'commission_amount',
         'client_service_fee',
         'commission_paid',
@@ -45,10 +46,12 @@ class Booking extends Model
         'currency',
         'selected_options',
         'deposit_amount',
+        'deposit_amount_eur',
         'deposit_currency',
         'deposit_status',
         'deposit_notes',
         'advance_amount',
+        'advance_amount_eur',
         'advance_status',
         'advance_payment_method',
         'advance_paid_at',
@@ -108,11 +111,14 @@ class Booking extends Model
         'extra_fees' => 'decimal:2',
         'discount_amount' => 'decimal:2',
         'total_price' => 'decimal:2',
+        'total_price_eur' => 'decimal:2',
         'commission_amount' => 'decimal:2',
         'commission_paid' => 'boolean',
         'commission_paid_at' => 'date',
         'deposit_amount' => 'decimal:2',
+        'deposit_amount_eur' => 'decimal:2',
         'advance_amount' => 'decimal:2',
+        'advance_amount_eur' => 'decimal:2',
         'amount_paid' => 'decimal:2',
         'amount_remaining' => 'decimal:2',
     ];
@@ -248,68 +254,44 @@ class Booking extends Model
     }
 
     /**
-     * Get the DZD to EUR conversion rate.
-     */
-    public function getDzdToEurRate(): float
-    {
-        return (float) Setting::get('dzd_to_eur_rate', 0.0068);
-    }
-
-    /**
-     * Get the total price in EUR (converted if currency is DZD).
-     */
-    public function getTotalEur(): float
-    {
-        if ($this->currency === 'EUR') {
-            return (float) $this->total_price;
-        }
-        return round((float) $this->total_price * $this->getDzdToEurRate(), 2);
-    }
-
-    /**
-     * Get the formatted total in EUR.
+     * Get the formatted total in EUR (from stored value, not converted).
      */
     public function getFormattedTotalEur(): string
     {
-        return number_format($this->getTotalEur(), 2, ',', ' ') . ' €';
-    }
-
-    /**
-     * Get the advance amount in EUR (converted if currency is DZD).
-     */
-    public function getAdvanceAmountEur(): float
-    {
-        if ($this->currency === 'EUR') {
-            return (float) $this->advance_amount;
+        if (!$this->total_price_eur || $this->total_price_eur <= 0) {
+            return '';
         }
-        return round((float) $this->advance_amount * $this->getDzdToEurRate(), 2);
+        return number_format($this->total_price_eur, 0, ',', ' ') . ' €';
     }
 
     /**
-     * Get the formatted advance amount in EUR.
+     * Get the formatted advance amount in EUR (from stored value, not converted).
      */
     public function getFormattedAdvanceEur(): string
     {
-        return number_format($this->getAdvanceAmountEur(), 2, ',', ' ') . ' €';
-    }
-
-    /**
-     * Get the deposit amount in EUR (converted if deposit_currency is DZD).
-     */
-    public function getDepositAmountEur(): float
-    {
-        if ($this->deposit_currency === 'EUR') {
-            return (float) $this->deposit_amount;
+        if (!$this->advance_amount_eur || $this->advance_amount_eur <= 0) {
+            return '';
         }
-        return round((float) $this->deposit_amount * $this->getDzdToEurRate(), 2);
+        return number_format($this->advance_amount_eur, 0, ',', ' ') . ' €';
     }
 
     /**
-     * Get the formatted deposit amount in EUR.
+     * Get the formatted deposit amount in EUR (from stored value, not converted).
      */
     public function getFormattedDepositEur(): string
     {
-        return number_format($this->getDepositAmountEur(), 2, ',', ' ') . ' €';
+        if (!$this->deposit_amount_eur || $this->deposit_amount_eur <= 0) {
+            return '';
+        }
+        return number_format($this->deposit_amount_eur, 0, ',', ' ') . ' €';
+    }
+
+    /**
+     * Check if EUR amounts are available.
+     */
+    public function hasEurPrices(): bool
+    {
+        return $this->total_price_eur > 0 || $this->deposit_amount_eur > 0 || $this->advance_amount_eur > 0;
     }
 
     public function getConfirmationUrl(): string
