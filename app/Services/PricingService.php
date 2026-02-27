@@ -26,6 +26,22 @@ class PricingService
     }
 
     /**
+     * Get DZD to EUR conversion rate from settings
+     */
+    private function getDzdToEurRate(): float
+    {
+        return (float) Setting::get('dzd_to_eur_rate', 0.0068);
+    }
+
+    /**
+     * Convert DZD amount to EUR
+     */
+    public function convertToEur(float $amountDzd): float
+    {
+        return round($amountDzd * $this->getDzdToEurRate(), 2);
+    }
+
+    /**
      * Get weekend days from settings
      */
     private function getWeekendDays(): array
@@ -187,6 +203,12 @@ class PricingService
 
         $currencySymbol = $currency === 'EUR' ? '€' : 'DA';
 
+        // Calculate EUR equivalents for DZD amounts
+        $eurRate = $this->getDzdToEurRate();
+        $totalEur = $currency === 'EUR' ? $total : round($total * $eurRate, 2);
+        $advanceAmountEur = $currency === 'EUR' ? $advanceAmount : round($advanceAmount * $eurRate, 2);
+        $depositAmountEur = $depositCurrency === 'EUR' ? $depositAmount : round($depositAmount * $eurRate, 2);
+
         return [
             'currency' => $currency,
             'currency_symbol' => $currencySymbol,
@@ -237,6 +259,15 @@ class PricingService
             'formatted_client_service_fee' => number_format($clientServiceFeeTotal, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_advance' => number_format($advanceAmount, 0, ',', ' ') . ' ' . $currencySymbol,
             'formatted_deposit' => number_format($depositAmount, 0, ',', ' ') . ' ' . ($depositCurrency === 'EUR' ? '€' : 'DA'),
+
+            // EUR equivalents (for display purposes)
+            'dzd_to_eur_rate' => $eurRate,
+            'total_eur' => $totalEur,
+            'advance_amount_eur' => $advanceAmountEur,
+            'deposit_amount_eur' => $depositAmountEur,
+            'formatted_total_eur' => number_format($totalEur, 2, ',', ' ') . ' €',
+            'formatted_advance_eur' => number_format($advanceAmountEur, 2, ',', ' ') . ' €',
+            'formatted_deposit_eur' => number_format($depositAmountEur, 2, ',', ' ') . ' €',
         ];
     }
 

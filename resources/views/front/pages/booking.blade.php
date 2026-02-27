@@ -340,7 +340,7 @@
                                 <div class="flex items-start gap-2">
                                     <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     <p class="text-xs text-amber-800">
-                                        Vous aurez <strong id="timerDisplay">-</strong> heures pour régler l'acompte de <strong id="advanceAmountDisplay">-</strong>.
+                                        Vous aurez <strong id="timerDisplay">-</strong> heures pour régler l'acompte de <strong id="advanceAmountDisplay">-</strong><span id="advanceAmountEurDisplay" class="text-amber-600"></span>.
                                         Passé ce délai, la réservation sera automatiquement annulée et le véhicule remis en disponibilité.
                                     </p>
                                 </div>
@@ -549,6 +549,9 @@
                 }
 
                 html += `<div class="border-t border-gray-200 pt-3 mt-3 flex justify-between text-lg"><span class="font-bold text-gray-900">Total</span><span class="font-black text-amber-600">${data.formatted_total}</span></div>`;
+                if (data.currency !== 'EUR' && data.formatted_total_eur) {
+                    html += `<div class="flex justify-between text-sm text-gray-500"><span></span><span>≈ ${data.formatted_total_eur}</span></div>`;
+                }
 
                 // Info frais de service
                 if (data.client_service_fee_total > 0) {
@@ -559,17 +562,26 @@
                 }
 
                 if (data.deposit_amount > 0) {
-                    html += `<div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Caution (remboursable)</span><span class="font-semibold">${data.formatted_deposit}</span></div>`;
+                    let depositHtml = `<div class="flex justify-between text-sm mt-2"><span class="text-gray-500">Caution (remboursable)</span><span class="font-semibold">${data.formatted_deposit}`;
+                    if (data.deposit_currency !== 'EUR' && data.formatted_deposit_eur) {
+                        depositHtml += ` <span class="text-gray-400">(≈ ${data.formatted_deposit_eur})</span>`;
+                    }
+                    depositHtml += `</span></div>`;
+                    html += depositHtml;
                 }
 
                 if (data.advance_amount > 0) {
+                    let advanceEurHtml = '';
+                    if (data.currency !== 'EUR' && data.formatted_advance_eur) {
+                        advanceEurHtml = `<span class="text-blue-500 text-sm ml-1">(≈ ${data.formatted_advance_eur})</span>`;
+                    }
                     html += `<div class="bg-blue-50 border border-blue-200 rounded-lg p-3 mt-3">
                         <div class="flex justify-between items-center">
                             <div>
                                 <span class="text-blue-800 font-semibold text-sm">Acompte à verser</span>
                                 <p class="text-blue-600 text-xs mt-0.5">${data.advance_percentage}% du total à payer à la réservation</p>
                             </div>
-                            <span class="font-bold text-blue-700 text-lg">${data.formatted_advance}</span>
+                            <span class="font-bold text-blue-700 text-lg">${data.formatted_advance}${advanceEurHtml}</span>
                         </div>
                     </div>`;
                 }
@@ -579,10 +591,16 @@
                 // Afficher/masquer la section choix méthode de paiement acompte
                 const advSection = document.getElementById('advancePaymentSection');
                 const advAmountDisplay = document.getElementById('advanceAmountDisplay');
+                const advAmountEurDisplay = document.getElementById('advanceAmountEurDisplay');
                 if (advSection) {
                     if (data.advance_amount > 0) {
                         advSection.classList.remove('hidden');
                         if (advAmountDisplay) advAmountDisplay.textContent = data.formatted_advance;
+                        if (advAmountEurDisplay && data.currency !== 'EUR' && data.formatted_advance_eur) {
+                            advAmountEurDisplay.textContent = ` (≈ ${data.formatted_advance_eur})`;
+                        } else if (advAmountEurDisplay) {
+                            advAmountEurDisplay.textContent = '';
+                        }
                     } else {
                         advSection.classList.add('hidden');
                     }

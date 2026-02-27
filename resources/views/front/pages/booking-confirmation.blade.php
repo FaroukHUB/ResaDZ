@@ -53,7 +53,12 @@
             <div class="bg-amber-50 rounded-xl p-4">
                 <div class="flex justify-between items-center">
                     <span class="text-amber-800 font-medium">Total ({{ $booking->total_days }} jours)</span>
-                    <span class="text-2xl font-black text-amber-600">{{ $booking->getFormattedTotal() }}</span>
+                    <div class="text-right">
+                        <span class="text-2xl font-black text-amber-600">{{ $booking->getFormattedTotal() }}</span>
+                        @if($booking->currency !== 'EUR')
+                            <span class="block text-sm text-amber-500">≈ {{ $booking->getFormattedTotalEur() }}</span>
+                        @endif
+                    </div>
                 </div>
                 @if($booking->client_service_fee > 0)
                     <div class="flex justify-between items-center mt-1 text-xs">
@@ -64,13 +69,23 @@
                 @if($booking->advance_amount > 0)
                     <div class="flex justify-between items-center mt-2 text-sm">
                         <span class="text-amber-700">Acompte à verser</span>
-                        <span class="font-semibold text-amber-700">{{ number_format($booking->advance_amount, 0, ',', ' ') }} {{ $booking->currency === 'EUR' ? '€' : 'DA' }}</span>
+                        <span class="font-semibold text-amber-700">
+                            {{ number_format($booking->advance_amount, 0, ',', ' ') }} {{ $booking->currency === 'EUR' ? '€' : 'DA' }}
+                            @if($booking->currency !== 'EUR')
+                                <span class="text-amber-500">(≈ {{ $booking->getFormattedAdvanceEur() }})</span>
+                            @endif
+                        </span>
                     </div>
                 @endif
                 @if($booking->deposit_amount > 0)
                     <div class="flex justify-between items-center mt-1 text-sm">
                         <span class="text-amber-700">Caution</span>
-                        <span class="font-semibold text-amber-700">{{ number_format($booking->deposit_amount, 0, ',', ' ') }} {{ $booking->deposit_currency === 'EUR' ? '€' : 'DA' }}</span>
+                        <span class="font-semibold text-amber-700">
+                            {{ number_format($booking->deposit_amount, 0, ',', ' ') }} {{ $booking->deposit_currency === 'EUR' ? '€' : 'DA' }}
+                            @if($booking->deposit_currency !== 'EUR')
+                                <span class="text-amber-500">(≈ {{ $booking->getFormattedDepositEur() }})</span>
+                            @endif
+                        </span>
                     </div>
                 @endif
             </div>

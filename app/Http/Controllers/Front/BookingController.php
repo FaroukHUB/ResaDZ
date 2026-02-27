@@ -72,6 +72,9 @@ class BookingController extends Controller
         $rentalConditions = $vehicle->loueur ? $vehicle->loueur->getSetting('rental_conditions', []) : [];
         $conditionsPdf = $vehicle->loueur ? $vehicle->loueur->getSetting('conditions_pdf', null) : null;
 
+        // EUR conversion rate
+        $dzdToEurRate = (float) Setting::get('dzd_to_eur_rate', 0.0068);
+
         return view('front.pages.booking', compact(
             'vehicle',
             'deliveryZones',
@@ -85,7 +88,8 @@ class BookingController extends Controller
             'operatingHoursStart',
             'operatingHoursEnd',
             'rentalConditions',
-            'conditionsPdf'
+            'conditionsPdf',
+            'dzdToEurRate'
         ));
     }
 
@@ -167,6 +171,13 @@ class BookingController extends Controller
         $advancePercentage = $loueur ? $loueur->getSetting('advance_percentage', 0) : 0;
         $pricing['advance_amount'] = round($pricing['total'] * $advancePercentage / 100);
         $pricing['formatted_advance'] = number_format($pricing['advance_amount'], 0, ',', ' ') . ' ' . ($pricing['currency'] === 'EUR' ? '€' : 'DA');
+
+        // Recalculate EUR equivalents with the updated total
+        $eurRate = (float) Setting::get('dzd_to_eur_rate', 0.0068);
+        $pricing['total_eur'] = $pricing['currency'] === 'EUR' ? $pricing['total'] : round($pricing['total'] * $eurRate, 2);
+        $pricing['advance_amount_eur'] = $pricing['currency'] === 'EUR' ? $pricing['advance_amount'] : round($pricing['advance_amount'] * $eurRate, 2);
+        $pricing['formatted_total_eur'] = number_format($pricing['total_eur'], 2, ',', ' ') . ' €';
+        $pricing['formatted_advance_eur'] = number_format($pricing['advance_amount_eur'], 2, ',', ' ') . ' €';
 
         return response()->json($pricing);
     }

@@ -247,6 +247,71 @@ class Booking extends Model
         return number_format($this->total_price, 0, ',', ' ') . ' ' . $symbol;
     }
 
+    /**
+     * Get the DZD to EUR conversion rate.
+     */
+    public function getDzdToEurRate(): float
+    {
+        return (float) Setting::get('dzd_to_eur_rate', 0.0068);
+    }
+
+    /**
+     * Get the total price in EUR (converted if currency is DZD).
+     */
+    public function getTotalEur(): float
+    {
+        if ($this->currency === 'EUR') {
+            return (float) $this->total_price;
+        }
+        return round((float) $this->total_price * $this->getDzdToEurRate(), 2);
+    }
+
+    /**
+     * Get the formatted total in EUR.
+     */
+    public function getFormattedTotalEur(): string
+    {
+        return number_format($this->getTotalEur(), 2, ',', ' ') . ' €';
+    }
+
+    /**
+     * Get the advance amount in EUR (converted if currency is DZD).
+     */
+    public function getAdvanceAmountEur(): float
+    {
+        if ($this->currency === 'EUR') {
+            return (float) $this->advance_amount;
+        }
+        return round((float) $this->advance_amount * $this->getDzdToEurRate(), 2);
+    }
+
+    /**
+     * Get the formatted advance amount in EUR.
+     */
+    public function getFormattedAdvanceEur(): string
+    {
+        return number_format($this->getAdvanceAmountEur(), 2, ',', ' ') . ' €';
+    }
+
+    /**
+     * Get the deposit amount in EUR (converted if deposit_currency is DZD).
+     */
+    public function getDepositAmountEur(): float
+    {
+        if ($this->deposit_currency === 'EUR') {
+            return (float) $this->deposit_amount;
+        }
+        return round((float) $this->deposit_amount * $this->getDzdToEurRate(), 2);
+    }
+
+    /**
+     * Get the formatted deposit amount in EUR.
+     */
+    public function getFormattedDepositEur(): string
+    {
+        return number_format($this->getDepositAmountEur(), 2, ',', ' ') . ' €';
+    }
+
     public function getConfirmationUrl(): string
     {
         return route('booking.client-confirmation', $this->confirmation_token);

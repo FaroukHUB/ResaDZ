@@ -264,7 +264,12 @@
                     <div class="border-t border-gray-200 pt-4 mt-4">
                         <div class="flex justify-between items-center">
                             <span class="font-bold text-gray-900">Total</span>
-                            <span class="text-2xl font-black text-amber-600">{{ $booking->getFormattedTotal() }}</span>
+                            <div class="text-right">
+                                <span class="text-2xl font-black text-amber-600">{{ $booking->getFormattedTotal() }}</span>
+                                @if($booking->currency !== 'EUR')
+                                    <span class="block text-sm text-gray-500">≈ {{ $booking->getFormattedTotalEur() }}</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
 
@@ -272,7 +277,12 @@
                         <div class="bg-amber-50 rounded-xl p-4 mt-4">
                             <div class="flex justify-between items-center">
                                 <span class="text-amber-800 text-sm font-medium">Caution (remboursable)</span>
-                                <span class="font-bold text-amber-700">{{ number_format($booking->deposit_amount, 0, ',', ' ') }} {{ $booking->deposit_currency === 'EUR' ? '€' : 'DA' }}</span>
+                                <div class="text-right">
+                                    <span class="font-bold text-amber-700">{{ number_format($booking->deposit_amount, 0, ',', ' ') }} {{ $booking->deposit_currency === 'EUR' ? '€' : 'DA' }}</span>
+                                    @if($booking->deposit_currency !== 'EUR')
+                                        <span class="block text-sm text-amber-500">≈ {{ $booking->getFormattedDepositEur() }}</span>
+                                    @endif
+                                </div>
                             </div>
                         </div>
                     @endif
@@ -281,7 +291,12 @@
                     @if($depositRequired && $booking->advance_amount > 0 && $booking->isConfirmedByLoueur())
                         <div class="bg-blue-50 rounded-xl p-4 mt-4">
                             <p class="text-blue-800 font-medium mb-2">Acompte</p>
-                            <p class="text-2xl font-bold text-blue-700">{{ number_format($booking->advance_amount, 0, ',', ' ') }} DA</p>
+                            <p class="text-2xl font-bold text-blue-700">
+                                {{ number_format($booking->advance_amount, 0, ',', ' ') }} {{ $booking->currency === 'EUR' ? '€' : 'DA' }}
+                                @if($booking->currency !== 'EUR')
+                                    <span class="text-lg text-blue-500">(≈ {{ $booking->getFormattedAdvanceEur() }})</span>
+                                @endif
+                            </p>
                             <p class="text-blue-600 text-xs mt-1">Pour garantir votre réservation</p>
 
                             @if(in_array('paypal', $depositPaymentMethods) && $booking->loueur?->paypal_email)

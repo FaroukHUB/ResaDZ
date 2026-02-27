@@ -39,6 +39,7 @@ class PlatformSettings extends Page
             'loueur_commission_per_day_dzd' => Setting::get('loueur_commission_per_day_dzd', 150),
             'client_service_fee_per_day_dzd' => Setting::get('client_service_fee_per_day_dzd', 100),
             'dzd_to_usd_rate' => Setting::get('dzd_to_usd_rate', 0.0074),
+            'dzd_to_eur_rate' => Setting::get('dzd_to_eur_rate', 0.0068),
             'min_paypal_amount_usd' => Setting::get('min_paypal_amount_usd', 1),
 
             // Booking Settings
@@ -199,13 +200,19 @@ class PlatformSettings extends Page
                                             ->required()
                                             ->step(0.0001)
                                             ->helperText('1 DZD = X USD (pour PayPal)'),
+                                        Forms\Components\TextInput::make('dzd_to_eur_rate')
+                                            ->label('Taux DZD → EUR')
+                                            ->numeric()
+                                            ->required()
+                                            ->step(0.0001)
+                                            ->helperText('1 DZD = X EUR (affichage équivalent Euro)'),
                                         Forms\Components\TextInput::make('min_paypal_amount_usd')
                                             ->label('Montant minimum PayPal')
                                             ->numeric()
                                             ->required()
                                             ->suffix('USD'),
                                     ])
-                                    ->columns(2),
+                                    ->columns(3),
                             ]),
 
                         // Booking Settings Tab
@@ -443,6 +450,7 @@ class PlatformSettings extends Page
         Setting::set('loueur_commission_per_day_dzd', $data['loueur_commission_per_day_dzd'], 'pricing', 'number');
         Setting::set('client_service_fee_per_day_dzd', $data['client_service_fee_per_day_dzd'], 'pricing', 'number');
         Setting::set('dzd_to_usd_rate', $data['dzd_to_usd_rate'], 'pricing', 'number');
+        Setting::set('dzd_to_eur_rate', $data['dzd_to_eur_rate'], 'pricing', 'number');
         Setting::set('min_paypal_amount_usd', $data['min_paypal_amount_usd'], 'pricing', 'number');
 
         // Booking Settings
