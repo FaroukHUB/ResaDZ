@@ -44,6 +44,8 @@ class Loueur extends Model
         'is_active',
         'is_verified',
         'verified_at',
+        'onboarding_completed_at',
+        'onboarding_step',
         'subscription_plan',
         'subscription_expires_at',
         'rating',
@@ -69,11 +71,51 @@ class Loueur extends Model
         'offers_transfer' => 'boolean',
         'offers_delivery' => 'boolean',
         'verified_at' => 'datetime',
+        'onboarding_completed_at' => 'datetime',
+        'onboarding_step' => 'integer',
         'subscription_expires_at' => 'datetime',
         'trial_ends_at' => 'date',
         'commission_paid_until' => 'date',
         'rating' => 'decimal:2',
     ];
+
+    const ONBOARDING_STEPS = [
+        1 => 'profile',
+        2 => 'zones',
+        3 => 'reservations',
+        4 => 'options',
+        5 => 'conditions',
+        6 => 'badges',
+        7 => 'notifications',
+    ];
+
+    /**
+     * Check if onboarding is completed.
+     */
+    public function hasCompletedOnboarding(): bool
+    {
+        return $this->onboarding_completed_at !== null;
+    }
+
+    /**
+     * Get onboarding progress percentage.
+     */
+    public function getOnboardingProgress(): int
+    {
+        $totalSteps = count(self::ONBOARDING_STEPS);
+        return $totalSteps > 0 ? round(($this->onboarding_step / $totalSteps) * 100) : 0;
+    }
+
+    /**
+     * Mark onboarding as completed.
+     */
+    public function completeOnboarding(): void
+    {
+        $this->update([
+            'onboarding_completed_at' => now(),
+            'onboarding_step' => count(self::ONBOARDING_STEPS),
+        ]);
+    }
 
     // Relations
     public function user(): BelongsTo
