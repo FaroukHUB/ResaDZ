@@ -4,6 +4,8 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\BlogPostResource\Pages;
 use App\Models\BlogPost;
+use FilamentTiptapEditor\TiptapEditor;
+use FilamentTiptapEditor\Enums\TiptapOutput;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -83,27 +85,53 @@ class BlogPostResource extends Resource
                                     ->maxLength(200)
                                     ->rows(3),
 
-                                Forms\Components\RichEditor::make('content')
+                                TiptapEditor::make('content')
                                     ->label('Contenu de l\'article')
                                     ->required()
-                                    ->toolbarButtons([
-                                        'attachFiles',
-                                        'blockquote',
+                                    ->profile('default')
+                                    ->output(TiptapOutput::Html)
+                                    ->maxContentWidth('5xl')
+                                    ->extraInputAttributes(['style' => 'min-height: 500px;'])
+                                    ->tools([
+                                        // Formatage de texte
+                                        'heading',
                                         'bold',
-                                        'bulletList',
-                                        'codeBlock',
-                                        'h2',
-                                        'h3',
                                         'italic',
-                                        'link',
-                                        'orderedList',
-                                        'redo',
-                                        'strike',
                                         'underline',
+                                        'strike',
+                                        'superscript',
+                                        'subscript',
+                                        'highlight',
+                                        'text-color',
+
+                                        // Structure
+                                        'paragraph',
+                                        'bullet-list',
+                                        'ordered-list',
+                                        'blockquote',
+                                        'hr',
+
+                                        // Médias
+                                        'media',
+                                        'link',
+                                        'table',
+                                        'code-block',
+
+                                        // Alignement
+                                        'align-left',
+                                        'align-center',
+                                        'align-right',
+                                        'align-justify',
+
+                                        // Utilitaires
                                         'undo',
+                                        'redo',
+                                        'source',
                                     ])
-                                    ->fileAttachmentsDisk('public')
-                                    ->fileAttachmentsDirectory('blog-images')
+                                    ->disk('public')
+                                    ->directory('blog-images')
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                    ->maxFileSize(5120)
                                     ->columnSpanFull(),
                             ])
                             ->columnSpan(2),
