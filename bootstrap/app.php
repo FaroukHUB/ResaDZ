@@ -15,6 +15,11 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(append: [
             \App\Http\Middleware\TrackPageVisits::class,
         ]);
+
+        // Exclude logout route from CSRF verification
+        $middleware->validateCsrfTokens(except: [
+            'deconnexion',
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
