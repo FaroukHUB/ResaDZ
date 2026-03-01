@@ -17,6 +17,32 @@ class BlogPostResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-newspaper';
 
+    // Désactive les vérifications d'autorisation (pas de Policy)
+    public static function canViewAny(): bool
+    {
+        return true;
+    }
+
+    public static function canCreate(): bool
+    {
+        return true;
+    }
+
+    public static function canEdit($record): bool
+    {
+        return true;
+    }
+
+    public static function canDelete($record): bool
+    {
+        return true;
+    }
+
+    public static function canView($record): bool
+    {
+        return true;
+    }
+
     protected static ?string $navigationLabel = 'Actualités';
 
     protected static ?string $modelLabel = 'Article';
