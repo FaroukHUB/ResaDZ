@@ -35,6 +35,9 @@ class TrackingController extends Controller
         $userAgent = $request->userAgent() ?? '';
         $geoData = $this->geoService->getLocation($ip);
 
+        // Get session ID safely (API routes may not have session)
+        $sessionId = $request->hasSession() ? $request->session()->get('visitor_session_id') : null;
+
         try {
             ClickEvent::create([
                 'event_type' => $validated['event_type'],
@@ -42,7 +45,7 @@ class TrackingController extends Controller
                 'loueur_id' => $validated['loueur_id'] ?? null,
                 'page_url' => $request->header('referer'),
                 'ip_address' => $ip,
-                'session_id' => $request->session()->get('visitor_session_id'),
+                'session_id' => $sessionId,
                 'user_agent' => substr($userAgent, 0, 500),
                 'device_type' => PageVisit::detectDeviceType($userAgent),
                 'country_code' => $geoData['country_code'],
@@ -88,7 +91,8 @@ class TrackingController extends Controller
      */
     public function heartbeat(Request $request): JsonResponse
     {
-        $sessionId = $request->session()->get('visitor_session_id');
+        // Get session ID safely (API routes may not have session)
+        $sessionId = $request->hasSession() ? $request->session()->get('visitor_session_id') : null;
 
         if ($sessionId) {
             Cache::put("realtime_visitor_{$sessionId}", now(), 300);
