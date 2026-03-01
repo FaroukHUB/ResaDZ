@@ -483,17 +483,17 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
-    public function previousStep(): void
+    public function previousStep()
     {
         if ($this->currentStep > 1) {
             $loueur = Auth::user()->loueur;
             $loueur->update(['onboarding_step' => $this->currentStep - 2]);
         }
 
-        $this->redirect(route('filament.loueur.pages.onboarding'));
+        return redirect()->route('filament.loueur.pages.onboarding');
     }
 
-    public function nextStep(): void
+    public function nextStep()
     {
         $loueur = Auth::user()->loueur;
         $data = $this->data;
@@ -554,7 +554,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             $loueur->update(['onboarding_step' => $this->currentStep]);
         }
 
-        $this->redirect(route('filament.loueur.pages.onboarding'));
+        return redirect()->route('filament.loueur.pages.onboarding');
     }
 
     protected function saveCurrentStep(): void
@@ -622,7 +622,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         }
     }
 
-    public function completeOnboarding(): void
+    public function completeOnboarding()
     {
         $loueur = Auth::user()->loueur;
         $data = $this->data;
@@ -640,10 +640,10 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             ->success()
             ->send();
 
-        $this->redirect(route('filament.loueur.pages.dashboard'));
+        return redirect()->route('filament.loueur.pages.dashboard');
     }
 
-    public function skipOnboarding(): void
+    public function skipOnboarding()
     {
         $loueur = Auth::user()->loueur;
         $loueur->completeOnboarding();
@@ -654,6 +654,6 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             ->warning()
             ->send();
 
-        redirect()->route('filament.loueur.pages.dashboard');
+        return redirect()->route('filament.loueur.pages.dashboard');
     }
 }
