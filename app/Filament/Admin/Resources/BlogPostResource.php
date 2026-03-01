@@ -88,6 +88,7 @@ class BlogPostResource extends Resource
                                 TiptapEditor::make('content')
                                     ->label('Contenu de l\'article')
                                     ->required()
+                                    ->profile('default')
                                     ->output(TiptapOutput::Html)
                                     ->maxContentWidth('5xl')
                                     ->extraInputAttributes(['style' => 'min-height: 500px;'])
