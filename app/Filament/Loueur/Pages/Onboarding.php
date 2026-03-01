@@ -162,7 +162,8 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                             Forms\Components\Select::make('wilaya')
                                 ->label('Wilaya')
                                 ->options(config('resadz.wilayas', []))
-                                ->searchable(),
+                                ->searchable()
+                                ->required(),
                         ]),
                 ]),
         ];
@@ -493,10 +494,73 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         return redirect()->route('filament.loueur.pages.onboarding');
     }
 
+    /**
+     * Validate the current step before proceeding
+     */
+    protected function validateCurrentStep(Loueur $loueur, array $data): ?string
+    {
+        return match ($this->currentStep) {
+            1 => $this->validateProfileStep($data),
+            2 => $this->validateZonesStep($loueur),
+            3 => $this->validateReservationsStep($data),
+            default => null,
+        };
+    }
+
+    protected function validateProfileStep(array $data): ?string
+    {
+        if (empty($data['company_name'])) {
+            return 'Le nom de l\'agence est obligatoire.';
+        }
+        if (empty($data['phone'])) {
+            return 'Le numéro de téléphone est obligatoire.';
+        }
+        if (empty($data['wilaya'])) {
+            return 'La wilaya est obligatoire.';
+        }
+        return null;
+    }
+
+    protected function validateZonesStep(Loueur $loueur): ?string
+    {
+        $activeZones = $loueur->deliveryZones()->where('is_active', true)->count();
+        if ($activeZones === 0) {
+            return 'Vous devez créer au moins une zone de livraison active avant de continuer.';
+        }
+        return null;
+    }
+
+    protected function validateReservationsStep(array $data): ?string
+    {
+        $advancePercentage = $data['advance_percentage'] ?? 0;
+        $paymentMethods = $data['advance_payment_methods'] ?? [];
+
+        // If advance payment is required, at least one payment method must be configured
+        if ($advancePercentage > 0 && empty($paymentMethods)) {
+            return 'Vous avez défini un acompte de ' . $advancePercentage . '%. Veuillez ajouter au moins une méthode de paiement.';
+        }
+
+        return null;
+    }
+
     public function nextStep()
     {
+        // Validate the current step form
+        $this->form->validate();
+
         $loueur = Auth::user()->loueur;
         $data = $this->data;
+
+        // Additional validation per step
+        $validationError = $this->validateCurrentStep($loueur, $data);
+        if ($validationError) {
+            Notification::make()
+                ->title('Validation requise')
+                ->body($validationError)
+                ->danger()
+                ->send();
+            return;
+        }
 
         // Save current step data
         switch ($this->currentStep) {
@@ -624,6 +688,9 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public function completeOnboarding()
     {
+        // Validate the final step
+        $this->form->validate();
+
         $loueur = Auth::user()->loueur;
         $data = $this->data;
 
