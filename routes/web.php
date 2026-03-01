@@ -19,6 +19,7 @@ Route::post('/connexion', [AuthController::class, 'login']);
 Route::get('/inscription', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/inscription', [AuthController::class, 'register']);
 Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout');
+Route::get('/deconnexion', [AuthController::class, 'logout'])->name('logout.get');
 
 // Google OAuth
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
