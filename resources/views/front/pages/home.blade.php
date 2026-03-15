@@ -57,12 +57,28 @@
                         @endforeach
                     </div>
                 @endif
-            @elseif(file_exists(public_path('assets/hero.jpg')))
-                <img src="{{ asset('assets/hero.jpg') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
-            @elseif(file_exists(public_path('assets/hero.png')))
-                <img src="{{ asset('assets/hero.png') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
             @else
-                <div class="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black"></div>
+                {{-- Static fallback slider with Algeria images --}}
+                @php
+                    $staticSlides = [
+                        ['image' => 'Alger.png', 'alt' => 'Alger - Location de voitures'],
+                        ['image' => 'sahara.png', 'alt' => 'Sahara - Location de voitures'],
+                        ['image' => 'chrea.png', 'alt' => 'Chrea - Location de voitures'],
+                        ['image' => 'cornichoran.png', 'alt' => 'Corniche Oranaise - Location de voitures'],
+                    ];
+                @endphp
+                <div id="hero-slider" class="relative w-full h-full">
+                    @foreach($staticSlides as $index => $slide)
+                        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
+                            <img src="{{ asset('assets/' . $slide['image']) }}" alt="{{ $slide['alt'] }}" class="w-full h-full object-cover">
+                        </div>
+                    @endforeach
+                </div>
+                <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+                    @foreach($staticSlides as $index => $slide)
+                        <button onclick="goToSlide({{ $index }})" aria-label="Slide {{ $index + 1 }}" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70' }}" data-index="{{ $index }}"></button>
+                    @endforeach
+                </div>
             @endif
             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
         </div>
