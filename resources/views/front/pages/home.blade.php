@@ -122,35 +122,29 @@
         </div>
 
         <!-- Search Form Card - Chevauchant -->
-        <div class="absolute bottom-0 left-0 right-0 z-20 transform translate-y-[85%] sm:translate-y-1/2">
+        <div class="absolute bottom-0 left-0 right-0 z-20 transform translate-y-full sm:translate-y-1/2">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-white rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-gray-100 overflow-hidden">
+                <div class="bg-neutral-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-neutral-800 overflow-hidden">
                     <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                             <div class="min-w-0">
-                                <label for="hero-wilaya" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
-                                <div class="relative">
-                                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    <select name="wilaya" id="hero-wilaya" class="w-full pl-10 pr-3 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer text-sm">
-                                        <option value="">Wilaya, ville...</option>
-                                        @if(isset($wilayas))
-                                            @foreach($wilayas as $wilaya)
-                                                <option value="{{ $wilaya }}">{{ $wilaya }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
+                                <label for="hero-wilaya" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
+                                <select name="wilaya" id="hero-wilaya" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer text-sm">
+                                    <option value="">Wilaya, ville...</option>
+                                    @if(isset($wilayas))
+                                        @foreach($wilayas as $wilaya)
+                                            <option value="{{ $wilaya }}">{{ $wilaya }}</option>
+                                        @endforeach
+                                    @endif
+                                </select>
                             </div>
                             <div class="min-w-0">
-                                <label for="hero-pickup-date" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Date de départ</label>
-                                <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm">
+                                <label for="hero-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
+                                <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm [color-scheme:dark]">
                             </div>
                             <div class="min-w-0">
-                                <label for="hero-return-date" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Date de retour</label>
-                                <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm">
+                                <label for="hero-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
+                                <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm [color-scheme:dark]">
                             </div>
                             <div>
                                 <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
@@ -167,7 +161,7 @@
 
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
-    <section class="pb-16 lg:pb-24 bg-gray-100 pt-[280px] sm:pt-[180px]">
+    <section class="pb-16 lg:pb-24 bg-gray-100 pt-[320px] sm:pt-[180px]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
