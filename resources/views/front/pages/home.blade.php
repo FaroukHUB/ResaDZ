@@ -146,21 +146,11 @@
                             </div>
                             <div class="min-w-0">
                                 <label for="hero-pickup-date" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Date de départ</label>
-                                <div class="relative">
-                                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full pl-10 pr-2 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm">
-                                </div>
+                                <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm">
                             </div>
                             <div class="min-w-0">
                                 <label for="hero-return-date" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Date de retour</label>
-                                <div class="relative">
-                                    <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full pl-10 pr-2 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm">
-                                </div>
+                                <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm">
                             </div>
                             <div>
                                 <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
