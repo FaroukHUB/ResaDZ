@@ -89,6 +89,33 @@ class BlogPostResource extends Resource
                                     ->label('Contenu de l\'article')
                                     ->required()
                                     ->profile('default')
+                                    ->tools([
+                                        'heading',
+                                        'bullet-list',
+                                        'ordered-list',
+                                        'blockquote',
+                                        'hr',
+                                        'bold',
+                                        'italic',
+                                        'strike',
+                                        'underline',
+                                        'superscript',
+                                        'subscript',
+                                        'lead',
+                                        'small',
+                                        'link',
+                                        'media',
+                                        'table',
+                                        'align-left',
+                                        'align-center',
+                                        'align-right',
+                                        'align-justify',
+                                        'code',
+                                        'code-block',
+                                        'source',
+                                        'undo',
+                                        'redo',
+                                    ])
                                     ->output(TiptapOutput::Html)
                                     ->maxContentWidth('5xl')
                                     ->extraInputAttributes(['style' => 'min-height: 500px;'])
