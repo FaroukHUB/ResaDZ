@@ -30,8 +30,9 @@
     display: none;
 }
 
-/* Fix select elements overflow on mobile */
-select {
+/* Fix select and input elements overflow on mobile */
+select,
+input[type="date"] {
     max-width: 100%;
     text-overflow: ellipsis;
     box-sizing: border-box;
@@ -43,5 +44,16 @@ select {
     .grid input {
         max-width: 100%;
         min-width: 0;
+    }
+
+    /* Fix date inputs on mobile */
+    input[type="date"] {
+        -webkit-appearance: none;
+        min-width: 0;
+        font-size: 14px;
+    }
+
+    input[type="date"]::-webkit-date-and-time-value {
+        text-align: left;
     }
 }
