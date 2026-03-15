@@ -4,8 +4,7 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\BlogPostResource\Pages;
 use App\Models\BlogPost;
-use FilamentTiptapEditor\TiptapEditor;
-use FilamentTiptapEditor\Enums\TiptapOutput;
+use AmidEsfahani\FilamentTinyEditor\TinyEditor;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -85,44 +84,11 @@ class BlogPostResource extends Resource
                                     ->maxLength(200)
                                     ->rows(3),
 
-                                TiptapEditor::make('content')
+                                TinyEditor::make('content')
                                     ->label('Contenu de l\'article')
                                     ->required()
-                                    ->profile('default')
-                                    ->tools([
-                                        'heading',
-                                        'bullet-list',
-                                        'ordered-list',
-                                        'blockquote',
-                                        'hr',
-                                        'bold',
-                                        'italic',
-                                        'strike',
-                                        'underline',
-                                        'superscript',
-                                        'subscript',
-                                        'lead',
-                                        'small',
-                                        'link',
-                                        'media',
-                                        'table',
-                                        'align-left',
-                                        'align-center',
-                                        'align-right',
-                                        'align-justify',
-                                        'code',
-                                        'code-block',
-                                        'source',
-                                        'undo',
-                                        'redo',
-                                    ])
-                                    ->output(TiptapOutput::Html)
-                                    ->maxContentWidth('5xl')
-                                    ->extraInputAttributes(['style' => 'min-height: 500px;'])
-                                    ->disk('public')
-                                    ->directory('blog-images')
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-                                    ->maxFileSize(5120)
+                                    ->profile('full')
+                                    ->showMenuBar()
                                     ->columnSpanFull(),
                             ])
                             ->columnSpan(2),
