@@ -122,7 +122,7 @@
         </div>
 
         <!-- Search Form Card - Chevauchant -->
-        <div class="absolute bottom-0 left-0 right-0 z-20 transform translate-y-full sm:translate-y-1/2">
+        <div class="absolute bottom-0 left-0 right-0 z-20 transform translate-y-[110%] sm:translate-y-1/2">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-neutral-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-neutral-800 overflow-hidden">
                     <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
@@ -161,7 +161,7 @@
 
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
-    <section class="pb-16 lg:pb-24 bg-gray-100 pt-[320px] sm:pt-[180px]">
+    <section class="pb-16 lg:pb-24 bg-gray-100 pt-[380px] sm:pt-[180px]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
