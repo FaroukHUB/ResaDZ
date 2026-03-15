@@ -101,16 +101,19 @@
                 prose-a:text-green-600 prose-a:font-semibold prose-a:underline prose-a:decoration-2 hover:prose-a:text-green-500
                 prose-img:rounded-xl prose-img:shadow-lg prose-img:mx-auto
                 prose-blockquote:border-l-green-500 prose-blockquote:bg-green-50 prose-blockquote:py-1 prose-blockquote:px-6 prose-blockquote:rounded-r-lg
-                prose-table:border-collapse prose-table:w-full
-                prose-th:bg-gray-100 prose-th:border prose-th:border-gray-300 prose-th:px-4 prose-th:py-2 prose-th:text-left
-                prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2
                 prose-code:bg-gray-100 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:font-mono
                 prose-pre:bg-gray-900 prose-pre:text-gray-100 prose-pre:rounded-xl prose-pre:shadow-lg
                 prose-hr:border-gray-200
                 [&_mark]:bg-yellow-200 [&_mark]:px-1 [&_mark]:rounded
                 [&_.text-center]:text-center [&_.text-right]:text-right [&_.text-justify]:text-justify
                 [&_sup]:text-xs [&_sub]:text-xs
-                [&_s]:text-gray-400">
+                [&_s]:text-gray-400
+                [&_table]:w-full [&_table]:border-collapse [&_table]:border-2 [&_table]:border-black [&_table]:my-6 [&_table]:text-[15px]
+                [&_thead_tr]:bg-black [&_thead_th]:text-white [&_thead_th]:font-semibold
+                [&_th]:p-3.5 [&_th]:border [&_th]:border-black [&_th]:text-left
+                [&_td]:p-3 [&_td]:border [&_td]:border-black
+                [&_tbody_tr:nth-child(odd)]:bg-white [&_tbody_tr:nth-child(even)]:bg-gray-100
+                [&_td_strong]:text-gray-900">
                 {!! $post->content !!}
             </div>
 
