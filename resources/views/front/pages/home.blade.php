@@ -39,7 +39,7 @@
 @section('content')
 
     <!-- Hero Section with Slider -->
-    <section class="relative min-h-[450px] sm:min-h-[600px] lg:min-h-[700px] flex items-center pb-32 lg:pb-40">
+    <section class="relative min-h-[320px] sm:min-h-[600px] lg:min-h-[700px] flex items-center pb-32 lg:pb-40">
         {{-- Background Slider --}}
         <div class="absolute inset-0 z-0">
             @if(isset($heroSlides) && $heroSlides->count() > 0)
@@ -157,7 +157,7 @@
     </section>
 
     <!-- Search Form Mobile - Chevauche le hero -->
-    <div class="bg-neutral-900 mx-4 rounded-2xl p-4 relative z-30" style="margin-top:-100px" id="mobile-search-form">
+    <div class="bg-neutral-900 mx-4 rounded-2xl p-4 relative z-30" style="margin-top:-50px" id="mobile-search-form">
         <script>if(window.innerWidth>=640)document.getElementById('mobile-search-form').style.display='none';</script>
         <form action="{{ route('vehicles.index') }}" method="GET">
             <div class="space-y-3">
