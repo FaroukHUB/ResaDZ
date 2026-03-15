@@ -39,7 +39,7 @@
 @section('content')
 
     <!-- Hero Section with Slider -->
-    <section class="relative min-h-screen sm:min-h-[600px] lg:min-h-[700px] flex items-end sm:items-center pb-24 sm:pb-32 lg:pb-40">
+    <section class="relative min-h-[70vh] sm:min-h-[600px] lg:min-h-[700px] flex items-end sm:items-center pb-24 sm:pb-32 lg:pb-40">
         {{-- Background Slider --}}
         <div class="absolute inset-0 z-0">
             @if(isset($heroSlides) && $heroSlides->count() > 0)
