@@ -39,14 +39,14 @@
 @section('content')
 
     <!-- Hero Section with Slider -->
-    <section class="relative sm:min-h-[600px] lg:min-h-[700px] flex items-end sm:items-center pb-8 sm:pb-32 lg:pb-40">
+    <section class="relative min-h-[400px] sm:min-h-[600px] lg:min-h-[700px] flex items-center pb-32 lg:pb-40">
         {{-- Background Slider --}}
-        <div class="relative sm:absolute inset-0 z-0 aspect-video sm:aspect-auto">
+        <div class="absolute inset-0 z-0">
             @if(isset($heroSlides) && $heroSlides->count() > 0)
                 <div id="hero-slider" class="relative w-full h-full">
                     @foreach($heroSlides as $index => $slide)
                         <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
-                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-contain sm:object-cover">
+                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover">
                         </div>
                     @endforeach
                 </div>
