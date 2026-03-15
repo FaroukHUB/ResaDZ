@@ -39,7 +39,7 @@
 @section('content')
 
     <!-- Hero Section with Slider -->
-    <section class="relative min-h-[600px] lg:min-h-[700px] flex items-center">
+    <section class="relative min-h-[600px] lg:min-h-[700px] flex items-center pb-32 lg:pb-40">
         {{-- Background Slider --}}
         <div class="absolute inset-0 z-0">
             @if(isset($heroSlides) && $heroSlides->count() > 0)
@@ -57,28 +57,12 @@
                         @endforeach
                     </div>
                 @endif
+            @elseif(file_exists(public_path('assets/hero.jpg')))
+                <img src="{{ asset('assets/hero.jpg') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
+            @elseif(file_exists(public_path('assets/hero.png')))
+                <img src="{{ asset('assets/hero.png') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
             @else
-                {{-- Static fallback slider with Algeria images --}}
-                @php
-                    $staticSlides = [
-                        ['image' => 'Alger.png', 'alt' => 'Alger - Location de voitures'],
-                        ['image' => 'sahara.png', 'alt' => 'Sahara - Location de voitures'],
-                        ['image' => 'chrea.png', 'alt' => 'Chrea - Location de voitures'],
-                        ['image' => 'cornichoran.png', 'alt' => 'Corniche Oranaise - Location de voitures'],
-                    ];
-                @endphp
-                <div id="hero-slider" class="relative w-full h-full">
-                    @foreach($staticSlides as $index => $slide)
-                        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
-                            <img src="{{ asset('assets/' . $slide['image']) }}" alt="{{ $slide['alt'] }}" class="w-full h-full object-cover">
-                        </div>
-                    @endforeach
-                </div>
-                <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
-                    @foreach($staticSlides as $index => $slide)
-                        <button onclick="goToSlide({{ $index }})" aria-label="Slide {{ $index + 1 }}" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70' }}" data-index="{{ $index }}"></button>
-                    @endforeach
-                </div>
+                <div class="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black"></div>
             @endif
             <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
         </div>
@@ -119,55 +103,6 @@
                     {{ $homeContent['hero_description'] ?? 'Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.' }}
                 </p>
 
-                <!-- Search Form Card -->
-                <div class="mt-10 bg-white/10 backdrop-blur-xl rounded-2xl shadow-2xl p-6 lg:p-8 border border-white/10">
-                    <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
-                            <div>
-                                <label for="hero-wilaya" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
-                                <div class="relative">
-                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                                    </svg>
-                                    <select name="wilaya" id="hero-wilaya" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer">
-                                        <option value="">Wilaya, ville...</option>
-                                        @if(isset($wilayas))
-                                            @foreach($wilayas as $wilaya)
-                                                <option value="{{ $wilaya }}">{{ $wilaya }}</option>
-                                            @endforeach
-                                        @endif
-                                    </select>
-                                </div>
-                            </div>
-                            <div>
-                                <label for="hero-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
-                                <div class="relative">
-                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
-                                </div>
-                            </div>
-                            <div>
-                                <label for="hero-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
-                                <div class="relative">
-                                    <svg class="w-5 h-5 text-white/40 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
-                                    </svg>
-                                    <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-white/10 border border-white/20 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
-                                </div>
-                            </div>
-                            <div>
-                                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-                                    Rechercher
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-
                 <!-- Stats -->
                 <div class="mt-10 flex flex-wrap gap-8 lg:gap-12">
                     <div class="text-center">
@@ -185,11 +120,64 @@
                 </div>
             </div>
         </div>
+
+        <!-- Search Form Card - Chevauchant -->
+        <div class="absolute bottom-0 left-0 right-0 z-20 transform translate-y-1/2">
+            <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="bg-white rounded-2xl shadow-2xl p-6 lg:p-8 border border-gray-100">
+                    <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                            <div>
+                                <label for="hero-wilaya" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
+                                <div class="relative">
+                                    <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    </svg>
+                                    <select name="wilaya" id="hero-wilaya" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer">
+                                        <option value="">Wilaya, ville...</option>
+                                        @if(isset($wilayas))
+                                            @foreach($wilayas as $wilaya)
+                                                <option value="{{ $wilaya }}">{{ $wilaya }}</option>
+                                            @endforeach
+                                        @endif
+                                    </select>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="hero-pickup-date" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Date de départ</label>
+                                <div class="relative">
+                                    <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="hero-return-date" class="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Date de retour</label>
+                                <div class="relative">
+                                    <svg class="w-5 h-5 text-gray-400 absolute left-4 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                                    </svg>
+                                    <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full pl-12 pr-4 py-3.5 rounded-xl bg-gray-50 border border-gray-200 text-gray-900 focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer">
+                                </div>
+                            </div>
+                            <div>
+                                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                                    Rechercher
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
-    <section class="py-16 lg:py-24 bg-gray-100">
+    <section class="pt-32 lg:pt-40 pb-16 lg:pb-24 bg-gray-100">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
