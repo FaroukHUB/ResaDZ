@@ -29,3 +29,19 @@
 .scrollbar-hide::-webkit-scrollbar {
     display: none;
 }
+
+/* Fix select elements overflow on mobile */
+select {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    box-sizing: border-box;
+}
+
+/* Ensure form containers don't overflow */
+@media (max-width: 640px) {
+    .grid select,
+    .grid input {
+        max-width: 100%;
+        min-width: 0;
+    }
+}

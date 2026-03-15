@@ -46,21 +46,21 @@
 
             {{-- Voiture Form --}}
             <div x-show="tab === 'voiture'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
-                <form action="{{ route('vehicles.index') }}" method="GET" class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 lg:p-8 border border-white/20">
+                <form action="{{ route('vehicles.index') }}" method="GET" class="bg-black/70 backdrop-blur-xl rounded-2xl p-6 lg:p-8 border border-white/10 overflow-hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Date d'arrivée</label>
                             <input type="date" name="pickup_date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" min="{{ date('Y-m-d') }}"
-                                   class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
+                                   class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Date de retour</label>
                             <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+5 days')) }}" min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                   class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
+                                   class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Aéroport</label>
-                            <select name="wilaya" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none">
+                            <select name="wilaya" class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none truncate">
                                 <option value="">Choisir un aéroport</option>
                                 <option value="Alger">Alger - Houari Boumediene</option>
                                 <option value="Oran">Oran - Ahmed Ben Bella</option>
@@ -77,9 +77,9 @@
                                 <option value="Ouargla">Ouargla - Ain Beida</option>
                             </select>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Type de véhicule</label>
-                            <select name="category" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none">
+                            <select name="category" class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none truncate">
                                 <option value="">Tous les types</option>
                                 <option value="citadine">Citadine</option>
                                 <option value="berline">Berline</option>
@@ -99,9 +99,9 @@
 
             {{-- Transfert Form --}}
             <div x-show="tab === 'transfert'" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
-                <form action="{{ route('transfers.search') }}" method="GET" class="bg-white/10 backdrop-blur-xl rounded-2xl p-6 lg:p-8 border border-white/20">
+                <form action="{{ route('transfers.search') }}" method="GET" class="bg-black/70 backdrop-blur-xl rounded-2xl p-6 lg:p-8 border border-white/10 overflow-hidden">
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Lieu de départ</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -109,10 +109,10 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                                 <input type="text" name="departure" placeholder="Ex: Aéroport Houari Boumediene"
-                                       class="w-full pl-11 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                       class="w-full pl-11 pr-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Destination</label>
                             <div class="relative">
                                 <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -120,25 +120,25 @@
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
                                 </svg>
                                 <input type="text" name="destination" placeholder="Ex: Alger centre, Hôtel..."
-                                       class="w-full pl-11 pr-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-green-500 focus:border-transparent">
+                                       class="w-full pl-11 pr-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white placeholder-white/40 focus:ring-2 focus:ring-green-500 focus:border-transparent">
                             </div>
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Date</label>
                             <input type="date" name="date" min="{{ date('Y-m-d') }}"
-                                   class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
+                                   class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent [color-scheme:dark]">
                         </div>
-                        <div>
+                        <div class="min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Heure</label>
-                            <select name="time" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none">
+                            <select name="time" class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none truncate">
                                 @for($h = 0; $h <= 23; $h++)
                                     <option value="{{ sprintf('%02d:00', $h) }}" {{ $h == 10 ? 'selected' : '' }}>{{ sprintf('%02d:00', $h) }}</option>
                                 @endfor
                             </select>
                         </div>
-                        <div class="md:col-span-2">
+                        <div class="md:col-span-2 min-w-0">
                             <label class="block text-sm font-medium text-white/70 mb-2">Passagers</label>
-                            <select name="passengers" class="w-full px-4 py-3.5 bg-white/10 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none">
+                            <select name="passengers" class="w-full px-4 py-3.5 bg-neutral-900 border border-white/20 rounded-xl text-white focus:ring-2 focus:ring-green-500 focus:border-transparent appearance-none truncate">
                                 @for($i = 1; $i <= 10; $i++)
                                     <option value="{{ $i }}">{{ $i }} {{ $i > 1 ? 'passagers' : 'passager' }}</option>
                                 @endfor
