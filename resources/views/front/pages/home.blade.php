@@ -46,9 +46,10 @@
                 <div id="hero-slider" class="relative w-full h-full">
                     @foreach($heroSlides as $index => $slide)
                         <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
-                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover sm:object-cover" style="object-position: center center;">
                         </div>
                     @endforeach
+                    <style>@media(max-width:639px){.hero-slide img{object-fit:contain!important;background:#000}}</style>
                 </div>
                 @if($heroSlides->count() > 1)
                     <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
