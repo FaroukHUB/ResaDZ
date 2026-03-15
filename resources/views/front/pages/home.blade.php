@@ -177,7 +177,7 @@
 
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
-    <section class="pt-52 lg:pt-60 pb-16 lg:pb-24 bg-gray-100">
+    <section class="pb-16 lg:pb-24 bg-gray-100" style="padding-top: 180px;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
