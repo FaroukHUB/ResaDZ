@@ -122,7 +122,7 @@
         </div>
 
         <!-- Search Form Card - Chevauchant -->
-        <div class="absolute top-full sm:top-auto sm:bottom-0 left-0 right-0 z-20 sm:transform sm:translate-y-1/2">
+        <div class="hidden sm:block absolute bottom-0 left-0 right-0 z-20 transform translate-y-1/2">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-neutral-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-neutral-800 overflow-hidden">
                     <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
@@ -159,9 +159,40 @@
         </div>
     </section>
 
+    <!-- Search Form Mobile - Sous le hero -->
+    <div class="sm:hidden bg-neutral-900 mx-4 -mt-8 rounded-2xl p-4 relative z-30">
+        <form action="{{ route('vehicles.index') }}" method="GET">
+            <div class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
+                    <select name="wilaya" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white appearance-none cursor-pointer text-sm">
+                        <option value="">Wilaya, ville...</option>
+                        @if(isset($wilayas))
+                            @foreach($wilayas as $wilaya)
+                                <option value="{{ $wilaya }}">{{ $wilaya }}</option>
+                            @endforeach
+                        @endif
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
+                    <input type="date" name="pickup_date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
+                    <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
+                </div>
+                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    Rechercher
+                </button>
+            </div>
+        </form>
+    </div>
+
     <!-- Notre sélection pour vous -->
     @if($selectedVehicles->count() > 0)
-    <section class="pb-16 lg:pb-24 bg-gray-100 pt-[420px] sm:pt-[180px]">
+    <section class="pb-16 lg:pb-24 bg-gray-100 pt-8 sm:pt-[180px]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-end justify-between mb-8 lg:mb-12">
                 <div>
