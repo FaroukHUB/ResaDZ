@@ -99,10 +99,6 @@
                         <span class="block text-green-400">{{ $homeContent['hero_subtitle'] ?? 'partout en Algérie' }}</span>
                     </h1>
                 @endif
-                <p class="mt-6 text-lg sm:text-xl text-white/70 max-w-xl">
-                    {{ $homeContent['hero_description'] ?? 'Comparez les offres de loueurs vérifiés et réservez en quelques clics. Le meilleur de la location auto en DZ.' }}
-                </p>
-
                 <!-- Stats -->
                 <div class="mt-10 flex flex-wrap gap-8 lg:gap-12">
                     <div class="text-center">
@@ -781,10 +777,10 @@
 
         function resetAutoSlide() {
             clearInterval(autoSlideInterval);
-            autoSlideInterval = setInterval(nextSlide, 5000);
+            autoSlideInterval = setInterval(nextSlide, 6000);
         }
 
-        autoSlideInterval = setInterval(nextSlide, 5000);
+        autoSlideInterval = setInterval(nextSlide, 6000);
     });
 </script>
 @endsection
