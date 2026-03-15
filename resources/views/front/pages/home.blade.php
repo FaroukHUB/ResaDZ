@@ -121,15 +121,15 @@
             </div>
         </div>
 
-        <!-- Search Form Card - Chevauchant -->
-        <div class="hidden sm:block absolute bottom-0 left-0 right-0 z-20 transform translate-y-1/2">
+        <!-- Search Form Card - Desktop only -->
+        <div class="absolute bottom-0 left-0 right-0 z-20 transform translate-y-1/2" style="display:none" id="desktop-search-form">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="bg-neutral-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-neutral-800 overflow-hidden">
+                <div class="bg-neutral-900 rounded-2xl shadow-2xl p-6 lg:p-8 border border-neutral-800 overflow-hidden">
                     <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-end">
+                        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 items-end">
                             <div class="min-w-0">
                                 <label for="hero-wilaya" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
-                                <select name="wilaya" id="hero-wilaya" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none cursor-pointer text-sm">
+                                <select name="wilaya" id="hero-wilaya" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white appearance-none cursor-pointer text-sm">
                                     <option value="">Wilaya, ville...</option>
                                     @if(isset($wilayas))
                                         @foreach($wilayas as $wilaya)
@@ -140,14 +140,14 @@
                             </div>
                             <div class="min-w-0">
                                 <label for="hero-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
-                                <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm [color-scheme:dark]">
+                                <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme:dark">
                             </div>
                             <div class="min-w-0">
                                 <label for="hero-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
-                                <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white focus:ring-2 focus:ring-green-500 focus:border-green-500 cursor-pointer text-sm [color-scheme:dark]">
+                                <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme:dark">
                             </div>
                             <div>
-                                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-500 transition shadow-lg shadow-green-600/30 flex items-center justify-center gap-2">
+                                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                     Rechercher
                                 </button>
@@ -157,10 +157,12 @@
                 </div>
             </div>
         </div>
+        <script>if(window.innerWidth>=640)document.getElementById('desktop-search-form').style.display='block';</script>
     </section>
 
-    <!-- Search Form Mobile - Sous le hero -->
-    <div class="sm:hidden bg-neutral-900 mx-4 -mt-8 rounded-2xl p-4 relative z-30">
+    <!-- Search Form Mobile - Chevauche le hero -->
+    <div class="bg-neutral-900 mx-4 rounded-2xl p-4 relative z-30" style="margin-top:-100px" id="mobile-search-form">
+        <script>if(window.innerWidth>=640)document.getElementById('mobile-search-form').style.display='none';</script>
         <form action="{{ route('vehicles.index') }}" method="GET">
             <div class="space-y-3">
                 <div>
