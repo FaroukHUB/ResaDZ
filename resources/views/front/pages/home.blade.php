@@ -122,7 +122,7 @@
         </div>
 
         <!-- Search Form Card - Chevauchant -->
-        <div class="absolute -bottom-[350px] sm:bottom-0 left-0 right-0 z-20 sm:transform sm:translate-y-1/2">
+        <div class="absolute top-full sm:top-auto sm:bottom-0 left-0 right-0 z-20 sm:transform sm:translate-y-1/2">
             <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="bg-neutral-900 rounded-2xl shadow-2xl p-4 sm:p-6 lg:p-8 border border-neutral-800 overflow-hidden">
                     <form action="{{ route('vehicles.index') }}" method="GET" id="search-form">
