@@ -39,79 +39,146 @@
 @section('content')
 
     <!-- Hero Section with Slider -->
-    <section class="relative min-h-[400px] sm:min-h-[600px] lg:min-h-[700px] flex items-center pb-32 lg:pb-40">
-        {{-- Background Slider --}}
-        <div class="absolute inset-0 z-0">
-            @if(isset($heroSlides) && $heroSlides->count() > 0)
-                <div id="hero-slider" class="relative w-full h-full">
-                    @foreach($heroSlides as $index => $slide)
-                        <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
-                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover">
-                        </div>
-                    @endforeach
-                </div>
-                @if($heroSlides->count() > 1)
-                    <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
-                        @foreach($heroSlides as $index => $slide)
-                            <button onclick="goToSlide({{ $index }})" aria-label="Slide {{ $index + 1 }}" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50 hover:bg-white/70' }}" data-index="{{ $index }}"></button>
-                        @endforeach
-                    </div>
-                @endif
-            @elseif(file_exists(public_path('assets/hero.jpg')))
-                <img src="{{ asset('assets/hero.jpg') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
-            @elseif(file_exists(public_path('assets/hero.png')))
-                <img src="{{ asset('assets/hero.png') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
-            @else
-                <div class="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black"></div>
-            @endif
-            <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
-        </div>
-
-        <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 w-full">
-            <div class="max-w-3xl">
+    <section class="relative bg-black">
+        {{-- MOBILE: Image en haut, texte en dessous --}}
+        <div class="sm:hidden">
+            {{-- Image avec ratio naturel --}}
+            <div class="relative">
                 @if(isset($heroSlides) && $heroSlides->count() > 0)
-                    <div class="relative">
+                    <div id="hero-slider-mobile" class="relative">
                         @foreach($heroSlides as $index => $slide)
-                            <div class="hero-title transition-opacity duration-700 {{ $index === 0 ? 'opacity-100' : 'opacity-0 absolute top-0 left-0' }}" data-index="{{ $index }}">
-                                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
-                                    @if($slide->title)
-                                        {{ $slide->title }}
-                                        @if($slide->subtitle)
-                                            <span class="block text-green-400">{{ $slide->subtitle }}</span>
-                                        @endif
-                                    @else
-                                        Louez votre voiture
-                                        <span class="block text-green-400">partout en Algérie</span>
-                                    @endif
-                                </h1>
-                                @if($slide->button_text && $slide->button_url)
-                                    <a href="{{ $slide->button_url }}" class="mt-6 inline-flex items-center px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition shadow-lg shadow-green-600/30">
-                                        {{ $slide->button_text }}
-                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                                    </a>
-                                @endif
+                            <div class="hero-slide-mobile {{ $index === 0 ? '' : 'hidden' }}" data-index="{{ $index }}">
+                                <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-auto">
                             </div>
                         @endforeach
                     </div>
+                @elseif(file_exists(public_path('assets/hero.jpg')))
+                    <img src="{{ asset('assets/hero.jpg') }}" alt="Location de voitures en Algérie" class="w-full h-auto">
+                @elseif(file_exists(public_path('assets/hero.png')))
+                    <img src="{{ asset('assets/hero.png') }}" alt="Location de voitures en Algérie" class="w-full h-auto">
+                @endif
+                <div class="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent"></div>
+            </div>
+            {{-- Texte mobile --}}
+            <div class="px-4 py-6 -mt-16 relative z-10">
+                @if(isset($heroSlides) && $heroSlides->count() > 0)
+                    @foreach($heroSlides as $index => $slide)
+                        <div class="hero-title-mobile {{ $index === 0 ? '' : 'hidden' }}" data-index="{{ $index }}">
+                            <h1 class="text-2xl font-black text-white leading-tight">
+                                @if($slide->title)
+                                    {{ $slide->title }}
+                                    @if($slide->subtitle)
+                                        <span class="block text-green-400 text-xl">{{ $slide->subtitle }}</span>
+                                    @endif
+                                @else
+                                    Louez votre voiture
+                                    <span class="block text-green-400">partout en Algérie</span>
+                                @endif
+                            </h1>
+                        </div>
+                    @endforeach
                 @else
-                    <h1 class="text-4xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                    <h1 class="text-2xl font-black text-white leading-tight">
                         {{ $homeContent['hero_title'] ?? 'Louez votre voiture' }}
                         <span class="block text-green-400">{{ $homeContent['hero_subtitle'] ?? 'partout en Algérie' }}</span>
                     </h1>
                 @endif
-                <!-- Stats -->
-                <div class="mt-10 flex flex-wrap gap-8 lg:gap-12">
+                <div class="mt-4 flex gap-6">
                     <div class="text-center">
-                        <div class="text-3xl lg:text-4xl font-bold text-white">{{ $totalVehicles }}+</div>
-                        <div class="text-sm text-white/50 mt-1">Véhicules</div>
+                        <div class="text-2xl font-bold text-white">{{ $totalVehicles }}+</div>
+                        <div class="text-xs text-white/50">Véhicules</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-3xl lg:text-4xl font-bold text-white">{{ $totalLoueurs }}+</div>
-                        <div class="text-sm text-white/50 mt-1">Loueurs</div>
+                        <div class="text-2xl font-bold text-white">{{ $totalLoueurs }}+</div>
+                        <div class="text-xs text-white/50">Loueurs</div>
                     </div>
                     <div class="text-center">
-                        <div class="text-3xl lg:text-4xl font-bold text-white">{{ $wilayas->count() }}+</div>
-                        <div class="text-sm text-white/50 mt-1">Wilayas</div>
+                        <div class="text-2xl font-bold text-white">{{ $wilayas->count() }}+</div>
+                        <div class="text-xs text-white/50">Wilayas</div>
+                    </div>
+                </div>
+                @if($heroSlides->count() > 1)
+                    <div class="flex justify-center gap-2 mt-4">
+                        @foreach($heroSlides as $index => $slide)
+                            <button onclick="goToSlideMobile({{ $index }})" class="hero-dot-mobile w-2 h-2 rounded-full {{ $index === 0 ? 'bg-white' : 'bg-white/40' }}" data-index="{{ $index }}"></button>
+                        @endforeach
+                    </div>
+                @endif
+            </div>
+        </div>
+
+        {{-- DESKTOP: Structure originale --}}
+        <div class="hidden sm:block relative min-h-[600px] lg:min-h-[700px]">
+            <div class="absolute inset-0 z-0">
+                @if(isset($heroSlides) && $heroSlides->count() > 0)
+                    <div id="hero-slider" class="relative w-full h-full">
+                        @foreach($heroSlides as $index => $slide)
+                            <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
+                                <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover">
+                            </div>
+                        @endforeach
+                    </div>
+                    @if($heroSlides->count() > 1)
+                        <div class="absolute bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+                            @foreach($heroSlides as $index => $slide)
+                                <button onclick="goToSlide({{ $index }})" class="hero-dot w-3 h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50' }}" data-index="{{ $index }}"></button>
+                            @endforeach
+                        </div>
+                    @endif
+                @elseif(file_exists(public_path('assets/hero.jpg')))
+                    <img src="{{ asset('assets/hero.jpg') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
+                @elseif(file_exists(public_path('assets/hero.png')))
+                    <img src="{{ asset('assets/hero.png') }}" alt="Location de voitures en Algérie" class="w-full h-full object-cover">
+                @else
+                    <div class="w-full h-full bg-gradient-to-br from-gray-900 via-gray-800 to-black"></div>
+                @endif
+                <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/80"></div>
+            </div>
+            <div class="relative z-10 max-w-7xl mx-auto px-6 lg:px-8 py-20 flex items-center min-h-[600px] lg:min-h-[700px]">
+                <div class="max-w-3xl">
+                    @if(isset($heroSlides) && $heroSlides->count() > 0)
+                        <div class="relative">
+                            @foreach($heroSlides as $index => $slide)
+                                <div class="hero-title transition-opacity duration-700 {{ $index === 0 ? 'opacity-100' : 'opacity-0 absolute top-0 left-0' }}" data-index="{{ $index }}">
+                                    <h1 class="text-5xl lg:text-6xl font-black text-white leading-tight">
+                                        @if($slide->title)
+                                            {{ $slide->title }}
+                                            @if($slide->subtitle)
+                                                <span class="block text-green-400">{{ $slide->subtitle }}</span>
+                                            @endif
+                                        @else
+                                            Louez votre voiture
+                                            <span class="block text-green-400">partout en Algérie</span>
+                                        @endif
+                                    </h1>
+                                    @if($slide->button_text && $slide->button_url)
+                                        <a href="{{ $slide->button_url }}" class="mt-6 inline-flex items-center px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition shadow-lg shadow-green-600/30">
+                                            {{ $slide->button_text }}
+                                            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                                        </a>
+                                    @endif
+                                </div>
+                            @endforeach
+                        </div>
+                    @else
+                        <h1 class="text-5xl lg:text-6xl font-black text-white leading-tight">
+                            {{ $homeContent['hero_title'] ?? 'Louez votre voiture' }}
+                            <span class="block text-green-400">{{ $homeContent['hero_subtitle'] ?? 'partout en Algérie' }}</span>
+                        </h1>
+                    @endif
+                    <div class="mt-10 flex gap-12">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">{{ $totalVehicles }}+</div>
+                            <div class="text-sm text-white/50 mt-1">Véhicules</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">{{ $totalLoueurs }}+</div>
+                            <div class="text-sm text-white/50 mt-1">Loueurs</div>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-white">{{ $wilayas->count() }}+</div>
+                            <div class="text-sm text-white/50 mt-1">Wilayas</div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -732,19 +799,25 @@
 
 @section('scripts')
 <script>
-    // Hero Slider
+    // Hero Slider - Desktop
     document.addEventListener('DOMContentLoaded', function() {
         const slides = document.querySelectorAll('.hero-slide');
         const titles = document.querySelectorAll('.hero-title');
         const dots = document.querySelectorAll('.hero-dot');
 
-        if (slides.length <= 1) return;
+        // Mobile
+        const slidesMobile = document.querySelectorAll('.hero-slide-mobile');
+        const titlesMobile = document.querySelectorAll('.hero-title-mobile');
+        const dotsMobile = document.querySelectorAll('.hero-dot-mobile');
+
+        if (slides.length <= 1 && slidesMobile.length <= 1) return;
 
         let currentSlide = 0;
-        const totalSlides = slides.length;
+        const totalSlides = Math.max(slides.length, slidesMobile.length);
         let autoSlideInterval;
 
         function showSlide(index) {
+            // Desktop
             slides.forEach((slide, i) => {
                 slide.classList.toggle('opacity-100', i === index);
                 slide.classList.toggle('opacity-0', i !== index);
@@ -763,6 +836,19 @@
                 dot.classList.toggle('scale-110', i === index);
                 dot.classList.toggle('bg-white/50', i !== index);
             });
+
+            // Mobile
+            slidesMobile.forEach((slide, i) => {
+                slide.classList.toggle('hidden', i !== index);
+            });
+            titlesMobile.forEach((title, i) => {
+                title.classList.toggle('hidden', i !== index);
+            });
+            dotsMobile.forEach((dot, i) => {
+                dot.classList.toggle('bg-white', i === index);
+                dot.classList.toggle('bg-white/40', i !== index);
+            });
+
             currentSlide = index;
         }
 
@@ -771,6 +857,11 @@
         }
 
         window.goToSlide = function(index) {
+            showSlide(index);
+            resetAutoSlide();
+        };
+
+        window.goToSlideMobile = function(index) {
             showSlide(index);
             resetAutoSlide();
         };
