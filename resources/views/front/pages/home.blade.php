@@ -318,41 +318,6 @@
     <!-- Section fusionnée : Voiture à l'arrivée / Transfert -->
     @include('front.components.arrival-section')
 
-    <!-- Blog Section - Actualités -->
-    @if(isset($blogPosts) && $blogPosts->count() > 0)
-    <section class="py-16 lg:py-24 bg-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between mb-12">
-                <div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-1 h-8 bg-gradient-to-b from-green-500 to-green-700 rounded-full"></div>
-                        <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">ResaDZ Magazine</span>
-                    </div>
-                    <h2 class="text-3xl md:text-4xl font-black text-gray-900">Actualités</h2>
-                    <p class="mt-2 text-gray-500">Promotions, guides et conseils pour votre location</p>
-                </div>
-                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
-                    Tout voir
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-                @foreach($blogPosts as $post)
-                    @include('front.components.blog-card', ['post' => $post])
-                @endforeach
-            </div>
-
-            <div class="mt-10 text-center sm:hidden">
-                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-full transition">
-                    Voir toutes les actualités
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-            </div>
-        </div>
-    </section>
-    @endif
-
     <!-- Loueurs Section -->
     @if($loueurs->count() > 0)
     <section class="py-16 lg:py-24 bg-gray-50">
@@ -445,6 +410,41 @@
         </div>
     </section>
 
+    @endif
+
+    <!-- Blog Section - Actualités -->
+    @if(isset($blogPosts) && $blogPosts->count() > 0)
+    <section class="py-16 lg:py-24 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-1 h-8 bg-gradient-to-b from-green-500 to-green-700 rounded-full"></div>
+                        <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">ResaDZ Magazine</span>
+                    </div>
+                    <h2 class="text-3xl md:text-4xl font-black text-gray-900">Actualites</h2>
+                    <p class="mt-2 text-gray-500">Promotions, guides et conseils pour votre location</p>
+                </div>
+                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
+                    Tout voir
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach($blogPosts as $post)
+                    @include('front.components.blog-card', ['post' => $post])
+                @endforeach
+            </div>
+
+            <div class="mt-10 text-center sm:hidden">
+                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-full transition">
+                    Voir toutes les actualites
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
     @endif
 
     <!-- SEO Section -->
