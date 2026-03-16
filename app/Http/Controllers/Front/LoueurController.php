@@ -8,6 +8,31 @@ use App\Models\Vehicle;
 
 class LoueurController extends Controller
 {
+    public function index()
+    {
+        // Priorite aux partenaires en vedette
+        $featuredLoueurs = Loueur::where('is_active', true)
+            ->where('is_featured_partner', true)
+            ->withCount('vehicles')
+            ->orderBy('partner_order')
+            ->get();
+
+        // Puis les autres loueurs tries par note
+        $otherLoueurs = Loueur::where('is_active', true)
+            ->where(function ($query) {
+                $query->where('is_featured_partner', false)
+                    ->orWhereNull('is_featured_partner');
+            })
+            ->withCount('vehicles')
+            ->orderBy('rating', 'desc')
+            ->get();
+
+        // Combiner les deux listes
+        $loueurs = $featuredLoueurs->concat($otherLoueurs);
+
+        return view('front.pages.loueurs', compact('loueurs', 'featuredLoueurs'));
+    }
+
     public function show(string $slug)
     {
         $loueur = Loueur::with('settings')

@@ -3,6 +3,10 @@
 @section('title', \App\Models\Setting::get('company_name', 'ResaDZ') . ' - ' . \App\Models\Setting::get('company_slogan', 'Location de véhicules en Algérie'))
 @section('meta_description', 'Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés partout en Algérie.')
 
+@section('head')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+@endsection
+
 @section('meta_extra')
 <script type="application/ld+json">
 {
@@ -356,67 +360,95 @@
             <div class="text-center mb-12">
                 <div class="flex items-center justify-center gap-3 mb-3">
                     <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
-                    <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Réseau</span>
+                    <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Reseau</span>
                     <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
                 </div>
                 <h2 class="text-3xl font-bold text-gray-900">{{ $homeContent['loueurs_title'] ?? 'Nos loueurs partenaires' }}</h2>
-                <p class="mt-2 text-gray-500">{{ $homeContent['loueurs_subtitle'] ?? 'Des professionnels vérifiés à votre service' }}</p>
+                <p class="mt-2 text-gray-500">{{ $homeContent['loueurs_subtitle'] ?? 'Des professionnels verifies a votre service' }}</p>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                @foreach($loueurs as $loueur)
-                    <a href="{{ route('loueur.show', $loueur->slug) }}" class="group bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all hover:-translate-y-1">
-                        <div class="flex items-center gap-4">
-                            @if($loueur->logo)
-                                <img src="{{ asset('storage/' . $loueur->logo) }}" alt="{{ $loueur->company_name }}" class="w-14 h-14 rounded-xl object-cover">
-                            @else
-                                <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex flex-col items-center justify-center shadow-sm">
-                                    <span class="text-white font-black text-[10px] leading-none">PARTENAIRE</span>
-                                    <span class="text-white font-black text-xs leading-tight">ResaDZ</span>
-                                </div>
-                            @endif
-                            <div class="flex-1 min-w-0">
-                                <h3 class="font-bold text-gray-900 group-hover:text-green-600 transition truncate">{{ $loueur->company_name }}</h3>
-                                <p class="text-sm text-gray-500">{{ $loueur->city ?? $loueur->wilaya ?? 'Algérie' }}</p>
-                                @if($loueur->total_reviews > 0)
-                                    <div class="flex items-center gap-1.5 mt-1">
-                                        <div class="flex items-center gap-0.5">
-                                            @for($i = 1; $i <= 5; $i++)
-                                                <svg class="w-3.5 h-3.5 {{ $i <= round($loueur->rating) ? 'text-amber-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                                                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                                                </svg>
-                                            @endfor
+            <!-- Slider des partenaires -->
+            <div class="relative">
+                <div class="swiper partners-swiper">
+                    <div class="swiper-wrapper pb-4">
+                        @foreach($loueurs as $loueur)
+                            <div class="swiper-slide">
+                                <a href="{{ route('loueur.show', $loueur->slug) }}" class="group block bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all hover:-translate-y-1 h-full">
+                                    <div class="flex items-center gap-4">
+                                        @if($loueur->logo)
+                                            <img src="{{ asset('storage/' . $loueur->logo) }}" alt="{{ $loueur->company_name }}" class="w-14 h-14 rounded-xl object-cover">
+                                        @else
+                                            <div class="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-xl flex flex-col items-center justify-center shadow-sm">
+                                                <span class="text-white font-black text-[10px] leading-none">PARTENAIRE</span>
+                                                <span class="text-white font-black text-xs leading-tight">ResaDZ</span>
+                                            </div>
+                                        @endif
+                                        <div class="flex-1 min-w-0">
+                                            <h3 class="font-bold text-gray-900 group-hover:text-green-600 transition truncate">{{ $loueur->company_name }}</h3>
+                                            <p class="text-sm text-gray-500">{{ $loueur->city ?? $loueur->wilaya ?? 'Algerie' }}</p>
+                                            @if($loueur->total_reviews > 0)
+                                                <div class="flex items-center gap-1.5 mt-1">
+                                                    <div class="flex items-center gap-0.5">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <svg class="w-3.5 h-3.5 {{ $i <= round($loueur->rating) ? 'text-amber-400' : 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
+                                                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                                                            </svg>
+                                                        @endfor
+                                                    </div>
+                                                    <span class="text-sm font-semibold text-gray-700">{{ number_format($loueur->rating, 1) }}</span>
+                                                    <span class="text-xs text-gray-400">({{ $loueur->total_reviews }})</span>
+                                                </div>
+                                            @else
+                                                <p class="text-xs text-gray-400 mt-1">Nouveau partenaire</p>
+                                            @endif
                                         </div>
-                                        <span class="text-sm font-semibold text-gray-700">{{ number_format($loueur->rating, 1) }}</span>
-                                        <span class="text-xs text-gray-400">({{ $loueur->total_reviews }})</span>
                                     </div>
-                                @else
-                                    <p class="text-xs text-gray-400 mt-1">Nouveau partenaire</p>
-                                @endif
+                                    <div class="mt-4 flex items-center justify-between">
+                                        <span class="text-sm text-gray-500">{{ $loueur->vehicles_count }} vehicule{{ $loueur->vehicles_count > 1 ? 's' : '' }}</span>
+                                        <div class="flex items-center gap-2">
+                                            @if($loueur->rating >= 4.5 && $loueur->total_reviews >= 10)
+                                                <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                                    Top
+                                                </span>
+                                            @endif
+                                            @if($loueur->is_verified)
+                                                <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-200">
+                                                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                                                    Verifie
+                                                </span>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </a>
                             </div>
-                        </div>
-                        <div class="mt-4 flex items-center justify-between">
-                            <span class="text-sm text-gray-500">{{ $loueur->vehicles_count }} véhicule{{ $loueur->vehicles_count > 1 ? 's' : '' }}</span>
-                            <div class="flex items-center gap-2">
-                                @if($loueur->rating >= 4.5 && $loueur->total_reviews >= 10)
-                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-amber-600 bg-amber-50 px-2 py-1 rounded-full border border-amber-200">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        Top
-                                    </span>
-                                @endif
-                                @if($loueur->is_verified)
-                                    <span class="inline-flex items-center gap-1 text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-full border border-green-200">
-                                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                                        Vérifié
-                                    </span>
-                                @endif
-                            </div>
-                        </div>
-                    </a>
-                @endforeach
+                        @endforeach
+                    </div>
+                    <!-- Pagination -->
+                    <div class="swiper-pagination partners-pagination"></div>
+                </div>
+
+                <!-- Navigation buttons -->
+                <button class="partners-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition hidden lg:flex">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button class="partners-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition hidden lg:flex">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                </button>
             </div>
+
+            <!-- Bouton Voir tous nos partenaires -->
+            @if($totalFeaturedPartners > 5 || $totalLoueurs > 5)
+            <div class="text-center mt-10">
+                <a href="{{ route('loueurs.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-600/20">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    Voir tous nos partenaires
+                </a>
+            </div>
+            @endif
         </div>
     </section>
+
     @endif
 
     <!-- SEO Section -->
@@ -729,7 +761,34 @@
 @endsection
 
 @section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
+    // Partners Slider
+    document.addEventListener('DOMContentLoaded', function() {
+        if (document.querySelector('.partners-swiper')) {
+            new Swiper('.partners-swiper', {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                pagination: {
+                    el: '.partners-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.partners-next',
+                    prevEl: '.partners-prev',
+                },
+                breakpoints: {
+                    640: {
+                        slidesPerView: 2,
+                    },
+                    1024: {
+                        slidesPerView: 3,
+                    },
+                },
+            });
+        }
+    });
+
     // Hero Slider
     document.addEventListener('DOMContentLoaded', function() {
         const slides = document.querySelectorAll('.hero-slide');

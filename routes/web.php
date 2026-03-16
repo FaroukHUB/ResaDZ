@@ -30,6 +30,7 @@ Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/comment-ca-marche', [HomeController::class, 'commentCaMarche'])->name('comment-ca-marche');
 Route::get('/vehicules', [VehicleController::class, 'index'])->name('vehicles.index');
 Route::get('/vehicule/{slug}', [VehicleController::class, 'show'])->name('vehicles.show');
+Route::get('/loueurs', [LoueurController::class, 'index'])->name('loueurs.index');
 Route::get('/loueur/{slug}', [LoueurController::class, 'show'])->name('loueur.show');
 
 // Blog

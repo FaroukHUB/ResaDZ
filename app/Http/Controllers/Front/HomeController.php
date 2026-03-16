@@ -43,11 +43,27 @@ class HomeController extends Controller
 
         $brands = Brand::orderBy('name')->get();
 
-        $loueurs = Loueur::where('is_active', true)
+        // Loueurs partenaires en vedette (choisis manuellement depuis l'admin)
+        $featuredLoueurs = Loueur::where('is_active', true)
+            ->where('is_featured_partner', true)
             ->withCount('vehicles')
-            ->orderBy('rating', 'desc')
-            ->limit(6)
+            ->orderBy('partner_order')
+            ->limit(5)
             ->get();
+
+        // Si aucun partenaire n'est mis en avant, utiliser les mieux notes
+        $loueurs = $featuredLoueurs->count() > 0
+            ? $featuredLoueurs
+            : Loueur::where('is_active', true)
+                ->withCount('vehicles')
+                ->orderBy('rating', 'desc')
+                ->limit(5)
+                ->get();
+
+        // Nombre total de partenaires en vedette (pour le bouton "Voir tous")
+        $totalFeaturedPartners = Loueur::where('is_active', true)
+            ->where('is_featured_partner', true)
+            ->count();
 
         $totalVehicles = Vehicle::where('is_active', true)->count();
         $totalLoueurs = Loueur::where('is_active', true)->count();
@@ -95,6 +111,7 @@ class HomeController extends Controller
             'loueurs',
             'totalVehicles',
             'totalLoueurs',
+            'totalFeaturedPartners',
             'wilayas',
             'heroSlides',
             'homeContent',
