@@ -368,11 +368,19 @@
             </div>
 
             <!-- Slider des partenaires -->
-            <div class="relative">
+            <div class="relative px-14 lg:px-16">
+                <!-- Navigation arrows - Ultra modern transparent style -->
+                <button class="partners-prev absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-lg hover:scale-110 transition-all duration-300 group">
+                    <svg class="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                </button>
+                <button class="partners-next absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-lg hover:scale-110 transition-all duration-300 group">
+                    <svg class="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+
                 <div class="swiper partners-swiper">
-                    <div class="swiper-wrapper pb-4">
+                    <div class="swiper-wrapper">
                         @foreach($loueurs as $loueur)
-                            <div class="swiper-slide">
+                            <div class="swiper-slide py-2">
                                 <a href="{{ route('loueur.show', $loueur->slug) }}" class="group block bg-white border border-gray-200 rounded-2xl p-6 hover:shadow-xl hover:border-green-200 transition-all hover:-translate-y-1 h-full">
                                     <div class="flex items-center gap-4">
                                         @if($loueur->logo)
@@ -425,14 +433,6 @@
                         @endforeach
                     </div>
                 </div>
-
-                <!-- Navigation arrows - Ultra modern transparent style -->
-                <button class="partners-prev absolute left-2 lg:-left-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all duration-300 shadow-xl group">
-                    <svg class="w-5 h-5 text-gray-700 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                </button>
-                <button class="partners-next absolute right-2 lg:-right-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all duration-300 shadow-xl group">
-                    <svg class="w-5 h-5 text-gray-700 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
-                </button>
             </div>
 
             <!-- Bouton Voir tous nos partenaires -->
