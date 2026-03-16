@@ -2,8 +2,8 @@
 <section class="relative">
     {{-- Hero Image avec chevauchement --}}
     <div class="relative h-[300px] lg:h-[400px]">
-        @if(file_exists(public_path('assets/airport-hero.jpg')))
-            <img src="{{ asset('assets/airport-hero.jpg') }}" alt="Location voiture aéroport Algérie" class="w-full h-full object-cover" loading="lazy" width="1920" height="400">
+        @if(file_exists(public_path('assets/airport-hero.webp')))
+            <img src="{{ asset('assets/airport-hero.webp') }}" alt="Location voiture aéroport Algérie" class="w-full h-full object-cover" loading="lazy" width="1920" height="400">
         @else
             {{-- Fallback gradient --}}
             <div class="w-full h-full bg-gradient-to-br from-slate-800 via-slate-900 to-black"></div>

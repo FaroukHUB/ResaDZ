@@ -2,8 +2,8 @@
 <section class="relative py-16 lg:py-24 overflow-hidden">
     {{-- Hero Image --}}
     <div class="absolute inset-0">
-        @if(file_exists(public_path('assets/airport-hero.jpg')))
-            <img src="{{ asset('assets/airport-hero.jpg') }}" alt="Service aéroport" class="w-full h-full object-cover" loading="lazy">
+        @if(file_exists(public_path('assets/airport-hero.webp')))
+            <img src="{{ asset('assets/airport-hero.webp') }}" alt="Service aéroport" class="w-full h-full object-cover" loading="lazy">
         @else
             <div class="w-full h-full bg-gradient-to-br from-neutral-800 via-neutral-900 to-black"></div>
         @endif
