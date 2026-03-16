@@ -4,9 +4,11 @@
 @section('meta_description', 'Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés partout en Algérie.')
 
 @section('head')
-{{-- Swiper CSS --}}
-<link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+{{-- Swiper CSS - Chargement non-bloquant --}}
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
+{{-- Preload Swiper JS pour éviter le délai --}}
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" as="script">
 @endsection
 
 @section('meta_extra')
@@ -168,8 +170,8 @@
         <form action="{{ route('vehicles.index') }}" method="GET">
             <div class="space-y-3">
                 <div>
-                    <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
-                    <select name="wilaya" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white appearance-none cursor-pointer text-sm">
+                    <label for="mobile-wilaya" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Lieu de prise en charge</label>
+                    <select name="wilaya" id="mobile-wilaya" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white appearance-none cursor-pointer text-sm">
                         <option value="">Wilaya, ville...</option>
                         @if(isset($wilayas))
                             @foreach($wilayas as $wilaya)
@@ -179,15 +181,15 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
-                    <input type="date" name="pickup_date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
+                    <label for="mobile-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
+                    <input type="date" name="pickup_date" id="mobile-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
-                    <input type="date" name="return_date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
+                    <label for="mobile-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
+                    <input type="date" name="return_date" id="mobile-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
                 </div>
                 <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     Rechercher
                 </button>
             </div>
@@ -339,11 +341,11 @@
             <!-- Slider des partenaires -->
             <div class="relative px-14 lg:px-16">
                 <!-- Navigation arrows - Ultra modern transparent style -->
-                <button class="partners-prev absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-lg hover:scale-110 transition-all duration-300 group">
-                    <svg class="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                <button type="button" aria-label="Partenaire précédent" class="partners-prev absolute left-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-lg hover:scale-110 transition-all duration-300 group">
+                    <svg class="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-                <button class="partners-next absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-lg hover:scale-110 transition-all duration-300 group">
-                    <svg class="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                <button type="button" aria-label="Partenaire suivant" class="partners-next absolute right-0 top-1/2 -translate-y-1/2 z-20 w-11 h-11 bg-white/80 backdrop-blur-sm rounded-full border border-gray-200 flex items-center justify-center hover:bg-white hover:shadow-lg hover:scale-110 transition-all duration-300 group">
+                    <svg class="w-5 h-5 text-gray-600 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </button>
 
                 <div class="swiper partners-swiper">
@@ -761,7 +763,7 @@
 @endsection
 
 @section('scripts')
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
     // Partners Slider
     document.addEventListener('DOMContentLoaded', function() {

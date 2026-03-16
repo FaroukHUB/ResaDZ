@@ -30,8 +30,14 @@
     <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative border-b border-neutral-800">
         <div class="aspect-[16/10] overflow-hidden">
             @if($vehicle->image)
-                <img src="{{ asset('storage/' . $vehicle->image) }}" alt="{{ $vehicle->full_name }}"
-                     class="w-full h-full object-cover" loading="lazy">
+                <img src="{{ asset('storage/' . $vehicle->image) }}"
+                     alt="{{ $vehicle->full_name }}"
+                     class="w-full h-full object-cover"
+                     loading="lazy"
+                     decoding="async"
+                     width="400"
+                     height="250"
+                     sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 400px">
             @else
                 <div class="w-full h-full flex items-center justify-center bg-neutral-900">
                     <svg class="w-16 h-16 text-neutral-700" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v4.5c0 .621.504 1.125 1.125 1.125z"/></svg>
