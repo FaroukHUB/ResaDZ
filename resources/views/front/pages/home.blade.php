@@ -4,7 +4,9 @@
 @section('meta_description', 'Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés partout en Algérie.')
 
 @section('head')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+{{-- Preload Swiper CSS to avoid render blocking --}}
+<link rel="preload" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css"></noscript>
 @endsection
 
 @section('meta_extra')
@@ -50,14 +52,16 @@
                 <div id="hero-slider" class="relative w-full h-full">
                     @foreach($heroSlides as $index => $slide)
                         <div class="hero-slide absolute inset-0 transition-opacity duration-1000 {{ $index === 0 ? 'opacity-100' : 'opacity-0' }}" data-index="{{ $index }}">
-                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover object-center">
+                            <img src="{{ asset('storage/' . $slide->image) }}" alt="{{ $slide->title ?? 'ResaDZ' }}" class="w-full h-full object-cover object-center" width="1920" height="700" @if($index === 0) fetchpriority="high" @else loading="lazy" @endif>
                         </div>
                     @endforeach
                 </div>
                 @if($heroSlides->count() > 1)
-                    <div class="absolute bottom-4 sm:bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2">
+                    <div class="absolute bottom-4 sm:bottom-24 left-1/2 transform -translate-x-1/2 z-20 flex gap-2" role="tablist" aria-label="Navigation des slides">
                         @foreach($heroSlides as $index => $slide)
-                            <button onclick="goToSlide({{ $index }})" class="hero-dot w-2 h-2 sm:w-3 sm:h-3 rounded-full transition-all {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50' }}" data-index="{{ $index }}"></button>
+                            <button onclick="goToSlide({{ $index }})" class="hero-dot w-11 h-11 sm:w-8 sm:h-8 flex items-center justify-center rounded-full transition-all" data-index="{{ $index }}" role="tab" aria-label="Aller au slide {{ $index + 1 }}" aria-selected="{{ $index === 0 ? 'true' : 'false' }}">
+                                <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full {{ $index === 0 ? 'bg-white scale-110' : 'bg-white/50' }}"></span>
+                            </button>
                         @endforeach
                     </div>
                 @endif
@@ -809,9 +813,13 @@
                 }
             });
             dots.forEach((dot, i) => {
-                dot.classList.toggle('bg-white', i === index);
-                dot.classList.toggle('scale-110', i === index);
-                dot.classList.toggle('bg-white/50', i !== index);
+                const span = dot.querySelector('span');
+                if (span) {
+                    span.classList.toggle('bg-white', i === index);
+                    span.classList.toggle('scale-110', i === index);
+                    span.classList.toggle('bg-white/50', i !== index);
+                }
+                dot.setAttribute('aria-selected', i === index ? 'true' : 'false');
             });
             currentSlide = index;
         }

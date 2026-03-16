@@ -22,6 +22,15 @@
     <title>@yield('title', $siteName . ' - ' . $siteSlogan)</title>
     <meta name="description" content="@yield('meta_description', $siteName . ', la marketplace de location de voitures en Algérie. Trouvez et réservez votre véhicule en quelques clics.')">
 
+    <!-- SEO Meta Tags -->
+    <meta name="robots" content="@yield('meta_robots', 'index, follow')">
+    <meta name="author" content="{{ $siteName }}">
+    <meta name="theme-color" content="#16a34a">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="format-detection" content="telephone=no">
+
     <!-- Open Graph -->
     <meta property="og:title" content="@yield('og_title', $siteName . ' - ' . $siteSlogan)">
     <meta property="og:description" content="@yield('og_description', 'Trouvez et réservez votre véhicule en quelques clics.')">
@@ -32,6 +41,13 @@
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="@yield('og_title', $siteName . ' - ' . $siteSlogan)">
+    <meta name="twitter:description" content="@yield('og_description', 'Trouvez et réservez votre véhicule en quelques clics.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('assets/favicon.png'))">
+
+    <!-- Geographic tags for Algeria -->
+    <meta name="geo.region" content="DZ">
+    <meta name="geo.placename" content="Algérie">
 
     @yield('meta_extra')
 
@@ -44,6 +60,9 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- CDN Preconnects for third-party resources -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
@@ -227,7 +246,7 @@
 
                     {{-- Navigation Links --}}
                     <div class="lg:col-span-2">
-                        <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-6">Navigation</h4>
+                        <h2 class="text-white font-bold text-sm uppercase tracking-wider mb-6">Navigation</h2>
                         <ul class="space-y-4">
                             <li><a href="{{ route('home') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Accueil</a></li>
                             <li><a href="{{ route('vehicles.index') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Véhicules</a></li>
@@ -238,7 +257,7 @@
 
                     {{-- Wilayas Populaires --}}
                     <div class="lg:col-span-2">
-                        <h4 class="text-white font-bold text-sm uppercase tracking-wider mb-6">Wilayas populaires</h4>
+                        <h2 class="text-white font-bold text-sm uppercase tracking-wider mb-6">Wilayas populaires</h2>
                         <ul class="space-y-4">
                             <li><a href="{{ route('vehicles.by-wilaya', 'alger') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Alger</a></li>
                             <li><a href="{{ route('vehicles.by-wilaya', 'oran') }}" class="text-white/60 hover:text-green-400 transition flex items-center gap-2 group"><span class="w-1.5 h-1.5 rounded-full bg-white/20 group-hover:bg-green-400 transition"></span>Oran</a></li>
@@ -255,7 +274,7 @@
                                     <svg class="w-5 h-5 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
                                 </div>
                                 <div>
-                                    <h4 class="text-white font-bold">Newsletter</h4>
+                                    <h2 class="text-white font-bold text-base">Newsletter</h2>
                                     <p class="text-white/40 text-xs">Offres exclusives & bons plans</p>
                                 </div>
                             </div>
