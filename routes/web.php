@@ -11,6 +11,7 @@ use App\Http\Controllers\Front\SitemapController;
 use App\Http\Controllers\Front\TransferController;
 use App\Http\Controllers\Front\VehicleController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Front\LegalController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes
@@ -74,6 +75,11 @@ Route::get('/comparer', [VehicleController::class, 'compare'])->name('vehicles.c
 // SEO
 Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
+
+// Pages légales
+Route::get('/mentions-legales', [LegalController::class, 'mentionsLegales'])->name('legal.mentions-legales');
+Route::get('/conditions-generales-utilisation', [LegalController::class, 'cgu'])->name('legal.cgu');
+Route::get('/politique-confidentialite', [LegalController::class, 'confidentialite'])->name('legal.confidentialite');
 
 // Calendar iCal Feed (for Google Calendar sync)
 Route::get('/calendar/ical/{token}.ics', [CalendarController::class, 'icalFeed'])->name('calendar.ical');

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\StoreBookingRequest;
 use App\Models\Booking;
 use App\Models\DeliveryZone;
 use App\Models\Option;
@@ -253,31 +254,11 @@ class BookingController extends Controller
     /**
      * Enregistre la demande de réservation (formulaire simplifié).
      */
-    public function store(Request $request, PricingService $pricingService, OptionAvailabilityService $optionService)
+    public function store(StoreBookingRequest $request, PricingService $pricingService, OptionAvailabilityService $optionService)
     {
         try {
-        $request->validate([
-            'vehicle_id' => 'required|exists:vehicles,id',
-            'start_date' => 'required|date|after_or_equal:today',
-            'end_date' => 'required|date|after:start_date',
-            'pickup_time' => 'required|string|max:5',
-            'client_name' => 'required|string|max:255',
-            'client_phone' => 'required|string|max:50',
-            'client_email' => 'required|email|max:255',
-            'pickup_zone_id' => 'nullable|exists:delivery_zones,id',
-            'return_zone_id' => 'nullable|exists:delivery_zones,id',
-            'same_return_location' => 'nullable|in:0,1',
-            'options' => 'nullable|array',
-            'currency' => 'nullable|in:DZD,EUR',
-            'advance_payment_method' => 'nullable|string|max:50',
-            'internal_notes' => 'nullable|string|max:1000',
-        ]);
-
-        // Valider la méthode d'acompte si fournie (convertir chaîne vide en null)
-        $advancePaymentMethod = $request->advance_payment_method ?: null;
-        if ($advancePaymentMethod && !in_array($advancePaymentMethod, ['cash', 'cib', 'dahabia', 'baridimob', 'paypal', 'bank_transfer'])) {
-            $advancePaymentMethod = null;
-        }
+        // Validation is now handled by StoreBookingRequest
+        $advancePaymentMethod = $request->advance_payment_method;
 
         // Si retour au même endroit, copier la zone de pickup vers return
         $pickupZoneId = $request->pickup_zone_id ? (int) $request->pickup_zone_id : null;

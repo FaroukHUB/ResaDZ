@@ -10,11 +10,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use App\Traits\HasPermissions;
 
 class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasPermissions;
 
     protected $fillable = [
         'name',
@@ -69,8 +70,8 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
 
-        // Panel admin principal - seulement super admin
-        if ($panel->getId() === 'admin' && $this->isSuperAdmin()) {
+        // Panel admin - utilisateurs avec rôles admin, moderator ou support
+        if ($panel->getId() === 'admin' && $this->canAccessAdminPanel()) {
             return true;
         }
 

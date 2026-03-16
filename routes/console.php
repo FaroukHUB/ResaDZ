@@ -24,3 +24,9 @@ Schedule::command('reviews:send-requests')
     ->dailyAt('10:00')
     ->description('Send review request emails to clients after completed bookings')
     ->emailOutputOnFailure(config('mail.admin_email'));
+
+// Send booking reminders 1 day before pickup (daily at 9:00 AM)
+Schedule::command('bookings:send-reminders')
+    ->dailyAt('09:00')
+    ->description('Send reminder emails for bookings starting tomorrow')
+    ->emailOutputOnFailure(config('mail.admin_email'));

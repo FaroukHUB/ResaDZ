@@ -300,9 +300,9 @@
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <p class="text-white/60 text-sm">&copy; {{ date('Y') }} {{ $siteName }}. Tous droits réservés.</p>
                     <div class="flex items-center gap-6 text-white/60 text-sm">
-                        <a href="#" class="hover:text-white transition">Mentions légales</a>
-                        <a href="#" class="hover:text-white transition">CGU</a>
-                        <a href="#" class="hover:text-white transition">Confidentialité</a>
+                        <a href="{{ route('legal.mentions-legales') }}" class="hover:text-white transition">Mentions légales</a>
+                        <a href="{{ route('legal.cgu') }}" class="hover:text-white transition">CGU</a>
+                        <a href="{{ route('legal.confidentialite') }}" class="hover:text-white transition">Confidentialité</a>
                     </div>
                 </div>
             </div>
