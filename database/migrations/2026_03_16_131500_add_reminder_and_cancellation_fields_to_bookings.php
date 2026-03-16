@@ -14,46 +14,46 @@ return new class extends Migration
         Schema::table('bookings', function (Blueprint $table) {
             // Reminder tracking
             if (!Schema::hasColumn('bookings', 'reminder_sent_at')) {
-                $table->timestamp('reminder_sent_at')->nullable()->after('review_requested_at');
+                $table->timestamp('reminder_sent_at')->nullable();
             }
 
             // Cancellation fields
             if (!Schema::hasColumn('bookings', 'cancelled_at')) {
-                $table->timestamp('cancelled_at')->nullable()->after('completed_at');
+                $table->timestamp('cancelled_at')->nullable();
             }
             if (!Schema::hasColumn('bookings', 'cancelled_by')) {
-                $table->string('cancelled_by', 20)->nullable()->after('cancelled_at'); // client, loueur, system
+                $table->string('cancelled_by', 20)->nullable(); // client, loueur, system
             }
             if (!Schema::hasColumn('bookings', 'cancellation_reason')) {
-                $table->text('cancellation_reason')->nullable()->after('cancelled_by');
+                $table->text('cancellation_reason')->nullable();
             }
 
             // Refund fields
             if (!Schema::hasColumn('bookings', 'refund_amount')) {
-                $table->decimal('refund_amount', 10, 2)->nullable()->after('cancellation_reason');
+                $table->decimal('refund_amount', 10, 2)->nullable();
             }
             if (!Schema::hasColumn('bookings', 'refund_status')) {
-                $table->string('refund_status', 20)->default('none')->after('refund_amount'); // none, pending, processed
+                $table->string('refund_status', 20)->default('none'); // none, pending, processed
             }
             if (!Schema::hasColumn('bookings', 'refund_method')) {
-                $table->string('refund_method', 50)->nullable()->after('refund_status');
+                $table->string('refund_method', 50)->nullable();
             }
             if (!Schema::hasColumn('bookings', 'refund_reference')) {
-                $table->string('refund_reference')->nullable()->after('refund_method');
+                $table->string('refund_reference')->nullable();
             }
             if (!Schema::hasColumn('bookings', 'refund_processed_at')) {
-                $table->timestamp('refund_processed_at')->nullable()->after('refund_reference');
+                $table->timestamp('refund_processed_at')->nullable();
             }
 
             // Deposit return fields
             if (!Schema::hasColumn('bookings', 'deposit_returned_at')) {
-                $table->timestamp('deposit_returned_at')->nullable()->after('deposit_collected_at');
+                $table->timestamp('deposit_returned_at')->nullable();
             }
             if (!Schema::hasColumn('bookings', 'deposit_deduction')) {
-                $table->decimal('deposit_deduction', 10, 2)->nullable()->after('deposit_returned_at');
+                $table->decimal('deposit_deduction', 10, 2)->nullable();
             }
             if (!Schema::hasColumn('bookings', 'deposit_deduction_reason')) {
-                $table->text('deposit_deduction_reason')->nullable()->after('deposit_deduction');
+                $table->text('deposit_deduction_reason')->nullable();
             }
 
             // Final payment fields
