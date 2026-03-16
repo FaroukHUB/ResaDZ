@@ -424,28 +424,24 @@
                             </div>
                         @endforeach
                     </div>
-                    <!-- Pagination -->
-                    <div class="swiper-pagination partners-pagination"></div>
                 </div>
 
-                <!-- Navigation buttons -->
-                <button class="partners-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition hidden lg:flex">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+                <!-- Navigation arrows - Ultra modern transparent style -->
+                <button class="partners-prev absolute left-2 lg:-left-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all duration-300 shadow-xl group">
+                    <svg class="w-5 h-5 text-gray-700 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
                 </button>
-                <button class="partners-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 z-10 w-10 h-10 bg-white rounded-full shadow-lg border border-gray-200 flex items-center justify-center hover:bg-gray-50 transition hidden lg:flex">
-                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                <button class="partners-next absolute right-2 lg:-right-5 top-1/2 -translate-y-1/2 z-10 w-12 h-12 bg-white/10 backdrop-blur-md rounded-full border border-white/20 flex items-center justify-center hover:bg-white/30 hover:scale-110 transition-all duration-300 shadow-xl group">
+                    <svg class="w-5 h-5 text-gray-700 group-hover:text-green-600 transition-colors" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </button>
             </div>
 
             <!-- Bouton Voir tous nos partenaires -->
-            @if($totalFeaturedPartners > 5 || $totalLoueurs > 5)
             <div class="text-center mt-10">
                 <a href="{{ route('loueurs.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-600/20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     Voir tous nos partenaires
                 </a>
             </div>
-            @endif
         </div>
     </section>
 
@@ -769,10 +765,7 @@
             new Swiper('.partners-swiper', {
                 slidesPerView: 1,
                 spaceBetween: 20,
-                pagination: {
-                    el: '.partners-pagination',
-                    clickable: true,
-                },
+                loop: true,
                 navigation: {
                     nextEl: '.partners-next',
                     prevEl: '.partners-prev',
