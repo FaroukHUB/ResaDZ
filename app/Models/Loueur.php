@@ -316,6 +316,11 @@ class Loueur extends Model
 
     public function setSetting(string $key, $value, string $type = 'string'): void
     {
+        if (is_null($value) && $type !== 'json') {
+            $this->settings()->where('key', $key)->delete();
+            return;
+        }
+
         $this->settings()->updateOrCreate(
             ['key' => $key],
             [

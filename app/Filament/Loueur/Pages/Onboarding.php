@@ -79,8 +79,8 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             'rental_options' => $loueur->getSetting('rental_options', []),
 
             // Step 5: Conditions
-            'conditions_pdf' => $loueur->getSetting('conditions_pdf', null),
-            'rental_conditions' => $loueur->getSetting('rental_conditions', []),
+            'conditions_pdf' => $loueur->getSetting('conditions_pdf', null) ?: null,
+            'rental_conditions' => $loueur->getSetting('rental_conditions', []) ?: [],
 
             // Step 6: Badges
             'badge_insurance' => $loueur->getSetting('badge_insurance', false),
@@ -349,7 +349,11 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                         ->label('Document PDF des conditions générales')
                         ->acceptedFileTypes(['application/pdf'])
                         ->maxSize(5120)
-                        ->directory('loueurs/conditions')
+                        ->disk('public')
+                        ->directory('conditions-pdf')
+                        ->downloadable()
+                        ->openable()
+                        ->previewable(false)
                         ->helperText('Optionnel : téléchargez vos CGV au format PDF'),
                     Forms\Components\Repeater::make('rental_conditions')
                         ->label('Conditions affichées')
@@ -593,7 +597,11 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 break;
 
             case 5:
-                $loueur->setSetting('conditions_pdf', $data['conditions_pdf'] ?? null, 'string');
+                $conditionsPdf = $data['conditions_pdf'] ?? null;
+                if (is_array($conditionsPdf)) {
+                    $conditionsPdf = !empty($conditionsPdf) ? reset($conditionsPdf) : null;
+                }
+                $loueur->setSetting('conditions_pdf', $conditionsPdf ?: null, 'string');
                 $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
                 break;
 
@@ -660,7 +668,11 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 break;
 
             case 5:
-                $loueur->setSetting('conditions_pdf', $data['conditions_pdf'] ?? null, 'string');
+                $conditionsPdf = $data['conditions_pdf'] ?? null;
+                if (is_array($conditionsPdf)) {
+                    $conditionsPdf = !empty($conditionsPdf) ? reset($conditionsPdf) : null;
+                }
+                $loueur->setSetting('conditions_pdf', $conditionsPdf ?: null, 'string');
                 $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
                 break;
 
