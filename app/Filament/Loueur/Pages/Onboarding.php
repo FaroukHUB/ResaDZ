@@ -63,7 +63,15 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             'city' => $loueur->city,
             'wilaya' => $loueur->wilaya,
 
-            // Step 2: Zones - loaded separately
+            // Step 2: Zones
+            'delivery_zones' => $loueur->deliveryZones()->orderBy('sort_order')->get()->map(fn ($zone) => [
+                'id' => $zone->id,
+                'name' => $zone->name,
+                'type' => $zone->type,
+                'city' => $zone->city,
+                'delivery_fee' => $zone->delivery_fee,
+                'is_active' => $zone->is_active,
+            ])->toArray(),
 
             // Step 3: Reservations
             'advance_percentage' => $loueur->getSetting('advance_percentage', 30),
@@ -171,48 +179,52 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     protected function getZonesSchema(): array
     {
-        $loueur = Auth::user()->loueur;
-        $zones = $loueur ? $loueur->deliveryZones()->orderBy('sort_order')->get() : collect();
-
         return [
             Forms\Components\Section::make('Zones de livraison')
-                ->description('Définissez les zones où vous pouvez livrer et récupérer les véhicules. Vous devez avoir au moins une zone active pour recevoir des réservations.')
+                ->description('Définissez les zones où vous pouvez livrer et récupérer les véhicules. Ajoutez au moins une zone active pour recevoir des réservations.')
                 ->schema([
-                    Forms\Components\Placeholder::make('zones_info')
-                        ->content(function () use ($zones) {
-                            if ($zones->isEmpty()) {
-                                return new \Illuminate\Support\HtmlString('
-                                    <div class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
-                                        <p class="text-amber-800 dark:text-amber-200 font-medium">Vous n\'avez pas encore de zone de livraison.</p>
-                                        <p class="text-amber-700 dark:text-amber-300 text-sm mt-1">Cliquez sur le bouton ci-dessous pour en créer une.</p>
-                                    </div>
-                                ');
-                            }
-
-                            $html = '<div class="space-y-2">';
-                            foreach ($zones as $zone) {
-                                $status = $zone->is_active ? '<span class="text-green-600">Active</span>' : '<span class="text-gray-400">Inactive</span>';
-                                $deliveryFee = $zone->delivery_fee > 0 ? number_format($zone->delivery_fee, 0, ',', ' ') . ' DA' : 'Gratuit';
-                                $html .= "<div class='p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex justify-between items-center'>
-                                    <div>
-                                        <span class='font-medium'>{$zone->name}</span>
-                                        <span class='text-sm text-gray-500 ml-2'>({$deliveryFee})</span>
-                                    </div>
-                                    <div>{$status}</div>
-                                </div>";
-                            }
-                            $html .= '</div>';
-
-                            return new \Illuminate\Support\HtmlString($html);
-                        }),
-                    Forms\Components\Actions::make([
-                        Forms\Components\Actions\Action::make('manage_zones')
-                            ->label('Gérer les zones de livraison')
-                            ->icon('heroicon-o-map-pin')
-                            ->url(route('filament.loueur.resources.delivery-zones.index'))
-                            ->openUrlInNewTab(false)
-                            ->color('primary'),
-                    ]),
+                    Forms\Components\Repeater::make('delivery_zones')
+                        ->label('')
+                        ->schema([
+                            Forms\Components\Grid::make(3)
+                                ->schema([
+                                    Forms\Components\TextInput::make('name')
+                                        ->label('Nom de la zone')
+                                        ->required()
+                                        ->placeholder('Ex: Alger Centre'),
+                                    Forms\Components\Select::make('type')
+                                        ->label('Type')
+                                        ->options([
+                                            'city' => 'Ville',
+                                            'airport' => 'Aéroport',
+                                            'station' => 'Gare',
+                                            'hotel' => 'Hôtel',
+                                        ])
+                                        ->default('city'),
+                                    Forms\Components\TextInput::make('delivery_fee')
+                                        ->label('Frais de livraison (DA)')
+                                        ->numeric()
+                                        ->minValue(0)
+                                        ->default(0)
+                                        ->helperText('0 = Gratuit'),
+                                ]),
+                            Forms\Components\Grid::make(2)
+                                ->schema([
+                                    Forms\Components\TextInput::make('city')
+                                        ->label('Ville')
+                                        ->placeholder('Ex: Alger'),
+                                    Forms\Components\Toggle::make('is_active')
+                                        ->label('Zone active')
+                                        ->default(true)
+                                        ->inline(false),
+                                ]),
+                        ])
+                        ->itemLabel(fn (array $state): ?string => $state['name'] ?? 'Nouvelle zone')
+                        ->collapsible()
+                        ->cloneable()
+                        ->defaultItems(0)
+                        ->addActionLabel('Ajouter une zone de livraison')
+                        ->reorderableWithButtons(),
                 ]),
         ];
     }
@@ -527,11 +539,64 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     protected function validateZonesStep(Loueur $loueur): ?string
     {
-        $activeZones = $loueur->deliveryZones()->where('is_active', true)->count();
-        if ($activeZones === 0) {
-            return 'Vous devez créer au moins une zone de livraison active avant de continuer.';
+        $zones = $this->data['delivery_zones'] ?? [];
+        $activeZones = collect($zones)->where('is_active', true)->count();
+
+        if (empty($zones)) {
+            return 'Vous devez créer au moins une zone de livraison.';
         }
+
+        if ($activeZones === 0) {
+            return 'Vous devez avoir au moins une zone de livraison active.';
+        }
+
         return null;
+    }
+
+    protected function saveDeliveryZones(Loueur $loueur, array $zones): void
+    {
+        $existingIds = [];
+        $sortOrder = 0;
+
+        foreach ($zones as $zoneData) {
+            $sortOrder++;
+
+            $zoneAttributes = [
+                'loueur_id' => $loueur->id,
+                'name' => $zoneData['name'],
+                'type' => $zoneData['type'] ?? 'city',
+                'city' => $zoneData['city'] ?? null,
+                'wilaya' => $loueur->wilaya,
+                'delivery_fee' => $zoneData['delivery_fee'] ?? 0,
+                'return_fee' => $zoneData['delivery_fee'] ?? 0,
+                'currency' => 'DZD',
+                'is_active' => $zoneData['is_active'] ?? true,
+                'delivery_available' => true,
+                'return_available' => true,
+                'sort_order' => $sortOrder,
+            ];
+
+            if (!empty($zoneData['id'])) {
+                // Update existing zone
+                $zone = DeliveryZone::where('id', $zoneData['id'])
+                    ->where('loueur_id', $loueur->id)
+                    ->first();
+
+                if ($zone) {
+                    $zone->update($zoneAttributes);
+                    $existingIds[] = $zone->id;
+                }
+            } else {
+                // Create new zone
+                $zone = DeliveryZone::create($zoneAttributes);
+                $existingIds[] = $zone->id;
+            }
+        }
+
+        // Delete zones that were removed
+        $loueur->deliveryZones()
+            ->whereNotIn('id', $existingIds)
+            ->delete();
     }
 
     protected function validateReservationsStep(array $data): ?string
@@ -579,6 +644,10 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                     'city' => $data['city'] ?? null,
                     'wilaya' => $data['wilaya'] ?? null,
                 ]);
+                break;
+
+            case 2:
+                $this->saveDeliveryZones($loueur, $data['delivery_zones'] ?? []);
                 break;
 
             case 3:
@@ -649,7 +718,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 break;
 
             case 2:
-                // Zones are managed separately via resource
+                $this->saveDeliveryZones($loueur, $data['delivery_zones'] ?? []);
                 break;
 
             case 3:
