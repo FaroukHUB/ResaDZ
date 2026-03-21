@@ -50,7 +50,7 @@
                 <div class="text-center mb-10">
                     <div class="inline-flex items-center gap-2 bg-green-50 border border-green-200 rounded-full px-5 py-2">
                         <svg class="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                        <span class="text-green-800 font-bold text-sm">Inscription gratuite &mdash; Frais de service transparents</span>
+                        <span class="text-green-800 font-bold text-sm">Inscription gratuite &mdash; Aucun frais pour les locataires</span>
                     </div>
                 </div>
 
@@ -97,8 +97,8 @@
                                 <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
                             </div>
                             <div>
-                                <p class="font-semibold text-gray-900 text-sm">Frais de service transparents</p>
-                                <p class="text-gray-500 text-xs mt-0.5">De petits frais de service par jour sont affichés clairement avant la réservation</p>
+                                <p class="font-semibold text-gray-900 text-sm">Aucun frais de service</p>
+                                <p class="text-gray-500 text-xs mt-0.5">Vous payez uniquement le prix affiché par le loueur, sans frais supplémentaires</p>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
@@ -301,7 +301,7 @@
                         <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="active === 1 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="active === 1" x-collapse class="px-5 pb-4">
-                        <p class="text-sm text-gray-600">L'inscription, la recherche et la comparaison sont gratuites. De petits frais de service par jour de location s'ajoutent au tarif du loueur. Ces frais sont affichés clairement avant chaque réservation, sans surprise.</p>
+                        <p class="text-sm text-gray-600">C'est entièrement gratuit ! L'inscription, la recherche, la comparaison et la réservation sont gratuites. Vous payez uniquement le prix affiché par le loueur, sans aucun frais de service supplémentaire.</p>
                     </div>
                 </div>
 
@@ -311,7 +311,7 @@
                         <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="active === 2 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="active === 2" x-collapse class="px-5 pb-4">
-                        <p class="text-sm text-gray-600">ResaDZ prélève un petit montant fixe par jour de location sur les réservations confirmées, payé par le loueur. De même, de légers frais de service par jour sont appliqués côté locataire. L'inscription, la publication d'annonces et l'utilisation du tableau de bord sont gratuites.</p>
+                        <p class="text-sm text-gray-600">ResaDZ prélève une commission uniquement auprès des loueurs, en pourcentage du montant de la location. Le taux est dégressif : 8% pour 1-3 jours, 6% pour 4-7 jours, et 5% pour 8 jours et plus. Les locataires ne paient aucune commission. L'inscription, la publication d'annonces et l'utilisation du tableau de bord sont gratuites.</p>
                     </div>
                 </div>
 
@@ -321,7 +321,7 @@
                         <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="active === 3 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="active === 3" x-collapse class="px-5 pb-4">
-                        <p class="text-sm text-gray-600">Non. Pas d'abonnement, pas de frais d'inscription, pas de frais de publication. Le seul coût est un montant fixe par jour de location sur les réservations confirmées. Tout est indiqué clairement dans votre espace partenaire.</p>
+                        <p class="text-sm text-gray-600">Non. Pas d'abonnement, pas de frais d'inscription, pas de frais de publication. Le seul coût est une commission en pourcentage sur les réservations confirmées (8%, 6% ou 5% selon la durée). Cette commission est visible avant confirmation dans votre espace partenaire.</p>
                     </div>
                 </div>
 
@@ -341,7 +341,7 @@
                         <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="active === 5 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="active === 5" x-collapse class="px-5 pb-4">
-                        <p class="text-sm text-gray-600">Les prix affichés au locataire incluent déjà les frais de service. Le montant du loueur et les frais ResaDZ sont détaillés séparément avant la confirmation, pour une transparence totale.</p>
+                        <p class="text-sm text-gray-600">Le locataire voit exactement le prix affiché par le loueur, sans frais supplémentaires. La commission ResaDZ est prélevée uniquement au loueur et n'affecte pas le prix payé par le locataire.</p>
                     </div>
                 </div>
             </div>

@@ -253,12 +253,6 @@
                             </div>
                         @endif
 
-                        @if($booking->client_service_fee > 0)
-                            <div class="flex justify-between">
-                                <span class="text-gray-600">Frais de service</span>
-                                <span>+{{ number_format($booking->client_service_fee, 0, ',', ' ') }} DA</span>
-                            </div>
-                        @endif
                     </div>
 
                     <div class="border-t border-gray-200 pt-4 mt-4">

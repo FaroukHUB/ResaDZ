@@ -54,12 +54,6 @@
                         <td style="padding: 8px 0; color: #78350f; font-weight: 600;">Durée</td>
                         <td style="padding: 8px 0; color: #374151; text-align: right;">{{ $booking->total_days }} jour(s)</td>
                     </tr>
-                    @if($booking->client_service_fee > 0)
-                    <tr>
-                        <td style="padding: 8px 0; color: #6b7280; font-size: 13px;">dont frais de service</td>
-                        <td style="padding: 8px 0; color: #6b7280; text-align: right; font-size: 13px;">{{ number_format($booking->client_service_fee, 0, ',', ' ') }} DA</td>
-                    </tr>
-                    @endif
                     <tr style="border-top: 2px solid #fbbf24;">
                         <td style="padding: 12px 0 0 0; color: #78350f; font-weight: 700; font-size: 18px;">Total</td>
                         <td style="padding: 12px 0 0 0; color: #d97706; text-align: right; font-weight: 700; font-size: 18px;">{{ $booking->getFormattedTotal() }}</td>

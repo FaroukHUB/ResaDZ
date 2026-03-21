@@ -10,25 +10,40 @@ use Carbon\Carbon;
 class PricingService
 {
     /**
-     * Get loueur commission per day from settings (charged to loueur)
+     * Get commission rate based on rental duration (degressive rates).
+     * New model (2026):
+     * - 1-3 days: 8%
+     * - 4-7 days: 6%
+     * - 8+ days: 5%
+     *
+     * Commission is only charged to loueur, client pays no service fee.
      */
-    private function getLoueurCommissionPerDay(string $currency = 'DZD'): float
+    private function getCommissionRate(int $totalDays): float
     {
-        if ($currency === 'EUR') {
-            return (float) Setting::get('loueur_commission_per_day_eur', 1);
+        // Get rates from settings with defaults
+        $rate1to3 = (float) Setting::get('commission_rate_1_to_3_days', 8);
+        $rate4to7 = (float) Setting::get('commission_rate_4_to_7_days', 6);
+        $rate8plus = (float) Setting::get('commission_rate_8_plus_days', 5);
+
+        if ($totalDays >= 8) {
+            return $rate8plus;
+        } elseif ($totalDays >= 4) {
+            return $rate4to7;
         }
-        return (float) Setting::get('loueur_commission_per_day_dzd', 150);
+        return $rate1to3;
     }
 
     /**
-     * Get client service fee per day from settings (charged to client)
+     * Get commission tier label for display
      */
-    private function getClientServiceFeePerDay(string $currency = 'DZD'): float
+    public function getCommissionTierLabel(int $totalDays): string
     {
-        if ($currency === 'EUR') {
-            return (float) Setting::get('client_service_fee_per_day_eur', 0.75);
+        if ($totalDays >= 8) {
+            return '8+ jours';
+        } elseif ($totalDays >= 4) {
+            return '4-7 jours';
         }
-        return (float) Setting::get('client_service_fee_per_day_dzd', 100);
+        return '1-3 jours';
     }
 
     /**
@@ -99,28 +114,25 @@ class PricingService
             }
         }
 
-        // 3. Frais ResaDZ (en DZD ou EUR selon la devise)
-        // Commission loueur = ce que ResaDZ prélève au loueur
-        $loueurCommissionPerDay = $this->getLoueurCommissionPerDay($currency);
-        $loueurCommissionTotal = $loueurCommissionPerDay * $totalDays;
+        // 3. Prix de base (nouveau modèle 2026 - pas de frais de service client)
+        // Le locataire ne paye AUCUNE commission, il paie le prix affiché par le loueur
+        $basePrice = $loueurDailyRate * $totalDays;
+        $clientDailyRate = $loueurDailyRate; // Client paie le même prix que le loueur affiche
+        $loueurBasePrice = $basePrice;
 
-        // Frais de service client = ce que le client paie en plus
-        $clientServiceFeePerDay = $this->getClientServiceFeePerDay($currency);
-        $clientServiceFeeTotal = $clientServiceFeePerDay * $totalDays;
-
-        // Prix de base pour le client = prix loueur + frais de service
-        $clientDailyRate = $loueurDailyRate + $clientServiceFeePerDay;
-        $basePrice = $clientDailyRate * $totalDays;
-
-        // Ce que le loueur reçoit réellement = prix affiché - commission ResaDZ
-        $loueurNetDailyRate = $loueurDailyRate - $loueurCommissionPerDay;
-        $loueurBasePrice = $loueurDailyRate * $totalDays;
-        $loueurNetBasePrice = $loueurNetDailyRate * $totalDays;
+        // Client service fee = 0 (nouveau modèle 2026)
+        $clientServiceFeePerDay = 0;
+        $clientServiceFeeTotal = 0;
 
         // NOTE: Les remises par durée sont remplacées par le prix dégressif
         // On garde la structure pour la compatibilité mais on la désactive
         $durationDiscount = 0;
         $durationDiscountPercent = 0;
+
+        // Récupérer le taux de commission dégressif selon la durée
+        // Taux: 1-3j → 8%, 4-7j → 6%, 8+ → 5%
+        $commissionRate = $this->getCommissionRate($totalDays);
+        $commissionTier = $this->getCommissionTierLabel($totalDays);
 
         // Config du véhicule pour surcharges
         $pricing = $vehicle->pricing ?? [];
@@ -193,17 +205,26 @@ class PricingService
         $subtotal = $basePrice - $durationDiscount + $seasonSurcharge + $weekendSurcharge;
         $total = $subtotal + $deliveryFee + $returnFee + $optionsTotal;
 
+        // 9. Commission ResaDZ (nouveau modèle 2026)
+        // Commission calculée sur le SUBTOTAL (montant HT de la location, sans livraison/options)
+        // Les frais de livraison et options ne sont pas commissionnés
+        $loueurCommissionTotal = round($subtotal * $commissionRate / 100, 2);
+        $loueurCommissionPerDay = round($loueurCommissionTotal / $totalDays, 2);
+
         // Calcul pour le loueur (ce qu'il reçoit après commission ResaDZ)
-        $loueurSubtotal = $loueurNetBasePrice - $durationDiscount + $seasonSurcharge + $weekendSurcharge;
+        $loueurNetBasePrice = $subtotal - $loueurCommissionTotal;
+        $loueurNetDailyRate = round($loueurNetBasePrice / $totalDays, 2);
+        $loueurSubtotal = $loueurNetBasePrice;
+        // Le loueur garde 100% des frais de livraison, retour et options (pas commissionnés)
         $loueurTotal = $loueurSubtotal + $deliveryFee + $returnFee + $optionsTotal;
 
-        // 9. Acompte (configuré par le loueur dans ses settings)
+        // 10. Acompte (configuré par le loueur dans ses settings)
         // Calculé en pourcentage du total, dans la devise de la réservation (DZD ou EUR)
         $loueur = $vehicle->loueur;
         $advancePercentage = $loueur ? $loueur->getSetting('advance_percentage', 0) : 0;
         $advanceAmount = round($total * $advancePercentage / 100);
 
-        // 10. Caution (configurée par véhicule - montants DA et EUR définis par le loueur)
+        // 11. Caution (configurée par véhicule - montants DA et EUR définis par le loueur)
         $depositAmountDa = $vehicle->deposit_amount ?? 0;
         $depositAmountEur = $vehicle->deposit_amount_eur ?? 0;
 
@@ -258,13 +279,15 @@ class PricingService
             'loueur_subtotal' => $loueurSubtotal,
             'loueur_total' => $loueurTotal,
 
-            // Commission ResaDZ (prélevée au loueur)
+            // Commission ResaDZ (prélevée au loueur uniquement - nouveau modèle 2026)
             'loueur_commission_per_day' => $loueurCommissionPerDay,
             'loueur_commission_total' => $loueurCommissionTotal,
+            'commission_rate' => $commissionRate,
+            'commission_tier' => $commissionTier,
 
-            // Frais de service (facturés au client)
-            'client_service_fee_per_day' => $clientServiceFeePerDay,
-            'client_service_fee_total' => $clientServiceFeeTotal,
+            // Frais de service client = 0 (nouveau modèle 2026 - locataire ne paie rien)
+            'client_service_fee_per_day' => 0,
+            'client_service_fee_total' => 0,
 
             'duration_discount' => $durationDiscount,
             'duration_discount_percent' => $durationDiscountPercent,

@@ -439,7 +439,9 @@ class BookingController extends Controller
             'total_price' => $totalPrice,
             'total_price_eur' => $pricing['total_eur'] ?? 0,
             'commission_amount' => $pricing['loueur_commission_total'] ?? 0,
-            'client_service_fee' => $pricing['client_service_fee_total'] ?? 0,
+            'commission_rate' => $pricing['commission_rate'] ?? 0,
+            'commission_tier' => $pricing['commission_tier'] ?? null,
+            'client_service_fee' => 0, // Nouveau modèle 2026: locataire ne paie aucune commission
             'advance_amount' => $pricing['advance_amount'],
             'advance_amount_eur' => $pricing['advance_amount_eur'] ?? 0,
             'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : null,

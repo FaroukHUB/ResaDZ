@@ -254,51 +254,63 @@ class Vehicle extends Model
         // Prix du loueur (ce qu'il affiche)
         $loueurGrossTotal = $pricePerDay * $days;
 
-        // Commission ResaDZ prélevée au loueur (en DZD ou EUR)
-        $loueurCommissionPerDay = $currency === 'EUR'
-            ? (float) Setting::get('loueur_commission_per_day_eur', 1)
-            : (float) Setting::get('loueur_commission_per_day_dzd', 150);
-        $loueurCommissionTotal = $loueurCommissionPerDay * $days;
+        // Commission ResaDZ (nouveau modèle 2026) - taux dégressif selon durée
+        // 1-3 jours: 8%, 4-7 jours: 6%, 8+ jours: 5%
+        $commissionRate = $this->getCommissionRate($days);
+        $loueurCommissionTotal = round($loueurGrossTotal * $commissionRate / 100, 2);
+        $loueurCommissionPerDay = round($loueurCommissionTotal / $days, 2);
 
         // Ce que le loueur reçoit réellement
         $loueurNetTotal = $loueurGrossTotal - $loueurCommissionTotal;
 
-        // Frais de service facturés au client (en DZD ou EUR)
-        $clientServiceFeePerDay = $currency === 'EUR'
-            ? (float) Setting::get('client_service_fee_per_day_eur', 0.75)
-            : (float) Setting::get('client_service_fee_per_day_dzd', 100);
-        $clientServiceFeeTotal = $clientServiceFeePerDay * $days;
+        // Pas de frais de service client (nouveau modèle 2026)
+        $clientServiceFeePerDay = 0;
+        $clientServiceFeeTotal = 0;
 
-        // Prix affiché au client (prix loueur + frais de service)
-        $clientTotal = $loueurGrossTotal + $clientServiceFeeTotal;
+        // Prix affiché au client = prix loueur (pas de frais supplémentaires)
+        $clientTotal = $loueurGrossTotal;
 
         return [
             'price_per_day_loueur' => $pricePerDay,
-            'price_per_day_client' => $pricePerDay + $clientServiceFeePerDay,
+            'price_per_day_client' => $pricePerDay, // Même prix pour le client
             'loueur_gross_total' => $loueurGrossTotal,
             'loueur_commission_per_day' => $loueurCommissionPerDay,
             'loueur_commission_total' => $loueurCommissionTotal,
+            'loueur_commission_rate' => $commissionRate,
             'loueur_net_total' => $loueurNetTotal,
-            'client_service_fee_per_day' => $clientServiceFeePerDay,
-            'client_service_fee_total' => $clientServiceFeeTotal,
+            'client_service_fee_per_day' => 0,
+            'client_service_fee_total' => 0,
             'client_total' => $clientTotal,
             'days' => $days,
             'currency' => $currency,
         ];
     }
 
-    // Prix affiché au client (avec frais de service)
+    /**
+     * Get commission rate based on rental duration (degressive rates).
+     * New model (2026): 1-3 days = 8%, 4-7 days = 6%, 8+ days = 5%
+     */
+    public function getCommissionRate(int $days): float
+    {
+        $rate1to3 = (float) Setting::get('commission_rate_1_to_3_days', 8);
+        $rate4to7 = (float) Setting::get('commission_rate_4_to_7_days', 6);
+        $rate8plus = (float) Setting::get('commission_rate_8_plus_days', 5);
+
+        if ($days >= 8) {
+            return $rate8plus;
+        } elseif ($days >= 4) {
+            return $rate4to7;
+        }
+        return $rate1to3;
+    }
+
+    // Prix affiché au client (pas de frais de service - nouveau modèle 2026)
     public function getClientPricePerDay(string $currency = 'DZD'): float
     {
-        $basePrice = $currency === 'EUR'
+        // Le client paie exactement le prix affiché par le loueur, sans frais supplémentaires
+        return $currency === 'EUR'
             ? ($this->price_per_day_eur ?? 0)
             : $this->price_per_day;
-
-        $serviceFee = $currency === 'EUR'
-            ? (float) Setting::get('client_service_fee_per_day_eur', 0.75)
-            : (float) Setting::get('client_service_fee_per_day_dzd', 100);
-
-        return $basePrice + $serviceFee;
     }
 
     // Helpers

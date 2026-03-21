@@ -72,10 +72,11 @@
             <x-heroicon-o-information-circle class="w-5 h-5 text-primary-600 dark:text-primary-400 mt-0.5" />
             <div>
                 <p class="text-sm text-primary-800 dark:text-primary-200">
-                    <strong>Commission :</strong> frais fixes par jour de location (configurable dans Paramètres plateforme)
+                    <strong>Commission :</strong> taux dégressif selon la durée de location (configurable dans Paramètres plateforme)
                 </p>
                 <p class="text-xs text-primary-600 dark:text-primary-400 mt-1">
-                    Les loueurs en période d'essai ne paient pas de commission. La commission est calculée automatiquement sur chaque réservation confirmée.
+                    <span class="font-semibold">1-3 jours : 8%</span> &bull; <span class="font-semibold">4-7 jours : 6%</span> &bull; <span class="font-semibold">8+ jours : 5%</span><br>
+                    Commission prélevée uniquement au loueur, sur le montant HT de la location (hors livraison/options). Le locataire ne paie aucune commission.
                 </p>
             </div>
         </div>

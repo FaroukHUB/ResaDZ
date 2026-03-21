@@ -515,18 +515,12 @@
                 let html = '';
                 const symbol = data.currency === 'EUR' ? '€' : 'DA';
 
-                // Prix de base (sans frais de service) avec indication prix réduit
-                const basePriceWithoutFees = data.base_price - (data.client_service_fee_total || 0);
+                // Prix de base (nouveau modèle 2026 - pas de frais de service client)
                 let priceLabel = `${data.total_days} jour(s) x ${fmt(data.loueur_daily_rate)} ${symbol}`;
                 if (data.degressive_applied && data.degressive_from_days) {
                     priceLabel = `<span class="text-green-600 font-medium">Prix réduit ${data.degressive_from_days}j+</span> · ${data.total_days} jour(s) x ${fmt(data.loueur_daily_rate)} ${symbol}`;
                 }
-                html += `<div class="flex justify-between"><span class="text-gray-600">${priceLabel}</span><span class="font-medium">${fmt(basePriceWithoutFees)} ${symbol}</span></div>`;
-
-                // Frais de service ResaDZ
-                if (data.client_service_fee_total > 0) {
-                    html += `<div class="flex justify-between text-gray-600"><span>Frais de service <span class="text-xs text-gray-400">(${data.total_days}j x ${fmt(data.client_service_fee_per_day)} ${symbol})</span></span><span class="font-medium">${fmt(data.client_service_fee_total)} ${symbol}</span></div>`;
-                }
+                html += `<div class="flex justify-between"><span class="text-gray-600">${priceLabel}</span><span class="font-medium">${fmt(data.base_price)} ${symbol}</span></div>`;
 
                 if (data.duration_discount > 0) {
                     html += `<div class="flex justify-between text-green-600"><span>Remise durée</span><span>-${fmt(data.duration_discount)} ${symbol}</span></div>`;
@@ -553,13 +547,6 @@
                     html += `<div class="flex justify-between text-sm text-gray-500"><span></span><span>ou ${data.formatted_total_eur}</span></div>`;
                 }
 
-                // Info frais de service
-                if (data.client_service_fee_total > 0) {
-                    html += `<div class="text-xs text-gray-400 mt-2 p-2 bg-gray-50 rounded-lg">
-                        <span class="font-medium text-gray-500">Pourquoi des frais de service ?</span><br>
-                        Ces frais couvrent : vérification des loueurs, support client 7j/7, paiement sécurisé et protection de vos données.
-                    </div>`;
-                }
 
                 // Caution - afficher les deux montants si disponibles
                 if (data.deposit_amount_da > 0 || data.deposit_amount_eur > 0) {

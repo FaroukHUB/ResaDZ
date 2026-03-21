@@ -115,8 +115,9 @@ class GenerateMonthlyCommissionInvoices extends Command
         ]);
 
         // Add summary line item
+        $avgRate = $totalBookings > 0 ? round(($totalCommission / $totalBookings) * 100, 1) : 0;
         $invoice->addItem(
-            description: "Commission sur {$bookings->count()} location(s) - {$startDate->format('F Y')}\nTotal des locations: " . number_format($totalBookings, 2) . " DZD",
+            description: "Commission sur {$bookings->count()} location(s) - {$startDate->format('F Y')}\nTotal des locations: " . number_format($totalBookings, 2) . " DZD (taux moyen: {$avgRate}%)",
             unitPrice: $totalCommission,
             quantity: 1,
             type: 'commission'
@@ -124,8 +125,10 @@ class GenerateMonthlyCommissionInvoices extends Command
 
         // Add individual booking details as separate items (optional, for transparency)
         foreach ($bookings as $booking) {
+            $rateInfo = $booking->commission_rate ? " ({$booking->commission_rate}%)" : '';
+            $tierInfo = $booking->commission_tier ? " [{$booking->commission_tier}]" : '';
             $invoice->addItem(
-                description: "Location #{$booking->reference} - {$booking->vehicle->full_name ?? 'Véhicule'}\n{$booking->start_date->format('d/m/Y')} - {$booking->end_date->format('d/m/Y')}\nMontant: " . number_format($booking->total_price, 2) . " DZD - Commission: " . number_format($booking->commission_amount, 2) . " DZD",
+                description: "Location #{$booking->reference} - {$booking->vehicle->full_name ?? 'Véhicule'}\n{$booking->start_date->format('d/m/Y')} - {$booking->end_date->format('d/m/Y')}{$tierInfo}\nMontant: " . number_format($booking->total_price, 2) . " DZD - Commission{$rateInfo}: " . number_format($booking->commission_amount, 2) . " DZD",
                 unitPrice: $booking->commission_amount,
                 quantity: 1,
                 type: 'commission_detail',

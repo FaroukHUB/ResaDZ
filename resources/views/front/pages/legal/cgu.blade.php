@@ -42,7 +42,7 @@
             <section class="mb-10">
                 <h2 class="text-2xl font-bold text-gray-900 mb-4">3. Accès à la Plateforme</h2>
                 <div class="prose prose-gray max-w-none">
-                    <p>L'accès à la Plateforme est gratuit pour les Utilisateurs et Locataires. Les Loueurs peuvent être soumis à des frais de service ou de commission selon les conditions définies dans leur contrat avec {{ $companyName }}.</p>
+                    <p>L'accès à la Plateforme est entièrement gratuit pour les Utilisateurs et Locataires, sans aucun frais de service. Les Loueurs sont soumis à une commission en pourcentage sur les réservations confirmées (taux dégressif selon la durée de location).</p>
                     <p class="mt-4">{{ $companyName }} se réserve le droit de suspendre ou de fermer l'accès à la Plateforme à tout moment pour maintenance ou mise à jour, sans préavis ni indemnité.</p>
                 </div>
             </section>
@@ -84,8 +84,8 @@
                         <li>Le prix de base de la location (par jour, semaine ou mois)</li>
                         <li>Les frais de livraison et de retour</li>
                         <li>Les options supplémentaires (GPS, siège bébé, etc.)</li>
-                        <li>Les frais de service de la Plateforme</li>
                     </ul>
+                    <p class="mt-4">Les Locataires ne paient aucun frais de service supplémentaire. La commission {{ $companyName }} est prélevée uniquement auprès des Loueurs.</p>
                     <p class="mt-4">Le montant de la caution est défini par chaque Loueur et communiqué avant la réservation.</p>
                 </div>
             </section>

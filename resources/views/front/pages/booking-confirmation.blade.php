@@ -60,12 +60,6 @@
                         @endif
                     </div>
                 </div>
-                @if($booking->client_service_fee > 0)
-                    <div class="flex justify-between items-center mt-1 text-xs">
-                        <span class="text-amber-700">dont frais de service</span>
-                        <span class="text-amber-700">{{ number_format($booking->client_service_fee, 0, ',', ' ') }} DA</span>
-                    </div>
-                @endif
                 @if($booking->advance_amount > 0)
                     <div class="flex justify-between items-center mt-2 text-sm">
                         <span class="text-amber-700">Acompte à verser</span>

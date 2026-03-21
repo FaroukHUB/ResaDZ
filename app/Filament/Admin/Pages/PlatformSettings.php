@@ -35,11 +35,10 @@ class PlatformSettings extends Page
             'company_phone' => Setting::get('company_phone', ''),
             'company_address' => Setting::get('company_address', ''),
 
-            // Commission & Pricing
-            'loueur_commission_per_day_dzd' => Setting::get('loueur_commission_per_day_dzd', 150),
-            'loueur_commission_per_day_eur' => Setting::get('loueur_commission_per_day_eur', 1),
-            'client_service_fee_per_day_dzd' => Setting::get('client_service_fee_per_day_dzd', 100),
-            'client_service_fee_per_day_eur' => Setting::get('client_service_fee_per_day_eur', 0.75),
+            // Commission & Pricing (nouveau modèle 2026 - taux dégressifs)
+            'commission_rate_1_to_3_days' => Setting::get('commission_rate_1_to_3_days', 8),
+            'commission_rate_4_to_7_days' => Setting::get('commission_rate_4_to_7_days', 6),
+            'commission_rate_8_plus_days' => Setting::get('commission_rate_8_plus_days', 5),
             'dzd_to_usd_rate' => Setting::get('dzd_to_usd_rate', 0.0074),
             'dzd_to_eur_rate' => Setting::get('dzd_to_eur_rate', 0.0068),
             'min_paypal_amount_usd' => Setting::get('min_paypal_amount_usd', 1),
@@ -174,47 +173,42 @@ class PlatformSettings extends Page
                         Forms\Components\Tabs\Tab::make('Commission & Tarifs')
                             ->icon('heroicon-o-currency-dollar')
                             ->schema([
-                                Forms\Components\Section::make('Commission ResaDZ (Dinar)')
-                                    ->description('Frais prélevés sur chaque réservation en dinars')
+                                Forms\Components\Section::make('Commission ResaDZ (Taux dégressifs)')
+                                    ->description('Commission prélevée UNIQUEMENT au loueur, en pourcentage du montant HT. Le locataire ne paie aucune commission.')
                                     ->schema([
-                                        Forms\Components\TextInput::make('loueur_commission_per_day_dzd')
-                                            ->label('Commission loueur (DA/jour)')
+                                        Forms\Components\Placeholder::make('commission_info')
+                                            ->label('')
+                                            ->content('La commission est calculée sur le montant total HT de la location (prix/jour × nombre de jours). Les frais de livraison et options ne sont pas commissionnés.')
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('commission_rate_1_to_3_days')
+                                            ->label('Taux 1-3 jours')
                                             ->numeric()
                                             ->required()
-                                            ->default(150)
-                                            ->suffix('DA/jour')
-                                            ->helperText('Commission prélevée au loueur par jour de location'),
-                                        Forms\Components\TextInput::make('client_service_fee_per_day_dzd')
-                                            ->label('Frais de service client (DA/jour)')
+                                            ->default(8)
+                                            ->suffix('%')
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->helperText('Commission pour les locations de 1 à 3 jours'),
+                                        Forms\Components\TextInput::make('commission_rate_4_to_7_days')
+                                            ->label('Taux 4-7 jours')
                                             ->numeric()
                                             ->required()
-                                            ->default(100)
-                                            ->suffix('DA/jour')
-                                            ->helperText('Frais de service facturés au client par jour de location'),
+                                            ->default(6)
+                                            ->suffix('%')
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->helperText('Commission pour les locations de 4 à 7 jours'),
+                                        Forms\Components\TextInput::make('commission_rate_8_plus_days')
+                                            ->label('Taux 8+ jours')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(5)
+                                            ->suffix('%')
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->helperText('Commission pour les locations de 8 jours ou plus'),
                                     ])
-                                    ->columns(2),
-
-                                Forms\Components\Section::make('Commission ResaDZ (Euro)')
-                                    ->description('Frais prélevés sur chaque réservation en euros (pour clients payant en EUR)')
-                                    ->schema([
-                                        Forms\Components\TextInput::make('loueur_commission_per_day_eur')
-                                            ->label('Commission loueur (€/jour)')
-                                            ->numeric()
-                                            ->required()
-                                            ->default(1)
-                                            ->step(0.01)
-                                            ->suffix('€/jour')
-                                            ->helperText('Commission prélevée au loueur par jour de location (paiement en euros)'),
-                                        Forms\Components\TextInput::make('client_service_fee_per_day_eur')
-                                            ->label('Frais de service client (€/jour)')
-                                            ->numeric()
-                                            ->required()
-                                            ->default(0.75)
-                                            ->step(0.01)
-                                            ->suffix('€/jour')
-                                            ->helperText('Frais de service facturés au client par jour de location (paiement en euros)'),
-                                    ])
-                                    ->columns(2),
+                                    ->columns(3),
 
                                 Forms\Components\Section::make('Conversion de devises')
                                     ->schema([
@@ -470,11 +464,10 @@ class PlatformSettings extends Page
         Setting::set('company_phone', $data['company_phone'], 'company', 'text');
         Setting::set('company_address', $data['company_address'], 'company', 'text');
 
-        // Commission & Pricing
-        Setting::set('loueur_commission_per_day_dzd', $data['loueur_commission_per_day_dzd'], 'pricing', 'number');
-        Setting::set('loueur_commission_per_day_eur', $data['loueur_commission_per_day_eur'], 'pricing', 'number');
-        Setting::set('client_service_fee_per_day_dzd', $data['client_service_fee_per_day_dzd'], 'pricing', 'number');
-        Setting::set('client_service_fee_per_day_eur', $data['client_service_fee_per_day_eur'], 'pricing', 'number');
+        // Commission & Pricing (nouveau modèle 2026 - taux dégressifs)
+        Setting::set('commission_rate_1_to_3_days', $data['commission_rate_1_to_3_days'], 'pricing', 'number');
+        Setting::set('commission_rate_4_to_7_days', $data['commission_rate_4_to_7_days'], 'pricing', 'number');
+        Setting::set('commission_rate_8_plus_days', $data['commission_rate_8_plus_days'], 'pricing', 'number');
         Setting::set('dzd_to_usd_rate', $data['dzd_to_usd_rate'], 'pricing', 'number');
         Setting::set('dzd_to_eur_rate', $data['dzd_to_eur_rate'], 'pricing', 'number');
         Setting::set('min_paypal_amount_usd', $data['min_paypal_amount_usd'], 'pricing', 'number');
