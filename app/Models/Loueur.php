@@ -196,6 +196,30 @@ class Loueur extends Model
         return $this->hasMany(DeliveryBooking::class);
     }
 
+    /**
+     * Vehicules du chauffeur (pour les taxis)
+     */
+    public function chauffeurVehicles(): HasMany
+    {
+        return $this->hasMany(ChauffeurVehicle::class);
+    }
+
+    /**
+     * Options proposees par le chauffeur (pour les taxis)
+     */
+    public function chauffeurOptions(): HasMany
+    {
+        return $this->hasMany(ChauffeurOption::class);
+    }
+
+    /**
+     * Vehicule principal du chauffeur
+     */
+    public function primaryVehicle()
+    {
+        return $this->hasOne(ChauffeurVehicle::class)->where('is_primary', true);
+    }
+
     public function isTaxi(): bool
     {
         return $this->account_type === 'taxi';

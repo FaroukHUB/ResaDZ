@@ -26,7 +26,7 @@ class EnsureUserIsLoueur
             return $next($request);
         }
 
-        // Vérifie que l'utilisateur a un profil loueur
+        // Verifie que l'utilisateur a un profil loueur
         $loueur = $user->loueur;
 
         if (!$loueur) {
@@ -35,7 +35,13 @@ class EnsureUserIsLoueur
                 ->with('error', 'Vous n\'avez pas de compte loueur. Contactez l\'administrateur.');
         }
 
-        // Vérifie que le loueur est actif
+        // Verifie que c'est bien un loueur (pas un chauffeur/taxi)
+        if ($loueur->isTaxi()) {
+            return redirect()->route('filament.chauffeur.pages.dashboard')
+                ->with('info', 'Vous etes un chauffeur. Redirection vers votre espace.');
+        }
+
+        // Verifie que le loueur est actif
         if (!$loueur->is_active) {
             auth()->logout();
             return redirect()->route('filament.loueur.auth.login')

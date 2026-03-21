@@ -18,6 +18,7 @@ class TransferBooking extends Model
     protected $fillable = [
         'reference',
         'loueur_id',
+        'chauffeur_vehicle_id',
         'departure',
         'destination',
         'transfer_date',
@@ -187,6 +188,11 @@ class TransferBooking extends Model
     public function loueur(): BelongsTo
     {
         return $this->belongsTo(Loueur::class);
+    }
+
+    public function chauffeurVehicle(): BelongsTo
+    {
+        return $this->belongsTo(ChauffeurVehicle::class);
     }
 
     public function transactions(): HasMany
