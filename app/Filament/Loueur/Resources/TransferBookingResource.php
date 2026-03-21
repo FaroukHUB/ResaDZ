@@ -304,6 +304,7 @@ class TransferBookingResource extends Resource
         $loueur = Auth::user()?->loueur;
         if (!$loueur) return false;
 
-        return $loueur->isTaxi() || $loueur->offers_transfer;
+        // Les taxis utilisent /chauffeur, ici on affiche seulement pour les loueurs qui proposent des transferts
+        return !$loueur->isTaxi() && $loueur->offers_transfer;
     }
 }

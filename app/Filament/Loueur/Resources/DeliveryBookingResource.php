@@ -379,6 +379,7 @@ class DeliveryBookingResource extends Resource
         $loueur = Auth::user()?->loueur;
         if (!$loueur) return false;
 
-        return $loueur->isTaxi() && $loueur->offers_delivery;
+        // Les taxis utilisent /chauffeur, ici on affiche seulement pour les loueurs qui proposent des livraisons
+        return !$loueur->isTaxi() && $loueur->offers_delivery;
     }
 }

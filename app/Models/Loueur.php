@@ -220,6 +220,14 @@ class Loueur extends Model
         return $this->hasOne(ChauffeurVehicle::class)->where('is_primary', true);
     }
 
+    /**
+     * Disponibilites pour les courses (transferts/livraisons)
+     */
+    public function courseAvailabilities(): HasMany
+    {
+        return $this->hasMany(CourseAvailability::class);
+    }
+
     public function isTaxi(): bool
     {
         return $this->account_type === 'taxi';
