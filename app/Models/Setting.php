@@ -23,15 +23,20 @@ class Setting extends Model
     // Récupérer une valeur de setting
     public static function get(string $key, $default = null)
     {
-        $setting = Cache::rememberForever("setting.{$key}", function () use ($key) {
-            return self::where('key', $key)->first();
-        });
+        try {
+            $setting = Cache::rememberForever("setting.{$key}", function () use ($key) {
+                return self::where('key', $key)->first();
+            });
 
-        if (!$setting) {
+            if (!$setting) {
+                return $default;
+            }
+
+            return self::castValue($setting->value, $setting->type);
+        } catch (\Exception $e) {
+            // Handle case when database/cache tables don't exist yet (during migrations)
             return $default;
         }
-
-        return self::castValue($setting->value, $setting->type);
     }
 
     // Définir une valeur de setting
