@@ -228,12 +228,21 @@ class CourseAvailability extends Page implements HasForms
 
     public function getViewData(): array
     {
-        $loueur = Auth::user()->loueur;
+        $loueur = Auth::user()?->loueur;
+        $startOfMonth = Carbon::create($this->currentYear, $this->currentMonth, 1)->startOfMonth();
+
         if (!$loueur) {
-            return ['days' => [], 'availabilities' => collect(), 'availabilityMap' => []];
+            return [
+                'days' => [],
+                'availabilityMap' => [],
+                'recurringAvailabilities' => collect(),
+                'currentMonth' => $this->currentMonth,
+                'currentYear' => $this->currentYear,
+                'monthName' => $startOfMonth->translatedFormat('F Y'),
+                'today' => now()->format('Y-m-d'),
+            ];
         }
 
-        $startOfMonth = Carbon::create($this->currentYear, $this->currentMonth, 1)->startOfMonth();
         $endOfMonth = $startOfMonth->copy()->endOfMonth();
 
         // Recuperer toutes les disponibilites
