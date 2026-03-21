@@ -34,11 +34,10 @@ class EnsureUserIsChauffeur
                 ->with('error', 'Vous n\'avez pas de compte chauffeur. Contactez l\'administrateur.');
         }
 
-        // Verifie que c'est bien un chauffeur/taxi
+        // Verifie que c'est bien un chauffeur/taxi - sinon redirige vers /loueur
         if (!$loueur->isTaxi()) {
-            auth()->logout();
-            return redirect()->route('filament.chauffeur.auth.login')
-                ->with('error', 'Ce portail est reserve aux chauffeurs. Utilisez /loueur pour les locations.');
+            return redirect()->route('filament.loueur.pages.dashboard')
+                ->with('info', 'Vous etes un loueur. Redirection vers votre espace.');
         }
 
         // Verifie que le chauffeur est actif

@@ -65,20 +65,16 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
 
-        // Panel loueur - utilisateurs avec rôle loueur et account_type = loueur
+        // Panel loueur - tous les utilisateurs avec rôle loueur peuvent accéder
+        // Le middleware EnsureUserIsLoueur redirigera les taxis vers /chauffeur
         if ($panel->getId() === 'loueur' && $this->isLoueur()) {
-            $loueur = $this->loueur;
-            if ($loueur && $loueur->isLoueur()) {
-                return true;
-            }
+            return true;
         }
 
-        // Panel chauffeur - utilisateurs avec rôle loueur et account_type = taxi
+        // Panel chauffeur - tous les utilisateurs avec rôle loueur peuvent accéder
+        // Le middleware EnsureUserIsChauffeur redirigera les loueurs vers /loueur
         if ($panel->getId() === 'chauffeur' && $this->isLoueur()) {
-            $loueur = $this->loueur;
-            if ($loueur && $loueur->isTaxi()) {
-                return true;
-            }
+            return true;
         }
 
         // Panel admin - utilisateurs avec rôles admin, moderator ou support
