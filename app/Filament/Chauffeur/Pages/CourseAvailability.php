@@ -207,15 +207,15 @@ class CourseAvailability extends Page implements HasForms
         CourseAvailabilityModel::create([
             'loueur_id' => $loueur->id,
             'type' => $data['type'],
-            'for_transfer' => $data['for_transfer'],
-            'for_delivery' => $data['for_delivery'],
+            'for_transfer' => $data['for_transfer'] ?? true,
+            'for_delivery' => $data['for_delivery'] ?? true,
             'date' => $data['date'],
-            'start_time' => $data['start_time'],
-            'end_time' => $data['end_time'],
-            'recurrence' => $data['recurrence'],
-            'recurrence_days' => $data['recurrence_days'],
-            'recurrence_end' => $data['recurrence_end'],
-            'notes' => $data['notes'],
+            'start_time' => $data['start_time'] ?? null,
+            'end_time' => $data['end_time'] ?? null,
+            'recurrence' => $data['recurrence'] ?? 'none',
+            'recurrence_days' => $data['recurrence_days'] ?? null,
+            'recurrence_end' => $data['recurrence_end'] ?? null,
+            'notes' => $data['notes'] ?? null,
         ]);
 
         $this->form->fill();
