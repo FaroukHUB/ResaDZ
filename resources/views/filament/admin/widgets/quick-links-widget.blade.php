@@ -41,7 +41,7 @@
             <div class="space-y-1">
                 <a href="/admin/loueurs" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-building-storefront', 'w-4 h-4 text-amber-600 dark:text-amber-400')
+                        <x-heroicon-o-building-storefront class="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Loueurs</span>
@@ -50,7 +50,7 @@
                 </a>
                 <a href="/admin/bookings" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-calendar-days', 'w-4 h-4 text-amber-600 dark:text-amber-400')
+                        <x-heroicon-o-calendar-days class="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Reservations</span>
@@ -59,7 +59,7 @@
                 </a>
                 <a href="/admin/revenues" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-currency-dollar', 'w-4 h-4 text-amber-600 dark:text-amber-400')
+                        <x-heroicon-o-currency-dollar class="w-4 h-4 text-amber-600 dark:text-amber-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Revenus</span>
@@ -82,7 +82,7 @@
             <div class="space-y-1">
                 <a href="/admin/vehicles" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-truck', 'w-4 h-4 text-blue-600 dark:text-blue-400')
+                        <x-heroicon-o-truck class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Vehicules</span>
@@ -91,7 +91,7 @@
                 </a>
                 <a href="/admin/brands" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-bookmark', 'w-4 h-4 text-blue-600 dark:text-blue-400')
+                        <x-heroicon-o-bookmark class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Marques</span>
@@ -100,7 +100,7 @@
                 </a>
                 <a href="/admin/categories" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-tag', 'w-4 h-4 text-blue-600 dark:text-blue-400')
+                        <x-heroicon-o-tag class="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Categories</span>
@@ -123,7 +123,7 @@
             <div class="space-y-1">
                 <a href="/admin/blog-posts" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-newspaper', 'w-4 h-4 text-emerald-600 dark:text-emerald-400')
+                        <x-heroicon-o-newspaper class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Articles</span>
@@ -132,7 +132,7 @@
                 </a>
                 <a href="/admin/hero-slides" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-photo', 'w-4 h-4 text-emerald-600 dark:text-emerald-400')
+                        <x-heroicon-o-photo class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Slides</span>
@@ -141,7 +141,7 @@
                 </a>
                 <a href="/admin/popups" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-emerald-50 dark:bg-emerald-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-window', 'w-4 h-4 text-emerald-600 dark:text-emerald-400')
+                        <x-heroicon-o-window class="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Popups</span>
@@ -164,7 +164,7 @@
             <div class="space-y-1">
                 <a href="/admin/statistics" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-chart-bar', 'w-4 h-4 text-purple-600 dark:text-purple-400')
+                        <x-heroicon-o-chart-bar class="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Stats</span>
@@ -173,7 +173,7 @@
                 </a>
                 <a href="/admin/leads" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-user-plus', 'w-4 h-4 text-purple-600 dark:text-purple-400')
+                        <x-heroicon-o-user-plus class="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Leads</span>
@@ -182,7 +182,7 @@
                 </a>
                 <a href="/admin/newsletter-subscribers" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-envelope', 'w-4 h-4 text-purple-600 dark:text-purple-400')
+                        <x-heroicon-o-envelope class="w-4 h-4 text-purple-600 dark:text-purple-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Newsletter</span>
@@ -206,7 +206,7 @@
             <div class="space-y-1">
                 <a href="/admin/platform-settings" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-cog-8-tooth', 'w-4 h-4 text-gray-600 dark:text-gray-400')
+                        <x-heroicon-o-cog-8-tooth class="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Parametres</span>
@@ -215,7 +215,7 @@
                 </a>
                 <a href="/admin/lead-capture-settings" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-cursor-arrow-ripple', 'w-4 h-4 text-gray-600 dark:text-gray-400')
+                        <x-heroicon-o-cursor-arrow-ripple class="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Lead Capture</span>
@@ -224,7 +224,7 @@
                 </a>
                 <a href="/admin/boost-packages" class="nav-item-modern">
                     <div class="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-500/20 flex items-center justify-center">
-                        @svg('heroicon-o-rocket-launch', 'w-4 h-4 text-gray-600 dark:text-gray-400')
+                        <x-heroicon-o-rocket-launch class="w-4 h-4 text-gray-600 dark:text-gray-400" />
                     </div>
                     <div class="flex-1 min-w-0">
                         <span class="text-sm font-medium text-gray-700 dark:text-gray-200">Boost</span>
