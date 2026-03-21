@@ -3,7 +3,9 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Models\Booking;
+use App\Models\DeliveryBooking;
 use App\Models\Loueur;
+use App\Models\TransferBooking;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -40,17 +42,51 @@ class Revenues extends Page implements HasForms, HasTable
     {
         $currentMonth = now()->format('Y-m');
 
-        // Stats globales
-        $totalCommissionDue = Booking::whereIn('status', ['confirmed', 'active', 'completed'])
+        // Stats globales - Locations (loueurs)
+        $totalCommissionDueLoueurs = Booking::whereIn('status', ['confirmed', 'active', 'completed'])
             ->where('commission_paid', false)
             ->sum('commission_amount');
 
-        $totalCommissionPaid = Booking::where('commission_paid', true)
+        $totalCommissionPaidLoueurs = Booking::where('commission_paid', true)
             ->whereMonth('commission_paid_at', now()->month)
             ->whereYear('commission_paid_at', now()->year)
             ->sum('commission_amount');
 
+        // Stats globales - Transferts (chauffeurs)
+        $totalCommissionDueTransfers = TransferBooking::whereIn('status', ['confirmed', 'completed'])
+            ->where('commission_paid', false)
+            ->sum('commission_amount');
+
+        $totalCommissionPaidTransfers = TransferBooking::where('commission_paid', true)
+            ->whereMonth('commission_paid_at', now()->month)
+            ->whereYear('commission_paid_at', now()->year)
+            ->sum('commission_amount');
+
+        // Stats globales - Livraisons (chauffeurs)
+        $totalCommissionDueDeliveries = DeliveryBooking::whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
+            ->where('commission_paid', false)
+            ->sum('commission_amount');
+
+        $totalCommissionPaidDeliveries = DeliveryBooking::where('commission_paid', true)
+            ->whereMonth('commission_paid_at', now()->month)
+            ->whereYear('commission_paid_at', now()->year)
+            ->sum('commission_amount');
+
+        // Totaux combinés
+        $totalCommissionDue = $totalCommissionDueLoueurs + $totalCommissionDueTransfers + $totalCommissionDueDeliveries;
+        $totalCommissionPaid = $totalCommissionPaidLoueurs + $totalCommissionPaidTransfers + $totalCommissionPaidDeliveries;
+
         $bookingsThisMonth = Booking::whereIn('status', ['confirmed', 'active', 'completed'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $transfersThisMonth = TransferBooking::whereIn('status', ['confirmed', 'completed'])
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->count();
+
+        $deliveriesThisMonth = DeliveryBooking::whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
             ->whereMonth('created_at', now()->month)
             ->whereYear('created_at', now()->year)
             ->count();
@@ -59,13 +95,22 @@ class Revenues extends Page implements HasForms, HasTable
         $loueursActive = Loueur::active()->count();
         $loueursSuspended = Loueur::suspended()->count();
 
+        // Nombre de taxis/chauffeurs
+        $taxisActive = Loueur::where('account_type', 'taxi')->active()->count();
+
         return [
             'totalCommissionDue' => $totalCommissionDue,
             'totalCommissionPaid' => $totalCommissionPaid,
+            'totalCommissionDueLoueurs' => $totalCommissionDueLoueurs,
+            'totalCommissionDueTransfers' => $totalCommissionDueTransfers,
+            'totalCommissionDueDeliveries' => $totalCommissionDueDeliveries,
             'bookingsThisMonth' => $bookingsThisMonth,
+            'transfersThisMonth' => $transfersThisMonth,
+            'deliveriesThisMonth' => $deliveriesThisMonth,
             'loueursInTrial' => $loueursInTrial,
             'loueursActive' => $loueursActive,
             'loueursSuspended' => $loueursSuspended,
+            'taxisActive' => $taxisActive,
         ];
     }
 
@@ -77,16 +122,39 @@ class Revenues extends Page implements HasForms, HasTable
                 'bookings as unpaid_bookings_count' => fn ($q) => $q
                     ->whereIn('status', ['confirmed', 'active', 'completed'])
                     ->where('commission_paid', false),
+                'transferBookings as unpaid_transfers_count' => fn ($q) => $q
+                    ->whereIn('status', ['confirmed', 'completed'])
+                    ->where('commission_paid', false),
+                'deliveryBookings as unpaid_deliveries_count' => fn ($q) => $q
+                    ->whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
+                    ->where('commission_paid', false),
             ])->withSum([
-                'bookings as unpaid_commission' => fn ($q) => $q
+                'bookings as unpaid_commission_locations' => fn ($q) => $q
                     ->whereIn('status', ['confirmed', 'active', 'completed'])
+                    ->where('commission_paid', false),
+            ], 'commission_amount')
+            ->withSum([
+                'transferBookings as unpaid_commission_transfers' => fn ($q) => $q
+                    ->whereIn('status', ['confirmed', 'completed'])
+                    ->where('commission_paid', false),
+            ], 'commission_amount')
+            ->withSum([
+                'deliveryBookings as unpaid_commission_deliveries' => fn ($q) => $q
+                    ->whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
                     ->where('commission_paid', false),
             ], 'commission_amount'))
             ->columns([
                 TextColumn::make('company_name')
-                    ->label('Loueur')
+                    ->label('Loueur/Chauffeur')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->description(fn ($record) => $record->isTaxi() ? 'Chauffeur/Taxi' : 'Loueur'),
+
+                TextColumn::make('account_type')
+                    ->label('Type')
+                    ->badge()
+                    ->color(fn ($state) => $state === 'taxi' ? 'warning' : 'info')
+                    ->formatStateUsing(fn ($state) => $state === 'taxi' ? 'Taxi' : 'Loueur'),
 
                 TextColumn::make('wilaya')
                     ->label('Wilaya')
@@ -98,13 +166,35 @@ class Revenues extends Page implements HasForms, HasTable
                     ->color(fn ($record) => $record->isInTrial() ? 'success' : ($record->isTrialExpired() ? 'warning' : 'gray'))
                     ->description(fn ($record) => $record->isInTrial() ? 'En cours' : ($record->trial_ends_at ? 'Expiré' : 'Non défini')),
 
-                TextColumn::make('unpaid_bookings_count')
-                    ->label('Résas impayées')
-                    ->badge()
-                    ->color(fn ($state) => $state > 0 ? 'danger' : 'success'),
+                // Commission locations (loueurs) - taux dégressif
+                TextColumn::make('unpaid_commission_locations')
+                    ->label('Comm. Locations')
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
+                    ->color(fn ($state) => ($state ?? 0) > 0 ? 'danger' : 'success')
+                    ->description(fn ($record) => $record->unpaid_bookings_count . ' résas'),
 
-                TextColumn::make('unpaid_commission')
-                    ->label('Commission due')
+                // Commission transferts (chauffeurs) - 10% fixe
+                TextColumn::make('unpaid_commission_transfers')
+                    ->label('Comm. Transferts')
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
+                    ->color(fn ($state) => ($state ?? 0) > 0 ? 'warning' : 'success')
+                    ->description(fn ($record) => ($record->unpaid_transfers_count ?? 0) . ' courses (10%)'),
+
+                // Commission livraisons (chauffeurs) - 10% fixe
+                TextColumn::make('unpaid_commission_deliveries')
+                    ->label('Comm. Livraisons')
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
+                    ->color(fn ($state) => ($state ?? 0) > 0 ? 'warning' : 'success')
+                    ->description(fn ($record) => ($record->unpaid_deliveries_count ?? 0) . ' livraisons (10%)'),
+
+                // Total commission due
+                TextColumn::make('total_unpaid')
+                    ->label('TOTAL DÛ')
+                    ->getStateUsing(fn ($record) =>
+                        ($record->unpaid_commission_locations ?? 0) +
+                        ($record->unpaid_commission_transfers ?? 0) +
+                        ($record->unpaid_commission_deliveries ?? 0)
+                    )
                     ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
                     ->color(fn ($state) => ($state ?? 0) > 0 ? 'danger' : 'success')
                     ->weight('bold'),
@@ -116,13 +206,15 @@ class Revenues extends Page implements HasForms, HasTable
                     ->falseIcon('heroicon-o-check-circle')
                     ->trueColor('danger')
                     ->falseColor('success'),
-
-                TextColumn::make('total_bookings')
-                    ->label('Total résas')
-                    ->badge()
-                    ->color('gray'),
             ])
             ->filters([
+                SelectFilter::make('account_type')
+                    ->label('Type de compte')
+                    ->options([
+                        'loueur' => 'Loueurs',
+                        'taxi' => 'Taxis/Chauffeurs',
+                    ]),
+
                 SelectFilter::make('status')
                     ->label('Statut')
                     ->options([
@@ -143,10 +235,20 @@ class Revenues extends Page implements HasForms, HasTable
 
                 Filter::make('has_unpaid')
                     ->label('Commission impayée')
-                    ->query(fn (Builder $query) => $query->whereHas('bookings', fn ($q) => $q
-                        ->whereIn('status', ['confirmed', 'active', 'completed'])
-                        ->where('commission_paid', false)
-                    )),
+                    ->query(fn (Builder $query) => $query->where(function ($q) {
+                        $q->whereHas('bookings', fn ($bq) => $bq
+                            ->whereIn('status', ['confirmed', 'active', 'completed'])
+                            ->where('commission_paid', false)
+                        )
+                        ->orWhereHas('transferBookings', fn ($tq) => $tq
+                            ->whereIn('status', ['confirmed', 'completed'])
+                            ->where('commission_paid', false)
+                        )
+                        ->orWhereHas('deliveryBookings', fn ($dq) => $dq
+                            ->whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
+                            ->where('commission_paid', false)
+                        );
+                    })),
             ])
             ->actions([
                 ActionGroup::make([
@@ -171,8 +273,9 @@ class Revenues extends Page implements HasForms, HasTable
                         ->color('success')
                         ->requiresConfirmation()
                         ->modalHeading('Marquer les commissions comme payées')
-                        ->modalDescription(fn ($record) => "Marquer toutes les commissions impayées de {$record->company_name} comme payées ?")
+                        ->modalDescription(fn ($record) => "Marquer TOUTES les commissions impayées (locations, transferts, livraisons) de {$record->company_name} comme payées ?")
                         ->action(function ($record) {
+                            // Marquer les bookings (locations)
                             $record->bookings()
                                 ->whereIn('status', ['confirmed', 'active', 'completed'])
                                 ->where('commission_paid', false)
@@ -181,10 +284,32 @@ class Revenues extends Page implements HasForms, HasTable
                                     'commission_paid_at' => now(),
                                 ]);
 
+                            // Marquer les transferts
+                            $record->transferBookings()
+                                ->whereIn('status', ['confirmed', 'completed'])
+                                ->where('commission_paid', false)
+                                ->update([
+                                    'commission_paid' => true,
+                                    'commission_paid_at' => now(),
+                                ]);
+
+                            // Marquer les livraisons
+                            $record->deliveryBookings()
+                                ->whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
+                                ->where('commission_paid', false)
+                                ->update([
+                                    'commission_paid' => true,
+                                    'commission_paid_at' => now(),
+                                ]);
+
                             $record->update(['commission_paid_until' => now()]);
-                            Notification::make()->success()->title('Commissions marquées payées')->send();
+                            Notification::make()->success()->title('Toutes les commissions marquées payées')->send();
                         })
-                        ->visible(fn ($record) => $record->unpaid_commission > 0),
+                        ->visible(fn ($record) =>
+                            ($record->unpaid_commission_locations ?? 0) > 0 ||
+                            ($record->unpaid_commission_transfers ?? 0) > 0 ||
+                            ($record->unpaid_commission_deliveries ?? 0) > 0
+                        ),
 
                     Action::make('view_bookings')
                         ->label('Voir réservations')
@@ -218,7 +343,7 @@ class Revenues extends Page implements HasForms, HasTable
                         }),
                 ]),
             ])
-            ->defaultSort('unpaid_commission', 'desc')
+            ->defaultSort('total_unpaid', 'desc')
             ->striped();
     }
 }

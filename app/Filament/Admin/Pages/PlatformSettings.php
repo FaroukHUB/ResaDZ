@@ -35,10 +35,15 @@ class PlatformSettings extends Page
             'company_phone' => Setting::get('company_phone', ''),
             'company_address' => Setting::get('company_address', ''),
 
-            // Commission & Pricing (nouveau modèle 2026 - taux dégressifs)
+            // Commission & Pricing - Loueurs (taux dégressifs)
             'commission_rate_1_to_3_days' => Setting::get('commission_rate_1_to_3_days', 8),
             'commission_rate_4_to_7_days' => Setting::get('commission_rate_4_to_7_days', 6),
             'commission_rate_8_plus_days' => Setting::get('commission_rate_8_plus_days', 5),
+
+            // Commission & Pricing - Chauffeurs/Taxis (taux fixe 10%)
+            'commission_rate_transfer' => Setting::get('commission_rate_transfer', 10),
+            'commission_rate_delivery' => Setting::get('commission_rate_delivery', 10),
+
             'dzd_to_usd_rate' => Setting::get('dzd_to_usd_rate', 0.0074),
             'dzd_to_eur_rate' => Setting::get('dzd_to_eur_rate', 0.0068),
             'min_paypal_amount_usd' => Setting::get('min_paypal_amount_usd', 1),
@@ -209,6 +214,34 @@ class PlatformSettings extends Page
                                             ->helperText('Commission pour les locations de 8 jours ou plus'),
                                     ])
                                     ->columns(3),
+
+                                Forms\Components\Section::make('Commission Chauffeurs/Taxis (Taux fixe)')
+                                    ->description('Commission prélevée UNIQUEMENT au chauffeur sur les transferts et livraisons. Le client ne paie aucune commission.')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('commission_driver_info')
+                                            ->label('')
+                                            ->content('Commission fixe de 10% sur le montant total de chaque course (transfert ou livraison).')
+                                            ->columnSpanFull(),
+                                        Forms\Components\TextInput::make('commission_rate_transfer')
+                                            ->label('Taux Transferts')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(10)
+                                            ->suffix('%')
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->helperText('Commission sur les courses de transfert (taxi, VTC)'),
+                                        Forms\Components\TextInput::make('commission_rate_delivery')
+                                            ->label('Taux Livraisons')
+                                            ->numeric()
+                                            ->required()
+                                            ->default(10)
+                                            ->suffix('%')
+                                            ->minValue(0)
+                                            ->maxValue(100)
+                                            ->helperText('Commission sur les livraisons de colis'),
+                                    ])
+                                    ->columns(2),
 
                                 Forms\Components\Section::make('Conversion de devises')
                                     ->schema([
@@ -464,10 +497,15 @@ class PlatformSettings extends Page
         Setting::set('company_phone', $data['company_phone'], 'company', 'text');
         Setting::set('company_address', $data['company_address'], 'company', 'text');
 
-        // Commission & Pricing (nouveau modèle 2026 - taux dégressifs)
+        // Commission & Pricing - Loueurs (taux dégressifs)
         Setting::set('commission_rate_1_to_3_days', $data['commission_rate_1_to_3_days'], 'pricing', 'number');
         Setting::set('commission_rate_4_to_7_days', $data['commission_rate_4_to_7_days'], 'pricing', 'number');
         Setting::set('commission_rate_8_plus_days', $data['commission_rate_8_plus_days'], 'pricing', 'number');
+
+        // Commission & Pricing - Chauffeurs/Taxis (taux fixe 10%)
+        Setting::set('commission_rate_transfer', $data['commission_rate_transfer'], 'pricing', 'number');
+        Setting::set('commission_rate_delivery', $data['commission_rate_delivery'], 'pricing', 'number');
+
         Setting::set('dzd_to_usd_rate', $data['dzd_to_usd_rate'], 'pricing', 'number');
         Setting::set('dzd_to_eur_rate', $data['dzd_to_eur_rate'], 'pricing', 'number');
         Setting::set('min_paypal_amount_usd', $data['min_paypal_amount_usd'], 'pricing', 'number');

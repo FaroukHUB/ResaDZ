@@ -444,6 +444,96 @@ class Loueur extends Model
         return $query->count();
     }
 
+    /**
+     * Get total unpaid commission for transfers (chauffeurs/taxis).
+     * Commission fixe de 10% sur les transferts.
+     */
+    public function getUnpaidTransferCommission(?string $month = null): float
+    {
+        $query = $this->transferBookings()
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->where('commission_paid', false);
+
+        if ($month) {
+            $query->whereMonth('created_at', substr($month, 5, 2))
+                  ->whereYear('created_at', substr($month, 0, 4));
+        }
+
+        return $query->sum('commission_amount');
+    }
+
+    /**
+     * Get count of transfers with unpaid commission.
+     */
+    public function getUnpaidTransferCount(?string $month = null): int
+    {
+        $query = $this->transferBookings()
+            ->whereIn('status', ['confirmed', 'completed'])
+            ->where('commission_paid', false);
+
+        if ($month) {
+            $query->whereMonth('created_at', substr($month, 5, 2))
+                  ->whereYear('created_at', substr($month, 0, 4));
+        }
+
+        return $query->count();
+    }
+
+    /**
+     * Get total unpaid commission for deliveries (chauffeurs/taxis).
+     * Commission fixe de 10% sur les livraisons.
+     */
+    public function getUnpaidDeliveryCommission(?string $month = null): float
+    {
+        $query = $this->deliveryBookings()
+            ->whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
+            ->where('commission_paid', false);
+
+        if ($month) {
+            $query->whereMonth('created_at', substr($month, 5, 2))
+                  ->whereYear('created_at', substr($month, 0, 4));
+        }
+
+        return $query->sum('commission_amount');
+    }
+
+    /**
+     * Get count of deliveries with unpaid commission.
+     */
+    public function getUnpaidDeliveryCount(?string $month = null): int
+    {
+        $query = $this->deliveryBookings()
+            ->whereIn('status', ['confirmed', 'picked_up', 'in_transit', 'delivered'])
+            ->where('commission_paid', false);
+
+        if ($month) {
+            $query->whereMonth('created_at', substr($month, 5, 2))
+                  ->whereYear('created_at', substr($month, 0, 4));
+        }
+
+        return $query->count();
+    }
+
+    /**
+     * Get total unpaid commission (locations + transferts + livraisons).
+     */
+    public function getTotalUnpaidCommission(?string $month = null): float
+    {
+        return $this->getUnpaidCommission($month)
+            + $this->getUnpaidTransferCommission($month)
+            + $this->getUnpaidDeliveryCommission($month);
+    }
+
+    /**
+     * Get total count of items with unpaid commission.
+     */
+    public function getTotalUnpaidCount(?string $month = null): int
+    {
+        return $this->getUnpaidBookingsCount($month)
+            + $this->getUnpaidTransferCount($month)
+            + $this->getUnpaidDeliveryCount($month);
+    }
+
     // Scopes
     public function scopeActive($query)
     {

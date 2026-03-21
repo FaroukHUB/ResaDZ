@@ -129,9 +129,16 @@ class DeliveryBookingResource extends Resource
                             ->columnSpanFull(),
 
                         Forms\Components\TextInput::make('price')
-                            ->label('Prix (DA)')
+                            ->label('Prix total (DA)')
                             ->numeric()
                             ->suffix('DA'),
+
+                        Forms\Components\TextInput::make('commission_amount')
+                            ->label('Commission ResaDZ (10%)')
+                            ->disabled()
+                            ->dehydrated(false)
+                            ->suffix('DA')
+                            ->helperText('Commission prélevée sur cette livraison'),
 
                         Forms\Components\DatePicker::make('pickup_date')
                             ->label('Date de récupération')
@@ -237,9 +244,29 @@ class DeliveryBookingResource extends Resource
                     ->searchable(),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Prix')
-                    ->money('DZD')
+                    ->label('Prix total')
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
                     ->sortable(),
+
+                Tables\Columns\TextColumn::make('commission_amount')
+                    ->label('Commission')
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
+                    ->color('danger')
+                    ->description(fn ($record) => $record->commission_rate . '%'),
+
+                Tables\Columns\TextColumn::make('net_amount')
+                    ->label('Montant net')
+                    ->formatStateUsing(fn ($record) => number_format($record->net_amount ?? 0, 0, ',', ' ') . ' DA')
+                    ->color('success')
+                    ->weight('bold'),
+
+                Tables\Columns\IconColumn::make('commission_paid')
+                    ->label('Payée')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-clock')
+                    ->trueColor('success')
+                    ->falseColor('warning'),
 
                 Tables\Columns\TextColumn::make('client_name')
                     ->label('Expéditeur')
