@@ -2,55 +2,79 @@
     <div class="max-w-5xl mx-auto">
         {{-- Header with progress --}}
         <div class="mb-8">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Bienvenue sur ResaDZ !</h1>
-                <p class="text-gray-600 dark:text-gray-400 mt-2">Configurez votre espace en quelques minutes pour commencer à recevoir des réservations.</p>
+            {{-- Welcome banner --}}
+            <div class="welcome-banner mb-8">
+                <div class="relative z-10 flex items-center justify-between">
+                    <div>
+                        <h1 class="text-2xl font-bold">Bienvenue sur ResaDZ !</h1>
+                        <p class="text-white/80 mt-1">Configurez votre espace en quelques minutes pour commencer a recevoir des reservations.</p>
+                    </div>
+                    <div class="hidden md:flex items-center gap-2 bg-white/20 backdrop-blur rounded-xl px-4 py-2">
+                        <x-heroicon-o-sparkles class="w-5 h-5" />
+                        <span class="font-semibold">{{ round(($currentStep / $totalSteps) * 100) }}% complete</span>
+                    </div>
+                </div>
             </div>
 
-            {{-- Progress bar --}}
-            <div class="relative">
-                <div class="flex justify-between mb-2">
+            {{-- Progress bar visual --}}
+            <div class="relative bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg border border-gray-100 dark:border-gray-700">
+                <div class="flex justify-between items-center mb-4">
                     @foreach($this->getStepInfo() as $step => $info)
                         <div class="flex flex-col items-center flex-1 {{ $step < $totalSteps ? 'relative' : '' }}">
-                            <div class="w-10 h-10 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300
-                                {{ $step < $currentStep ? 'bg-green-500 text-white' : '' }}
-                                {{ $step === $currentStep ? 'bg-primary-600 text-white ring-4 ring-primary-100 dark:ring-primary-900' : '' }}
-                                {{ $step > $currentStep ? 'bg-gray-200 dark:bg-gray-700 text-gray-500 dark:text-gray-400' : '' }}">
+                            {{-- Step circle --}}
+                            <div class="step-indicator transition-all duration-500
+                                {{ $step < $currentStep ? 'step-indicator-completed' : '' }}
+                                {{ $step === $currentStep ? 'step-indicator-active scale-110' : '' }}
+                                {{ $step > $currentStep ? 'step-indicator-pending' : '' }}">
                                 @if($step < $currentStep)
                                     <x-heroicon-s-check class="w-5 h-5" />
                                 @else
                                     {{ $step }}
                                 @endif
                             </div>
-                            <span class="mt-2 text-xs font-medium text-center hidden sm:block
-                                {{ $step === $currentStep ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400' }}">
+                            {{-- Step label --}}
+                            <span class="mt-3 text-xs font-medium text-center hidden sm:block max-w-[80px]
+                                {{ $step === $currentStep ? 'text-primary-600 dark:text-primary-400 font-bold' : 'text-gray-500 dark:text-gray-400' }}">
                                 {{ $info['title'] }}
                             </span>
+                            {{-- Connector line --}}
                             @if($step < $totalSteps)
-                                <div class="hidden sm:block absolute top-5 left-1/2 w-full h-0.5 {{ $step < $currentStep ? 'bg-green-500' : 'bg-gray-200 dark:bg-gray-700' }}" style="transform: translateX(50%);"></div>
+                                <div class="hidden sm:block absolute top-5 left-1/2 w-full h-1 rounded-full transition-all duration-500
+                                    {{ $step < $currentStep ? 'bg-gradient-to-r from-green-500 to-emerald-400' : 'bg-gray-200 dark:bg-gray-700' }}"
+                                    style="transform: translateX(50%);"></div>
                             @endif
                         </div>
                     @endforeach
                 </div>
+
+                {{-- Progress percentage bar --}}
+                <div class="progress-modern mt-4">
+                    <div class="progress-modern-bar" style="width: {{ ($currentStep / $totalSteps) * 100 }}%"></div>
+                </div>
             </div>
         </div>
 
-        {{-- Current step info --}}
+        {{-- Current step info card --}}
         @php
             $stepInfo = $this->getStepInfo()[$currentStep] ?? [];
         @endphp
-        <div class="bg-primary-50 dark:bg-primary-900/20 border border-primary-200 dark:border-primary-800 rounded-xl p-4 mb-6">
-            <div class="flex items-start gap-3">
-                <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900/40 rounded-lg flex items-center justify-center flex-shrink-0">
+        <div class="stat-card border-l-4 border-primary-500 bg-gradient-to-r from-primary-50 to-white dark:from-primary-900/20 dark:to-gray-800 mb-6">
+            <div class="flex items-start gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-primary-500 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg shadow-primary-500/30">
                     @if($stepInfo['icon'] ?? false)
-                        <x-dynamic-component :component="$stepInfo['icon']" class="w-5 h-5 text-primary-600 dark:text-primary-400" />
+                        <x-dynamic-component :component="$stepInfo['icon']" class="w-7 h-7 text-white" />
+                    @else
+                        <span class="text-xl font-bold text-white">{{ $currentStep }}</span>
                     @endif
                 </div>
-                <div>
-                    <h2 class="font-semibold text-primary-900 dark:text-primary-100">
-                        Étape {{ $currentStep }}/{{ $totalSteps }} : {{ $stepInfo['title'] ?? '' }}
+                <div class="flex-1">
+                    <div class="flex items-center gap-2">
+                        <span class="badge-modern badge-info">Etape {{ $currentStep }}/{{ $totalSteps }}</span>
+                    </div>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mt-2">
+                        {{ $stepInfo['title'] ?? '' }}
                     </h2>
-                    <p class="text-sm text-primary-700 dark:text-primary-300 mt-0.5">
+                    <p class="text-gray-600 dark:text-gray-400 mt-1">
                         {{ $stepInfo['description'] ?? '' }}
                     </p>
                 </div>
@@ -62,52 +86,84 @@
             $tips = [
                 1 => [
                     'title' => 'Conseil',
-                    'text' => 'Un profil complet inspire confiance. Les clients préfèrent les agences avec une description claire et des coordonnées vérifiables.',
+                    'text' => 'Un profil complet inspire confiance. Les clients preferent les agences avec une description claire et des coordonnees verifiables.',
+                    'icon' => 'heroicon-o-light-bulb',
+                    'color' => 'amber',
                 ],
                 2 => [
                     'title' => 'Important',
-                    'text' => 'Sans zone de livraison, vos clients ne pourront pas réserver. Créez au moins une zone avec le lieu principal de prise en charge.',
+                    'text' => 'Sans zone de livraison, vos clients ne pourront pas reserver. Creez au moins une zone avec le lieu principal de prise en charge.',
+                    'icon' => 'heroicon-o-exclamation-triangle',
+                    'color' => 'red',
                 ],
                 3 => [
                     'title' => 'Astuce',
-                    'text' => 'Un acompte de 20-30% est recommandé pour sécuriser les réservations tout en restant attractif. Proposez plusieurs méthodes de paiement.',
+                    'text' => 'Un acompte de 20-30% est recommande pour securiser les reservations tout en restant attractif. Proposez plusieurs methodes de paiement.',
+                    'icon' => 'heroicon-o-currency-dollar',
+                    'color' => 'green',
                 ],
                 4 => [
-                    'title' => 'Bon à savoir',
-                    'text' => 'Les options populaires comme le siège bébé ou le GPS peuvent être offertes gratuitement pour vous démarquer de la concurrence.',
+                    'title' => 'Bon a savoir',
+                    'text' => 'Les options populaires comme le siege bebe ou le GPS peuvent etre offertes gratuitement pour vous demarquer de la concurrence.',
+                    'icon' => 'heroicon-o-gift',
+                    'color' => 'purple',
                 ],
                 5 => [
                     'title' => 'Conseil juridique',
-                    'text' => 'Des conditions claires protègent à la fois vous et vos clients. Précisez au minimum l\'âge requis et les documents demandés.',
+                    'text' => 'Des conditions claires protegent a la fois vous et vos clients. Precisez au minimum l\'age requis et les documents demandes.',
+                    'icon' => 'heroicon-o-scale',
+                    'color' => 'blue',
                 ],
                 6 => [
                     'title' => 'Marketing',
-                    'text' => 'Les badges attirent l\'attention sur vos véhicules. N\'activez que ceux qui correspondent vraiment à vos services.',
+                    'text' => 'Les badges attirent l\'attention sur vos vehicules. N\'activez que ceux qui correspondent vraiment a vos services.',
+                    'icon' => 'heroicon-o-sparkles',
+                    'color' => 'pink',
                 ],
                 7 => [
-                    'title' => 'Dernière étape !',
-                    'text' => 'Activez au moins un canal de notification pour ne jamais manquer une réservation. Les notifications push sont les plus rapides.',
+                    'title' => 'Derniere etape !',
+                    'text' => 'Activez au moins un canal de notification pour ne jamais manquer une reservation. Les notifications push sont les plus rapides.',
+                    'icon' => 'heroicon-o-bell',
+                    'color' => 'indigo',
                 ],
             ];
             $tip = $tips[$currentStep] ?? null;
+            $tipColors = [
+                'amber' => 'from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 border-amber-300 dark:border-amber-700',
+                'red' => 'from-red-50 to-rose-50 dark:from-red-900/20 dark:to-rose-900/20 border-red-300 dark:border-red-700',
+                'green' => 'from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border-green-300 dark:border-green-700',
+                'purple' => 'from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 border-purple-300 dark:border-purple-700',
+                'blue' => 'from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 border-blue-300 dark:border-blue-700',
+                'pink' => 'from-pink-50 to-rose-50 dark:from-pink-900/20 dark:to-rose-900/20 border-pink-300 dark:border-pink-700',
+                'indigo' => 'from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 border-indigo-300 dark:border-indigo-700',
+            ];
+            $iconColors = [
+                'amber' => 'from-amber-500 to-orange-500',
+                'red' => 'from-red-500 to-rose-500',
+                'green' => 'from-green-500 to-emerald-500',
+                'purple' => 'from-purple-500 to-violet-500',
+                'blue' => 'from-blue-500 to-indigo-500',
+                'pink' => 'from-pink-500 to-rose-500',
+                'indigo' => 'from-indigo-500 to-violet-500',
+            ];
         @endphp
 
         @if($tip)
-            <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 mb-6">
-                <div class="flex items-start gap-3">
-                    <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-                    </svg>
+            <div class="stat-card border bg-gradient-to-r {{ $tipColors[$tip['color']] ?? $tipColors['amber'] }} mb-6 animate-slide-up">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 bg-gradient-to-br {{ $iconColors[$tip['color']] ?? $iconColors['amber'] }} rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                        <x-dynamic-component :component="$tip['icon']" class="w-6 h-6 text-white" />
+                    </div>
                     <div>
-                        <p class="font-semibold text-amber-900 dark:text-amber-100 text-sm">{{ $tip['title'] }}</p>
-                        <p class="text-sm text-amber-700 dark:text-amber-300 mt-0.5">{{ $tip['text'] }}</p>
+                        <p class="font-bold text-gray-900 dark:text-white">{{ $tip['title'] }}</p>
+                        <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">{{ $tip['text'] }}</p>
                     </div>
                 </div>
             </div>
         @endif
 
         {{-- Form --}}
-        <div class="bg-white dark:bg-gray-900 rounded-2xl shadow-sm border border-gray-200 dark:border-gray-700 p-6">
+        <div class="card-modern">
             <form wire:submit.prevent="{{ $currentStep === $totalSteps ? 'completeOnboarding' : 'nextStep' }}">
                 {{ $this->form }}
 
@@ -119,35 +175,41 @@
                                 type="button"
                                 color="gray"
                                 wire:click="previousStep"
+                                class="group"
                             >
-                                <x-heroicon-s-arrow-left class="w-4 h-4 mr-1" />
-                                Précédent
+                                <x-heroicon-s-arrow-left class="w-4 h-4 mr-1 group-hover:-translate-x-1 transition-transform" />
+                                Precedent
                             </x-filament::button>
                         @else
                             <button
                                 type="button"
                                 wire:click="skipOnboarding"
-                                class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline"
+                                class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 underline decoration-dashed hover:decoration-solid transition-all"
                             >
                                 Configurer plus tard
                             </button>
                         @endif
                     </div>
 
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm text-gray-500 dark:text-gray-400">
-                            {{ $currentStep }}/{{ $totalSteps }}
-                        </span>
+                    <div class="flex items-center gap-4">
+                        <div class="hidden sm:flex items-center gap-1">
+                            @for($i = 1; $i <= $totalSteps; $i++)
+                                <div class="w-2 h-2 rounded-full transition-all duration-300
+                                    {{ $i < $currentStep ? 'bg-green-500' : '' }}
+                                    {{ $i === $currentStep ? 'bg-primary-500 w-4' : '' }}
+                                    {{ $i > $currentStep ? 'bg-gray-300 dark:bg-gray-600' : '' }}"></div>
+                            @endfor
+                        </div>
 
                         @if($currentStep === $totalSteps)
-                            <x-filament::button type="submit" color="success">
-                                <x-heroicon-s-check class="w-4 h-4 mr-1" />
+                            <x-filament::button type="submit" color="success" class="btn-gradient-success group">
+                                <x-heroicon-s-check class="w-4 h-4 mr-1 group-hover:scale-110 transition-transform" />
                                 Terminer la configuration
                             </x-filament::button>
                         @else
-                            <x-filament::button type="submit">
+                            <x-filament::button type="submit" class="btn-gradient-primary group">
                                 Suivant
-                                <x-heroicon-s-arrow-right class="w-4 h-4 ml-1" />
+                                <x-heroicon-s-arrow-right class="w-4 h-4 ml-1 group-hover:translate-x-1 transition-transform" />
                             </x-filament::button>
                         @endif
                     </div>
@@ -157,13 +219,14 @@
 
         {{-- Skip link at bottom --}}
         @if($currentStep > 1)
-            <div class="text-center mt-4">
+            <div class="text-center mt-6">
                 <button
                     type="button"
                     wire:click="skipOnboarding"
-                    class="text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 underline"
+                    class="inline-flex items-center gap-2 text-sm text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
                 >
-                    Terminer plus tard et accéder au tableau de bord
+                    <x-heroicon-o-forward class="w-4 h-4" />
+                    Terminer plus tard et acceder au tableau de bord
                 </button>
             </div>
         @endif
