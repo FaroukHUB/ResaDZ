@@ -48,8 +48,16 @@ class TransactionResource extends Resource
             ->schema([
                 Forms\Components\Hidden::make('type')
                     ->default('expense'),
+                Forms\Components\Placeholder::make('expense_help')
+                    ->label('')
+                    ->content(new \Illuminate\Support\HtmlString('
+                        <div class="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-lg text-sm text-red-800 dark:text-red-200">
+                            <strong>📊 Pourquoi enregistrer vos dépenses ?</strong> — Elles apparaissent dans votre tableau de bord financier pour calculer votre bénéfice net. Associez-les à un véhicule pour connaître la rentabilité de chaque voiture !
+                        </div>
+                    ')),
                 Forms\Components\Section::make('Dépense')
-                    ->description('Ajoutez vos dépenses : carburant, entretien, assurance, etc.')
+                    ->description('Enregistrez carburant, entretien, assurance, lavage, réparations...')
+                    ->icon('heroicon-o-arrow-trending-down')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -57,11 +65,13 @@ class TransactionResource extends Resource
                                     ->label('Description')
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Ex: Plein carburant Tiguan'),
+                                    ->placeholder('Ex: Plein carburant Tiguan')
+                                    ->helperText('Soyez précis pour retrouver facilement'),
                                 Forms\Components\DatePicker::make('transaction_date')
                                     ->label('Date')
                                     ->required()
-                                    ->default(now()),
+                                    ->default(now())
+                                    ->helperText('Date de la dépense (pas forcément aujourd\'hui)'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -74,7 +84,8 @@ class TransactionResource extends Resource
                                         : ExpenseCategory::where('is_default', true)->pluck('name', 'id')
                                     )
                                     ->searchable()
-                                    ->required(),
+                                    ->required()
+                                    ->helperText('Permet de filtrer et analyser par type'),
                                 Forms\Components\Select::make('vehicle_id')
                                     ->label('Véhicule concerné')
                                     ->options(fn () => $loueur
@@ -82,10 +93,12 @@ class TransactionResource extends Resource
                                         : []
                                     )
                                     ->searchable()
-                                    ->placeholder('Optionnel'),
+                                    ->placeholder('Optionnel')
+                                    ->helperText('Lier à un véhicule = suivi de rentabilité'),
                             ]),
                     ]),
                 Forms\Components\Section::make('Montant')
+                    ->description('Détails financiers de la dépense')
                     ->schema([
                         Forms\Components\Grid::make(3)
                             ->schema([
@@ -94,7 +107,8 @@ class TransactionResource extends Resource
                                     ->numeric()
                                     ->required()
                                     ->minValue(0)
-                                    ->suffix('DA'),
+                                    ->suffix('DA')
+                                    ->helperText('Montant total de la dépense'),
                                 Forms\Components\Select::make('currency')
                                     ->label('Devise')
                                     ->options([
@@ -102,7 +116,8 @@ class TransactionResource extends Resource
                                         'EUR' => 'Euro (€)',
                                     ])
                                     ->default('DZD')
-                                    ->required(),
+                                    ->required()
+                                    ->helperText('En quelle devise'),
                                 Forms\Components\Select::make('payment_method')
                                     ->label('Méthode de paiement')
                                     ->options([
@@ -112,15 +127,18 @@ class TransactionResource extends Resource
                                         'baridimob' => 'BaridiMob',
                                         'bank_transfer' => 'Virement',
                                     ])
-                                    ->default('cash'),
+                                    ->default('cash')
+                                    ->helperText('Comment avez-vous payé'),
                             ]),
                     ]),
                 Forms\Components\Section::make('Notes')
+                    ->description('Informations complémentaires')
                     ->schema([
                         Forms\Components\Textarea::make('notes')
                             ->label('Notes additionnelles')
                             ->rows(2)
-                            ->placeholder('Détails supplémentaires, numéro de facture, etc.'),
+                            ->placeholder('Détails supplémentaires, numéro de facture, etc.')
+                            ->helperText('Numéro de facture, nom du fournisseur...'),
                     ])
                     ->collapsed(),
             ]);

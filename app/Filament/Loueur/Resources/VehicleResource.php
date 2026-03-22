@@ -52,6 +52,7 @@ class VehicleResource extends Resource
                 // Section 1: Informations du véhicule
                 Forms\Components\Section::make('Informations du véhicule')
                     ->icon('heroicon-o-truck')
+                    ->description('Ces informations sont affichées sur la fiche de votre véhicule côté client. Plus c\'est complet, plus les clients auront confiance.')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -60,23 +61,26 @@ class VehicleResource extends Resource
                                     ->label('Marque')
                                     ->options(Brand::pluck('name', 'id'))
                                     ->searchable()
-                                    ->required(),
+                                    ->required()
+                                    ->helperText('La marque apparaît dans les filtres de recherche'),
                                 Forms\Components\Select::make('category_id')
                                     ->label('Catégorie')
                                     ->options(Category::pluck('name', 'id'))
-                                    ->required(),
+                                    ->required()
+                                    ->helperText('Citadine, SUV, Berline... Les clients filtrent par catégorie'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('model')
                                     ->label('Modèle')
                                     ->required()
-                                    ->maxLength(255),
+                                    ->maxLength(255)
+                                    ->helperText('Ex: Clio, Golf, Tucson...'),
                                 Forms\Components\TextInput::make('full_name')
                                     ->label('Nom complet')
                                     ->required()
                                     ->maxLength(255)
-                                    ->helperText('Ex: VW Tiguan 2024 Noir'),
+                                    ->helperText('Titre affiché sur la carte du véhicule. Ex: VW Tiguan 2024 Noir'),
                             ]),
                         Forms\Components\Grid::make(4)
                             ->schema([
@@ -84,13 +88,15 @@ class VehicleResource extends Resource
                                     ->label('Année')
                                     ->numeric()
                                     ->minValue(2000)
-                                    ->maxValue(date('Y') + 1),
+                                    ->maxValue(date('Y') + 1)
+                                    ->helperText('Année de mise en circulation'),
                                 Forms\Components\Select::make('transmission')
                                     ->label('Transmission')
                                     ->options([
                                         'manual' => 'Manuelle',
                                         'automatic' => 'Automatique',
-                                    ]),
+                                    ])
+                                    ->helperText('Filtre très utilisé par les clients'),
                                 Forms\Components\Select::make('fuel_type')
                                     ->label('Carburant')
                                     ->options([
@@ -98,9 +104,11 @@ class VehicleResource extends Resource
                                         'diesel' => 'Diesel',
                                         'hybrid' => 'Hybride',
                                         'electric' => 'Électrique',
-                                    ]),
+                                    ])
+                                    ->helperText('Affiché sur la fiche véhicule'),
                                 Forms\Components\TextInput::make('color')
-                                    ->label('Couleur'),
+                                    ->label('Couleur')
+                                    ->helperText('Aide les clients à identifier le véhicule'),
                             ]),
                         Forms\Components\Grid::make(4)
                             ->schema([
@@ -108,29 +116,35 @@ class VehicleResource extends Resource
                                     ->label('Places')
                                     ->numeric()
                                     ->minValue(2)
-                                    ->maxValue(9),
+                                    ->maxValue(9)
+                                    ->helperText('Nombre de passagers max'),
                                 Forms\Components\TextInput::make('doors')
                                     ->label('Portes')
                                     ->numeric()
                                     ->minValue(2)
-                                    ->maxValue(5),
+                                    ->maxValue(5)
+                                    ->helperText('2, 3, 4 ou 5 portes'),
                                 Forms\Components\TextInput::make('mileage')
                                     ->label('Kilométrage')
                                     ->numeric()
-                                    ->suffix('km'),
+                                    ->suffix('km')
+                                    ->helperText('Kilométrage actuel du véhicule'),
                                 Forms\Components\TextInput::make('luggage_capacity')
                                     ->label('Bagages')
                                     ->numeric()
-                                    ->suffix('valises'),
+                                    ->suffix('valises')
+                                    ->helperText('Capacité du coffre en nombre de valises'),
                             ]),
                         Forms\Components\Toggle::make('has_air_conditioning')
                             ->label('Climatisation')
-                            ->default(true),
+                            ->default(true)
+                            ->helperText('Cochez si le véhicule est climatisé — très recherché en été'),
                     ]),
 
                 // Section 2: Tarification
                 Forms\Components\Section::make('Tarification')
                     ->icon('heroicon-o-currency-euro')
+                    ->description('Définissez vos tarifs. Le prix affiché aux clients inclut la commission ResaDZ.')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -140,12 +154,13 @@ class VehicleResource extends Resource
                                     ->numeric()
                                     ->required()
                                     ->suffix('DA')
-                                    ->live(onBlur: true),
+                                    ->live(onBlur: true)
+                                    ->helperText('Prix affiché aux clients algériens — le plus important !'),
                                 Forms\Components\TextInput::make('price_per_day_eur')
                                     ->label('Votre prix / jour (EUR)')
                                     ->numeric()
                                     ->suffix('€')
-                                    ->helperText('Pour clients diaspora'),
+                                    ->helperText('Optionnel — pour la diaspora qui réserve depuis l\'étranger'),
                             ]),
                         // Commission info box - always visible
                         Forms\Components\Placeholder::make('commission_info')
@@ -176,11 +191,13 @@ class VehicleResource extends Resource
                                 Forms\Components\TextInput::make('deposit_amount')
                                     ->label('Caution en DA')
                                     ->numeric()
-                                    ->suffix('DA'),
+                                    ->suffix('DA')
+                                    ->helperText('Montant bloqué pendant la location — remboursé si pas de dégâts'),
                                 Forms\Components\TextInput::make('deposit_amount_eur')
                                     ->label('Caution en EUR')
                                     ->numeric()
-                                    ->suffix('€'),
+                                    ->suffix('€')
+                                    ->helperText('Pour les paiements en devise étrangère'),
                             ]),
                         Forms\Components\Grid::make(3)
                             ->schema([
@@ -189,27 +206,43 @@ class VehicleResource extends Resource
                                     ->numeric()
                                     ->default(1)
                                     ->minValue(1)
-                                    ->suffix('jours'),
+                                    ->suffix('jours')
+                                    ->helperText('Les clients ne pourront pas réserver moins'),
                                 Forms\Components\TextInput::make('max_rental_days')
                                     ->label('Durée max')
                                     ->numeric()
                                     ->suffix('jours')
-                                    ->placeholder('Illimité'),
+                                    ->placeholder('Illimité')
+                                    ->helperText('Laissez vide pour aucune limite'),
                                 Forms\Components\TextInput::make('mileage_limit_per_day')
                                     ->label('Km/jour max')
                                     ->numeric()
                                     ->suffix('km')
-                                    ->placeholder('Illimité'),
+                                    ->placeholder('Illimité')
+                                    ->helperText('Limite affichée au client. Laissez vide = km illimités'),
                             ]),
                     ]),
 
                 // Section 3: Prix dégressifs (optionnel)
                 Forms\Components\Section::make('Prix dégressifs (optionnel)')
                     ->icon('heroicon-o-arrow-trending-down')
-                    ->description('Proposez des réductions pour les locations longue durée')
+                    ->description('Attirez plus de clients avec des réductions longue durée ! Les prix dégressifs sont affichés sur votre fiche véhicule et incitent les clients à réserver plus longtemps.')
                     ->collapsed()
                     ->collapsible()
                     ->schema([
+                        Forms\Components\Placeholder::make('degressive_help')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-sm">
+                                    <p class="font-semibold text-amber-800 dark:text-amber-200">💡 Exemple de prix dégressifs :</p>
+                                    <ul class="mt-2 text-amber-700 dark:text-amber-300 space-y-1">
+                                        <li>• Prix de base : 5 000 DA/jour</li>
+                                        <li>• À partir de 7 jours : 4 500 DA/jour (-10%)</li>
+                                        <li>• À partir de 14 jours : 4 000 DA/jour (-20%)</li>
+                                        <li>• À partir de 30 jours : 3 500 DA/jour (-30%)</li>
+                                    </ul>
+                                </div>
+                            ')),
                         Forms\Components\Repeater::make('degressive_pricing')
                             ->label('')
                             ->schema([
@@ -220,16 +253,19 @@ class VehicleResource extends Resource
                                             ->numeric()
                                             ->required()
                                             ->minValue(2)
-                                            ->suffix('jours'),
+                                            ->suffix('jours')
+                                            ->helperText('Nombre minimum de jours pour ce tarif'),
                                         Forms\Components\TextInput::make('price_per_day')
                                             ->label('Prix / jour (DA)')
                                             ->numeric()
                                             ->required()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Prix réduit par jour'),
                                         Forms\Components\TextInput::make('price_per_day_eur')
                                             ->label('Prix / jour (EUR)')
                                             ->numeric()
-                                            ->suffix('€'),
+                                            ->suffix('€')
+                                            ->helperText('Optionnel'),
                                     ]),
                             ])
                             ->defaultItems(0)
@@ -244,14 +280,30 @@ class VehicleResource extends Resource
                 // Section 4: Photos
                 Forms\Components\Section::make('Photos')
                     ->icon('heroicon-o-photo')
+                    ->description('Des photos de qualité augmentent vos réservations de 60% ! Prenez des photos en journée, véhicule propre, sous plusieurs angles.')
                     ->collapsible()
                     ->schema([
+                        Forms\Components\Placeholder::make('photo_tips')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-sm">
+                                    <p class="font-semibold text-green-800 dark:text-green-200">📸 Conseils pour de bonnes photos :</p>
+                                    <ul class="mt-2 text-green-700 dark:text-green-300 grid grid-cols-2 gap-1">
+                                        <li>• Extérieur 3/4 avant (la plus importante)</li>
+                                        <li>• Extérieur 3/4 arrière</li>
+                                        <li>• Intérieur (tableau de bord)</li>
+                                        <li>• Sièges arrière</li>
+                                        <li>• Coffre ouvert</li>
+                                        <li>• Compteur kilométrique</li>
+                                    </ul>
+                                </div>
+                            ')),
                         Forms\Components\FileUpload::make('image')
                             ->label('Photo principale')
                             ->image()
                             ->directory('vehicles')
                             ->visibility('public')
-                            ->helperText('Cette photo sera affichée en premier'),
+                            ->helperText('Photo affichée en premier sur les cartes de recherche — choisissez la meilleure !'),
                         Forms\Components\FileUpload::make('gallery')
                             ->label('Galerie (optionnel)')
                             ->image()
@@ -259,12 +311,13 @@ class VehicleResource extends Resource
                             ->directory('vehicles/gallery')
                             ->visibility('public')
                             ->reorderable()
-                            ->helperText('Photos supplémentaires du véhicule'),
+                            ->helperText('Glissez pour réorganiser. Plus vous en mettez, plus les clients auront confiance.'),
                     ]),
 
                 // Section 5: Disponibilité
                 Forms\Components\Section::make('Disponibilité')
                     ->icon('heroicon-o-calendar')
+                    ->description('Contrôlez quand et si votre véhicule apparaît dans les résultats de recherche.')
                     ->collapsible()
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -278,21 +331,25 @@ class VehicleResource extends Resource
                                         'unavailable' => 'Indisponible',
                                     ])
                                     ->default('available')
-                                    ->required(),
+                                    ->required()
+                                    ->helperText('Statut affiché aux clients sur la fiche véhicule'),
                                 Forms\Components\Toggle::make('is_active')
                                     ->label('Visible sur le site')
                                     ->default(true)
-                                    ->helperText('Désactivez pour masquer temporairement'),
+                                    ->helperText('Désactivez pour masquer le véhicule des recherches sans le supprimer'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\DatePicker::make('available_from')
-                                    ->label('Disponible à partir de'),
+                                    ->label('Disponible à partir de')
+                                    ->helperText('Laissez vide si disponible immédiatement'),
                                 Forms\Components\DatePicker::make('available_until')
-                                    ->label('Disponible jusqu\'au'),
+                                    ->label('Disponible jusqu\'au')
+                                    ->helperText('Laissez vide si pas de date de fin'),
                             ]),
                         Forms\Components\Toggle::make('is_featured')
-                            ->label('Mettre en avant sur la page d\'accueil'),
+                            ->label('Mettre en avant sur la page d\'accueil')
+                            ->helperText('Les véhicules mis en avant apparaissent dans la section "Sélection" de la page d\'accueil'),
                     ]),
             ]);
     }

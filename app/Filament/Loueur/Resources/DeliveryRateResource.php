@@ -40,8 +40,15 @@ class DeliveryRateResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Placeholder::make('rate_help')
+                    ->label('')
+                    ->content(new \Illuminate\Support\HtmlString('
+                        <div class="p-3 bg-cyan-50 dark:bg-cyan-900/20 border border-cyan-200 dark:border-cyan-700 rounded-lg text-sm text-cyan-800 dark:text-cyan-200">
+                            <strong>📦 Tarifs de livraison</strong> — Ces tarifs sont affichés aux clients qui commandent une livraison de colis. Le prix final = Prix de base + (Poids × Prix/kg). Créez plusieurs tarifs pour différentes destinations et types de colis.
+                        </div>
+                    ')),
                 Forms\Components\Section::make('Tarif de livraison')
-                    ->description('Définissez vos tarifs par trajet et type de colis')
+                    ->description('Configurez un tarif pour un trajet et type de colis spécifique')
                     ->icon('heroicon-o-truck')
                     ->columns(2)
                     ->schema([
@@ -49,13 +56,15 @@ class DeliveryRateResource extends Resource
                             ->label('Ville de départ')
                             ->placeholder('Ex: Alger, Oran...')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('D\'où part le colis'),
 
                         Forms\Components\TextInput::make('to_city')
                             ->label('Ville de destination')
                             ->placeholder('Ex: Constantine, Annaba...')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Où est livré le colis'),
 
                         Forms\Components\Select::make('package_type')
                             ->label('Type de colis')
@@ -65,32 +74,35 @@ class DeliveryRateResource extends Resource
                                 'repas' => 'Repas',
                             ])
                             ->default('colis')
-                            ->required(),
+                            ->required()
+                            ->helperText('Le type affecte les attentes du client'),
 
                         Forms\Components\TextInput::make('base_price')
                             ->label('Prix de base (DA)')
                             ->numeric()
                             ->required()
                             ->suffix('DA')
-                            ->minValue(0),
+                            ->minValue(0)
+                            ->helperText('Prix minimum pour ce trajet'),
 
                         Forms\Components\TextInput::make('price_per_kg')
                             ->label('Prix par kg supplémentaire (DA)')
                             ->numeric()
                             ->suffix('DA/kg')
                             ->minValue(0)
-                            ->helperText('Optionnel — laissez vide si prix fixe'),
+                            ->helperText('Supplément par kg au-delà du poids de base (0 = prix fixe)'),
 
                         Forms\Components\TextInput::make('max_weight')
                             ->label('Poids max (kg)')
                             ->numeric()
                             ->suffix('kg')
                             ->minValue(0)
-                            ->helperText('Optionnel'),
+                            ->helperText('Poids maximum accepté pour ce trajet'),
 
                         Forms\Components\Toggle::make('is_active')
                             ->label('Actif')
-                            ->default(true),
+                            ->default(true)
+                            ->helperText('Désactivez pour masquer ce tarif'),
                     ]),
             ]);
     }

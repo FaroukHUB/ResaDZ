@@ -51,8 +51,16 @@ class OfferResource extends Resource
         return $form
             ->schema([
                 Forms\Components\Section::make('Offre Spéciale')
-                    ->description('Créez des offres attractives pour vos véhicules')
+                    ->description('Créez des offres attractives pour booster vos réservations ! Les offres sont affichées avec un badge coloré sur la carte du véhicule.')
+                    ->icon('heroicon-o-tag')
                     ->schema([
+                        Forms\Components\Placeholder::make('offer_help')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-700 rounded-lg text-sm text-rose-800 dark:text-rose-200">
+                                    <strong>🏷️ Impact sur le site</strong> — Un badge coloré apparaît sur la carte du véhicule dans les résultats de recherche. Les clients voient immédiatement la réduction et sont plus enclins à réserver !
+                                </div>
+                            ')),
                         Forms\Components\Select::make('vehicle_id')
                             ->label('Véhicule')
                             ->options(function () use ($loueur) {
@@ -62,20 +70,22 @@ class OfferResource extends Resource
                                     ->pluck('full_name', 'id');
                             })
                             ->searchable()
-                            ->required(),
+                            ->required()
+                            ->helperText('Sélectionnez le véhicule concerné par cette offre'),
                         Forms\Components\Hidden::make('loueur_id')
                             ->default(fn () => $loueur?->id),
                         Forms\Components\TextInput::make('title')
                             ->label('Titre de l\'offre')
                             ->placeholder('Ex: Offre spéciale weekend')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Titre visible dans les détails de l\'offre'),
                         Forms\Components\TextInput::make('badge_text')
                             ->label('Badge affiché')
                             ->placeholder('Ex: -10%, PROMO, -20% WE')
                             ->required()
                             ->maxLength(50)
-                            ->helperText('Texte court affiché sur la carte du véhicule'),
+                            ->helperText('⭐ Ce texte apparaît sur le badge rouge — gardez-le court (max 10 caractères)'),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\Select::make('discount_type')
@@ -86,35 +96,39 @@ class OfferResource extends Resource
                                     ])
                                     ->default('percentage')
                                     ->required()
-                                    ->live(),
+                                    ->live()
+                                    ->helperText('Pourcentage = réduit le prix proportionnellement'),
                                 Forms\Components\TextInput::make('discount_value')
                                     ->label('Valeur de la réduction')
                                     ->numeric()
                                     ->required()
                                     ->suffix(fn (Forms\Get $get) => $get('discount_type') === 'percentage' ? '%' : 'DA')
                                     ->helperText(fn (Forms\Get $get) => $get('discount_type') === 'percentage'
-                                        ? 'Ex: 10 pour -10%'
-                                        : 'Ex: 500 pour -500 DA'),
+                                        ? 'Ex: 10 pour -10% sur le prix affiché'
+                                        : 'Ex: 500 pour -500 DA sur le prix affiché'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\DatePicker::make('start_date')
                                     ->label('Date de début')
                                     ->required()
-                                    ->default(now()),
+                                    ->default(now())
+                                    ->helperText('L\'offre sera visible dès cette date'),
                                 Forms\Components\DatePicker::make('end_date')
                                     ->label('Date de fin')
                                     ->required()
-                                    ->after('start_date'),
+                                    ->after('start_date')
+                                    ->helperText('L\'offre disparaît automatiquement après'),
                             ]),
                         Forms\Components\Textarea::make('description')
                             ->label('Description (optionnel)')
                             ->placeholder('Détails de l\'offre, conditions, etc.')
-                            ->rows(3),
+                            ->rows(3)
+                            ->helperText('Visible quand le client clique sur les détails de l\'offre'),
                         Forms\Components\Toggle::make('is_active')
                             ->label('Offre active')
                             ->default(true)
-                            ->helperText('Désactivez pour masquer temporairement l\'offre'),
+                            ->helperText('Désactivez pour masquer l\'offre sans la supprimer'),
                     ]),
             ]);
     }

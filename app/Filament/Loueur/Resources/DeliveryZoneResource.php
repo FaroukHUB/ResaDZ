@@ -47,7 +47,16 @@ class DeliveryZoneResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Placeholder::make('zone_help')
+                    ->label('')
+                    ->content(new \Illuminate\Support\HtmlString('
+                        <div class="p-3 bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-700 rounded-lg text-sm text-teal-800 dark:text-teal-200">
+                            <strong>📍 Zones de livraison</strong> — Ces zones apparaissent dans le formulaire de réservation. Le client choisit où récupérer et rendre le véhicule, et les frais sont ajoutés automatiquement au total.
+                        </div>
+                    ')),
                 Forms\Components\Section::make('Informations de la zone')
+                    ->description('Définissez un lieu où vous pouvez livrer ou récupérer un véhicule')
+                    ->icon('heroicon-o-map-pin')
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -55,7 +64,8 @@ class DeliveryZoneResource extends Resource
                                     ->label('Nom de la zone')
                                     ->required()
                                     ->maxLength(255)
-                                    ->placeholder('Ex: Alger Centre, Aéroport Houari Boumediene'),
+                                    ->placeholder('Ex: Alger Centre, Aéroport Houari Boumediene')
+                                    ->helperText('Nom affiché au client dans le formulaire de réservation'),
                                 Forms\Components\Select::make('type')
                                     ->label('Type')
                                     ->options([
@@ -65,19 +75,24 @@ class DeliveryZoneResource extends Resource
                                         'hotel' => 'Hôtel',
                                         'custom' => 'Personnalisé',
                                     ])
-                                    ->default('city'),
+                                    ->default('city')
+                                    ->helperText('Aide à catégoriser et afficher une icône appropriée'),
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\TextInput::make('city')
                                     ->label('Ville')
-                                    ->placeholder('Ex: Alger'),
+                                    ->placeholder('Ex: Alger')
+                                    ->helperText('Pour le filtrage par ville'),
                                 Forms\Components\TextInput::make('wilaya')
                                     ->label('Wilaya')
-                                    ->placeholder('Ex: Alger'),
+                                    ->placeholder('Ex: Alger')
+                                    ->helperText('Pour le filtrage par wilaya'),
                             ]),
                     ]),
                 Forms\Components\Section::make('Tarification')
+                    ->description('Frais facturés au client pour cette zone — ajoutés au total de la réservation')
+                    ->icon('heroicon-o-currency-euro')
                     ->schema([
                         Forms\Components\Grid::make(3)
                             ->schema([
@@ -86,41 +101,47 @@ class DeliveryZoneResource extends Resource
                                     ->numeric()
                                     ->minValue(0)
                                     ->default(0)
-                                    ->helperText('0 = Gratuit'),
+                                    ->helperText('Frais pour AMENER le véhicule (0 = Gratuit)'),
                                 Forms\Components\TextInput::make('return_fee')
                                     ->label('Frais de retour')
                                     ->numeric()
                                     ->minValue(0)
                                     ->default(0)
-                                    ->helperText('0 = Gratuit'),
+                                    ->helperText('Frais pour RÉCUPÉRER le véhicule (0 = Gratuit)'),
                                 Forms\Components\Select::make('currency')
                                     ->label('Devise')
                                     ->options([
                                         'DZD' => 'Dinar (DA)',
                                         'EUR' => 'Euro (€)',
                                     ])
-                                    ->default('DZD'),
+                                    ->default('DZD')
+                                    ->helperText('Devise des frais'),
                             ]),
                     ]),
                 Forms\Components\Section::make('Disponibilité')
+                    ->description('Contrôlez où et comment cette zone est proposée aux clients')
+                    ->icon('heroicon-o-check-circle')
                     ->schema([
                         Forms\Components\Grid::make(3)
                             ->schema([
                                 Forms\Components\Toggle::make('is_active')
                                     ->label('Zone active')
-                                    ->default(true),
+                                    ->default(true)
+                                    ->helperText('Désactiver = masquer la zone'),
                                 Forms\Components\Toggle::make('delivery_available')
                                     ->label('Livraison disponible')
-                                    ->default(true),
+                                    ->default(true)
+                                    ->helperText('Peut-on LIVRER ici ?'),
                                 Forms\Components\Toggle::make('return_available')
                                     ->label('Retour disponible')
-                                    ->default(true),
+                                    ->default(true)
+                                    ->helperText('Peut-on RÉCUPÉRER ici ?'),
                             ]),
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Ordre d\'affichage')
                             ->numeric()
                             ->default(0)
-                            ->helperText('Les zones avec un ordre plus petit apparaissent en premier'),
+                            ->helperText('Les zones avec un ordre plus petit apparaissent en premier dans la liste'),
                     ]),
             ]);
     }

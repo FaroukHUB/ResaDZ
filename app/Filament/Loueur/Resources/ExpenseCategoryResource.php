@@ -44,29 +44,43 @@ class ExpenseCategoryResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Placeholder::make('category_help')
+                    ->label('')
+                    ->content(new \Illuminate\Support\HtmlString('
+                        <div class="p-3 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700 rounded-lg text-sm text-orange-800 dark:text-orange-200">
+                            <strong>🏷️ Catégories de dépenses</strong> — Organisez vos dépenses par type pour mieux analyser vos coûts. Les catégories apparaissent dans le menu déroulant lors de l\'ajout d\'une dépense et dans les graphiques du tableau de bord financier.
+                        </div>
+                    ')),
                 Forms\Components\Section::make('Catégorie')
+                    ->description('Créez une catégorie personnalisée pour vos dépenses')
+                    ->icon('heroicon-o-tag')
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Nom')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('Ex: Carburant, Assurance, Entretien...'),
+                            ->placeholder('Ex: Carburant, Assurance, Entretien...')
+                            ->helperText('Nom affiché dans la liste des catégories'),
                         Forms\Components\TextInput::make('icon')
                             ->label('Icône')
                             ->placeholder('Ex: fuel, wrench, shield')
-                            ->helperText('Nom de l\'icône (optionnel)'),
+                            ->helperText('Icône Heroicon (optionnel) — ex: truck, currency-dollar'),
                         Forms\Components\ColorPicker::make('color')
-                            ->label('Couleur'),
+                            ->label('Couleur')
+                            ->helperText('Couleur du badge dans les rapports'),
                         Forms\Components\Textarea::make('description')
                             ->label('Description')
-                            ->rows(2),
+                            ->rows(2)
+                            ->helperText('Description optionnelle pour vous rappeler l\'usage'),
                         Forms\Components\TextInput::make('sort_order')
                             ->label('Ordre')
                             ->numeric()
-                            ->default(0),
+                            ->default(0)
+                            ->helperText('Les catégories avec un ordre plus petit apparaissent en premier'),
                         Forms\Components\Toggle::make('is_active')
                             ->label('Active')
-                            ->default(true),
+                            ->default(true)
+                            ->helperText('Désactivez pour masquer sans supprimer'),
                     ])
                     ->columns(2),
             ]);

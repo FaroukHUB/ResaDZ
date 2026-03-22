@@ -40,8 +40,15 @@ class TransferRouteResource extends Resource
     {
         return $form
             ->schema([
+                Forms\Components\Placeholder::make('transfer_help')
+                    ->label('')
+                    ->content(new \Illuminate\Support\HtmlString('
+                        <div class="p-3 bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-700 rounded-lg text-sm text-purple-800 dark:text-purple-200">
+                            <strong>🚗 Service de transfert</strong> — Ces trajets sont proposés aux clients sur la page de transfert. Ils peuvent réserver un trajet avec chauffeur pour leurs déplacements (aéroport, gare, hôtel...).
+                        </div>
+                    ')),
                 Forms\Components\Section::make('Trajet')
-                    ->description('Définissez le trajet et le tarif')
+                    ->description('Définissez le trajet, le tarif et les conditions')
                     ->icon('heroicon-o-map-pin')
                     ->columns(2)
                     ->schema([
@@ -49,20 +56,23 @@ class TransferRouteResource extends Resource
                             ->label('Lieu de départ')
                             ->placeholder('Ex: Aéroport Alger, Gare Oran...')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Point de prise en charge du client'),
 
                         Forms\Components\TextInput::make('destination')
                             ->label('Destination')
                             ->placeholder('Ex: Hôtel El Aurassi, Centre-ville...')
                             ->required()
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Où déposez-vous le client'),
 
                         Forms\Components\TextInput::make('price')
                             ->label('Prix (DA)')
                             ->numeric()
                             ->required()
                             ->suffix('DA')
-                            ->minValue(0),
+                            ->minValue(0)
+                            ->helperText('Prix affiché au client pour ce trajet'),
 
                         Forms\Components\Select::make('vehicle_type')
                             ->label('Type de véhicule')
@@ -73,7 +83,8 @@ class TransferRouteResource extends Resource
                                 'minibus' => 'Minibus',
                             ])
                             ->default('berline')
-                            ->required(),
+                            ->required()
+                            ->helperText('Type de véhicule utilisé pour ce trajet'),
 
                         Forms\Components\TextInput::make('max_passengers')
                             ->label('Passagers max')
@@ -81,23 +92,27 @@ class TransferRouteResource extends Resource
                             ->default(4)
                             ->minValue(1)
                             ->maxValue(20)
-                            ->required(),
+                            ->required()
+                            ->helperText('Nombre maximum de passagers acceptés'),
 
                         Forms\Components\Toggle::make('is_active')
                             ->label('Actif')
-                            ->default(true),
+                            ->default(true)
+                            ->helperText('Désactivez pour masquer ce trajet'),
 
                         Forms\Components\Toggle::make('round_trip')
                             ->label('Aller-retour disponible')
                             ->reactive()
-                            ->default(false),
+                            ->default(false)
+                            ->helperText('Proposer aussi l\'aller-retour'),
 
                         Forms\Components\TextInput::make('round_trip_price')
                             ->label('Prix aller-retour (DA)')
                             ->numeric()
                             ->suffix('DA')
                             ->minValue(0)
-                            ->visible(fn (Forms\Get $get) => $get('round_trip')),
+                            ->visible(fn (Forms\Get $get) => $get('round_trip'))
+                            ->helperText('Prix total A/R (généralement -10 à -20% vs 2x aller simple)'),
                     ]),
             ]);
     }

@@ -60,13 +60,22 @@ class BookingResource extends Resource
                     ->tabs([
                         Forms\Components\Tabs\Tab::make('Informations')
                             ->icon('heroicon-o-information-circle')
+                            ->badge('Principal')
                             ->schema([
+                                Forms\Components\Placeholder::make('info_help')
+                                    ->label('')
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+                                            <strong>💡 Informations principales</strong> — Ces données définissent la réservation. Le statut contrôle l\'affichage côté client et les notifications automatiques.
+                                        </div>
+                                    ')),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('reference')
                                             ->label('Référence')
                                             ->disabled()
-                                            ->dehydrated(false),
+                                            ->dehydrated(false)
+                                            ->helperText('Générée automatiquement — communiquez-la au client'),
                                         Forms\Components\Select::make('status')
                                             ->label('Statut')
                                             ->options([
@@ -77,7 +86,8 @@ class BookingResource extends Resource
                                                 'cancelled' => 'Annulée',
                                                 'expired' => 'Expirée',
                                             ])
-                                            ->required(),
+                                            ->required()
+                                            ->helperText('Confirmée = client notifié, En cours = véhicule bloqué'),
                                     ]),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
@@ -88,168 +98,229 @@ class BookingResource extends Resource
                                                 : []
                                             )
                                             ->searchable()
-                                            ->required(),
+                                            ->required()
+                                            ->helperText('Le véhicule sera marqué indisponible sur ces dates'),
                                         Forms\Components\Select::make('currency')
                                             ->label('Devise')
                                             ->options([
                                                 'DZD' => 'Dinar (DA)',
                                                 'EUR' => 'Euro (€)',
                                             ])
-                                            ->default('DZD'),
+                                            ->default('DZD')
+                                            ->helperText('Devise utilisée pour cette réservation'),
                                     ]),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\DateTimePicker::make('start_date')
                                             ->label('Date de début')
-                                            ->required(),
+                                            ->required()
+                                            ->helperText('Date et heure de remise du véhicule'),
                                         Forms\Components\DateTimePicker::make('end_date')
                                             ->label('Date de fin')
-                                            ->required(),
+                                            ->required()
+                                            ->helperText('Date et heure de retour prévue'),
                                     ]),
                                 Forms\Components\TextInput::make('total_days')
                                     ->label('Nombre de jours')
                                     ->numeric()
-                                    ->minValue(1),
+                                    ->minValue(1)
+                                    ->helperText('Calculé automatiquement mais modifiable'),
                             ]),
                         Forms\Components\Tabs\Tab::make('Client')
                             ->icon('heroicon-o-user')
                             ->schema([
+                                Forms\Components\Placeholder::make('client_help')
+                                    ->label('')
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-sm text-green-800 dark:text-green-200">
+                                            <strong>👤 Informations client</strong> — L\'email est utilisé pour les notifications automatiques (confirmation, rappel, demande d\'avis). Le WhatsApp permet d\'envoyer des messages rapides.
+                                        </div>
+                                    ')),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('client_name')
                                             ->label('Nom du client')
-                                            ->required(),
+                                            ->required()
+                                            ->helperText('Nom complet tel qu\'il apparaît sur le permis'),
                                         Forms\Components\TextInput::make('client_phone')
                                             ->label('Téléphone')
-                                            ->tel(),
+                                            ->tel()
+                                            ->helperText('Numéro principal pour vous contacter'),
                                     ]),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('client_email')
                                             ->label('Email')
-                                            ->email(),
+                                            ->email()
+                                            ->helperText('Important ! Sert pour les confirmations et demandes d\'avis'),
                                         Forms\Components\TextInput::make('client_whatsapp')
-                                            ->label('WhatsApp'),
+                                            ->label('WhatsApp')
+                                            ->helperText('Format international : +213 xxx... pour messages WhatsApp'),
                                     ]),
                                 Forms\Components\Section::make('Documents')
+                                    ->description('Conservez les documents du client pour votre protection juridique. Ils ne sont jamais partagés publiquement.')
                                     ->schema([
                                         Forms\Components\FileUpload::make('client_id_document')
                                             ->label('Pièce d\'identité')
                                             ->directory('bookings/documents')
-                                            ->visibility('private'),
+                                            ->visibility('private')
+                                            ->helperText('CNI ou passeport — obligatoire pour le contrat'),
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\FileUpload::make('client_license_front')
                                                     ->label('Permis (recto)')
                                                     ->directory('bookings/documents')
-                                                    ->visibility('private'),
+                                                    ->visibility('private')
+                                                    ->helperText('Face avec la photo'),
                                                 Forms\Components\FileUpload::make('client_license_back')
                                                     ->label('Permis (verso)')
                                                     ->directory('bookings/documents')
-                                                    ->visibility('private'),
+                                                    ->visibility('private')
+                                                    ->helperText('Face avec les infos'),
                                             ]),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Livraison')
                             ->icon('heroicon-o-truck')
                             ->schema([
+                                Forms\Components\Placeholder::make('delivery_help')
+                                    ->label('')
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-800 dark:text-amber-200">
+                                            <strong>🚚 Livraison</strong> — Définissez où le client récupère et rend le véhicule. Les frais de livraison sont calculés selon vos zones configurées dans "Zones de livraison".
+                                        </div>
+                                    ')),
                                 Forms\Components\Section::make('Récupération')
+                                    ->description('Où le client récupère le véhicule')
                                     ->schema([
                                         Forms\Components\Select::make('pickup_zone_id')
                                             ->label('Zone de récupération')
                                             ->options(fn () => $loueur
                                                 ? DeliveryZone::where('loueur_id', $loueur->id)->pluck('name', 'id')
                                                 : []
-                                            ),
+                                            )
+                                            ->helperText('Zone prédéfinie — les frais seront appliqués automatiquement'),
                                         Forms\Components\TextInput::make('pickup_address')
-                                            ->label('Adresse de récupération'),
+                                            ->label('Adresse de récupération')
+                                            ->helperText('Adresse exacte pour le point de rendez-vous'),
                                         Forms\Components\Textarea::make('pickup_notes')
                                             ->label('Notes de récupération')
-                                            ->rows(2),
+                                            ->rows(2)
+                                            ->helperText('Ex: "Devant le café X", "Appeler 5 min avant"'),
                                     ]),
                                 Forms\Components\Section::make('Retour')
+                                    ->description('Où le client rend le véhicule')
                                     ->schema([
                                         Forms\Components\Select::make('return_zone_id')
                                             ->label('Zone de retour')
                                             ->options(fn () => $loueur
                                                 ? DeliveryZone::where('loueur_id', $loueur->id)->pluck('name', 'id')
                                                 : []
-                                            ),
+                                            )
+                                            ->helperText('Peut être différent de la zone de récupération'),
                                         Forms\Components\TextInput::make('return_address')
-                                            ->label('Adresse de retour'),
+                                            ->label('Adresse de retour')
+                                            ->helperText('Laissez vide si identique à la récupération'),
                                         Forms\Components\Textarea::make('return_notes')
                                             ->label('Notes de retour')
-                                            ->rows(2),
+                                            ->rows(2)
+                                            ->helperText('Instructions spécifiques pour le retour'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Tarification')
                             ->icon('heroicon-o-currency-euro')
                             ->schema([
+                                Forms\Components\Placeholder::make('pricing_help')
+                                    ->label('')
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded-lg text-sm text-indigo-800 dark:text-indigo-200">
+                                            <strong>💰 Tarification</strong> — Le total est calculé : Prix de base + Surcharges + Livraison + Options - Remises. Le client voit ce total sur sa confirmation.
+                                        </div>
+                                    ')),
                                 Forms\Components\Grid::make(3)
                                     ->schema([
                                         Forms\Components\TextInput::make('base_price')
                                             ->label('Prix de base')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Prix du véhicule × nombre de jours'),
                                         Forms\Components\TextInput::make('duration_discount')
                                             ->label('Remise durée')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Réduction longue durée appliquée'),
                                         Forms\Components\TextInput::make('season_surcharge')
                                             ->label('Surcharge saison')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Supplément haute saison (été, fêtes)'),
                                     ]),
                                 Forms\Components\Grid::make(3)
                                     ->schema([
                                         Forms\Components\TextInput::make('delivery_fee')
                                             ->label('Frais livraison')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Selon la zone de récupération'),
                                         Forms\Components\TextInput::make('return_fee')
                                             ->label('Frais retour')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Selon la zone de retour'),
                                         Forms\Components\TextInput::make('options_total')
                                             ->label('Total options')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Siège bébé, GPS, chauffeur...'),
                                     ]),
                                 Forms\Components\Grid::make(3)
                                     ->schema([
                                         Forms\Components\TextInput::make('extra_fees')
                                             ->label('Frais extra')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Frais additionnels manuels'),
                                         Forms\Components\TextInput::make('discount_amount')
                                             ->label('Remise')
                                             ->numeric()
-                                            ->suffix('DA'),
+                                            ->suffix('DA')
+                                            ->helperText('Code promo ou remise manuelle'),
                                         Forms\Components\TextInput::make('total_price')
                                             ->label('TOTAL')
                                             ->numeric()
                                             ->suffix('DA')
-                                            ->required(),
+                                            ->required()
+                                            ->helperText('Montant final facturé au client'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Paiement')
                             ->icon('heroicon-o-banknotes')
                             ->schema([
+                                Forms\Components\Placeholder::make('payment_help')
+                                    ->label('')
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg text-sm text-emerald-800 dark:text-emerald-200">
+                                            <strong>💳 Suivi des paiements</strong> — Gérez l\'acompte, la caution et le paiement final. Le statut "Payé" est visible par le client sur sa page de confirmation.
+                                        </div>
+                                    ')),
                                 Forms\Components\Section::make('Acompte')
+                                    ->description('L\'acompte confirme la réservation. Sans paiement avant expiration, la réservation peut être annulée.')
                                     ->schema([
                                         Forms\Components\Grid::make(3)
                                             ->schema([
                                                 Forms\Components\TextInput::make('advance_amount')
                                                     ->label('Montant acompte')
                                                     ->numeric()
-                                                    ->suffix('DA'),
+                                                    ->suffix('DA')
+                                                    ->helperText('Généralement 20-30% du total'),
                                                 Forms\Components\Select::make('advance_status')
                                                     ->label('Statut acompte')
                                                     ->options([
                                                         'pending' => 'En attente',
                                                         'paid' => 'Payé',
                                                         'refunded' => 'Remboursé',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('Passez à "Payé" quand reçu'),
                                                 Forms\Components\Select::make('advance_payment_method')
                                                     ->label('Méthode')
                                                     ->options([
@@ -259,25 +330,30 @@ class BookingResource extends Resource
                                                         'baridimob' => 'BaridiMob',
                                                         'paypal' => 'PayPal',
                                                         'bank_transfer' => 'Virement',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('Comment le client a payé'),
                                             ]),
                                         Forms\Components\DateTimePicker::make('advance_expires_at')
-                                            ->label('Expiration acompte'),
+                                            ->label('Expiration acompte')
+                                            ->helperText('Date limite pour recevoir l\'acompte'),
                                     ]),
                                 Forms\Components\Section::make('Caution')
+                                    ->description('Montant bloqué pendant la location — à rendre au client si pas de dégâts.')
                                     ->schema([
                                         Forms\Components\Grid::make(3)
                                             ->schema([
                                                 Forms\Components\TextInput::make('deposit_amount')
                                                     ->label('Montant caution')
                                                     ->numeric()
-                                                    ->suffix('DA'),
+                                                    ->suffix('DA')
+                                                    ->helperText('Montant défini sur la fiche véhicule'),
                                                 Forms\Components\Select::make('deposit_currency')
                                                     ->label('Devise')
                                                     ->options([
                                                         'DZD' => 'DA',
                                                         'EUR' => '€',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('En quelle devise'),
                                                 Forms\Components\Select::make('deposit_status')
                                                     ->label('Statut')
                                                     ->options([
@@ -285,21 +361,25 @@ class BookingResource extends Resource
                                                         'received' => 'Reçue',
                                                         'returned' => 'Rendue',
                                                         'partial' => 'Partielle',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('Partielle = déduit des dégâts'),
                                             ]),
                                     ]),
                                 Forms\Components\Section::make('Paiement final')
+                                    ->description('Solde à payer à la remise ou au retour du véhicule.')
                                     ->schema([
                                         Forms\Components\Grid::make(3)
                                             ->schema([
                                                 Forms\Components\TextInput::make('amount_paid')
                                                     ->label('Montant payé')
                                                     ->numeric()
-                                                    ->suffix('DA'),
+                                                    ->suffix('DA')
+                                                    ->helperText('Total encaissé à ce jour'),
                                                 Forms\Components\TextInput::make('amount_remaining')
                                                     ->label('Reste à payer')
                                                     ->numeric()
-                                                    ->suffix('DA'),
+                                                    ->suffix('DA')
+                                                    ->helperText('Ce que le client doit encore'),
                                                 Forms\Components\Select::make('payment_status')
                                                     ->label('Statut paiement')
                                                     ->options([
@@ -307,7 +387,8 @@ class BookingResource extends Resource
                                                         'partial' => 'Partiel',
                                                         'paid' => 'Payé',
                                                         'refunded' => 'Remboursé',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('Affiché au client'),
                                             ]),
                                         Forms\Components\Select::make('payment_method')
                                             ->label('Méthode de paiement')
@@ -318,20 +399,30 @@ class BookingResource extends Resource
                                                 'baridimob' => 'BaridiMob',
                                                 'paypal' => 'PayPal',
                                                 'bank_transfer' => 'Virement',
-                                            ]),
+                                            ])
+                                            ->helperText('Méthode utilisée pour le solde'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('État véhicule')
                             ->icon('heroicon-o-clipboard-document-check')
                             ->schema([
+                                Forms\Components\Placeholder::make('condition_help')
+                                    ->label('')
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-700 rounded-lg text-sm text-rose-800 dark:text-rose-200">
+                                            <strong>📋 État du véhicule</strong> — Documentez l\'état avant/après pour vous protéger en cas de litige. Les photos et notes servent de preuve juridique.
+                                        </div>
+                                    ')),
                                 Forms\Components\Section::make('Départ')
+                                    ->description('À remplir AVANT de remettre le véhicule au client')
                                     ->schema([
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('mileage_start')
                                                     ->label('Kilométrage départ')
                                                     ->numeric()
-                                                    ->suffix('km'),
+                                                    ->suffix('km')
+                                                    ->helperText('Relevez le compteur exact'),
                                                 Forms\Components\Select::make('fuel_level_start')
                                                     ->label('Niveau carburant')
                                                     ->options([
@@ -340,25 +431,30 @@ class BookingResource extends Resource
                                                         'half' => '1/2',
                                                         'three_quarters' => '3/4',
                                                         'full' => 'Plein',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('Le client doit rendre avec le même niveau'),
                                             ]),
                                         Forms\Components\Textarea::make('condition_notes_before')
                                             ->label('Notes état avant')
-                                            ->rows(2),
+                                            ->rows(2)
+                                            ->helperText('Rayures existantes, impacts, état intérieur...'),
                                         Forms\Components\FileUpload::make('photos_before')
                                             ->label('Photos avant')
                                             ->multiple()
                                             ->directory('bookings/photos')
-                                            ->visibility('private'),
+                                            ->visibility('private')
+                                            ->helperText('Prenez des photos de tous les angles + intérieur'),
                                     ]),
                                 Forms\Components\Section::make('Retour')
+                                    ->description('À remplir au retour du véhicule — comparez avec l\'état de départ')
                                     ->schema([
                                         Forms\Components\Grid::make(2)
                                             ->schema([
                                                 Forms\Components\TextInput::make('mileage_end')
                                                     ->label('Kilométrage retour')
                                                     ->numeric()
-                                                    ->suffix('km'),
+                                                    ->suffix('km')
+                                                    ->helperText('Pour calculer les km parcourus'),
                                                 Forms\Components\Select::make('fuel_level_end')
                                                     ->label('Niveau carburant')
                                                     ->options([
@@ -367,16 +463,19 @@ class BookingResource extends Resource
                                                         'half' => '1/2',
                                                         'three_quarters' => '3/4',
                                                         'full' => 'Plein',
-                                                    ]),
+                                                    ])
+                                                    ->helperText('Si moins qu\'au départ, facturer le carburant'),
                                             ]),
                                         Forms\Components\Textarea::make('condition_notes_after')
                                             ->label('Notes état après')
-                                            ->rows(2),
+                                            ->rows(2)
+                                            ->helperText('Nouveaux dégâts, problèmes signalés...'),
                                         Forms\Components\FileUpload::make('photos_after')
                                             ->label('Photos après')
                                             ->multiple()
                                             ->directory('bookings/photos')
-                                            ->visibility('private'),
+                                            ->visibility('private')
+                                            ->helperText('Documentez tout nouveau dommage'),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Notes')
