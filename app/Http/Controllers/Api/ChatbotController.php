@@ -52,7 +52,7 @@ class ChatbotController extends Controller
             'content' => $request->message,
         ];
 
-        $model = config('services.openrouter.model', 'google/gemini-2.0-flash:free');
+        $model = config('services.openrouter.model', 'google/gemini-2.0-flash-exp:free');
 
         try {
             $response = Http::timeout(15)
@@ -79,6 +79,7 @@ class ChatbotController extends Controller
             Log::warning('Chatbot OpenRouter API error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
+                'model' => $model,
             ]);
 
             return response()->json([
