@@ -21,7 +21,7 @@ class ChatbotController extends Controller
             'history' => 'nullable|array|max:10',
         ]);
 
-        $apiKey = config('services.gemini.api_key');
+        $apiKey = config('services.openrouter.api_key');
 
         if (! $apiKey) {
             return response()->json([
@@ -31,57 +31,52 @@ class ChatbotController extends Controller
 
         $systemPrompt = $this->buildSystemPrompt();
 
-        // Build Gemini conversation format
-        $contents = [];
+        // Build OpenRouter conversation format (OpenAI-compatible)
+        $messages = [
+            ['role' => 'system', 'content' => $systemPrompt],
+        ];
 
         if ($request->history) {
             foreach ($request->history as $msg) {
                 if (isset($msg['role']) && isset($msg['content'])) {
-                    $contents[] = [
-                        'role' => $msg['role'] === 'user' ? 'user' : 'model',
-                        'parts' => [['text' => $msg['content']]],
+                    $messages[] = [
+                        'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
+                        'content' => $msg['content'],
                     ];
                 }
             }
         }
 
-        $contents[] = [
+        $messages[] = [
             'role' => 'user',
-            'parts' => [['text' => $request->message]],
+            'content' => $request->message,
         ];
 
-        $model = config('services.gemini.model', 'gemini-2.0-flash');
+        $model = config('services.openrouter.model', 'google/gemini-2.0-flash-exp:free');
 
         try {
-            $response = Http::timeout(15)->post(
-                "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}",
-                [
-                    'system_instruction' => [
-                        'parts' => [['text' => $systemPrompt]],
-                    ],
-                    'contents' => $contents,
-                    'generationConfig' => [
-                        'maxOutputTokens' => 300,
-                        'temperature' => 0.7,
-                    ],
-                    'safetySettings' => [
-                        ['category' => 'HARM_CATEGORY_HARASSMENT', 'threshold' => 'BLOCK_ONLY_HIGH'],
-                        ['category' => 'HARM_CATEGORY_HATE_SPEECH', 'threshold' => 'BLOCK_ONLY_HIGH'],
-                        ['category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'threshold' => 'BLOCK_ONLY_HIGH'],
-                        ['category' => 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold' => 'BLOCK_ONLY_HIGH'],
-                    ],
-                ]
-            );
+            $response = Http::timeout(15)
+                ->withHeaders([
+                    'Authorization' => "Bearer {$apiKey}",
+                    'HTTP-Referer' => config('app.url'),
+                    'X-Title' => config('app.name', 'ResaDZ'),
+                ])
+                ->post('https://openrouter.ai/api/v1/chat/completions', [
+                    'model' => $model,
+                    'messages' => $messages,
+                    'max_tokens' => 300,
+                    'temperature' => 0.7,
+                ]);
 
             if ($response->successful()) {
                 $data = $response->json();
-                $reply = $data['candidates'][0]['content']['parts'][0]['text']
+                $reply = $data['choices'][0]['message']['content']
                     ?? "Désolé, je n'ai pas compris. Reformule ta question !";
 
                 return response()->json(['reply' => trim($reply)]);
             }
 
-            Log::warning('Chatbot Gemini API error', [
+            Log::warning('Chatbot OpenRouter API error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
             ]);
