@@ -14,6 +14,8 @@
     var sendBtn = document.getElementById('resabot-send');
     var closeBtn = document.getElementById('resabot-close');
 
+    var micBtn = document.getElementById('resabot-mic');
+
     if (!fab || !chatWindow) return;
 
     var STORAGE_KEY = 'resabot_state';
@@ -22,6 +24,8 @@
     var unreadCount = 0;
     var isWaitingForAI = false;
     var conversationHistory = [];
+    var isListening = false;
+    var recognition = null;
 
     // --- CSRF Token ---
     var csrfMeta = document.querySelector('meta[name="csrf-token"]');
@@ -354,6 +358,77 @@
 
         // Send to AI for intelligent response
         sendToAI(text);
+    }
+
+    // --- Voice Recognition ---
+    var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+    if (SpeechRecognition && micBtn) {
+        recognition = new SpeechRecognition();
+        recognition.lang = 'fr-FR';
+        recognition.continuous = false;
+        recognition.interimResults = true;
+
+        recognition.onstart = function () {
+            isListening = true;
+            micBtn.classList.add('resabot-mic-btn--active');
+            micBtn.querySelector('.resabot-mic-icon').style.display = 'none';
+            micBtn.querySelector('.resabot-mic-stop-icon').style.display = 'block';
+            inputField.placeholder = 'Parle maintenant...';
+        };
+
+        recognition.onresult = function (event) {
+            var transcript = '';
+            for (var i = event.resultIndex; i < event.results.length; i++) {
+                transcript += event.results[i][0].transcript;
+            }
+            inputField.value = transcript;
+
+            // Auto-send on final result
+            if (event.results[event.results.length - 1].isFinal) {
+                stopListening();
+                if (transcript.trim()) {
+                    handleSend();
+                }
+            }
+        };
+
+        recognition.onerror = function (event) {
+            stopListening();
+            if (event.error === 'not-allowed') {
+                addMessage("Autorise l'accès au micro dans ton navigateur pour utiliser la dictée vocale.", 'bot');
+            }
+        };
+
+        recognition.onend = function () {
+            stopListening();
+        };
+
+        micBtn.addEventListener('click', function () {
+            if (isListening) {
+                recognition.stop();
+                stopListening();
+            } else {
+                try {
+                    recognition.start();
+                } catch (e) {
+                    // Already started
+                }
+            }
+        });
+    } else if (micBtn) {
+        // Browser doesn't support speech recognition
+        micBtn.style.display = 'none';
+    }
+
+    function stopListening() {
+        isListening = false;
+        if (micBtn) {
+            micBtn.classList.remove('resabot-mic-btn--active');
+            micBtn.querySelector('.resabot-mic-icon').style.display = 'block';
+            micBtn.querySelector('.resabot-mic-stop-icon').style.display = 'none';
+        }
+        inputField.placeholder = 'Écris ou parle...';
     }
 
     // --- Event Listeners ---

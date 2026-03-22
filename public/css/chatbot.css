@@ -446,6 +446,59 @@
     background: #ffffff;
 }
 
+/* --- Mic Button --- */
+.resabot-mic-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: none;
+    background: #F1F5F9;
+    color: #64748B;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.resabot-mic-btn:hover {
+    background: #E2E8F0;
+    color: #FF6B2C;
+}
+
+.resabot-mic-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+    stroke: none;
+}
+
+.resabot-mic-btn svg path[fill="none"] {
+    fill: none;
+    stroke: currentColor;
+}
+
+.resabot-mic-btn svg line {
+    stroke: currentColor;
+}
+
+.resabot-mic-btn--active {
+    background: #EF4444;
+    color: #ffffff;
+    animation: resabot-micPulse 1.5s ease-in-out infinite;
+}
+
+.resabot-mic-btn--active:hover {
+    background: #DC2626;
+    color: #ffffff;
+}
+
+@keyframes resabot-micPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.5); }
+    50% { box-shadow: 0 0 0 8px rgba(239, 68, 68, 0); }
+}
+
 .resabot-send-btn {
     width: 40px;
     height: 40px;

@@ -33,7 +33,18 @@
 
     <!-- Input Area -->
     <div class="resabot-input-area">
-        <input type="text" class="resabot-input" id="resabot-input" placeholder="Écris ta question ici..." autocomplete="off">
+        <input type="text" class="resabot-input" id="resabot-input" placeholder="Écris ou parle..." autocomplete="off">
+        <button type="button" class="resabot-mic-btn" id="resabot-mic" aria-label="Dicter un message">
+            <svg class="resabot-mic-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="12" y1="19" x2="12" y2="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <line x1="8" y1="23" x2="16" y2="23" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            <svg class="resabot-mic-stop-icon" viewBox="0 0 24 24" aria-hidden="true" style="display:none">
+                <rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>
+            </svg>
+        </button>
         <button type="button" class="resabot-send-btn" id="resabot-send" aria-label="Envoyer">
             <svg viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/>
