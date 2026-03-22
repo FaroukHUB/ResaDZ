@@ -1,16 +1,63 @@
 <x-filament-panels::page>
     <div class="space-y-6">
-        {{-- Welcome Banner --}}
+        {{-- Welcome Banner with Guide --}}
         <div class="welcome-banner" style="background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);">
             <div class="relative z-10">
-                <div class="flex items-center gap-3 mb-2">
-                    <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                        <x-heroicon-o-truck class="w-6 h-6 text-white" />
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                            <x-heroicon-o-truck class="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold">Tableau de bord chauffeur</h2>
+                            <p class="text-white/80 text-sm">Suivez vos courses et revenus en temps reel</p>
+                        </div>
                     </div>
-                    <div>
-                        <h2 class="text-xl font-bold">Tableau de bord chauffeur</h2>
-                        <p class="text-white/80 text-sm">Suivez vos courses et revenus en temps reel</p>
+                    <div class="hidden md:block">
+                        <div x-data="{ open: false }" class="relative">
+                            <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl transition text-sm font-medium">
+                                <x-heroicon-o-question-mark-circle class="w-5 h-5" />
+                                Aide
+                            </button>
+                            <div x-show="open" @click.away="open = false" x-transition
+                                 class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 text-gray-700 dark:text-gray-300 text-sm z-50">
+                                <h4 class="font-bold text-gray-900 dark:text-white mb-2">Comprendre votre tableau de bord</h4>
+                                <ul class="space-y-2">
+                                    <li class="flex items-start gap-2">
+                                        <span class="w-2 h-2 bg-blue-500 rounded-full mt-1.5"></span>
+                                        <span><strong>Transferts</strong> : Courses aeroport/gare (passagers)</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="w-2 h-2 bg-amber-500 rounded-full mt-1.5"></span>
+                                        <span><strong>Livraisons</strong> : Transport de colis et marchandises</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="w-2 h-2 bg-green-500 rounded-full mt-1.5"></span>
+                                        <span><strong>Solde</strong> : Votre benefice apres depenses</span>
+                                    </li>
+                                    <li class="flex items-start gap-2">
+                                        <span class="w-2 h-2 bg-red-500 rounded-full mt-1.5"></span>
+                                        <span><strong>Commission</strong> : 10% a payer a ResaDZ</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Quick Tips --}}
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <x-heroicon-o-light-bulb class="w-5 h-5 text-white" />
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-amber-900 dark:text-amber-100">Conseil du jour</p>
+                    <p class="text-sm text-amber-700 dark:text-amber-300 mt-1">
+                        Pensez a mettre a jour vos <strong>disponibilites</strong> chaque semaine pour recevoir plus de courses. Les chauffeurs avec un calendrier a jour recoivent 35% de demandes en plus !
+                    </p>
                 </div>
             </div>
         </div>

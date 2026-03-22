@@ -133,21 +133,53 @@
             </div>
         </div>
 
+        {{-- Guide Section --}}
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <x-heroicon-o-information-circle class="w-5 h-5 text-white" />
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-blue-900 dark:text-blue-100">Comment utiliser le calendrier ?</p>
+                    <ul class="text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
+                        <li class="flex items-start gap-2">
+                            <x-heroicon-o-cursor-arrow-rays class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span><strong>Cliquer sur une case verte</strong> : Bloquer cette date (le vehicule ne sera plus reservable)</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <x-heroicon-o-cursor-arrow-rays class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span><strong>Cliquer sur une case rayee</strong> : Debloquer la date pour la rendre disponible</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <x-heroicon-o-link class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span><strong>Copier lien iCal</strong> : Synchronisez ce calendrier avec Google Calendar ou Airbnb</span>
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <x-heroicon-o-arrow-down-tray class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                            <span><strong>Importer</strong> : Importez les indisponibilites depuis un autre calendrier</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- Legend --}}
-        <div class="flex flex-wrap items-center gap-4 text-sm px-1">
-            <div class="flex items-center gap-2">
-                <div class="w-5 h-5 rounded-md bg-[#d1fae5]"></div>
-                <span class="text-gray-600 dark:text-gray-400 font-medium">Disponible</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-5 h-5 rounded-md bg-[#fbbf24]"></div>
-                <span class="text-gray-600 dark:text-gray-400 font-medium">En attente</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="w-5 h-5 rounded-md bg-[#3b82f6]"></div>
-                <span class="text-gray-600 dark:text-gray-400 font-medium">Confirmée</span>
-            </div>
-            <div class="flex items-center gap-2">
+        <div class="bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm border border-gray-100 dark:border-gray-700">
+            <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-3">Legende des couleurs</p>
+            <div class="flex flex-wrap items-center gap-4 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-md bg-[#d1fae5]"></div>
+                    <span class="text-gray-600 dark:text-gray-400 font-medium">Disponible <span class="text-gray-400">(cliquez pour bloquer)</span></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-md bg-[#fbbf24]"></div>
+                    <span class="text-gray-600 dark:text-gray-400 font-medium">En attente</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-5 h-5 rounded-md bg-[#3b82f6]"></div>
+                    <span class="text-gray-600 dark:text-gray-400 font-medium">Confirmee</span>
+                </div>
+                <div class="flex items-center gap-2">
                 <div class="w-5 h-5 rounded-md bg-[#8b5cf6]"></div>
                 <span class="text-gray-600 dark:text-gray-400 font-medium">En cours</span>
             </div>

@@ -3,17 +3,64 @@
         @if($isTaxi ?? false)
             {{-- ========== TAXI/CHAUFFEUR DASHBOARD ========== --}}
 
-            {{-- Welcome Banner --}}
+            {{-- Welcome Banner with Guide --}}
             <div class="welcome-banner">
                 <div class="relative z-10">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                            <x-heroicon-o-chart-bar-square class="w-6 h-6 text-white" />
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                                <x-heroicon-o-chart-bar-square class="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h2 class="text-xl font-bold">Tableau de bord financier</h2>
+                                <p class="text-white/80 text-sm">Suivez vos revenus et depenses en temps reel</p>
+                            </div>
                         </div>
-                        <div>
-                            <h2 class="text-xl font-bold">Tableau de bord financier</h2>
-                            <p class="text-white/80 text-sm">Suivez vos revenus et depenses en temps reel</p>
+                        <div class="hidden md:block">
+                            <div x-data="{ open: false }" class="relative">
+                                <button @click="open = !open" class="flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-xl transition text-sm font-medium">
+                                    <x-heroicon-o-question-mark-circle class="w-5 h-5" />
+                                    Guide
+                                </button>
+                                <div x-show="open" @click.away="open = false" x-transition
+                                     class="absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-4 text-gray-700 dark:text-gray-300 text-sm z-50">
+                                    <h4 class="font-bold text-gray-900 dark:text-white mb-2">Comment lire ce tableau ?</h4>
+                                    <ul class="space-y-2">
+                                        <li class="flex items-start gap-2">
+                                            <span class="w-2 h-2 bg-green-500 rounded-full mt-1.5"></span>
+                                            <span><strong>CA (Chiffre d'affaires)</strong> : Total des revenus generes par vos courses</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <span class="w-2 h-2 bg-red-500 rounded-full mt-1.5"></span>
+                                            <span><strong>Depenses</strong> : Carburant, entretien, et autres frais enregistres</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <span class="w-2 h-2 bg-blue-500 rounded-full mt-1.5"></span>
+                                            <span><strong>Solde</strong> : Benefice net = CA - Depenses</span>
+                                        </li>
+                                        <li class="flex items-start gap-2">
+                                            <span class="w-2 h-2 bg-amber-500 rounded-full mt-1.5"></span>
+                                            <span><strong>Commission</strong> : 10% a reverser a ResaDZ sur les courses confirmees</span>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Quick Tips --}}
+            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-indigo-200 dark:border-indigo-800">
+                <div class="flex items-start gap-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                        <x-heroicon-o-light-bulb class="w-5 h-5 text-white" />
+                    </div>
+                    <div class="flex-1">
+                        <p class="font-semibold text-indigo-900 dark:text-indigo-100">Astuce du jour</p>
+                        <p class="text-sm text-indigo-700 dark:text-indigo-300 mt-1">
+                            Enregistrez vos depenses regulierement (carburant, peages, entretien) dans l'onglet <strong>Transactions</strong> pour avoir une vision precise de votre rentabilite. Un suivi quotidien vous aide a optimiser vos gains !
+                        </p>
                     </div>
                 </div>
             </div>

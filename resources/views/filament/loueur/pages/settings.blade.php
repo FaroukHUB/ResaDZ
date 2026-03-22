@@ -14,6 +14,36 @@
         </div>
     </div>
 
+    {{-- Guide Section --}}
+    <div class="mb-6 bg-gradient-to-r from-violet-50 to-purple-50 dark:from-violet-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-violet-200 dark:border-violet-800">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-violet-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <x-heroicon-o-adjustments-horizontal class="w-5 h-5 text-white" />
+            </div>
+            <div class="flex-1">
+                <p class="font-semibold text-violet-900 dark:text-violet-100">Guide des parametres</p>
+                <div class="text-sm text-violet-700 dark:text-violet-300 mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-building-storefront class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Profil</strong> : Infos visibles par vos clients (nom, description, contact)</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-map-pin class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Zones</strong> : Lieux de livraison et tarifs associes</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-credit-card class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Paiements</strong> : Acompte, methodes de paiement acceptees</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-bell class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Notifications</strong> : Comment etre alerte des reservations</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <form wire:submit="save">
         <div class="card-modern mb-6">
             {{ $this->form }}

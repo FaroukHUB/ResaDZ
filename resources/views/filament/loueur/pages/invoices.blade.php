@@ -1,5 +1,38 @@
 <x-filament-panels::page>
     <div class="space-y-6">
+        {{-- Welcome Banner --}}
+        <div class="welcome-banner" style="background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);">
+            <div class="relative z-10">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                        <x-heroicon-o-document-text class="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">Mes factures</h2>
+                        <p class="text-white/80 text-sm">Consultez et telechargez vos factures ResaDZ</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Guide Section --}}
+        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <x-heroicon-o-information-circle class="w-5 h-5 text-white" />
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-blue-900 dark:text-blue-100">Comprendre vos factures</p>
+                    <ul class="text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
+                        <li>• <strong>Commission</strong> : 10% preleves sur chaque reservation completee</li>
+                        <li>• <strong>Boosts</strong> : Factures separees pour les mises en avant de vehicules</li>
+                        <li>• <strong>En attente</strong> : Factures a regler avant la date d'echeance</li>
+                        <li>• <strong>PDF</strong> : Cliquez sur le bouton pour telecharger une version imprimable</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- Summary Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-5">

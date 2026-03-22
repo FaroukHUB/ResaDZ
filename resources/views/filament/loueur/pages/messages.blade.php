@@ -1,5 +1,21 @@
 <x-filament-panels::page>
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4" style="height: calc(100vh - 180px); min-height: 550px;">
+    {{-- Guide Banner --}}
+    <div class="mb-4 bg-gradient-to-r from-cyan-50 to-blue-50 dark:from-cyan-900/20 dark:to-blue-900/20 rounded-xl p-4 border border-cyan-200 dark:border-cyan-800">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <x-heroicon-o-chat-bubble-left-right class="w-5 h-5 text-white" />
+            </div>
+            <div class="flex-1">
+                <p class="font-semibold text-cyan-900 dark:text-cyan-100">Centre de messagerie</p>
+                <p class="text-sm text-cyan-700 dark:text-cyan-300 mt-1">
+                    Communiquez directement avec l'equipe ResaDZ pour toute question concernant votre compte, vos reservations ou vos paiements.
+                    <strong>Temps de reponse moyen : 2-4 heures</strong> (jours ouvrables).
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4" style="height: calc(100vh - 240px); min-height: 550px;">
         {{-- Conversations Sidebar --}}
         <div class="lg:col-span-4 xl:col-span-3 bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden flex flex-col">
             {{-- Header --}}

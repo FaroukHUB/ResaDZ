@@ -1,5 +1,40 @@
 <x-filament-panels::page>
     <div class="space-y-6">
+        {{-- Welcome Banner --}}
+        <div class="welcome-banner" style="background: linear-gradient(135deg, #f59e0b 0%, #ef4444 100%);">
+            <div class="relative z-10">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center gap-3">
+                        <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                            <x-heroicon-o-star class="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <h2 class="text-xl font-bold">Avis clients</h2>
+                            <p class="text-white/80 text-sm">Gerez votre reputation et repondez aux clients</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Guide Section --}}
+        <div class="bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+            <div class="flex items-start gap-3">
+                <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <x-heroicon-o-light-bulb class="w-5 h-5 text-white" />
+                </div>
+                <div class="flex-1">
+                    <p class="font-semibold text-amber-900 dark:text-amber-100">Pourquoi repondre aux avis ?</p>
+                    <ul class="text-sm text-amber-700 dark:text-amber-300 mt-2 space-y-1">
+                        <li>• <strong>Avis positifs</strong> : Remerciez vos clients pour les fideliser et encourager de nouveaux avis</li>
+                        <li>• <strong>Avis negatifs</strong> : Montrez votre professionnalisme en proposant une solution ou une explication</li>
+                        <li>• <strong>Visibilite</strong> : Les agences qui repondent aux avis sont mieux classees sur ResaDZ</li>
+                        <li>• <strong>Confiance</strong> : 90% des clients lisent les reponses avant de reserver</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
             {{-- Average Rating --}}

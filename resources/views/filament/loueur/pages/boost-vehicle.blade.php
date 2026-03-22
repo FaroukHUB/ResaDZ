@@ -1,4 +1,51 @@
 <x-filament-panels::page>
+    {{-- Welcome Banner --}}
+    <div class="welcome-banner mb-6" style="background: linear-gradient(135deg, #f59e0b 0%, #eab308 100%);">
+        <div class="relative z-10">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                        <x-heroicon-o-rocket-launch class="w-6 h-6 text-white" />
+                    </div>
+                    <div>
+                        <h2 class="text-xl font-bold">Booster vos vehicules</h2>
+                        <p class="text-white/80 text-sm">Augmentez votre visibilite et obtenez plus de reservations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{-- Guide Section --}}
+    <div class="mb-6 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20 rounded-xl p-4 border border-amber-200 dark:border-amber-800">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 bg-gradient-to-br from-amber-500 to-yellow-500 rounded-xl flex items-center justify-center flex-shrink-0">
+                <x-heroicon-o-question-mark-circle class="w-5 h-5 text-white" />
+            </div>
+            <div class="flex-1">
+                <p class="font-semibold text-amber-900 dark:text-amber-100">Comment fonctionne le boost ?</p>
+                <ul class="text-sm text-amber-700 dark:text-amber-300 mt-2 space-y-1">
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-500 font-bold">1.</span>
+                        <span><strong>Choisissez un vehicule</strong> parmi votre flotte active</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-500 font-bold">2.</span>
+                        <span><strong>Selectionnez une duree</strong> : 3, 7 ou 30 jours selon votre budget</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-500 font-bold">3.</span>
+                        <span><strong>Effet immediat</strong> : Votre vehicule apparait en tete des resultats avec un badge "Sponsorise"</span>
+                    </li>
+                    <li class="flex items-start gap-2">
+                        <span class="text-amber-500 font-bold">4.</span>
+                        <span><strong>+40% de clics en moyenne</strong> grace a la mise en avant prioritaire</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     {{-- Active Boosts --}}
     @if($this->activeBoosts->count() > 0)
         <div class="mb-6">
