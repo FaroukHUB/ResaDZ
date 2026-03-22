@@ -34,7 +34,7 @@ class Revenues extends Page implements HasForms, HasTable
     protected static ?string $navigationLabel = 'Revenus & Commissions';
     protected static ?string $title = 'Gestion des Revenus';
     protected static ?string $navigationGroup = 'Gestion';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 5;
 
     protected static string $view = 'filament.admin.pages.revenues';
 

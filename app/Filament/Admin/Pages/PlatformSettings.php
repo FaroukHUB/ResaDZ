@@ -18,7 +18,7 @@ class PlatformSettings extends Page
 
     protected static ?string $title = 'Paramètres de la plateforme';
 
-    protected static ?string $navigationGroup = 'Configuration';
+    protected static ?string $navigationGroup = 'Paramètres';
 
     protected static ?int $navigationSort = 1;
 

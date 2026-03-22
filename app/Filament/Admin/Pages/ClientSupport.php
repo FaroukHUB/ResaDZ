@@ -20,7 +20,7 @@ class ClientSupport extends Page
 
     protected static ?int $navigationSort = 20;
 
-    protected static ?string $navigationGroup = 'Communication';
+    protected static ?string $navigationGroup = 'Gestion';
 
     public ?int $selectedConversationId = null;
     public string $newMessage = '';

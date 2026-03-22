@@ -17,10 +17,24 @@ use Illuminate\Support\Facades\DB;
 class Statistics extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-chart-pie';
-    protected static ?string $navigationGroup = 'Analytics';
+    protected static ?string $navigationGroup = 'Marketing';
     protected static ?string $navigationLabel = 'Statistiques';
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 0;
     protected static string $view = 'filament.admin.pages.statistics';
+
+    public static function getNavigationBadge(): ?string
+    {
+        // Show real-time visitors
+        $count = \App\Models\PageVisit::where('visited_at', '>=', now()->subMinutes(5))
+            ->distinct('session_id')
+            ->count('session_id');
+        return $count > 0 ? $count . ' en ligne' : null;
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'success';
+    }
 
     public string $period = 'month';
 
