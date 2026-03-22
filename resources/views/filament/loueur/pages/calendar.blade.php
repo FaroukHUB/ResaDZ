@@ -2,9 +2,9 @@
     <style>
         .cal-grid { display: grid; gap: 0; }
         .cal-cell {
-            width: 44px; height: 44px;
-            border-radius: 8px;
-            margin: 1px;
+            width: 56px; height: 56px;
+            border-radius: 10px;
+            margin: 2px;
             transition: all 0.15s ease;
             position: relative;
             cursor: default;
@@ -56,13 +56,13 @@
             z-index: 2;
         }
         .cal-vehicle-card {
-            min-width: 220px;
-            max-width: 220px;
+            min-width: 240px;
+            max-width: 240px;
         }
         .cal-day-header {
-            width: 46px; min-width: 46px;
+            width: 60px; min-width: 60px;
             text-align: center;
-            padding: 6px 0;
+            padding: 8px 0;
         }
         .cal-row {
             display: flex;
@@ -80,8 +80,8 @@
         .dark .cal-row { border-bottom-color: #374151; }
 
         @media (max-width: 640px) {
-            .cal-cell { width: 36px; height: 36px; border-radius: 6px; }
-            .cal-day-header { width: 38px; min-width: 38px; }
+            .cal-cell { width: 44px; height: 44px; border-radius: 8px; }
+            .cal-day-header { width: 48px; min-width: 48px; }
             .cal-vehicle-card { min-width: 160px; max-width: 160px; }
         }
     </style>
@@ -200,7 +200,7 @@
         {{-- Calendar --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
-                <div style="min-width: {{ 220 + (count($days) * 48) }}px;">
+                <div style="min-width: {{ 240 + (count($days) * 64) }}px;">
 
                     {{-- Days header --}}
                     <div class="flex items-end border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-20">
@@ -358,25 +358,23 @@
                 </div>
             </div>
 
-            {{-- Sync card --}}
-            <div class="lg:w-96 bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5">
+            {{-- Sync card with detailed instructions --}}
+            <div class="lg:w-[420px] bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-5" x-data="{ showGoogleSteps: false, showAppleSteps: false }">
                 <div class="flex items-center gap-3 mb-4">
                     <div class="w-10 h-10 bg-green-100 dark:bg-green-900/40 rounded-xl flex items-center justify-center flex-shrink-0">
                         <svg class="w-5 h-5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
                     </div>
                     <div>
-                        <p class="font-semibold text-gray-900 dark:text-white text-sm">Synchronisation</p>
-                        <p class="text-xs text-gray-500 dark:text-gray-400">Abonnez-vous à vos réservations</p>
+                        <p class="font-semibold text-gray-900 dark:text-white text-sm">Synchronisation avec votre agenda</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400">Recevez vos reservations automatiquement</p>
                     </div>
                 </div>
 
-                {{-- Quick actions --}}
-                <div class="flex flex-col gap-2 mb-4">
-                    <a
-                        href="https://calendar.google.com/calendar/r?cid={{ urlencode($icalUrl) }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition group"
+                {{-- Google Calendar Section --}}
+                <div class="mb-4">
+                    <button
+                        @click="showGoogleSteps = !showGoogleSteps; showAppleSteps = false"
+                        class="w-full flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition group"
                     >
                         <svg class="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
                             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -384,19 +382,83 @@
                             <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
                             <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
                         </svg>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Ajouter à Google Agenda</span>
-                        <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </a>
-                    <a
-                        href="webcal://{{ str_replace(['http://', 'https://'], '', $icalUrl) }}"
-                        class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition group"
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white flex-1 text-left">Google Agenda</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="{ 'rotate-180': showGoogleSteps }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    <div x-show="showGoogleSteps" x-transition class="mt-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
+                        <p class="font-semibold text-blue-900 dark:text-blue-100 text-sm mb-3">Comment synchroniser avec Google Agenda :</p>
+                        <ol class="space-y-3 text-sm text-blue-800 dark:text-blue-200">
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                                <span>Cliquez sur le bouton <strong>"Ajouter maintenant"</strong> ci-dessous pour ouvrir Google Agenda</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                                <span>Connectez-vous a votre compte Google si demande</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                                <span>Cliquez sur <strong>"Ajouter"</strong> dans la fenetre qui s'ouvre</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                                <span>Vos reservations apparaitront automatiquement dans votre agenda !</span>
+                            </li>
+                        </ol>
+                        <a
+                            href="https://calendar.google.com/calendar/r?cid={{ urlencode($icalUrl) }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition text-sm font-semibold"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                            Ajouter maintenant
+                        </a>
+                    </div>
+                </div>
+
+                {{-- Apple Calendar / Outlook Section --}}
+                <div class="mb-4">
+                    <button
+                        @click="showAppleSteps = !showAppleSteps; showGoogleSteps = false"
+                        class="w-full flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-600 transition group"
                     >
                         <svg class="w-5 h-5 flex-shrink-0 text-gray-600 dark:text-gray-400" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V9h14v11zM9 11H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2zm-8 4H7v2h2v-2zm4 0h-2v2h2v-2zm4 0h-2v2h2v-2z"/>
                         </svg>
-                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white">Apple Calendar / Outlook</span>
-                        <svg class="w-4 h-4 ml-auto text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-                    </a>
+                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300 group-hover:text-gray-900 dark:group-hover:text-white flex-1 text-left">Apple Calendar / Outlook</span>
+                        <svg class="w-4 h-4 text-gray-400 transition-transform" :class="{ 'rotate-180': showAppleSteps }" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                    </button>
+
+                    <div x-show="showAppleSteps" x-transition class="mt-3 bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-xl p-4">
+                        <p class="font-semibold text-gray-900 dark:text-gray-100 text-sm mb-3">Comment synchroniser avec Apple Calendar / Outlook :</p>
+                        <ol class="space-y-3 text-sm text-gray-700 dark:text-gray-300">
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">1</span>
+                                <span>Cliquez sur le bouton <strong>"S'abonner"</strong> ci-dessous</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">2</span>
+                                <span>Votre application de calendrier s'ouvrira automatiquement</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">3</span>
+                                <span>Confirmez l'abonnement en cliquant sur <strong>"S'abonner"</strong> ou <strong>"OK"</strong></span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="w-6 h-6 bg-gray-500 text-white rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0">4</span>
+                                <span>Vos reservations se synchroniseront automatiquement !</span>
+                            </li>
+                        </ol>
+                        <a
+                            href="webcal://{{ str_replace(['http://', 'https://'], '', $icalUrl) }}"
+                            class="mt-4 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-gray-700 text-white rounded-xl hover:bg-gray-800 transition text-sm font-semibold"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            S'abonner
+                        </a>
+                    </div>
                 </div>
 
                 {{-- Manual copy --}}
@@ -420,7 +482,7 @@
                             ></button>
                         </div>
                         <p class="text-[11px] text-gray-400 dark:text-gray-500 leading-relaxed">
-                            Collez ce lien dans votre application de calendrier préférée.
+                            Collez ce lien dans votre application de calendrier preferee pour une synchronisation manuelle.
                         </p>
                     </div>
                 </div>
