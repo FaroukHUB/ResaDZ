@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\CatalogController;
+use App\Http\Controllers\Api\ChatbotController;
 use App\Http\Controllers\Api\MarketingController;
 use App\Http\Controllers\Api\PopupController;
 use App\Http\Controllers\Api\PushSubscriptionController;
@@ -69,6 +70,9 @@ Route::middleware('throttle:tracking')->prefix('tracking')->group(function () {
     Route::get('/realtime', [\App\Http\Controllers\Api\TrackingController::class, 'getRealtimeVisitors']);
     Route::post('/heartbeat', [\App\Http\Controllers\Api\TrackingController::class, 'heartbeat']);
 });
+
+// Chatbot - Rate limited to prevent abuse
+Route::middleware('throttle:marketing')->post('/chatbot', [ChatbotController::class, 'chat']);
 
 // Push Notifications - Sensitive rate limit
 Route::middleware('throttle:sensitive')->prefix('push')->group(function () {

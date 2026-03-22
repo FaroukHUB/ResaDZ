@@ -366,6 +366,19 @@
     stroke: currentColor;
 }
 
+/* --- Inline Link in bot message --- */
+.resabot-inline-link {
+    color: #FF6B2C;
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-underline-offset: 2px;
+}
+.resabot-inline-link:hover {
+    text-decoration-style: solid;
+    color: #EA580C;
+}
+
 /* --- Typing Indicator --- */
 .resabot-typing {
     align-self: flex-start;
