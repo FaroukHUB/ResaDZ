@@ -12,7 +12,7 @@ class CreateTransferRoute extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $data['loueur_id'] = Auth::user()->loueur->id;
+        $data['loueur_id'] = Auth::user()?->loueur?->id;
 
         return $data;
     }

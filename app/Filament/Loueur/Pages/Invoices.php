@@ -37,12 +37,17 @@ class Invoices extends Page
 
     public function getLoueur()
     {
-        return Auth::user()->loueur;
+        return Auth::user()?->loueur;
     }
 
     public function getInvoices()
     {
-        return Invoice::where('loueur_id', $this->getLoueur()->id)
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return collect();
+        }
+
+        return Invoice::where('loueur_id', $loueur->id)
             ->with('items')
             ->orderByDesc('issue_date')
             ->get();
@@ -50,14 +55,24 @@ class Invoices extends Page
 
     public function getTotalUnpaid(): float
     {
-        return Invoice::where('loueur_id', $this->getLoueur()->id)
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return 0;
+        }
+
+        return Invoice::where('loueur_id', $loueur->id)
             ->whereIn('status', ['sent', 'overdue'])
             ->sum('total');
     }
 
     public function getTotalPaid(): float
     {
-        return Invoice::where('loueur_id', $this->getLoueur()->id)
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return 0;
+        }
+
+        return Invoice::where('loueur_id', $loueur->id)
             ->where('status', 'paid')
             ->sum('total');
     }

@@ -52,6 +52,11 @@ class Messages extends Page implements HasForms
 
     public function mount(): void
     {
+        // Ensure user has a loueur
+        if (!$this->getLoueur()) {
+            return;
+        }
+
         // Auto-select first conversation if exists
         $firstConversation = $this->getConversations()->first();
         if ($firstConversation) {
@@ -61,12 +66,17 @@ class Messages extends Page implements HasForms
 
     public function getLoueur()
     {
-        return Auth::user()->loueur;
+        return Auth::user()?->loueur;
     }
 
     public function getConversations()
     {
-        return Conversation::where('loueur_id', $this->getLoueur()->id)
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return collect();
+        }
+
+        return Conversation::where('loueur_id', $loueur->id)
             ->with('latestMessage')
             ->orderByDesc('last_message_at')
             ->get();
@@ -74,11 +84,12 @@ class Messages extends Page implements HasForms
 
     public function getSelectedConversation()
     {
-        if (!$this->selectedConversationId) {
+        $loueur = $this->getLoueur();
+        if (!$this->selectedConversationId || !$loueur) {
             return null;
         }
 
-        return Conversation::where('loueur_id', $this->getLoueur()->id)
+        return Conversation::where('loueur_id', $loueur->id)
             ->where('id', $this->selectedConversationId)
             ->first();
     }
@@ -125,7 +136,7 @@ class Messages extends Page implements HasForms
         $conversation->addMessage(
             content: $this->newMessage,
             senderType: 'loueur',
-            senderId: $this->getLoueur()->id
+            senderId: $this->getLoueur()?->id
         );
 
         $this->newMessage = '';
@@ -148,8 +159,18 @@ class Messages extends Page implements HasForms
             return;
         }
 
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            Notification::make()
+                ->title('Erreur')
+                ->body('Votre compte loueur n\'est pas configuré.')
+                ->danger()
+                ->send();
+            return;
+        }
+
         $conversation = Conversation::create([
-            'loueur_id' => $this->getLoueur()->id,
+            'loueur_id' => $loueur->id,
             'subject' => $this->newSubject,
             'category' => $this->newCategory,
             'status' => 'open',
@@ -161,7 +182,7 @@ class Messages extends Page implements HasForms
         $conversation->addMessage(
             content: $this->newConversationMessage,
             senderType: 'loueur',
-            senderId: $this->getLoueur()->id
+            senderId: $loueur->id
         );
 
         $this->selectedConversationId = $conversation->id;

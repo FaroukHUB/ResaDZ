@@ -343,7 +343,7 @@ class Revenues extends Page implements HasForms, HasTable
                         }),
                 ]),
             ])
-            ->defaultSort('total_unpaid', 'desc')
+            ->defaultSort('company_name', 'asc')
             ->striped();
     }
 }

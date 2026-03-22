@@ -46,6 +46,10 @@ class BookingMessages extends Page
 
     public function mount(): void
     {
+        if (!$this->getLoueur()) {
+            return;
+        }
+
         $firstConversation = $this->getConversations()->first();
         if ($firstConversation) {
             $this->selectConversation($firstConversation->id);
@@ -54,12 +58,17 @@ class BookingMessages extends Page
 
     public function getLoueur()
     {
-        return Auth::user()->loueur;
+        return Auth::user()?->loueur;
     }
 
     public function getConversations()
     {
-        return BookingConversation::where('loueur_id', $this->getLoueur()->id)
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return collect();
+        }
+
+        return BookingConversation::where('loueur_id', $loueur->id)
             ->with(['booking.vehicle', 'latestMessage'])
             ->orderByDesc('last_message_at')
             ->get();
@@ -67,11 +76,12 @@ class BookingMessages extends Page
 
     public function getSelectedConversation()
     {
-        if (!$this->selectedConversationId) {
+        $loueur = $this->getLoueur();
+        if (!$this->selectedConversationId || !$loueur) {
             return null;
         }
 
-        return BookingConversation::where('loueur_id', $this->getLoueur()->id)
+        return BookingConversation::where('loueur_id', $loueur->id)
             ->where('id', $this->selectedConversationId)
             ->with(['booking.vehicle', 'messages'])
             ->first();
@@ -118,7 +128,7 @@ class BookingMessages extends Page
         BookingMessage::create([
             'booking_conversation_id' => $conversation->id,
             'sender_type' => 'loueur',
-            'sender_id' => $this->getLoueur()->id,
+            'sender_id' => $this->getLoueur()?->id,
             'content' => $this->newMessage,
         ]);
 

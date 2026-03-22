@@ -46,12 +46,17 @@ class Reviews extends Page implements HasForms
 
     protected function getLoueur()
     {
-        return Auth::user()->loueur;
+        return Auth::user()?->loueur;
     }
 
     public function getReviews()
     {
-        return Review::where('loueur_id', $this->getLoueur()->id)
+        $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return collect();
+        }
+
+        return Review::where('loueur_id', $loueur->id)
             ->where('type', 'client_to_loueur')
             ->where('is_public', true)
             ->with(['reviewer', 'booking.vehicle'])
@@ -62,6 +67,15 @@ class Reviews extends Page implements HasForms
     public function getStats(): array
     {
         $loueur = $this->getLoueur();
+        if (!$loueur) {
+            return [
+                'total' => 0,
+                'average' => 0,
+                'distribution' => [],
+                'without_response' => 0,
+            ];
+        }
+
         $reviews = Review::where('loueur_id', $loueur->id)
             ->where('type', 'client_to_loueur')
             ->where('is_public', true)
@@ -120,7 +134,7 @@ class Reviews extends Page implements HasForms
         }
 
         $review = Review::where('id', $this->respondingToId)
-            ->where('loueur_id', $this->getLoueur()->id)
+            ->where('loueur_id', $this->getLoueur()?->id)
             ->first();
 
         if (!$review) {
