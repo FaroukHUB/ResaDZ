@@ -16,7 +16,7 @@
             <div class="flex items-center gap-3">
                 <div class="px-4 py-2 bg-white/20 rounded-lg text-center">
                     <p class="text-xs text-white/70">Vehicules</p>
-                    <p class="text-xl font-bold">{{ \App\Models\Vehicle::where('is_available', true)->count() }}</p>
+                    <p class="text-xl font-bold">{{ \App\Models\Vehicle::where('is_active', true)->where('status', 'available')->count() }}</p>
                 </div>
                 <div class="px-4 py-2 bg-white/20 rounded-lg text-center">
                     <p class="text-xs text-white/70">Loueurs</p>
