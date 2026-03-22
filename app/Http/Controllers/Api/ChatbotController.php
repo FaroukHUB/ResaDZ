@@ -52,7 +52,7 @@ class ChatbotController extends Controller
             'content' => $request->message,
         ];
 
-        $model = config('services.openrouter.model', 'google/gemini-2.0-flash-exp:free');
+        $model = config('services.openrouter.model', 'google/gemini-2.0-flash:free');
 
         try {
             $response = Http::timeout(15)
