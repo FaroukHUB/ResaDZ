@@ -434,12 +434,34 @@ class Calendar extends Page
     public function getViewData(): array
     {
         $loueur = Auth::user()->loueur;
-        if (!$loueur) {
-            return ['vehicles' => collect(), 'days' => [], 'bookingMap' => [], 'blockMap' => []];
-        }
 
         $startOfMonth = Carbon::create($this->currentYear, $this->currentMonth, 1)->startOfMonth();
         $endOfMonth = $startOfMonth->copy()->endOfMonth();
+
+        // Generate days array
+        $days = [];
+        $period = CarbonPeriod::create($startOfMonth, $endOfMonth);
+        foreach ($period as $date) {
+            $days[] = $date;
+        }
+
+        // Base data that's always needed
+        $baseData = [
+            'vehicles' => collect(),
+            'bookingMap' => [],
+            'blockMap' => [],
+            'unavailableMap' => [],
+            'days' => $days,
+            'currentMonth' => $this->currentMonth,
+            'currentYear' => $this->currentYear,
+            'monthName' => $startOfMonth->translatedFormat('F Y'),
+            'icalUrl' => '',
+            'today' => now()->format('Y-m-d'),
+        ];
+
+        if (!$loueur) {
+            return $baseData;
+        }
 
         // Get all vehicles
         $vehicles = Vehicle::where('loueur_id', $loueur->id)
@@ -506,13 +528,6 @@ class Calendar extends Page
                     }
                 }
             }
-        }
-
-        // Generate days array
-        $days = [];
-        $period = CarbonPeriod::create($startOfMonth, $endOfMonth);
-        foreach ($period as $date) {
-            $days[] = $date;
         }
 
         // Generate iCal URL
