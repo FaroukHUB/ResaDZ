@@ -161,8 +161,13 @@
 
     function handleWilayaChoice(wilaya) {
         showTypingThenDo(function () {
-            addMessage("Parfait ! Clique ici pour voir les voitures disponibles \uD83D\uDC47", 'bot');
-            addLinkButton("Voir les v\u00E9hicules \u00E0 " + wilaya, "#");
+            if (wilaya === "Autre") {
+                addMessage("Pas de probl\u00E8me ! Clique ici pour voir tous les v\u00E9hicules disponibles et filtre par ta wilaya \uD83D\uDC47", 'bot');
+                addLinkButton("Voir tous les v\u00E9hicules", "/vehicules");
+            } else {
+                addMessage("Parfait ! Voici les voitures disponibles \u00E0 " + wilaya + " \uD83D\uDC47", 'bot');
+                addLinkButton("Voir les v\u00E9hicules \u00E0 " + wilaya, "/vehicules?wilaya=" + encodeURIComponent(wilaya));
+            }
         });
     }
 
