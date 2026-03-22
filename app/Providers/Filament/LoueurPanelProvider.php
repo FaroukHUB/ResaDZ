@@ -63,10 +63,34 @@ class LoueurPanelProvider extends PanelProvider
                 EnsureUserIsLoueur::class, // Vérifie que c'est bien un loueur
             ])
             ->navigationGroups([
-                'Catalogue',
-                'Réservations',
-                'Finances',
-                'Configuration',
+                \Filament\Navigation\NavigationGroup::make('Catalogue')
+                    ->label('Catalogue')
+                    ->icon('heroicon-o-squares-2x2')
+                    ->collapsible(),
+                \Filament\Navigation\NavigationGroup::make('Réservations')
+                    ->label('Réservations')
+                    ->icon('heroicon-o-calendar-days')
+                    ->collapsible(),
+                \Filament\Navigation\NavigationGroup::make('Chauffeur')
+                    ->label('Chauffeur')
+                    ->icon('heroicon-o-truck')
+                    ->collapsible(),
+                \Filament\Navigation\NavigationGroup::make('Livraison')
+                    ->label('Livraison')
+                    ->icon('heroicon-o-cube')
+                    ->collapsible(),
+                \Filament\Navigation\NavigationGroup::make('Finances')
+                    ->label('Finances')
+                    ->icon('heroicon-o-banknotes')
+                    ->collapsible(),
+                \Filament\Navigation\NavigationGroup::make('Marketing')
+                    ->label('Marketing')
+                    ->icon('heroicon-o-megaphone')
+                    ->collapsible(),
+                \Filament\Navigation\NavigationGroup::make('Configuration')
+                    ->label('Configuration')
+                    ->icon('heroicon-o-cog-6-tooth')
+                    ->collapsible(),
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_START,

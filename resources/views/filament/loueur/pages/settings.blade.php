@@ -22,22 +22,54 @@
             </div>
             <div class="flex-1">
                 <p class="font-semibold text-violet-900 dark:text-violet-100">Guide des parametres</p>
-                <div class="text-sm text-violet-700 dark:text-violet-300 mt-2 grid grid-cols-1 md:grid-cols-2 gap-3">
+                <div class="text-sm text-violet-700 dark:text-violet-300 mt-2 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                     <div class="flex items-start gap-2">
                         <x-heroicon-o-building-storefront class="w-4 h-4 mt-0.5 flex-shrink-0" />
-                        <span><strong>Profil</strong> : Infos visibles par vos clients (nom, description, contact)</span>
+                        <span><strong>Profil</strong> : Nom, description et localisation de votre agence</span>
                     </div>
                     <div class="flex items-start gap-2">
-                        <x-heroicon-o-map-pin class="w-4 h-4 mt-0.5 flex-shrink-0" />
-                        <span><strong>Zones</strong> : Lieux de livraison et tarifs associes</span>
+                        <x-heroicon-o-phone class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Contact</strong> : Telephone, WhatsApp et reseaux sociaux</span>
                     </div>
                     <div class="flex items-start gap-2">
-                        <x-heroicon-o-credit-card class="w-4 h-4 mt-0.5 flex-shrink-0" />
-                        <span><strong>Paiements</strong> : Acompte, methodes de paiement acceptees</span>
+                        <x-heroicon-o-banknotes class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Paiements</strong> : Methodes de paiement acceptees (CIB, PayPal...)</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-calendar class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Reservations</strong> : Acompte, delais d'annulation et options de retour</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-squares-plus class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Options</strong> : Equipements payants (siege bebe, GPS, chauffeur...)</span>
                     </div>
                     <div class="flex items-start gap-2">
                         <x-heroicon-o-bell class="w-4 h-4 mt-0.5 flex-shrink-0" />
-                        <span><strong>Notifications</strong> : Comment etre alerte des reservations</span>
+                        <span><strong>Notifications</strong> : Alertes push, email et WhatsApp</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-tag class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Badges</strong> : Badges affiches sur vos vehicules (assurance, livraison...)</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-clipboard-document-list class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Conditions</strong> : Regles de location (age, permis, caution...)</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-arrow-path class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Synchronisation</strong> : Lien iCal pour Google Agenda/Outlook</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-truck class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Services</strong> : Activer le transfert ou la livraison</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-magnifying-glass class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>SEO</strong> : Titre et description pour les moteurs de recherche</span>
+                    </div>
+                    <div class="flex items-start gap-2">
+                        <x-heroicon-o-lock-closed class="w-4 h-4 mt-0.5 flex-shrink-0" />
+                        <span><strong>Securite</strong> : Modifier votre mot de passe de connexion</span>
                     </div>
                 </div>
             </div>

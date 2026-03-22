@@ -18,7 +18,7 @@ class TransferRouteResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
-    protected static ?string $navigationGroup = 'Transferts';
+    protected static ?string $navigationGroup = 'Chauffeur';
 
     protected static ?string $navigationLabel = 'Mes Trajets';
 

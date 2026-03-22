@@ -18,7 +18,7 @@ class CourseAvailability extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static ?string $navigationGroup = 'Courses';
+    protected static ?string $navigationGroup = 'Chauffeur';
 
     protected static ?string $navigationLabel = 'Mes Disponibilites';
 

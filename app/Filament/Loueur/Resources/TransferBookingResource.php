@@ -18,7 +18,7 @@ class TransferBookingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $navigationGroup = 'Transferts';
+    protected static ?string $navigationGroup = 'Chauffeur';
 
     protected static ?string $navigationLabel = 'Réservations Transfert';
 
