@@ -2,6 +2,13 @@
 
 namespace App\Providers;
 
+use App\Models\ChauffeurVehicle;
+use App\Models\Loueur;
+use App\Models\Review;
+use App\Models\TransferRoute;
+use App\Models\Vehicle;
+use App\Models\VehicleOffer;
+use App\Observers\ChatbotCacheObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -23,6 +30,14 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        // Auto-clear chatbot cache when data changes
+        Vehicle::observe(ChatbotCacheObserver::class);
+        Loueur::observe(ChatbotCacheObserver::class);
+        TransferRoute::observe(ChatbotCacheObserver::class);
+        ChauffeurVehicle::observe(ChatbotCacheObserver::class);
+        VehicleOffer::observe(ChatbotCacheObserver::class);
+        Review::observe(ChatbotCacheObserver::class);
     }
 
     /**

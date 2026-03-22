@@ -3,10 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Brand;
-use App\Models\Category;
+use App\Models\ChauffeurVehicle;
+use App\Models\Loueur;
+use App\Models\Review;
 use App\Models\Setting;
+use App\Models\TransferRoute;
 use App\Models\Vehicle;
+use App\Models\VehicleOffer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -15,6 +18,9 @@ use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
+    public const CACHE_KEY = 'chatbot_knowledge_base';
+    public const CACHE_TTL = 600; // 10 min fallback
+
     /**
      * Handle chatbot message via Groq API (free)
      */
@@ -34,11 +40,10 @@ class ChatbotController extends Controller
         }
 
         $systemPrompt = $this->buildSystemPrompt();
-        $vehicleCatalog = $this->buildVehicleCatalog();
+        $knowledgeBase = $this->buildKnowledgeBase();
 
-        // Build Groq conversation format (OpenAI-compatible)
         $messages = [
-            ['role' => 'system', 'content' => $systemPrompt . "\n\n" . $vehicleCatalog],
+            ['role' => 'system', 'content' => $systemPrompt . "\n\n" . $knowledgeBase],
         ];
 
         if ($request->history) {
@@ -98,70 +103,273 @@ class ChatbotController extends Controller
     }
 
     /**
-     * Build the vehicle catalog from real database data (cached 10 min)
+     * Clear the chatbot knowledge cache (called by observers)
+     */
+    public static function clearCache(): void
+    {
+        Cache::forget(self::CACHE_KEY);
+    }
+
+    /**
+     * Build the full knowledge base from all database data
+     */
+    private function buildKnowledgeBase(): string
+    {
+        return Cache::remember(self::CACHE_KEY, self::CACHE_TTL, function () {
+            $kb = '';
+            $kb .= $this->buildVehicleCatalog();
+            $kb .= "\n\n";
+            $kb .= $this->buildTransferCatalog();
+            $kb .= "\n\n";
+            $kb .= $this->buildLoueurDirectory();
+            $kb .= "\n\n";
+            $kb .= $this->buildActiveOffers();
+            $kb .= "\n\n";
+            $kb .= $this->buildReviewsSummary();
+
+            return $kb;
+        });
+    }
+
+    /**
+     * Vehicle catalog with real prices and details
      */
     private function buildVehicleCatalog(): string
     {
-        return Cache::remember('chatbot_vehicle_catalog', 600, function () {
-            $vehicles = Vehicle::with(['brand', 'category', 'loueur'])
-                ->active()
-                ->available()
-                ->orderBy('price_per_day')
-                ->get();
+        $vehicles = Vehicle::with(['brand', 'category', 'loueur'])
+            ->active()
+            ->available()
+            ->orderBy('price_per_day')
+            ->get();
 
-            if ($vehicles->isEmpty()) {
-                return "CATALOGUE : Aucun véhicule disponible pour le moment.";
-            }
+        if ($vehicles->isEmpty()) {
+            return "🚗 CATALOGUE VÉHICULES : Aucun véhicule disponible pour le moment.";
+        }
 
-            $catalog = "🚗 CATALOGUE VÉHICULES DISPONIBLES (données réelles du site) :\n";
-            $catalog .= "Format : [Nom] | [Prix/jour] | [Wilaya] | [Catégorie] | [Boîte] | [Carburant] | [Lien]\n\n";
+        $catalog = "🚗 CATALOGUE VÉHICULES DISPONIBLES ({$vehicles->count()} véhicules) :\n";
 
-            foreach ($vehicles as $v) {
-                $wilaya = $v->loueur->wilaya ?? 'N/A';
-                $brand = $v->brand->name ?? '';
-                $category = $v->category->name ?? '';
-                $transmission = $v->transmission === 'automatic' ? 'Auto' : 'Manuelle';
-                $fuel = match ($v->fuel_type) {
-                    'diesel' => 'Diesel',
-                    'essence' => 'Essence',
-                    'hybrid' => 'Hybride',
-                    'electric' => 'Électrique',
-                    default => $v->fuel_type,
-                };
-                $price = number_format($v->price_per_day, 0, ',', ' ');
+        foreach ($vehicles as $v) {
+            $wilaya = $v->loueur->wilaya ?? 'N/A';
+            $loueurName = $v->loueur->company_name ?? '';
+            $category = $v->category->name ?? '';
+            $transmission = $v->transmission === 'automatic' ? 'Auto' : 'Manuelle';
+            $fuel = match ($v->fuel_type) {
+                'diesel' => 'Diesel',
+                'essence' => 'Essence',
+                'hybrid' => 'Hybride',
+                'electric' => 'Électrique',
+                default => $v->fuel_type,
+            };
+            $price = number_format($v->price_per_day, 0, ',', ' ');
+            $seats = $v->seats ?? 5;
+            $year = $v->year ?? '';
+            $clim = $v->has_air_conditioning ? 'Clim' : 'Sans clim';
 
-                // Prix dégressifs
-                $degressif = '';
-                if ($v->degressive_pricing && is_array($v->degressive_pricing)) {
-                    $tiers = [];
-                    foreach ($v->degressive_pricing as $tier) {
-                        if (isset($tier['from_days']) && isset($tier['price_per_day'])) {
-                            $tiers[] = $tier['from_days'] . 'j+: ' . number_format($tier['price_per_day'], 0, ',', ' ') . ' DA';
-                        }
-                    }
-                    if ($tiers) {
-                        $degressif = ' (Dégressif: ' . implode(', ', $tiers) . ')';
+            // Prix dégressifs
+            $degressif = '';
+            if ($v->degressive_pricing && is_array($v->degressive_pricing)) {
+                $tiers = [];
+                foreach ($v->degressive_pricing as $tier) {
+                    if (isset($tier['from_days']) && isset($tier['price_per_day'])) {
+                        $tiers[] = $tier['from_days'] . 'j+: ' . number_format($tier['price_per_day'], 0, ',', ' ') . ' DA';
                     }
                 }
-
-                $catalog .= "- {$v->full_name} | {$price} DA/jour{$degressif} | {$wilaya} | {$category} | {$transmission} | {$fuel} | /vehicule/{$v->slug}\n";
+                if ($tiers) {
+                    $degressif = ' | Dégressif: ' . implode(', ', $tiers);
+                }
             }
 
-            // Stats résumées
-            $totalVehicles = $vehicles->count();
-            $wilayas = $vehicles->map(fn ($v) => $v->loueur->wilaya ?? null)->filter()->unique()->sort()->values();
-            $brands = $vehicles->map(fn ($v) => $v->brand->name ?? null)->filter()->unique()->sort()->values();
-            $priceMin = $vehicles->min('price_per_day');
-            $priceMax = $vehicles->max('price_per_day');
+            // Caution
+            $caution = $v->deposit_amount ? ' | Caution: ' . number_format($v->deposit_amount, 0, ',', ' ') . ' DA' : '';
 
-            $catalog .= "\n📊 RÉSUMÉ :\n";
-            $catalog .= "- {$totalVehicles} véhicules disponibles\n";
-            $catalog .= "- Prix : de " . number_format($priceMin, 0, ',', ' ') . " DA à " . number_format($priceMax, 0, ',', ' ') . " DA/jour\n";
-            $catalog .= "- Wilayas couvertes : " . $wilayas->implode(', ') . "\n";
-            $catalog .= "- Marques : " . $brands->implode(', ') . "\n";
+            // Min/max jours
+            $duree = '';
+            if ($v->min_rental_days > 1) {
+                $duree .= " | Min {$v->min_rental_days}j";
+            }
+            if ($v->max_rental_days) {
+                $duree .= " | Max {$v->max_rental_days}j";
+            }
 
-            return $catalog;
-        });
+            $catalog .= "- {$v->full_name} ({$year}) | {$price} DA/jour{$degressif} | {$wilaya} | {$category} | {$transmission} | {$fuel} | {$seats} places | {$clim}{$caution}{$duree} | Loueur: {$loueurName} | /vehicule/{$v->slug}\n";
+        }
+
+        // Stats
+        $wilayas = $vehicles->map(fn ($v) => $v->loueur->wilaya ?? null)->filter()->unique()->sort()->values();
+        $brands = $vehicles->map(fn ($v) => $v->brand->name ?? null)->filter()->unique()->sort()->values();
+        $priceMin = $vehicles->min('price_per_day');
+        $priceMax = $vehicles->max('price_per_day');
+
+        $catalog .= "\n📊 STATS VÉHICULES : {$vehicles->count()} dispo | ";
+        $catalog .= number_format($priceMin, 0, ',', ' ') . " - " . number_format($priceMax, 0, ',', ' ') . " DA/jour | ";
+        $catalog .= "Wilayas: " . $wilayas->implode(', ') . " | ";
+        $catalog .= "Marques: " . $brands->implode(', ');
+
+        return $catalog;
+    }
+
+    /**
+     * Transfer/chauffeur routes and vehicles
+     */
+    private function buildTransferCatalog(): string
+    {
+        $routes = TransferRoute::with('loueur')
+            ->where('is_active', true)
+            ->get();
+
+        $chauffeurVehicles = ChauffeurVehicle::with('loueur')
+            ->where('is_active', true)
+            ->get();
+
+        if ($routes->isEmpty() && $chauffeurVehicles->isEmpty()) {
+            return "🚕 TRANSFERTS/CHAUFFEURS : Aucun service disponible pour le moment.";
+        }
+
+        $catalog = "🚕 SERVICES TRANSFERT & CHAUFFEUR :\n";
+
+        if ($routes->isNotEmpty()) {
+            $catalog .= "\nTRAJETS DISPONIBLES :\n";
+            foreach ($routes as $route) {
+                $loueurName = $route->loueur->company_name ?? '';
+                $price = number_format($route->price, 0, ',', ' ');
+                $roundTrip = $route->round_trip && $route->round_trip_price
+                    ? ' | A/R: ' . number_format($route->round_trip_price, 0, ',', ' ') . ' DA'
+                    : '';
+                $type = $route->vehicle_type ?? '';
+                $pax = $route->max_passengers ? " | Max {$route->max_passengers} passagers" : '';
+
+                $catalog .= "- {$route->departure} → {$route->destination} | {$price} DA{$roundTrip} | {$type}{$pax} | Chauffeur: {$loueurName}\n";
+            }
+        }
+
+        if ($chauffeurVehicles->isNotEmpty()) {
+            $catalog .= "\nVÉHICULES CHAUFFEUR DISPONIBLES :\n";
+            foreach ($chauffeurVehicles as $cv) {
+                $loueurName = $cv->loueur->company_name ?? '';
+                $wilaya = $cv->loueur->wilaya ?? '';
+                $equipments = [];
+                if ($cv->has_air_conditioning) $equipments[] = 'Clim';
+                if ($cv->has_wifi) $equipments[] = 'WiFi';
+                if ($cv->has_child_seat) $equipments[] = 'Siège bébé';
+                if ($cv->has_wheelchair_access) $equipments[] = 'Accès PMR';
+                $equip = $equipments ? ' | ' . implode(', ', $equipments) : '';
+
+                $catalog .= "- {$cv->brand} {$cv->model} ({$cv->year}) | {$cv->seats} places | {$cv->vehicle_type}{$equip} | {$wilaya} | Chauffeur: {$loueurName}\n";
+            }
+        }
+
+        return $catalog;
+    }
+
+    /**
+     * Loueur directory with ratings and services
+     */
+    private function buildLoueurDirectory(): string
+    {
+        $loueurs = Loueur::where('is_active', true)
+            ->where('is_suspended', false)
+            ->whereNotNull('onboarding_completed_at')
+            ->withCount(['vehicles' => function ($q) {
+                $q->where('is_active', true)->where('status', 'available');
+            }])
+            ->having('vehicles_count', '>', 0)
+            ->orWhere(function ($q) {
+                $q->where('is_active', true)
+                    ->where('is_suspended', false)
+                    ->where('account_type', 'taxi');
+            })
+            ->get();
+
+        if ($loueurs->isEmpty()) {
+            return "🏢 LOUEURS : Aucun loueur actif pour le moment.";
+        }
+
+        $catalog = "🏢 LOUEURS & CHAUFFEURS ACTIFS ({$loueurs->count()}) :\n";
+
+        foreach ($loueurs as $l) {
+            $type = $l->account_type === 'taxi' ? 'Chauffeur' : 'Loueur';
+            $rating = $l->rating ? "★ {$l->rating}/5 ({$l->total_reviews} avis)" : 'Nouveau';
+            $verified = $l->is_verified ? '✓ Vérifié' : '';
+            $services = [];
+            if ($l->offers_transfer) $services[] = 'Transferts';
+            if ($l->offers_delivery) $services[] = 'Livraison';
+            $servicesStr = $services ? ' | Services: ' . implode(', ', $services) : '';
+            $vehicleCount = $l->vehicles_count ?? 0;
+            $vStr = $vehicleCount > 0 ? " | {$vehicleCount} véhicules" : '';
+
+            $catalog .= "- {$l->company_name} ({$type}) | {$l->wilaya} | {$rating} {$verified}{$vStr}{$servicesStr}\n";
+        }
+
+        return $catalog;
+    }
+
+    /**
+     * Active promotions and offers
+     */
+    private function buildActiveOffers(): string
+    {
+        $offers = VehicleOffer::with(['vehicle', 'vehicle.brand'])
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->get();
+
+        if ($offers->isEmpty()) {
+            return "🏷️ PROMOS : Aucune promotion en cours.";
+        }
+
+        $catalog = "🏷️ PROMOTIONS EN COURS ({$offers->count()}) :\n";
+
+        foreach ($offers as $offer) {
+            $vehicleName = $offer->vehicle->full_name ?? 'Véhicule';
+            $slug = $offer->vehicle->slug ?? '';
+            $discount = $offer->discount_type === 'percentage'
+                ? "-{$offer->discount_value}%"
+                : "-" . number_format($offer->discount_value, 0, ',', ' ') . " DA";
+            $badge = $offer->badge_text ?? $offer->title;
+            $endDate = $offer->end_date?->format('d/m/Y') ?? '';
+
+            $catalog .= "- {$vehicleName} : {$discount} ({$badge}) | Jusqu'au {$endDate} | /vehicule/{$slug}\n";
+        }
+
+        return $catalog;
+    }
+
+    /**
+     * Reviews summary per loueur
+     */
+    private function buildReviewsSummary(): string
+    {
+        $reviews = Review::with('loueur')
+            ->where('is_public', true)
+            ->where('is_approved', true)
+            ->where('type', 'client_to_loueur')
+            ->latest()
+            ->limit(30)
+            ->get();
+
+        if ($reviews->isEmpty()) {
+            return "⭐ AVIS CLIENTS : Pas encore d'avis publiés.";
+        }
+
+        $catalog = "⭐ DERNIERS AVIS CLIENTS :\n";
+
+        // Résumé par loueur
+        $byLoueur = $reviews->groupBy(fn ($r) => $r->loueur->company_name ?? 'Inconnu');
+        foreach ($byLoueur as $loueurName => $loueurReviews) {
+            $avgRating = round($loueurReviews->avg('rating_overall'), 1);
+            $count = $loueurReviews->count();
+            $lastComment = $loueurReviews->first()->comment ?? '';
+            $shortComment = mb_strlen($lastComment) > 80 ? mb_substr($lastComment, 0, 80) . '...' : $lastComment;
+
+            $catalog .= "- {$loueurName} : ★ {$avgRating}/5 ({$count} avis)";
+            if ($shortComment) {
+                $catalog .= " | Dernier: \"{$shortComment}\"";
+            }
+            $catalog .= "\n";
+        }
+
+        return $catalog;
     }
 
     /**
@@ -174,7 +382,7 @@ class ChatbotController extends Controller
         $whatsapp = Setting::get('whatsapp', '');
 
         return <<<PROMPT
-Tu es Résabot, l'assistant virtuel de {$companyName}, la marketplace de location de véhicules entre particuliers en Algérie.
+Tu es Résabot, le CERVEAU de {$companyName}. Tu connais TOUT le site : chaque véhicule, chaque prix, chaque loueur, chaque chauffeur, chaque promo, chaque avis client. Tes données sont mises à jour en temps réel.
 
 PERSONNALITÉ :
 - Tu parles en français simple et chaleureux, avec une touche algérienne (tu peux utiliser "Salam", "Inchallah", etc.)
@@ -184,37 +392,66 @@ PERSONNALITÉ :
 - Tes réponses sont COURTES (3-5 phrases max), claires et directes
 
 ⚠️ COMPRÉHENSION DES MESSAGES :
-Les utilisateurs écrivent souvent en abrégé, avec des fautes d'orthographe, ou en mélangeant français/arabe/darija. Tu dois comprendre :
-- "symbole" / "symbol" / "simboul" = Hyundai Symbol / Renault Symbol
-- "clio" / "klio" = Renault Clio
+Les utilisateurs écrivent souvent en abrégé, avec des fautes, ou en mélangeant français/arabe/darija. Tu DOIS comprendre :
+- "symbole" / "symbol" / "simboul" / "simbol" = Renault Symbol ou Hyundai Accent
+- "clio" / "klio" / "kliou" = Renault Clio
 - "polo" / "polou" = Volkswagen Polo
 - "ibiza" / "ibisa" = Seat Ibiza
-- "3 j" / "3j" / "3 jours" / "3jrs" = 3 jours de location
-- "combien" / "cmb" / "cb" / "chhal" / "prix" / "tarif" / "bch7al" = demande de prix
-- "dispo" / "disponible" / "kayen" / "rana" = disponibilité
-- "wesh" / "wch" / "svp" / "plz" = formules de politesse
-- "auto" / "automatique" / "bva" = boîte automatique
-- "manuelle" / "bvm" = boîte manuelle
-- "alger" / "dzair" / "lger" = wilaya d'Alger
-- "oran" / "wahran" = wilaya d'Oran
-- "constantine" / "ksantina" / "9santina" = Constantine
-- Si le mot ne correspond pas exactement à un véhicule, cherche le véhicule le plus proche dans le catalogue
+- "golf" / "golfe" = Volkswagen Golf
+- "tucson" / "tukson" / "tokson" = Hyundai Tucson
+- "duster" / "daster" = Dacia Duster
+- "logan" / "logane" = Dacia Logan
+- "3 j" / "3j" / "3 jours" / "3jrs" / "3jour" = 3 jours de location
+- "1 semaine" / "7j" / "semaine" = 7 jours
+- "1 mois" / "30j" / "mois" = 30 jours
+- "combien" / "cmb" / "cb" / "chhal" / "prix" / "tarif" / "bch7al" / "9adach" / "gadech" = demande de prix
+- "dispo" / "disponible" / "kayen" / "kayna" / "rana" / "yella" = disponibilité
+- "wesh" / "wch" / "svp" / "plz" / "stp" = formules de politesse
+- "auto" / "automatique" / "bva" / "otomatik" = boîte automatique
+- "manuelle" / "bvm" / "maniel" = boîte manuelle
+- "alger" / "dzair" / "lger" / "el djazair" = Alger
+- "oran" / "wahran" = Oran
+- "constantine" / "ksantina" / "9santina" / "kosantina" = Constantine
+- "setif" / "stif" / "s'tif" = Sétif
+- "annaba" / "3annaba" / "bône" = Annaba
+- "tizi" / "tizi ouzou" / "to" = Tizi Ouzou
+- "bejaia" / "bgayet" / "bougie" = Béjaïa
+- "blida" / "el boulaida" = Blida
+- "transfert" / "taxi" / "chauffeur" / "aéroport" / "airport" = service transfert
+- "livraison" / "colis" / "envoi" = service livraison
+- "avis" / "note" / "commentaire" / "review" = avis clients
+- "promo" / "offre" / "reduction" / "solde" = promotions
+- Si le mot ne correspond pas exactement, cherche le véhicule le PLUS PROCHE dans le catalogue
 
 🎯 QUAND ON TE DEMANDE UN PRIX OU UN VÉHICULE :
 1. Cherche dans le CATALOGUE ci-dessous le(s) véhicule(s) qui correspondent
-2. Donne le VRAI prix depuis le catalogue (prix/jour + prix dégressif si dispo)
-3. Calcule le prix total si une durée est précisée (prix/jour × nombre de jours, en utilisant le palier dégressif si applicable)
-4. Donne TOUJOURS le lien direct vers le véhicule : /vehicule/slug-du-vehicule
-5. Si plusieurs véhicules correspondent, liste-les tous (max 5) avec leurs prix et liens
-6. Si aucun véhicule ne correspond, dis-le clairement et suggère de voir tout le catalogue sur /vehicules
+2. Donne le VRAI prix depuis le catalogue (prix/jour + prix dégressif si applicable)
+3. Calcule le prix total si une durée est précisée (prix/jour × jours, en utilisant le palier dégressif)
+4. Mentionne la caution si elle existe
+5. Donne TOUJOURS le lien direct : /vehicule/slug-du-vehicule
+6. Si plusieurs véhicules correspondent, liste les meilleurs (max 5) avec prix et liens
+7. Si une PROMO existe sur ce véhicule, mentionne-la !
+8. Mentionne la note du loueur si elle est disponible
 
-🔗 LIENS :
-- Quand tu mentionnes un véhicule, donne TOUJOURS le lien /vehicule/slug
-- Pour réserver : redirige vers la page du véhicule /vehicule/slug
-- Pour voir tout : /vehicules
-- Véhicules par wilaya : /vehicules?wilaya=NomWilaya
+🚕 QUAND ON DEMANDE UN TRANSFERT :
+1. Cherche dans les TRAJETS DISPONIBLES ci-dessous
+2. Donne le prix réel du trajet
+3. Mentionne si l'aller-retour est dispo et son prix
+4. Indique le type de véhicule et les équipements
+
+⭐ QUAND ON DEMANDE DES AVIS :
+1. Donne la note moyenne du loueur depuis les AVIS ci-dessous
+2. Cite un avis récent si disponible
+3. Rassure sur la fiabilité du loueur
+
+🔗 LIENS À DONNER :
+- Véhicule spécifique : /vehicule/slug (TOUJOURS quand tu parles d'un véhicule)
+- Tous les véhicules : /vehicules
+- Par wilaya : /vehicules?wilaya=NomWilaya
+- Par marque : /vehicules?marque=NomMarque
 - S'inscrire comme loueur : /loueur
 - Comment ça marche : /comment-ca-marche
+- Blog : /blog
 
 CE QUE TU SAIS SUR RESADZ :
 
@@ -226,49 +463,37 @@ CE QUE TU SAIS SUR RESADZ :
 
 💰 TARIFICATION :
 - Clients : GRATUIT, le prix affiché est le prix final
-- Loueurs : Commission 5-8% selon la durée (1-3j: 8%, 4-7j: 6%, 8j+: 5%)
+- Loueurs : Commission dégressive (1-3j: 8%, 4-7j: 6%, 8j+: 5%)
 - Transferts/chauffeur : Commission 10%
 - 30 jours d'essai gratuit pour les nouveaux loueurs
 
 🚗 COMMENT ÇA MARCHE (CLIENT) :
-1. Cherche un véhicule sur /vehicules (filtrable par wilaya, marque, catégorie, prix)
+1. Cherche un véhicule sur /vehicules
 2. Compare les offres et vérifie les avis
 3. Réserve en ligne gratuitement
 4. Le loueur confirme la réservation
-5. Prends contact via la messagerie intégrée
-6. Récupère le véhicule et profite !
+5. Contact via messagerie intégrée
+6. Récupère le véhicule !
 
 🏢 COMMENT ÇA MARCHE (LOUEUR) :
 1. Inscris-toi gratuitement sur /loueur
 2. Publie tes véhicules avec photos et tarifs
 3. Reçois des demandes de réservation
-4. Confirme et gère tes locations depuis le tableau de bord
-5. Encaisse et développe ton activité
+4. Gère tout depuis ton tableau de bord
 
-💳 MOYENS DE PAIEMENT :
-- Espèces, CIB, Virement bancaire, BaridiMob, PayPal, Wise
+💳 MOYENS DE PAIEMENT : Espèces, CIB, Virement bancaire, BaridiMob, PayPal, Wise
 
-🚕 SERVICES ADDITIONNELS :
-- Transferts aéroport/gare (chauffeur privé)
-- Livraison de colis
-- GPS, siège bébé, chauffeur additionnel disponibles en options
-
-📄 DOCUMENTS REQUIS POUR LOUER :
-- Pièce d'identité (CNI ou passeport)
-- Permis de conduire valide
-- Le loueur peut demander une caution (variable selon le véhicule)
+📄 DOCUMENTS REQUIS : CNI ou passeport + Permis de conduire valide
 
 📞 CONTACT :
 - Téléphone : {$phone}
 - WhatsApp : {$whatsapp}
-- Messages depuis l'espace loueur ou client
 
-RÈGLES IMPORTANTES :
-- Utilise TOUJOURS les données réelles du catalogue ci-dessous pour répondre aux questions sur les prix et disponibilités
-- Donne TOUJOURS le lien direct /vehicule/slug quand tu parles d'un véhicule
-- Si la question est hors-sujet (politique, religion, etc.), dis poliment que tu ne peux répondre qu'aux questions sur la location de voitures
-- Ne donne JAMAIS d'information fausse, dis plutôt que tu ne sais pas
-- Si tu ne trouves pas le véhicule demandé dans le catalogue, dis que ce modèle n'est pas disponible actuellement et suggère des alternatives
+RÈGLES :
+- Utilise TOUJOURS les données réelles ci-dessous, JAMAIS d'invention
+- Donne TOUJOURS le lien /vehicule/slug quand tu parles d'un véhicule
+- Hors-sujet → dis poliment que tu ne gères que la location de voitures
+- Info introuvable → dis que tu ne sais pas et suggère de contacter le support
 PROMPT;
     }
 }
