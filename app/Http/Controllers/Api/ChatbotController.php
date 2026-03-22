@@ -7,13 +7,12 @@ use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 
 class ChatbotController extends Controller
 {
     /**
-     * Handle chatbot message via Claude API
+     * Handle chatbot message via Gemini API (free)
      */
     public function chat(Request $request): JsonResponse
     {
@@ -22,7 +21,7 @@ class ChatbotController extends Controller
             'history' => 'nullable|array|max:10',
         ]);
 
-        $apiKey = config('services.anthropic.api_key');
+        $apiKey = config('services.gemini.api_key');
 
         if (! $apiKey) {
             return response()->json([
@@ -32,45 +31,60 @@ class ChatbotController extends Controller
 
         $systemPrompt = $this->buildSystemPrompt();
 
-        // Build messages array with history
-        $messages = [];
+        // Build Gemini conversation format
+        $contents = [];
 
         if ($request->history) {
             foreach ($request->history as $msg) {
                 if (isset($msg['role']) && isset($msg['content'])) {
-                    $messages[] = [
-                        'role' => $msg['role'] === 'user' ? 'user' : 'assistant',
-                        'content' => $msg['content'],
+                    $contents[] = [
+                        'role' => $msg['role'] === 'user' ? 'user' : 'model',
+                        'parts' => [['text' => $msg['content']]],
                     ];
                 }
             }
         }
 
-        $messages[] = [
+        $contents[] = [
             'role' => 'user',
-            'content' => $request->message,
+            'parts' => [['text' => $request->message]],
         ];
 
+        $model = config('services.gemini.model', 'gemini-2.0-flash');
+
         try {
-            $response = Http::withHeaders([
-                'x-api-key' => $apiKey,
-                'anthropic-version' => '2023-06-01',
-                'content-type' => 'application/json',
-            ])->timeout(15)->post('https://api.anthropic.com/v1/messages', [
-                'model' => config('services.anthropic.model', 'claude-haiku-4-5-20251001'),
-                'max_tokens' => 300,
-                'system' => $systemPrompt,
-                'messages' => $messages,
-            ]);
+            $response = Http::timeout(15)->post(
+                "https://generativelanguage.googleapis.com/v1beta/models/{$model}:generateContent?key={$apiKey}",
+                [
+                    'system_instruction' => [
+                        'parts' => [['text' => $systemPrompt]],
+                    ],
+                    'contents' => $contents,
+                    'generationConfig' => [
+                        'maxOutputTokens' => 300,
+                        'temperature' => 0.7,
+                    ],
+                    'safetySettings' => [
+                        ['category' => 'HARM_CATEGORY_HARASSMENT', 'threshold' => 'BLOCK_ONLY_HIGH'],
+                        ['category' => 'HARM_CATEGORY_HATE_SPEECH', 'threshold' => 'BLOCK_ONLY_HIGH'],
+                        ['category' => 'HARM_CATEGORY_SEXUALLY_EXPLICIT', 'threshold' => 'BLOCK_ONLY_HIGH'],
+                        ['category' => 'HARM_CATEGORY_DANGEROUS_CONTENT', 'threshold' => 'BLOCK_ONLY_HIGH'],
+                    ],
+                ]
+            );
 
             if ($response->successful()) {
                 $data = $response->json();
-                $reply = $data['content'][0]['text'] ?? "Désolé, je n'ai pas compris. Reformule ta question !";
+                $reply = $data['candidates'][0]['content']['parts'][0]['text']
+                    ?? "Désolé, je n'ai pas compris. Reformule ta question !";
 
-                return response()->json(['reply' => $reply]);
+                return response()->json(['reply' => trim($reply)]);
             }
 
-            Log::warning('Chatbot API error', ['status' => $response->status(), 'body' => $response->body()]);
+            Log::warning('Chatbot Gemini API error', [
+                'status' => $response->status(),
+                'body' => $response->body(),
+            ]);
 
             return response()->json([
                 'reply' => "Oups, j'ai un petit souci technique. Réessaie dans un instant !",
@@ -126,7 +140,7 @@ CE QUE TU SAIS SUR RESADZ :
 6. Récupère le véhicule et profite !
 
 🏢 COMMENT ÇA MARCHE (LOUEUR) :
-1. Inscris-toi gratuitement
+1. Inscris-toi gratuitement sur /loueur
 2. Publie tes véhicules avec photos et tarifs
 3. Reçois des demandes de réservation
 4. Confirme et gère tes locations depuis le tableau de bord
@@ -143,13 +157,29 @@ CE QUE TU SAIS SUR RESADZ :
 - Livraison de colis
 - GPS, siège bébé, chauffeur additionnel disponibles en options
 
+📄 DOCUMENTS REQUIS POUR LOUER :
+- Pièce d'identité (CNI ou passeport)
+- Permis de conduire valide
+- Le loueur peut demander une caution (variable selon le véhicule)
+
+⏰ HORAIRES :
+- La plateforme est disponible 24h/24, 7j/7
+- Les horaires de prise en charge dépendent de chaque loueur (créneaux de 6h à 23h30)
+- La plupart des loueurs sont flexibles sur les horaires
+
+✈️ TRANSFERTS AÉROPORT :
+- Service de chauffeur privé disponible
+- Transferts depuis/vers les aéroports (Alger, Oran, Constantine, etc.)
+- Aussi disponible pour les gares ferroviaires et routières
+- Prix fixé à l'avance, pas de surprises
+
 📞 CONTACT :
 - Téléphone : {$phone}
 - WhatsApp : {$whatsapp}
 - Messages depuis l'espace loueur ou client
 
 RÈGLES IMPORTANTES :
-- Si on te demande un prix précis, redirige vers /vehicules pour voir les tarifs réels
+- Si on te demande un prix précis, redirige vers /vehicules pour voir les tarifs réels car les prix varient selon le loueur
 - Si la question est hors-sujet (politique, religion, etc.), dis poliment que tu ne peux répondre qu'aux questions sur la location de voitures
 - Si tu ne connais pas la réponse, suggère de contacter le support via la messagerie
 - Ne donne JAMAIS d'information fausse, dis plutôt que tu ne sais pas
@@ -159,7 +189,7 @@ RÈGLES IMPORTANTES :
 
 LIENS UTILES À PARTAGER :
 - Voir les véhicules : /vehicules
-- Véhicules par wilaya : /vehicules?wilaya=NomWilaya
+- Véhicules par wilaya : /vehicules?wilaya=NomWilaya (ex: /vehicules?wilaya=Alger)
 - S'inscrire comme loueur : /loueur
 - Comment ça marche : /comment-ca-marche
 - Blog : /blog
