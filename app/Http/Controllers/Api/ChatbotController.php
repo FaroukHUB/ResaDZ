@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class ChatbotController extends Controller
 {
     /**
-     * Handle chatbot message via Gemini API (free)
+     * Handle chatbot message via Groq API (free)
      */
     public function chat(Request $request): JsonResponse
     {
@@ -21,7 +21,7 @@ class ChatbotController extends Controller
             'history' => 'nullable|array|max:10',
         ]);
 
-        $apiKey = config('services.openrouter.api_key');
+        $apiKey = config('services.groq.api_key');
 
         if (! $apiKey) {
             return response()->json([
@@ -31,7 +31,7 @@ class ChatbotController extends Controller
 
         $systemPrompt = $this->buildSystemPrompt();
 
-        // Build OpenRouter conversation format (OpenAI-compatible)
+        // Build Groq conversation format (OpenAI-compatible)
         $messages = [
             ['role' => 'system', 'content' => $systemPrompt],
         ];
@@ -52,16 +52,14 @@ class ChatbotController extends Controller
             'content' => $request->message,
         ];
 
-        $model = config('services.openrouter.model', 'openrouter/auto');
+        $model = config('services.groq.model', 'llama-3.3-70b-versatile');
 
         try {
             $response = Http::timeout(15)
                 ->withHeaders([
                     'Authorization' => "Bearer {$apiKey}",
-                    'HTTP-Referer' => config('app.url'),
-                    'X-Title' => config('app.name', 'ResaDZ'),
                 ])
-                ->post('https://openrouter.ai/api/v1/chat/completions', [
+                ->post('https://api.groq.com/openai/v1/chat/completions', [
                     'model' => $model,
                     'messages' => $messages,
                     'max_tokens' => 300,
@@ -76,7 +74,7 @@ class ChatbotController extends Controller
                 return response()->json(['reply' => trim($reply)]);
             }
 
-            Log::warning('Chatbot OpenRouter API error', [
+            Log::warning('Chatbot Groq API error', [
                 'status' => $response->status(),
                 'body' => $response->body(),
                 'model' => $model,
