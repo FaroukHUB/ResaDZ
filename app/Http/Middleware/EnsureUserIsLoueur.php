@@ -9,8 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 class EnsureUserIsLoueur
 {
     /**
-     * Vérifie que l'utilisateur connecté est un loueur OU un super admin.
-     * Le super admin a accès à tout.
+     * Vérifie que l'utilisateur connecté est un loueur.
+     * Les super admins sont redirigés vers le panel admin.
      */
     public function handle(Request $request, Closure $next): Response
     {
@@ -21,9 +21,10 @@ class EnsureUserIsLoueur
             return redirect()->route('filament.loueur.auth.login');
         }
 
-        // Super Admin = accès à tout, sans restriction
+        // Super Admin → redirection vers panel admin
         if ($user->role === 'super_admin') {
-            return $next($request);
+            return redirect()->route('filament.admin.pages.dashboard')
+                ->with('info', 'Vous êtes administrateur. Utilisez le panel admin.');
         }
 
         // Verifie que l'utilisateur a un profil loueur
