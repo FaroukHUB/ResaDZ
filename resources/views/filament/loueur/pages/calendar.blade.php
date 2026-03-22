@@ -109,7 +109,7 @@
                 <button wire:click="nextMonth" class="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition text-gray-600 dark:text-gray-300">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                 </button>
-                <button wire:click="goToToday" class="ml-3 px-4 py-2 text-sm font-semibold rounded-xl bg-primary-600 text-white hover:bg-primary-700 transition shadow-sm">
+                <button wire:click="goToToday" class="ml-3 px-4 py-2 text-sm font-semibold rounded-xl text-white transition shadow-sm" style="background: linear-gradient(135deg, #FF6B2C, #F59E0B);">
                     Aujourd'hui
                 </button>
             </div>
@@ -134,14 +134,14 @@
         </div>
 
         {{-- Guide Section --}}
-        <div class="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-xl p-4 border border-blue-200 dark:border-blue-800">
+        <div class="stat-card bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-900/10 dark:to-amber-900/10 border border-orange-200 dark:border-orange-800">
             <div class="flex items-start gap-3">
-                <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                <div class="w-10 h-10 bg-gradient-to-br from-[#FF6B2C] to-[#F59E0B] rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
                     <x-heroicon-o-information-circle class="w-5 h-5 text-white" />
                 </div>
                 <div class="flex-1">
-                    <p class="font-semibold text-blue-900 dark:text-blue-100">Comment utiliser le calendrier ?</p>
-                    <ul class="text-sm text-blue-700 dark:text-blue-300 mt-2 space-y-1">
+                    <p class="font-semibold text-[#1E293B] dark:text-white">Comment utiliser le calendrier ?</p>
+                    <ul class="text-sm text-[#64748B] mt-2 space-y-1">
                         <li class="flex items-start gap-2">
                             <x-heroicon-o-cursor-arrow-rays class="w-4 h-4 mt-0.5 flex-shrink-0" />
                             <span><strong>Cliquer sur une case verte</strong> : Bloquer cette date (le vehicule ne sera plus reservable)</span>

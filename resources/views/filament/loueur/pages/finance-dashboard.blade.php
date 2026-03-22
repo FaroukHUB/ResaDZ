@@ -4,16 +4,16 @@
             {{-- ========== TAXI/CHAUFFEUR DASHBOARD ========== --}}
 
             {{-- Welcome Banner with Guide --}}
-            <div class="welcome-banner">
+            <div class="hero-card" style="background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%);">
                 <div class="relative z-10">
                     <div class="flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                                <x-heroicon-o-chart-bar-square class="w-6 h-6 text-white" />
+                        <div class="flex items-center gap-4">
+                            <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                                <x-heroicon-o-chart-bar-square class="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <h2 class="text-xl font-bold">Tableau de bord financier</h2>
-                                <p class="text-white/80 text-sm">Suivez vos revenus et depenses en temps reel</p>
+                                <h2 class="text-2xl font-bold">Tableau de bord financier</h2>
+                                <p class="text-white/80 text-sm mt-1">Suivez vos revenus et depenses en temps reel</p>
                             </div>
                         </div>
                         <div class="hidden md:block">
@@ -404,15 +404,15 @@
             {{-- ========== LOUEUR (RENTAL) DASHBOARD ========== --}}
 
             {{-- Welcome Banner --}}
-            <div class="welcome-banner">
+            <div class="hero-card" style="background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%);">
                 <div class="relative z-10">
-                    <div class="flex items-center gap-3 mb-2">
-                        <div class="w-12 h-12 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
-                            <x-heroicon-o-chart-bar-square class="w-6 h-6 text-white" />
+                    <div class="flex items-center gap-4 mb-2">
+                        <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                            <x-heroicon-o-chart-bar-square class="w-7 h-7 text-white" />
                         </div>
                         <div>
-                            <h2 class="text-xl font-bold">Tableau de bord financier</h2>
-                            <p class="text-white/80 text-sm">Gerez vos finances en toute simplicite</p>
+                            <h2 class="text-2xl font-bold">Tableau de bord financier</h2>
+                            <p class="text-white/80 text-sm mt-1">Gerez vos finances en toute simplicite</p>
                         </div>
                     </div>
                 </div>
@@ -421,9 +421,9 @@
             {{-- Period Stats --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {{-- Today --}}
-                <div class="stat-card group hover:shadow-lg">
+                <div class="stat-card stat-card-orange group">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="icon-container icon-container-md bg-gradient-to-br from-indigo-500 to-purple-600">
+                        <div class="icon-container icon-container-md bg-gradient-to-br from-[#FF6B2C] to-[#F59E0B]">
                             <x-heroicon-o-sun class="w-5 h-5 text-white" />
                         </div>
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Aujourd'hui</h3>

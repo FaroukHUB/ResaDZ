@@ -1,12 +1,14 @@
 <x-filament-panels::page>
     <div class="space-y-6">
         {{-- Info Card --}}
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-4">
-            <div class="flex items-start gap-3">
-                <x-heroicon-o-information-circle class="w-6 h-6 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
+        <div class="stat-card border-l-4 border-[#FF6B2C] bg-gradient-to-r from-orange-50 to-white dark:from-orange-900/10 dark:to-gray-800">
+            <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-gradient-to-br from-[#FF6B2C] to-[#F59E0B] rounded-xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                    <x-heroicon-o-information-circle class="w-6 h-6 text-white" />
+                </div>
                 <div>
-                    <p class="text-sm font-semibold text-blue-800 dark:text-blue-200">Gerez vos disponibilites pour les courses</p>
-                    <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
+                    <p class="font-semibold text-[#1E293B] dark:text-white">Gerez vos disponibilites pour les courses</p>
+                    <p class="text-sm text-[#64748B] mt-1">
                         Cliquez sur une date pour la marquer comme disponible. Cliquez a nouveau pour la marquer comme indisponible.
                         Utilisez le formulaire ci-dessous pour ajouter des disponibilites recurrentes.
                     </p>

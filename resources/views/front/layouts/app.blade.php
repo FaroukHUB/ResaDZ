@@ -338,5 +338,8 @@
 
     {{-- Lead Capture Popup --}}
     <x-lead-capture />
+
+    {{-- Chatbot Résabot --}}
+    @include('partials.chatbot')
 </body>
 </html>
