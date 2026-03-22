@@ -24,7 +24,7 @@ class NewsletterSubscriberResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Abonnés Newsletter';
 
-    protected static ?int $navigationSort = 40;
+    protected static ?int $navigationSort = 2;
 
     public static function form(Form $form): Form
     {

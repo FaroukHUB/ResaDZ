@@ -23,9 +23,11 @@ class ReviewResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Avis';
 
-    protected static ?string $navigationGroup = 'Contenu';
+    protected static ?string $navigationGroup = 'Marketing';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 6;
+
+    protected static ?string $navigationBadgeTooltip = 'Avis en attente de moderation';
 
     public static function getNavigationBadge(): ?string
     {

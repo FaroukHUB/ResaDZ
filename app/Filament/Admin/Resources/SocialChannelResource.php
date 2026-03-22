@@ -16,7 +16,7 @@ class SocialChannelResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-chat-bubble-left-right';
 
-    protected static ?string $navigationGroup = 'Marketing';
+    protected static ?string $navigationGroup = 'Contenu';
 
     protected static ?string $navigationLabel = 'Canaux Sociaux';
 
@@ -24,7 +24,7 @@ class SocialChannelResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Canaux Sociaux';
 
-    protected static ?int $navigationSort = 25;
+    protected static ?int $navigationSort = 4;
 
     public static function form(Form $form): Form
     {

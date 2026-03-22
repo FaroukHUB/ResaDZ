@@ -26,9 +26,11 @@ class InvoiceResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Factures';
 
-    protected static ?string $navigationGroup = 'Communication';
+    protected static ?string $navigationGroup = 'Gestion';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
+
+    protected static ?string $navigationBadgeTooltip = 'Factures en attente de paiement';
 
     public static function form(Form $form): Form
     {

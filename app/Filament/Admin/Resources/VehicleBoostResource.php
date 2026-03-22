@@ -20,7 +20,8 @@ class VehicleBoostResource extends Resource
     protected static ?string $modelLabel = 'Boost';
     protected static ?string $pluralModelLabel = 'Boosts';
     protected static ?string $navigationGroup = 'Marketing';
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 4;
+    protected static ?string $navigationBadgeTooltip = 'Boosts en attente de validation';
 
     public static function getNavigationBadge(): ?string
     {

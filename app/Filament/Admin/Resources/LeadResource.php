@@ -24,7 +24,7 @@ class LeadResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Contacts';
 
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 1;
 
     public static function form(Form $form): Form
     {

@@ -24,9 +24,11 @@ class ConversationResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Conversations';
 
-    protected static ?string $navigationGroup = 'Communication';
+    protected static ?string $navigationGroup = 'Gestion';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 4;
+
+    protected static ?string $navigationBadgeTooltip = 'Messages non lus';
 
     public static function getNavigationBadge(): ?string
     {

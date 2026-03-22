@@ -259,4 +259,6 @@ class BlogPostResource extends Resource
     {
         return static::getModel()::where('is_published', true)->count() ?: null;
     }
+
+    protected static ?string $navigationBadgeTooltip = 'Articles publies';
 }
