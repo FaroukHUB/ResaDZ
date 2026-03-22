@@ -18,13 +18,25 @@ class VehicleResource extends Resource
 
     protected static ?string $navigationGroup = 'Catalogue';
 
-    protected static ?string $navigationLabel = 'Véhicules';
+    protected static ?string $navigationLabel = 'Vehicules';
 
-    protected static ?string $modelLabel = 'Véhicule';
+    protected static ?string $modelLabel = 'Vehicule';
 
-    protected static ?string $pluralModelLabel = 'Véhicules';
+    protected static ?string $pluralModelLabel = 'Vehicules';
 
-    protected static ?int $navigationSort = 3;
+    protected static ?int $navigationSort = 1;
+
+    protected static ?string $navigationBadgeTooltip = 'Vehicules disponibles sur la plateforme';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('is_active', true)->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'info';
+    }
 
     public static function form(Form $form): Form
     {

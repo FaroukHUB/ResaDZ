@@ -30,6 +30,18 @@ class LoueurResource extends Resource
 
     protected static ?int $navigationSort = 1;
 
+    protected static ?string $navigationBadgeTooltip = 'Nombre de loueurs actifs';
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::where('is_active', true)->count();
+    }
+
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return 'success';
+    }
+
     public static function form(Form $form): Form
     {
         return $form
@@ -38,6 +50,8 @@ class LoueurResource extends Resource
                     ->tabs([
                         Forms\Components\Tabs\Tab::make('Compte & Agence')
                             ->icon('heroicon-o-user')
+                            ->badge('Principal')
+                            ->badgeColor('primary')
                             ->schema([
                                 Forms\Components\Section::make('Identifiants de connexion')
                                     ->description('Ces identifiants permettront au loueur de se connecter à son dashboard')

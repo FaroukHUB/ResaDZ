@@ -16,19 +16,22 @@ class BookingResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
 
-    protected static ?string $navigationGroup = 'Activité';
+    protected static ?string $navigationGroup = 'Gestion';
 
-    protected static ?string $navigationLabel = 'Réservations';
+    protected static ?string $navigationLabel = 'Reservations';
 
-    protected static ?string $modelLabel = 'Réservation';
+    protected static ?string $modelLabel = 'Reservation';
 
-    protected static ?string $pluralModelLabel = 'Réservations';
+    protected static ?string $pluralModelLabel = 'Reservations';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
+
+    protected static ?string $navigationBadgeTooltip = 'Reservations en attente de confirmation';
 
     public static function getNavigationBadge(): ?string
     {
-        return static::getModel()::where('status', 'pending')->count() ?: null;
+        $count = static::getModel()::where('status', 'pending')->count();
+        return $count > 0 ? $count : null;
     }
 
     public static function getNavigationBadgeColor(): ?string
