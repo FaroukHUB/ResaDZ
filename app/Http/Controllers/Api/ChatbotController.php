@@ -266,19 +266,23 @@ class ChatbotController extends Controller
      */
     private function buildLoueurDirectory(): string
     {
-        $loueurs = Loueur::where('is_active', true)
+        // Loueurs with available vehicles
+        $vehicleLoueurs = Loueur::where('is_active', true)
             ->where('is_suspended', false)
             ->whereNotNull('onboarding_completed_at')
             ->withCount(['vehicles' => function ($q) {
                 $q->where('is_active', true)->where('status', 'available');
             }])
             ->having('vehicles_count', '>', 0)
-            ->orWhere(function ($q) {
-                $q->where('is_active', true)
-                    ->where('is_suspended', false)
-                    ->where('account_type', 'taxi');
-            })
             ->get();
+
+        // Taxi/chauffeur accounts
+        $taxiLoueurs = Loueur::where('is_active', true)
+            ->where('is_suspended', false)
+            ->where('account_type', 'taxi')
+            ->get();
+
+        $loueurs = $vehicleLoueurs->merge($taxiLoueurs)->unique('id');
 
         if ($loueurs->isEmpty()) {
             return "🏢 LOUEURS : Aucun loueur actif pour le moment.";

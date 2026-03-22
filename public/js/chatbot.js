@@ -377,6 +377,8 @@
             inputField.placeholder = 'Parle maintenant...';
         };
 
+        var voiceSent = false;
+
         recognition.onresult = function (event) {
             var transcript = '';
             for (var i = event.resultIndex; i < event.results.length; i++) {
@@ -384,8 +386,10 @@
             }
             inputField.value = transcript;
 
-            // Auto-send on final result
-            if (event.results[event.results.length - 1].isFinal) {
+            // Auto-send on final result (only once)
+            if (event.results[event.results.length - 1].isFinal && !voiceSent) {
+                voiceSent = true;
+                recognition.stop();
                 stopListening();
                 if (transcript.trim()) {
                     handleSend();
@@ -394,6 +398,7 @@
         };
 
         recognition.onerror = function (event) {
+            voiceSent = false;
             stopListening();
             if (event.error === 'not-allowed') {
                 addMessage("Autorise l'accès au micro dans ton navigateur pour utiliser la dictée vocale.", 'bot');
@@ -401,6 +406,7 @@
         };
 
         recognition.onend = function () {
+            voiceSent = false;
             stopListening();
         };
 
