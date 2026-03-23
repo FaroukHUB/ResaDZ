@@ -448,9 +448,10 @@ class Calendar extends Page
         // Base data that's always needed
         $baseData = [
             'vehicles' => collect(),
-            'bookingMap' => [],
-            'blockMap' => [],
-            'unavailableMap' => [],
+            'statusMap' => [],
+            'bookingInfo' => [],
+            'blockInfo' => [],
+            'statsData' => [],
             'days' => $days,
             'currentMonth' => $this->currentMonth,
             'currentYear' => $this->currentYear,
@@ -530,21 +531,81 @@ class Calendar extends Page
             }
         }
 
+        // Build status map & booking info per vehicle per day (for Blade rendering)
+        $todayStr = now()->format('Y-m-d');
+        $statusMap = [];   // key => status string
+        $bookingInfo = []; // key => [ status, client_name, start, end, id ]
+        $blockInfo = [];   // key => [ type, reason ]
+        $statsData = [];   // vehicleId => [ available, blocked, booked ]
+
+        foreach ($vehicles as $vehicle) {
+            $available = 0;
+            $blocked = 0;
+            $booked = 0;
+
+            $monthPeriod = CarbonPeriod::create($startOfMonth, $endOfMonth);
+            foreach ($monthPeriod as $date) {
+                $dateStr = $date->format('Y-m-d');
+                $key = $vehicle->id . '_' . $dateStr;
+
+                // Determine status in priority order
+                if (isset($bookingMap[$key])) {
+                    $statusMap[$key] = 'booked';
+                    $b = $bookingMap[$key];
+                    $bookingInfo[$key] = [
+                        'status' => $b->status,
+                        'client_name' => $b->client_name ?? 'Client',
+                        'start' => $b->start_date->format('d/m'),
+                        'end' => $b->end_date->format('d/m'),
+                        'id' => $b->id,
+                    ];
+                    $booked++;
+                } elseif (isset($blockMap[$key]) && $blockMap[$key]->type === 'maintenance') {
+                    $statusMap[$key] = 'maintenance';
+                    $blockInfo[$key] = [
+                        'type' => $blockMap[$key]->type,
+                        'reason' => $blockMap[$key]->reason ?? '',
+                    ];
+                } elseif (isset($blockMap[$key])) {
+                    $statusMap[$key] = 'blocked';
+                    $blockInfo[$key] = [
+                        'type' => $blockMap[$key]->type,
+                        'reason' => $blockMap[$key]->reason ?? '',
+                    ];
+                    $blocked++;
+                } elseif (isset($unavailableMap[$key])) {
+                    $statusMap[$key] = 'unavailable';
+                } elseif ($dateStr < $todayStr) {
+                    $statusMap[$key] = 'past';
+                } else {
+                    $statusMap[$key] = 'available';
+                    $available++;
+                }
+            }
+
+            $statsData[$vehicle->id] = [
+                'available' => $available,
+                'blocked' => $blocked,
+                'booked' => $booked,
+            ];
+        }
+
         // Generate iCal URL
         $token = \App\Http\Controllers\Api\CalendarController::generateToken($loueur->id);
         $icalUrl = url('/calendar/ical/' . $token . '.ics');
 
         return [
             'vehicles' => $vehicles,
-            'bookingMap' => $bookingMap,
-            'blockMap' => $blockMap,
-            'unavailableMap' => $unavailableMap,
+            'statusMap' => $statusMap,
+            'bookingInfo' => $bookingInfo,
+            'blockInfo' => $blockInfo,
+            'statsData' => $statsData,
             'days' => $days,
             'currentMonth' => $this->currentMonth,
             'currentYear' => $this->currentYear,
             'monthName' => $startOfMonth->translatedFormat('F Y'),
             'icalUrl' => $icalUrl,
-            'today' => now()->format('Y-m-d'),
+            'today' => $todayStr,
         ];
     }
 }
