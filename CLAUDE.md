@@ -61,7 +61,31 @@ Laravel 11 + Filament (admin + loueur panels). Hébergé sur O2Switch.
 7. ✅ Fix double envoi audio
 8. ✅ Fix détection chauffeurs/taxis dans la knowledge base
 
+## Ce qui a été fait (session 23 mars 2026)
+1. ✅ Fix page 403 : logo dynamique ResaDZ (Setting logo_light) au lieu du logo loueur hardcodé
+2. ✅ Numéro WhatsApp dynamique depuis Settings sur la page 403
+
 ## TODO - Prochaine session
+### Select Modèle dynamique par Marque (véhicules)
+- Créer table `vehicle_models` (id, brand_id, name, is_active, timestamps)
+- Créer model `VehicleModel` avec relation `belongsTo(Brand)`
+- Ajouter relation `hasMany(VehicleModel)` sur `Brand`
+- Migration : ajouter `vehicle_model_id` sur `vehicles` (nullable, garder le champ `model` texte en fallback)
+- Seeder avec les modèles courants en Algérie :
+  - Renault → Clio, Symbol, Duster, Logan, Megane, Kadjar...
+  - Hyundai → i10, i20, Tucson, Accent, Creta...
+  - Dacia → Sandero, Duster, Logan, Jogger...
+  - Peugeot → 208, 308, 2008, 3008, Partner...
+  - Volkswagen → Golf, Polo, Tiguan, Caddy...
+  - Seat → Ibiza, Leon, Arona, Ateca...
+  - Toyota, Kia, Chevrolet, etc.
+- Formulaire Filament (Admin + Loueur) :
+  - Select Marque (reactive) → Select Modèle (filtré par marque) → full_name auto-rempli
+  - Le loueur peut créer un nouveau modèle via `createOptionForm()` si pas dans la liste
+  - La finition/version reste dans le champ full_name (texte libre)
+- Admin : `VehicleModelResource` pour gérer les modèles (CRUD)
+- Ne PAS gérer les finitions (VTR, GTI, etc.) dans la table — c'est dans full_name
+
 ### Amélioration UX Panel Chauffeur
 - Revoir l'interface du dashboard chauffeur (Filament Loueur panel, account_type=taxi)
 - Vérifier les pages : transferts, véhicules chauffeur, options, réservations
