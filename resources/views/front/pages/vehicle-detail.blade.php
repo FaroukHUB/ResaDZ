@@ -221,6 +221,11 @@
             </div>
         </div>
 
+        {{-- Reviews section --}}
+        @if($vehicle->loueur)
+            @include('front.components.reviews-section', ['loueur' => $vehicle->loueur])
+        @endif
+
         {{-- Related Vehicles --}}
         @if($relatedVehicles->count() > 0)
             <div class="mt-16">

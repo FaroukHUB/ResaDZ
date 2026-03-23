@@ -18,6 +18,7 @@
     $avgVehicle = $allReviews->avg('rating_vehicle');
     $avgCommunication = $allReviews->avg('rating_communication');
     $avgPunctuality = $allReviews->avg('rating_punctuality');
+    $avgRespect = $allReviews->avg('rating_respect');
 
     // Distribution des notes (1-5 étoiles)
     $ratingDistribution = [];
@@ -105,7 +106,18 @@
                             </div>
                         </div>
                     @endif
-                    @if(!$avgVehicle && !$avgCommunication && !$avgPunctuality)
+                    @if($avgRespect)
+                        <div class="flex items-center justify-between">
+                            <span class="text-sm text-gray-600">Respect</span>
+                            <div class="flex items-center gap-2">
+                                <div class="w-24 h-2 bg-gray-100 rounded-full overflow-hidden">
+                                    <div class="h-full bg-amber-500 rounded-full" style="width: {{ ($avgRespect / 5) * 100 }}%"></div>
+                                </div>
+                                <span class="text-sm font-semibold text-gray-900 w-8">{{ number_format($avgRespect, 1) }}</span>
+                            </div>
+                        </div>
+                    @endif
+                    @if(!$avgVehicle && !$avgCommunication && !$avgPunctuality && !$avgRespect)
                         <p class="text-sm text-gray-400">Pas assez de données détaillées</p>
                     @endif
                 </div>
@@ -170,6 +182,12 @@
                                 <span class="inline-flex items-center gap-1 text-xs text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg">
                                     <svg class="w-3.5 h-3.5 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                                     Ponctualité {{ $review->rating_punctuality }}/5
+                                </span>
+                            @endif
+                            @if($review->rating_respect)
+                                <span class="inline-flex items-center gap-1 text-xs text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg">
+                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
+                                    Respect {{ $review->rating_respect }}/5
                                 </span>
                             @endif
                         </div>

@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingConfirmedMail;
 use App\Mail\ReviewRequestMail;
+use App\Models\Review;
 
 class BookingResource extends Resource
 {
@@ -661,6 +662,64 @@ class BookingResource extends Resource
                                 ->warning()
                                 ->send();
                         }
+                    }),
+                Tables\Actions\Action::make('reviewClient')
+                    ->label('Noter le client')
+                    ->icon('heroicon-o-star')
+                    ->color('warning')
+                    ->visible(fn (Booking $record) => $record->status === 'completed' && !$record->loueur_reviewed)
+                    ->form([
+                        Forms\Components\Placeholder::make('info')
+                            ->label('')
+                            ->content(fn (Booking $record) => new \Illuminate\Support\HtmlString(
+                                '<p class="text-sm text-gray-600">Notez votre expérience avec <strong>' . e($record->client_name ?? 'ce client') . '</strong>.</p>'
+                            )),
+                        Forms\Components\Select::make('rating_overall')
+                            ->label('Note globale')
+                            ->options([5 => '⭐⭐⭐⭐⭐ Excellent', 4 => '⭐⭐⭐⭐ Très bien', 3 => '⭐⭐⭐ Bien', 2 => '⭐⭐ Moyen', 1 => '⭐ Mauvais'])
+                            ->required(),
+                        Forms\Components\Select::make('rating_respect')
+                            ->label('Respect & comportement')
+                            ->options([5 => '⭐⭐⭐⭐⭐', 4 => '⭐⭐⭐⭐', 3 => '⭐⭐⭐', 2 => '⭐⭐', 1 => '⭐']),
+                        Forms\Components\Select::make('rating_punctuality')
+                            ->label('Ponctualité')
+                            ->options([5 => '⭐⭐⭐⭐⭐', 4 => '⭐⭐⭐⭐', 3 => '⭐⭐⭐', 2 => '⭐⭐', 1 => '⭐']),
+                        Forms\Components\Select::make('rating_cleanliness')
+                            ->label('Propreté du véhicule au retour')
+                            ->options([5 => '⭐⭐⭐⭐⭐', 4 => '⭐⭐⭐⭐', 3 => '⭐⭐⭐', 2 => '⭐⭐', 1 => '⭐']),
+                        Forms\Components\Textarea::make('comment')
+                            ->label('Commentaire (optionnel)')
+                            ->rows(3)
+                            ->maxLength(500)
+                            ->placeholder('Votre expérience avec ce client...'),
+                    ])
+                    ->modalHeading('Noter le client')
+                    ->modalSubmitActionLabel('Publier ma note')
+                    ->action(function (Booking $record, array $data) {
+                        $loueur = Auth::user()->loueur;
+
+                        Review::create([
+                            'booking_id' => $record->id,
+                            'loueur_id' => $loueur->id,
+                            'type' => 'loueur_to_client',
+                            'reviewer_id' => $loueur->user_id,
+                            'reviewed_user_id' => $record->client_id,
+                            'rating_overall' => $data['rating_overall'],
+                            'rating_respect' => $data['rating_respect'] ?? null,
+                            'rating_punctuality' => $data['rating_punctuality'] ?? null,
+                            'rating_cleanliness' => $data['rating_cleanliness'] ?? null,
+                            'comment' => $data['comment'] ?? null,
+                            'is_public' => true,
+                            'is_approved' => true,
+                        ]);
+
+                        $record->update(['loueur_reviewed' => true]);
+
+                        Notification::make()
+                            ->title('Merci !')
+                            ->body('Votre avis sur le client a été enregistré.')
+                            ->success()
+                            ->send();
                     }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),

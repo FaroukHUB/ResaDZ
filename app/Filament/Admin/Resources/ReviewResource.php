@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\ReviewResource\Pages;
+use App\Http\Controllers\Front\ReviewController;
 use App\Models\Review;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -89,8 +90,13 @@ class ReviewResource extends Resource
                             ->label('Propreté')
                             ->disabled()
                             ->suffix('/5'),
+
+                        Forms\Components\TextInput::make('rating_respect')
+                            ->label('Respect')
+                            ->disabled()
+                            ->suffix('/5'),
                     ])
-                    ->columns(5),
+                    ->columns(6),
 
                 Forms\Components\Section::make('Commentaire')
                     ->schema([
@@ -218,7 +224,12 @@ class ReviewResource extends Resource
                     ->icon('heroicon-o-check')
                     ->color('success')
                     ->visible(fn ($record) => !$record->is_approved)
-                    ->action(fn ($record) => $record->update(['is_approved' => true, 'is_flagged' => false])),
+                    ->action(function ($record) {
+                        $record->update(['is_approved' => true, 'is_flagged' => false, 'is_public' => true]);
+                        if ($record->loueur_id) {
+                            ReviewController::updateLoueurRating($record->loueur_id);
+                        }
+                    }),
 
                 Tables\Actions\Action::make('reject')
                     ->label('Masquer')
@@ -226,7 +237,12 @@ class ReviewResource extends Resource
                     ->color('danger')
                     ->visible(fn ($record) => $record->is_approved)
                     ->requiresConfirmation()
-                    ->action(fn ($record) => $record->update(['is_approved' => false, 'is_public' => false])),
+                    ->action(function ($record) {
+                        $record->update(['is_approved' => false, 'is_public' => false]);
+                        if ($record->loueur_id) {
+                            ReviewController::updateLoueurRating($record->loueur_id);
+                        }
+                    }),
 
                 Tables\Actions\EditAction::make(),
 
@@ -237,14 +253,28 @@ class ReviewResource extends Resource
                     ->label('Approuver')
                     ->icon('heroicon-o-check')
                     ->color('success')
-                    ->action(fn ($records) => $records->each->update(['is_approved' => true])),
+                    ->action(function ($records) {
+                        $loueurIds = collect();
+                        $records->each(function ($record) use ($loueurIds) {
+                            $record->update(['is_approved' => true, 'is_public' => true]);
+                            if ($record->loueur_id) $loueurIds->push($record->loueur_id);
+                        });
+                        $loueurIds->unique()->each(fn ($id) => ReviewController::updateLoueurRating($id));
+                    }),
 
                 Tables\Actions\BulkAction::make('reject')
                     ->label('Masquer')
                     ->icon('heroicon-o-eye-slash')
                     ->color('danger')
                     ->requiresConfirmation()
-                    ->action(fn ($records) => $records->each->update(['is_approved' => false, 'is_public' => false])),
+                    ->action(function ($records) {
+                        $loueurIds = collect();
+                        $records->each(function ($record) use ($loueurIds) {
+                            $record->update(['is_approved' => false, 'is_public' => false]);
+                            if ($record->loueur_id) $loueurIds->push($record->loueur_id);
+                        });
+                        $loueurIds->unique()->each(fn ($id) => ReviewController::updateLoueurRating($id));
+                    }),
 
                 Tables\Actions\DeleteBulkAction::make(),
             ]);

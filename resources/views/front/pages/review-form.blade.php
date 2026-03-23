@@ -66,6 +66,7 @@
                     'rating_communication' => 'Communication',
                     'rating_punctuality' => 'Ponctualité',
                     'rating_cleanliness' => 'Propreté',
+                    'rating_respect' => 'Respect & comportement',
                 ] as $field => $label)
                     <div x-data="{ rating: 0 }">
                         <label class="block text-xs text-gray-500 mb-1">{{ $label }}</label>
@@ -102,7 +103,7 @@
             Publier mon avis
         </button>
 
-        <p class="text-xs text-gray-400 text-center">Votre avis sera publié avec votre prénom. Il aide la communauté ResaDZ.</p>
+        <p class="text-xs text-gray-400 text-center">Votre avis sera vérifié par notre équipe avant publication. Merci de contribuer à la communauté ResaDZ !</p>
     </form>
 </div>
 @endsection
