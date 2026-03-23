@@ -373,10 +373,10 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                     Forms\Components\TextInput::make('return_margin_hours')
                         ->label('Marge horaire pour le retour')
                         ->numeric()
-                        ->minValue(1)
+                        ->minValue(0)
                         ->maxValue(12)
                         ->suffix('heures')
-                        ->helperText('Temps accordé après l\'heure de prise en charge pour le retour'),
+                        ->helperText('0 = retour à l\'heure exacte, sinon temps accordé après l\'heure prévue'),
                     Forms\Components\Grid::make(2)
                         ->schema([
                             Forms\Components\TextInput::make('fuel_return_fee')
