@@ -174,14 +174,20 @@ class VehicleResource extends Resource
                                         <div>
                                             <p class="font-semibold text-blue-900 dark:text-blue-100">Commission ResaDZ</p>
                                             <p class="text-sm text-blue-800 dark:text-blue-200 mt-1">
-                                                ResaDZ prélève <strong>150 DA/jour</strong> (ou <strong>1€/jour</strong> pour les prix en EUR) sur chaque réservation.
+                                                ResaDZ prélève une commission <strong>dégressive</strong> selon la durée de location :
                                             </p>
-                                            <p class="text-xs text-blue-600 dark:text-blue-300 mt-2">
-                                                <strong>Pourquoi ?</strong> Cette commission couvre : visibilité sur la plateforme, gestion des réservations, support client 7j/7, paiements sécurisés et protection de vos données.
-                                            </p>
-                                            <p class="text-xs text-blue-600 dark:text-blue-300 mt-1">
-                                                <strong>Exemple :</strong> Vous fixez 5 000 DA/jour → Vous recevez 4 850 DA/jour après commission.
-                                            </p>
+                                            <div class="flex flex-wrap gap-2 mt-2">
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">1 à 5 jours → 8%</span>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">6 à 10 jours → 6%</span>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">+10 jours → 5%</span>
+                                            </div>
+                                            <div class="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg">
+                                                <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-200">💡 Astuce : ajoutez ~500 DA à votre prix souhaité pour amortir la commission.</p>
+                                                <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
+                                                    <strong>Exemple :</strong> Vous voulez recevoir 5 000 DA/jour → Affichez <strong>5 500 DA/jour</strong>.<br>
+                                                    Sur une location de 3 jours : 5 500 × 3 = 16 500 DA − 8% (1 320 DA) = <strong>15 180 DA net pour vous</strong>.
+                                                </p>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
