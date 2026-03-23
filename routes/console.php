@@ -30,3 +30,8 @@ Schedule::command('bookings:send-reminders')
     ->dailyAt('09:00')
     ->description('Send reminder emails for bookings starting tomorrow')
     ->emailOutputOnFailure(config('mail.admin_email'));
+
+// Purge expired sessions from database (prevents stale session 403 errors)
+Schedule::command('session:gc')
+    ->hourly()
+    ->description('Nettoyer les sessions expirées de la base de données');

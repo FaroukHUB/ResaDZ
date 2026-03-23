@@ -21,7 +21,12 @@ class EnsureUserIsAdmin
 
         // Check if user has admin role (admin, super_admin, moderator, support)
         if (!in_array($user->role, ['admin', 'super_admin', 'moderator', 'support'])) {
-            abort(403, 'Accès réservé aux administrateurs.');
+            auth()->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect()->route('filament.admin.auth.login')
+                ->with('error', 'Accès réservé aux administrateurs.');
         }
 
         return $next($request);

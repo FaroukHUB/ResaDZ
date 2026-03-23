@@ -14,7 +14,14 @@ class EnsureUserIsLoueur
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $user = $request->user();
+        try {
+            $user = $request->user();
+        } catch (\Exception $e) {
+            // Session corrompue ou cache stale — on nettoie et redirige
+            $this->cleanupAndRedirect($request);
+
+            return redirect()->route('filament.loueur.auth.login');
+        }
 
         // Pas connecté → redirection vers login
         if (!$user) {
@@ -60,5 +67,21 @@ class EnsureUserIsLoueur
         }
 
         return $next($request);
+    }
+
+    protected function cleanupAndRedirect(Request $request): void
+    {
+        try {
+            auth()->logout();
+        } catch (\Exception $e) {
+            // ignore
+        }
+
+        try {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+        } catch (\Exception $e) {
+            // ignore
+        }
     }
 }
