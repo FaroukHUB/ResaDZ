@@ -379,23 +379,69 @@ class Loueur extends Model
     }
 
     /**
-     * Get configured rental conditions.
+     * Get configured rental conditions (predefined toggles + custom).
      */
     public function getConditions(): array
     {
-        $conditions = $this->getSetting('rental_conditions', []);
-        if (!is_array($conditions)) {
-            return [];
+        $conditions = [];
+
+        // Predefined conditions from toggles
+        if ($this->getSetting('cond_min_age', false)) {
+            $age = $this->getSetting('cond_min_age_value', '21');
+            $conditions[] = ['title' => 'Âge minimum', 'description' => "Le conducteur doit avoir au moins {$age} ans."];
+        }
+        if ($this->getSetting('cond_min_license_years', false)) {
+            $years = $this->getSetting('cond_min_license_years_value', '2');
+            $conditions[] = ['title' => 'Permis de conduire', 'description' => "Permis de conduire valide depuis au moins {$years} ans."];
+        }
+        if ($this->getSetting('cond_id_required', false)) {
+            $conditions[] = ['title' => 'Pièce d\'identité', 'description' => 'Pièce d\'identité obligatoire (CNI ou passeport).'];
+        }
+        if ($this->getSetting('cond_km_limit', false)) {
+            $km = $this->getSetting('cond_km_limit_value', '250');
+            $fee = $this->getSetting('cond_km_extra_fee', '15');
+            $conditions[] = ['title' => 'Kilométrage', 'description' => "{$km} km/jour inclus. Supplément de {$fee} DA/km au-delà."];
+        }
+        if ($this->getSetting('cond_fuel_full', false)) {
+            $conditions[] = ['title' => 'Carburant', 'description' => 'Véhicule à rendre avec le plein de carburant.'];
+        }
+        if ($this->getSetting('cond_clean_return', false)) {
+            $conditions[] = ['title' => 'Propreté', 'description' => 'Véhicule à rendre propre (intérieur et extérieur).'];
+        }
+        if ($this->getSetting('cond_no_offroad', false)) {
+            $conditions[] = ['title' => 'Hors route', 'description' => 'Interdit de rouler hors route ou sur pistes.'];
+        }
+        if ($this->getSetting('cond_caution', false)) {
+            $amount = number_format((float) $this->getSetting('cond_caution_value', '50000'), 0, ',', ' ');
+            $conditions[] = ['title' => 'Caution', 'description' => "Caution de {$amount} DA exigée à la prise du véhicule."];
+        }
+        if ($this->getSetting('cond_no_smoking', false)) {
+            $conditions[] = ['title' => 'Non-fumeur', 'description' => 'Interdit de fumer dans le véhicule.'];
+        }
+        if ($this->getSetting('cond_no_pets', false)) {
+            $conditions[] = ['title' => 'Animaux', 'description' => 'Animaux non autorisés dans le véhicule.'];
+        }
+        if ($this->getSetting('cond_algeria_only', false)) {
+            $conditions[] = ['title' => 'Zone de circulation', 'description' => 'Circulation autorisée uniquement en Algérie.'];
+        }
+        if ($this->getSetting('cond_no_subletting', false)) {
+            $conditions[] = ['title' => 'Sous-location', 'description' => 'Sous-location interdite. Seul le locataire désigné peut conduire.'];
         }
 
-        return collect($conditions)->map(function ($condition) {
-            return [
-                'title' => $condition['title'] === 'Autre'
-                    ? ($condition['custom_title'] ?? 'Condition')
-                    : $condition['title'],
-                'description' => $condition['description'] ?? '',
-            ];
-        })->toArray();
+        // Custom conditions from repeater
+        $custom = $this->getSetting('rental_conditions', []);
+        if (is_array($custom)) {
+            foreach ($custom as $condition) {
+                if (!empty($condition['title'])) {
+                    $conditions[] = [
+                        'title' => $condition['title'],
+                        'description' => $condition['description'] ?? '',
+                    ];
+                }
+            }
+        }
+
+        return $conditions;
     }
 
     /**
