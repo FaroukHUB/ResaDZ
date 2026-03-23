@@ -115,6 +115,16 @@
             </div>
         @endif
 
+        {{-- Reassurance banner --}}
+        @if($currentStep >= 1)
+            <div class="mb-6 onb-animate-in" style="animation-delay: 0.22s;">
+                <div class="flex items-center gap-3 px-5 py-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/40">
+                    <svg class="w-5 h-5 text-emerald-500 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    <p class="text-sm text-emerald-700 dark:text-emerald-300">Pas de stress ! Vous pourrez modifier toutes ces informations plus tard depuis votre <strong>tableau de bord</strong> → <strong>Paramètres</strong>.</p>
+                </div>
+            </div>
+        @endif
+
         {{-- STEP 0: CGU & CONTRAT CHAUFFEUR --}}
         @if($currentStep === 0)
             <div class="space-y-6 onb-animate-in" style="animation-delay: 0.25s;">
