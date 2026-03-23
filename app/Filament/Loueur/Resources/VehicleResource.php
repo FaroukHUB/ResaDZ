@@ -155,7 +155,7 @@ class VehicleResource extends Resource
                                     ->required()
                                     ->suffix('DA')
                                     ->live(onBlur: true)
-                                    ->helperText('Prix affiché aux clients algériens — le plus important !'),
+                                    ->helperText(new \Illuminate\Support\HtmlString('Prix affiché aux clients algériens — le plus important !<br><em class="text-xs text-slate-500">💡 Astuce : ajoutez 500 DA à votre tarif habituel pour couvrir la commission ResaDZ et maximiser vos revenus nets.</em>')),
                                 Forms\Components\TextInput::make('price_per_day_eur')
                                     ->label('Votre prix / jour (EUR)')
                                     ->numeric()
@@ -177,15 +177,13 @@ class VehicleResource extends Resource
                                                 ResaDZ prélève une commission <strong>dégressive</strong> selon la durée de location :
                                             </p>
                                             <div class="flex flex-wrap gap-2 mt-2">
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">1 à 5 jours → 8%</span>
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">6 à 10 jours → 6%</span>
-                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">+10 jours → 5%</span>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">1 à 10 jours → 8%</span>
+                                                <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-bold bg-blue-200 dark:bg-blue-800 text-blue-900 dark:text-blue-100">+10 jours → 6%</span>
                                             </div>
                                             <div class="mt-3 p-3 bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-700 rounded-lg">
-                                                <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-200">💡 Astuce : ajoutez ~500 DA à votre prix souhaité pour amortir la commission.</p>
+                                                <p class="text-sm font-semibold text-emerald-800 dark:text-emerald-200">💡 Astuce : ajoutez 500 DA à votre tarif habituel pour couvrir la commission ResaDZ et maximiser vos revenus nets.</p>
                                                 <p class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
-                                                    <strong>Exemple :</strong> Vous voulez recevoir 5 000 DA/jour → Affichez <strong>5 500 DA/jour</strong>.<br>
-                                                    Sur une location de 3 jours : 5 500 × 3 = 16 500 DA − 8% (1 320 DA) = <strong>15 180 DA net pour vous</strong>.
+                                                    <strong>Exemple :</strong> Vous visez 6 000 DA nets ? Affichez <strong>6 500 DA</strong>. Ça couvre la commission et vous gardez 100% de vos revenus cibles.
                                                 </p>
                                             </div>
                                         </div>
@@ -292,16 +290,18 @@ class VehicleResource extends Resource
                         Forms\Components\Placeholder::make('photo_tips')
                             ->label('')
                             ->content(new \Illuminate\Support\HtmlString('
-                                <div class="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg text-sm">
-                                    <p class="font-semibold text-green-800 dark:text-green-200">📸 Conseils pour de bonnes photos :</p>
-                                    <ul class="mt-2 text-green-700 dark:text-green-300 grid grid-cols-2 gap-1">
-                                        <li>• Extérieur 3/4 avant (la plus importante)</li>
-                                        <li>• Extérieur 3/4 arrière</li>
-                                        <li>• Intérieur (tableau de bord)</li>
-                                        <li>• Sièges arrière</li>
-                                        <li>• Coffre ouvert</li>
-                                        <li>• Compteur kilométrique</li>
-                                    </ul>
+                                <div class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl">
+                                    <div class="flex items-start gap-3">
+                                        <span class="text-2xl flex-shrink-0">📸</span>
+                                        <div>
+                                            <p class="font-bold text-amber-900 dark:text-amber-100">Photo principale — fond blanc ou noir obligatoire</p>
+                                            <p class="text-sm text-amber-800 dark:text-amber-200 mt-1">
+                                                C\'est l\'image qui représente votre véhicule sur toute la plateforme.
+                                                Prenez-la dans un endroit bien éclairé, fond uni blanc ou noir.
+                                                Les autres photos : intérieur, détails, angles — montrez tout !
+                                            </p>
+                                        </div>
+                                    </div>
                                 </div>
                             ')),
                         Forms\Components\FileUpload::make('image')

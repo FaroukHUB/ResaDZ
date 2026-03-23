@@ -311,7 +311,7 @@
                         <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="active === 2 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="active === 2" x-collapse class="px-5 pb-4">
-                        <p class="text-sm text-gray-600">ResaDZ prélève une commission uniquement auprès des loueurs, en pourcentage du montant de la location. Le taux est dégressif : 8% pour 1-5 jours, 6% pour 5-10 jours, et 5% pour plus de 10 jours. Les locataires ne paient aucune commission. L'inscription, la publication d'annonces et l'utilisation du tableau de bord sont gratuites.</p>
+                        <p class="text-sm text-gray-600">ResaDZ prélève une commission uniquement auprès des loueurs, en pourcentage du montant de la location. Le taux est dégressif : 8% pour 1 à 10 jours, et 6% pour plus de 10 jours. Les locataires ne paient aucune commission. L'inscription, la publication d'annonces et l'utilisation du tableau de bord sont gratuites.</p>
                     </div>
                 </div>
 
@@ -321,7 +321,7 @@
                         <svg class="w-5 h-5 text-gray-400 transition-transform flex-shrink-0 ml-4" :class="active === 3 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                     </button>
                     <div x-show="active === 3" x-collapse class="px-5 pb-4">
-                        <p class="text-sm text-gray-600">Non. Pas d'abonnement, pas de frais d'inscription, pas de frais de publication. Le seul coût est une commission en pourcentage sur les réservations confirmées (8%, 6% ou 5% selon la durée de location). Cette commission est visible avant confirmation dans votre espace partenaire.</p>
+                        <p class="text-sm text-gray-600">Non. Pas d'abonnement, pas de frais d'inscription, pas de frais de publication. Le seul coût est une commission en pourcentage sur les réservations confirmées (8% pour 1-10 jours, 6% au-delà). Cette commission est visible avant confirmation dans votre espace partenaire.</p>
                     </div>
                 </div>
 

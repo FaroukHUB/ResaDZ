@@ -35,10 +35,10 @@
             0 => '👋 Ces documents protègent à la fois vous et vos clients. Prenez 2 minutes pour les lire — c\'est important !',
             1 => 'Un profil complet attire 3x plus de clients 😊',
             2 => 'Ajoutez l\'aéroport — très demandé par la diaspora en été ! ✈️',
-            3 => '💡 Conseil : intégrez la commission ResaDZ dans votre tarif journalier pour maximiser vos revenus nets. Exemple : si vous visez 6 000 DA nets, affichez 6 500 DA 😊',
+            3 => '💡 Un acompte entre 20% et 30% est idéal. Si vous acceptez PayPal, renseignez bien votre email — les clients pourront payer directement ! 💰 Astuce rentabilité : ajoutez 500 DA à votre tarif journalier habituel. Exemple : vous visez 6 000 DA nets ? Affichez 6 500 DA. Ça couvre la commission ResaDZ et vous gardez 100% de vos revenus cibles 😊',
             4 => 'Le siège bébé et le GPS sont les options les plus demandées ✨',
             5 => 'Des conditions claires = moins de litiges 📋',
-            6 => 'Le badge Kilométrage illimité est le plus cliqué sur ResaDZ 🏆',
+            6 => '🏆 Le badge Kilométrage illimité est le plus cliqué sur ResaDZ ! 📸 Conseil photo important : la première photo est votre vitrine sur ResaDZ — elle apparaît sur la homepage et dans toutes les recherches. Elle doit être sur fond blanc ou fond noir, propre et bien cadrée. Les autres photos peuvent montrer l\'intérieur, le coffre, les détails. Un véhicule avec de belles photos reçoit 3x plus de demandes ! 🚗',
             7 => 'Activez WhatsApp en priorité 🔔',
         ];
     @endphp
@@ -174,9 +174,8 @@
                         <p class="font-semibold mt-3 mb-1">2. COMMISSIONS ET FACTURATION</p>
                         <p class="mb-1">Le Loueur accepte les commissions suivantes, prélevées automatiquement sur chaque transaction :</p>
                         <ul class="list-disc list-inside mb-2 space-y-0.5">
-                            <li>Location 1-5 jours : 8% du montant total</li>
-                            <li>Location 5-10 jours : 6% du montant total</li>
-                            <li>Location plus de 10 jours : 5% du montant total</li>
+                            <li>Location 1 à 10 jours : 8% du montant total</li>
+                            <li>Location plus de 10 jours : 6% du montant total</li>
                         </ul>
                         <p class="mb-2">Les paiements des clients sont effectués directement au Loueur. ResaDZ émet une facture hebdomadaire récapitulant les commissions dues. Le Loueur s'engage à régler ses factures dans les délais indiqués.</p>
 

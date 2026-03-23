@@ -11,25 +11,20 @@ class PricingService
 {
     /**
      * Get commission rate based on rental duration (degressive rates).
-     * - 1-5 days: 8%
-     * - 6-10 days: 6%
-     * - 11+ days: 5%
+     * - 1 to 10 days: 8%
+     * - More than 10 days: 6%
      *
      * Commission is only charged to loueur, client pays no service fee.
      */
     private function getCommissionRate(int $totalDays): float
     {
-        // Get rates from settings with defaults
-        $rate1to5 = (float) Setting::get('commission_rate_1_to_3_days', 8);
-        $rate6to10 = (float) Setting::get('commission_rate_4_to_7_days', 6);
-        $rate11plus = (float) Setting::get('commission_rate_8_plus_days', 5);
+        $rate1to10 = (float) Setting::get('commission_rate_1_to_10_days', 8);
+        $rate11plus = (float) Setting::get('commission_rate_11_plus_days', 6);
 
         if ($totalDays > 10) {
             return $rate11plus;
-        } elseif ($totalDays > 5) {
-            return $rate6to10;
         }
-        return $rate1to5;
+        return $rate1to10;
     }
 
     /**
@@ -39,10 +34,8 @@ class PricingService
     {
         if ($totalDays > 10) {
             return '+ de 10 jours';
-        } elseif ($totalDays > 5) {
-            return '5-10 jours';
         }
-        return '1-5 jours';
+        return '1-10 jours';
     }
 
     /**
@@ -129,7 +122,7 @@ class PricingService
         $durationDiscountPercent = 0;
 
         // Récupérer le taux de commission dégressif selon la durée
-        // Taux: 1-5j → 8%, 5-10j → 6%, +10j → 5%
+        // Taux: 1-10j → 8%, +10j → 6%
         $commissionRate = $this->getCommissionRate($totalDays);
         $commissionTier = $this->getCommissionTierLabel($totalDays);
 

@@ -36,9 +36,8 @@ class PlatformSettings extends Page
             'company_address' => Setting::get('company_address', ''),
 
             // Commission & Pricing - Loueurs (taux dégressifs)
-            'commission_rate_1_to_3_days' => Setting::get('commission_rate_1_to_3_days', 8),
-            'commission_rate_4_to_7_days' => Setting::get('commission_rate_4_to_7_days', 6),
-            'commission_rate_8_plus_days' => Setting::get('commission_rate_8_plus_days', 5),
+            'commission_rate_1_to_10_days' => Setting::get('commission_rate_1_to_10_days', 8),
+            'commission_rate_11_plus_days' => Setting::get('commission_rate_11_plus_days', 6),
 
             // Commission & Pricing - Chauffeurs/Taxis (taux fixe 10%)
             'commission_rate_transfer' => Setting::get('commission_rate_transfer', 10),
@@ -198,35 +197,26 @@ class PlatformSettings extends Page
                                             ->label('')
                                             ->content('La commission est calculée sur le montant total HT de la location (prix/jour × nombre de jours). Les frais de livraison et options ne sont pas commissionnés.')
                                             ->columnSpanFull(),
-                                        Forms\Components\TextInput::make('commission_rate_1_to_3_days')
-                                            ->label('Taux 1-5 jours')
+                                        Forms\Components\TextInput::make('commission_rate_1_to_10_days')
+                                            ->label('Taux 1-10 jours')
                                             ->numeric()
                                             ->required()
                                             ->default(8)
                                             ->suffix('%')
                                             ->minValue(0)
                                             ->maxValue(100)
-                                            ->helperText('Commission pour les locations de 1 à 5 jours'),
-                                        Forms\Components\TextInput::make('commission_rate_4_to_7_days')
-                                            ->label('Taux 5-10 jours')
+                                            ->helperText('Commission pour les locations de 1 à 10 jours'),
+                                        Forms\Components\TextInput::make('commission_rate_11_plus_days')
+                                            ->label('Taux +10 jours')
                                             ->numeric()
                                             ->required()
                                             ->default(6)
                                             ->suffix('%')
                                             ->minValue(0)
                                             ->maxValue(100)
-                                            ->helperText('Commission pour les locations de 5 à 10 jours'),
-                                        Forms\Components\TextInput::make('commission_rate_8_plus_days')
-                                            ->label('Taux +10 jours')
-                                            ->numeric()
-                                            ->required()
-                                            ->default(5)
-                                            ->suffix('%')
-                                            ->minValue(0)
-                                            ->maxValue(100)
                                             ->helperText('Commission pour les locations de plus de 10 jours'),
                                     ])
-                                    ->columns(3),
+                                    ->columns(2),
 
                                 Forms\Components\Section::make('Commission Chauffeurs/Taxis (Taux fixe)')
                                     ->description('Commission prélevée UNIQUEMENT au chauffeur sur les transferts et livraisons. Le client ne paie aucune commission.')
@@ -511,9 +501,8 @@ class PlatformSettings extends Page
         Setting::set('company_address', $data['company_address'], 'company', 'text');
 
         // Commission & Pricing - Loueurs (taux dégressifs)
-        Setting::set('commission_rate_1_to_3_days', $data['commission_rate_1_to_3_days'], 'pricing', 'number');
-        Setting::set('commission_rate_4_to_7_days', $data['commission_rate_4_to_7_days'], 'pricing', 'number');
-        Setting::set('commission_rate_8_plus_days', $data['commission_rate_8_plus_days'], 'pricing', 'number');
+        Setting::set('commission_rate_1_to_10_days', $data['commission_rate_1_to_10_days'], 'pricing', 'number');
+        Setting::set('commission_rate_11_plus_days', $data['commission_rate_11_plus_days'], 'pricing', 'number');
 
         // Commission & Pricing - Chauffeurs/Taxis (taux fixe 10%)
         Setting::set('commission_rate_transfer', $data['commission_rate_transfer'], 'pricing', 'number');

@@ -33,9 +33,9 @@ Laravel 11 + Filament (admin + loueur panels). Hébergé sur O2Switch.
 - `Setting` : config globale du site
 
 ## Commission
-- Location véhicule : 1-5j → 8%, 5-10j → 6%, +10j → 5%
+- Location véhicule : 1-10j → 8%, +10j → 6% (2 paliers seulement)
 - Transferts/livraisons : 10% fixe
-- Configurable via Settings (commission_rate_1_to_3_days, etc.)
+- Configurable via Settings (commission_rate_1_to_10_days, commission_rate_11_plus_days)
 
 ## Chatbot (Résabot)
 - **API** : Groq (gratuit, sans CB) — modèle llama-3.3-70b-versatile
