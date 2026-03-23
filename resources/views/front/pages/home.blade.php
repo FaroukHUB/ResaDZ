@@ -324,8 +324,8 @@
     <!-- Section fusionnée : Voiture à l'arrivée / Transfert -->
     @include('front.components.arrival-section')
 
-    <!-- Loueurs Section -->
-    @if($loueurs->count() > 0)
+    <!-- Loueurs Section (masquée tant qu'il n'y a pas 6+ loueurs avec véhicules) -->
+    @if($loueurs->where('vehicles_count', '>', 0)->count() >= 6)
     <section class="py-16 lg:py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
@@ -417,6 +417,82 @@
     </section>
 
     @endif
+
+    <!-- Pourquoi nous faire confiance -->
+    <section class="py-16 lg:py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <div class="flex items-center justify-center gap-3 mb-3">
+                    <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
+                    <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Confiance</span>
+                    <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
+                </div>
+                <h2 class="text-3xl lg:text-4xl font-black text-gray-900">Pourquoi nous faire confiance</h2>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
+                {{-- Card 1 --}}
+                <div class="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-green-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-all duration-300"></div>
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Loueurs vérifiés</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Chaque partenaire est contrôlé manuellement avant publication</p>
+                    </div>
+                </div>
+
+                {{-- Card 2 --}}
+                <div class="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-green-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-all duration-300"></div>
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Réservation 24h/24</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Réservez en ligne à tout moment, confirmation en moins de 2h</p>
+                    </div>
+                </div>
+
+                {{-- Card 3 --}}
+                <div class="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-green-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-all duration-300"></div>
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Paiement direct</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Vous payez le loueur directement, ResaDZ ne touche jamais votre argent</p>
+                    </div>
+                </div>
+
+                {{-- Card 4 --}}
+                <div class="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-green-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-all duration-300"></div>
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Support WhatsApp 7j/7</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Notre équipe répond tous les jours, même le weekend</p>
+                    </div>
+                </div>
+
+                {{-- Card 5 --}}
+                <div class="relative bg-white rounded-2xl p-6 border border-gray-100 shadow-sm hover:shadow-xl hover:border-green-200 hover:-translate-y-1 transition-all duration-300 group overflow-hidden sm:col-span-2 lg:col-span-1">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-green-50 rounded-full -translate-y-1/2 translate-x-1/2 group-hover:bg-green-100 transition-all duration-300"></div>
+                    <div class="relative">
+                        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mb-4 group-hover:bg-green-200 group-hover:scale-110 transition-all duration-300">
+                            <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        <h3 class="text-sm font-bold text-gray-900 mb-1">Annulation flexible</h3>
+                        <p class="text-gray-500 text-xs leading-relaxed">Annulez selon les conditions du loueur, en toute transparence</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Blog Section - Actualités -->
     @if(isset($blogPosts) && $blogPosts->count() > 0)
