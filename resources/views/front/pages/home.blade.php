@@ -196,56 +196,106 @@
         </form>
     </div>
 
-    <!-- Notre sélection pour vous -->
-    @if($selectedVehicles->count() > 0)
-    <section class="pb-16 lg:pb-24 bg-gray-100 pt-8 sm:pt-[180px]">
+    <!-- ===== SECTION 3 : BARRE DE CONFIANCE ===== -->
+    <section class="bg-white border-t border-b border-green-100 py-4 relative z-10" style="margin-top: -1px;">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-end justify-between mb-8 lg:mb-12">
-                <div>
-                    <div class="flex items-center gap-3 mb-3">
-                        <div class="w-1 h-8 bg-gradient-to-b from-green-500 to-green-700 rounded-full"></div>
-                        <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Recommandé</span>
+            <div class="flex items-center justify-between gap-6 overflow-x-auto scrollbar-hide sm:overflow-visible">
+                @foreach([
+                    ['icon' => 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z', 'text' => 'Loueurs vérifiés manuellement'],
+                    ['icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => 'Réservation en ligne 24h/24'],
+                    ['icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z', 'text' => 'Paiement directement au loueur'],
+                    ['icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', 'text' => 'Support WhatsApp 7j/7'],
+                    ['icon' => 'M6 18L18 6M6 6l12 12', 'text' => 'Annulation flexible'],
+                ] as $item)
+                    <div class="flex items-center gap-2 flex-shrink-0">
+                        <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/></svg>
+                        <span class="text-gray-700 text-sm font-medium whitespace-nowrap">{{ $item['text'] }}</span>
                     </div>
-                    <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">{{ $homeContent['selection_title'] ?? 'Notre sélection pour vous' }}</h2>
-                    <p class="mt-2 text-gray-500 text-sm lg:text-base">{{ $homeContent['selection_subtitle'] ?? 'Les véhicules que nous recommandons' }}</p>
-                </div>
-                @if($selectedVehicles->count() > 8)
-                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
-                    Voir tout
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-                @endif
-            </div>
-
-            {{-- Desktop: grid 4 colonnes, max 8 véhicules (2 rows) --}}
-            <div class="hidden lg:grid grid-cols-4 gap-6">
-                @foreach($selectedVehicles->take(8) as $vehicle)
-                    @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true])
+                    @if(!$loop->last)
+                        <div class="hidden sm:block w-px h-5 bg-gray-200 flex-shrink-0"></div>
+                    @endif
                 @endforeach
             </div>
-            {{-- Mobile: scroll horizontal --}}
+        </div>
+    </section>
+
+    <!-- ===== SECTION 4 : RECHERCHE PAR WILAYA ===== -->
+    <section class="py-12 lg:py-16 pt-8 sm:pt-[180px]" style="background: #F8FAFF;">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 class="text-2xl font-bold text-gray-900">Où voulez-vous louer ?</h2>
+            <p class="mt-2 text-gray-500 text-sm">Trouvez un véhicule dans votre wilaya</p>
+            <div class="mt-8 flex flex-wrap justify-center gap-3">
+                @foreach(['Alger', 'Oran', 'Constantine', 'Annaba', 'Béjaïa', 'Tlemcen', 'Sétif', 'Batna', 'Blida', 'Boumerdès', 'Tipaza', 'Skikda'] as $w)
+                    <a href="{{ route('vehicles.index', ['wilaya' => $w]) }}" class="inline-flex items-center gap-1.5 px-4 py-2 bg-white border border-gray-200 rounded-full text-sm font-medium text-gray-700 hover:bg-green-50 hover:border-green-400 hover:text-green-700 transition-all">
+                        <svg class="w-3.5 h-3.5 text-green-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
+                        {{ $w }}
+                    </a>
+                @endforeach
+            </div>
+            <div class="mt-6">
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-5 py-2.5 border border-green-600 text-green-600 text-sm font-semibold rounded-xl hover:bg-green-600 hover:text-white transition">
+                    Voir toutes les wilayas
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 5 : NOTRE SÉLECTION ===== -->
+    @if($selectedVehicles->count() > 0)
+    <section class="py-16 lg:py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <span class="inline-flex items-center gap-1.5 px-4 py-1.5 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wider mb-3">⭐ Sélection ResaDZ</span>
+                <h2 class="text-2xl lg:text-4xl font-black text-gray-900">Notre sélection du moment</h2>
+                <p class="mt-2 text-gray-500">Des véhicules vérifiés, choisis pour vous</p>
+            </div>
+
+            <div class="hidden lg:grid grid-cols-4 gap-6">
+                @foreach($selectedVehicles->take(4) as $vehicle)
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true, 'showSelectionBadge' => true])
+                @endforeach
+            </div>
             <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
                 <div class="flex gap-4" style="width: max-content;">
-                    @foreach($selectedVehicles->take(8) as $vehicle)
+                    @foreach($selectedVehicles->take(4) as $vehicle)
                         <div class="w-[280px] flex-shrink-0">
-                            @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true])
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showSelectionBorder' => true, 'showSelectionBadge' => true])
                         </div>
                     @endforeach
                 </div>
             </div>
-            @if($selectedVehicles->count() > 8)
-            <div class="mt-8 text-center sm:hidden">
-                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
-                    Voir tout
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-                </a>
-            </div>
-            @endif
+        </div>
+    </section>
+    @endif
 
-            {{-- Bouton voir tous les véhicules --}}
+    <!-- ===== SECTION 6 : VÉHICULES RÉCENTS ===== -->
+    @if(isset($recentVehicles) && $recentVehicles->count() > 0)
+    <section class="py-16 lg:py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-10">
+                <h2 class="text-2xl lg:text-4xl font-black text-gray-900">Derniers véhicules ajoutés</h2>
+                <p class="mt-2 text-gray-500">Fraîchement publiés par nos loueurs partenaires</p>
+            </div>
+
+            <div class="hidden lg:grid grid-cols-4 gap-6">
+                @foreach($recentVehicles->take(8) as $vehicle)
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showNewBadge' => true])
+                @endforeach
+            </div>
+            <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-4" style="width: max-content;">
+                    @foreach($recentVehicles->take(8) as $vehicle)
+                        <div class="w-[280px] flex-shrink-0">
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle, 'showNewBadge' => true])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
             <div class="mt-10 text-center">
-                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full transition shadow-lg shadow-green-600/20 text-lg">
-                    Voir tous nos véhicules
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl transition shadow-lg shadow-green-600/20 text-lg">
+                    Voir tous les véhicules
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
@@ -253,79 +303,141 @@
     </section>
     @endif
 
-    <!-- Qui sommes-nous -->
-    <section class="py-16 lg:py-24 bg-neutral-950">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- ===== SECTION 7 : COMMENT ÇA MARCHE ===== -->
+    <section class="py-16 lg:py-24" style="background: #F0FDF4;">
+        <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
-                <div class="flex items-center justify-center gap-3 mb-3">
-                    <div class="w-8 h-1 bg-gradient-to-r from-green-400 to-green-600 rounded-full"></div>
-                    <span class="text-green-400 text-sm font-semibold uppercase tracking-wider">ResaDZ</span>
-                    <div class="w-8 h-1 bg-gradient-to-r from-green-400 to-green-600 rounded-full"></div>
-                </div>
-                <h2 class="text-3xl lg:text-4xl font-black text-white">Qui sommes-nous ?</h2>
-                <p class="mt-3 text-white/50 max-w-2xl mx-auto">La première marketplace algérienne dédiée à la location de véhicules et aux transferts</p>
-                <div class="mt-4 inline-flex items-center gap-2 bg-green-500/10 border border-green-500/20 rounded-full px-4 py-1.5">
-                    <svg class="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
-                    <span class="text-green-400 text-sm font-medium">Inscription gratuite &mdash; Tarifs transparents</span>
-                    <span class="text-white/30">|</span>
-                    <a href="{{ route('comment-ca-marche') }}" class="text-white/50 hover:text-green-400 text-sm transition">Comment ça marche</a>
-                </div>
+                <span class="inline-flex items-center px-4 py-1.5 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wider mb-3">Simple et rapide</span>
+                <h2 class="text-3xl lg:text-4xl font-black text-gray-900">Réservez en 3 étapes</h2>
+                <p class="mt-2 text-gray-500">De la recherche à la remise des clés</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {{-- Card 1 --}}
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition group">
-                    <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-green-500/30 transition">
-                        <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-                        </svg>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+                {{-- Connecting line (desktop) --}}
+                <div class="hidden md:block absolute top-12 left-[20%] right-[20%] h-px border-t-2 border-dashed border-green-300"></div>
+
+                {{-- Step 1 --}}
+                <div class="text-center relative">
+                    <div class="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-5 relative z-10">1</div>
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Comparez les offres</h3>
-                    <p class="text-white/50 text-sm leading-relaxed">Accédez à des dizaines de loueurs vérifiés et comparez les prix, options et disponibilités en un seul endroit.</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Je cherche</h3>
+                    <p class="text-gray-500 text-sm">Saisissez votre wilaya et vos dates. Comparez les véhicules disponibles en temps réel.</p>
                 </div>
 
-                {{-- Card 2 --}}
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition group">
-                    <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-green-500/30 transition">
-                        <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                        </svg>
+                {{-- Step 2 --}}
+                <div class="text-center relative">
+                    <div class="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-5 relative z-10">2</div>
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Loueurs vérifiés</h3>
-                    <p class="text-white/50 text-sm leading-relaxed">Chaque partenaire est vérifié et noté par notre communauté. Louez en toute confiance partout en Algérie.</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Je réserve</h3>
+                    <p class="text-gray-500 text-sm">Choisissez votre véhicule, payez l'acompte en ligne et recevez la confirmation en moins de 2h.</p>
                 </div>
 
-                {{-- Card 3 --}}
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition group">
-                    <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-green-500/30 transition">
-                        <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5"/>
-                        </svg>
+                {{-- Step 3 --}}
+                <div class="text-center relative">
+                    <div class="w-14 h-14 bg-green-600 rounded-full flex items-center justify-center text-white text-xl font-bold mx-auto mb-5 relative z-10">3</div>
+                    <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 5.25a3 3 0 013 3m3 0a6 6 0 01-7.029 5.912c-.563-.097-1.159.026-1.563.43L10.5 17.25H8.25v2.25H6v2.25H2.25v-2.818c0-.597.237-1.17.659-1.591l6.499-6.499c.404-.404.527-1 .43-1.563A6 6 0 1121.75 8.25z"/></svg>
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Location & Transfert</h3>
-                    <p class="text-white/50 text-sm leading-relaxed">Louez un véhicule en libre-service ou réservez un transfert avec chauffeur. Deux services, une seule plateforme.</p>
-                </div>
-
-                {{-- Card 4 --}}
-                <div class="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition group">
-                    <div class="w-14 h-14 bg-green-500/20 rounded-2xl flex items-center justify-center mb-5 group-hover:bg-green-500/30 transition">
-                        <svg class="w-7 h-7 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
-                        </svg>
-                    </div>
-                    <h3 class="text-lg font-bold text-white mb-2">Partout en Algérie</h3>
-                    <p class="text-white/50 text-sm leading-relaxed">D'Alger à Tamanrasset, d'Oran à Annaba. Trouvez un véhicule ou un chauffeur dans toutes les wilayas.</p>
+                    <h3 class="text-lg font-bold text-gray-900 mb-2">Je conduis</h3>
+                    <p class="text-gray-500 text-sm">Le loueur vous remet les clés à l'endroit convenu. Profitez de votre location !</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Section fusionnée : Voiture à l'arrivée / Transfert -->
+    <!-- ===== SECTION 8 : AÉROPORT (keep) ===== -->
     @include('front.components.arrival-section')
 
-    <!-- Loueurs Section -->
-    @if($loueurs->count() > 0)
+    <!-- ===== SECTION 9 : LES 2 SERVICES ===== -->
+    <section class="py-16 lg:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl lg:text-4xl font-black text-gray-900">Deux façons de voyager en Algérie</h2>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                {{-- Card Location --}}
+                <div class="rounded-2xl p-8 lg:p-10 text-white transition-transform hover:-translate-y-1" style="background: linear-gradient(135deg, #065F46 0%, #10B981 100%);">
+                    <div class="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Location de voiture</h3>
+                    <p class="text-white/80 mb-5">Conduisez vous-même. Choisissez parmi nos véhicules vérifiés partout en Algérie.</p>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center gap-2 text-sm text-white/90"><svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Tarifs transparents en DA</li>
+                        <li class="flex items-center gap-2 text-sm text-white/90"><svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Loueurs vérifiés</li>
+                        <li class="flex items-center gap-2 text-sm text-white/90"><svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Kilométrage selon loueur</li>
+                    </ul>
+                    <p class="text-white/60 text-sm mb-5">À partir de 4 500 DA/jour</p>
+                    <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-green-800 font-bold rounded-xl hover:bg-green-50 transition">
+                        Voir les véhicules
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+
+                {{-- Card Transfert --}}
+                <div class="rounded-2xl p-8 lg:p-10 text-white transition-transform hover:-translate-y-1" style="background: linear-gradient(135deg, #3730A3 0%, #8B5CF6 100%);">
+                    <div class="w-16 h-16 bg-white/15 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z"/></svg>
+                    </div>
+                    <h3 class="text-2xl font-bold mb-3">Transfert avec chauffeur</h3>
+                    <p class="text-white/80 mb-5">Soyez conduit à destination. Idéal pour l'aéroport, les longues distances.</p>
+                    <ul class="space-y-2 mb-6">
+                        <li class="flex items-center gap-2 text-sm text-white/90"><svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Chauffeurs professionnels</li>
+                        <li class="flex items-center gap-2 text-sm text-white/90"><svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Prix fixe à l'avance</li>
+                        <li class="flex items-center gap-2 text-sm text-white/90"><svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg> Disponible 24h/24</li>
+                    </ul>
+                    <a href="{{ route('transfers.search') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-white text-indigo-800 font-bold rounded-xl hover:bg-indigo-50 transition">
+                        Réserver un transfert
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== SECTION 10 : CONFIANCE ===== -->
+    <section class="py-16 lg:py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-2xl p-6 text-center shadow-sm hover:-translate-y-0.5 transition-transform">
+                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 mb-1">Loueurs vérifiés</h3>
+                    <p class="text-gray-500 text-sm">Chaque partenaire est contrôlé manuellement avant d'être publié</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 text-center shadow-sm hover:-translate-y-0.5 transition-transform">
+                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 mb-1">Confirmation rapide</h3>
+                    <p class="text-gray-500 text-sm">Votre réservation est confirmée en moins de 2h après le paiement</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 text-center shadow-sm hover:-translate-y-0.5 transition-transform">
+                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 mb-1">Paiement direct</h3>
+                    <p class="text-gray-500 text-sm">Vous payez directement le loueur. ResaDZ ne touche jamais votre argent</p>
+                </div>
+                <div class="bg-white rounded-2xl p-6 text-center shadow-sm hover:-translate-y-0.5 transition-transform">
+                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 mb-1">Support 7j/7</h3>
+                    <p class="text-gray-500 text-sm">Notre équipe répond sur WhatsApp tous les jours, même le weekend</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Loueurs Section (conditionnel: 6+ loueurs avec véhicules) -->
+    @if($loueurs->where('vehicles_count', '>', 0)->count() >= 6)
     <section class="py-16 lg:py-24 bg-gray-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="text-center mb-12">
