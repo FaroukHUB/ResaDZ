@@ -22,7 +22,7 @@ class TrackPageVisits
         'duckduckbot', 'semrush', 'ahrefs', 'mj12bot', 'dotbot',
         'petalbot', 'uptimerobot', 'pingdom', 'curl', 'wget',
         'python-requests', 'go-http-client', 'headlesschrome',
-        'phantomjs', 'selenium', 'lighthouse', 'pagespeed',
+        'phantomjs', 'selenium', 'lighthouse', 'pagespeed', 'scraper',
     ];
 
     public function __construct(GeoLocationService $geoService)

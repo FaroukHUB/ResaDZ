@@ -33,6 +33,12 @@ class TrackingController extends Controller
 
         $ip = $request->ip();
         $userAgent = $request->userAgent() ?? '';
+
+        // Exclude bots and excluded IPs from click tracking
+        if ($this->isBot($userAgent) || $this->isExcludedIp($ip)) {
+            return response()->json(['success' => true]);
+        }
+
         $geoData = $this->geoService->getLocation($ip);
 
         // Get session ID safely (API routes may not have session)
@@ -99,5 +105,36 @@ class TrackingController extends Controller
         }
 
         return response()->json(['success' => true]);
+    }
+
+    protected function isBot(string $userAgent): bool
+    {
+        if (empty(trim($userAgent))) {
+            return true;
+        }
+
+        $ua = strtolower($userAgent);
+        $botPatterns = [
+            'bot', 'crawl', 'spider', 'scraper', 'slurp', 'facebookexternalhit',
+            'mediapartners', 'googlebot', 'bingbot', 'yandex', 'baidu',
+            'duckduckbot', 'semrush', 'ahrefs', 'mj12bot', 'dotbot',
+            'petalbot', 'uptimerobot', 'pingdom', 'curl', 'wget',
+            'python-requests', 'go-http-client', 'headlesschrome',
+            'phantomjs', 'selenium', 'lighthouse', 'pagespeed',
+        ];
+
+        foreach ($botPatterns as $pattern) {
+            if (str_contains($ua, $pattern)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function isExcludedIp(string $ip): bool
+    {
+        $excluded = config('resadz.excluded_tracking_ips', []);
+        return in_array($ip, $excluded);
     }
 }
