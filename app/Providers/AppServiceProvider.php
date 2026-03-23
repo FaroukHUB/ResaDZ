@@ -2,9 +2,11 @@
 
 namespace App\Providers;
 
+use App\Models\Booking;
 use App\Models\ChauffeurVehicle;
 use App\Models\Loueur;
 use App\Models\Review;
+use App\Models\TransferBooking;
 use App\Models\TransferRoute;
 use App\Models\Vehicle;
 use App\Models\VehicleOffer;
@@ -32,9 +34,12 @@ class AppServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
-        // Notify admin on new registrations and vehicles
+        // Notify admin on new registrations, bookings, and reviews
         Loueur::observe(AdminNotifyObserver::class);
         Vehicle::observe(AdminNotifyObserver::class);
+        Booking::observe(AdminNotifyObserver::class);
+        TransferBooking::observe(AdminNotifyObserver::class);
+        Review::observe(AdminNotifyObserver::class);
 
         // Auto-clear chatbot cache when data changes
         Vehicle::observe(ChatbotCacheObserver::class);
