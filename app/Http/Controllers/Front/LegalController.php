@@ -14,8 +14,8 @@ class LegalController extends Controller
     {
         $companyName = Setting::get('company_name', 'ResaDZ');
         $companyAddress = Setting::get('company_address', '');
-        $companyEmail = Setting::get('contact_email', 'contact@resadz.com');
-        $companyPhone = Setting::get('contact_phone', '');
+        $companyEmail = Setting::get('company_email', 'contact@resadz.com');
+        $companyPhone = Setting::get('company_phone', '');
 
         return view('front.pages.legal.mentions-legales', compact(
             'companyName',
@@ -41,7 +41,7 @@ class LegalController extends Controller
     public function confidentialite()
     {
         $companyName = Setting::get('company_name', 'ResaDZ');
-        $companyEmail = Setting::get('contact_email', 'contact@resadz.com');
+        $companyEmail = Setting::get('company_email', 'contact@resadz.com');
 
         return view('front.pages.legal.confidentialite', compact('companyName', 'companyEmail'));
     }

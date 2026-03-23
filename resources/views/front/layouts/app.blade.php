@@ -11,6 +11,10 @@
     // Logos
     $logoLight = \App\Models\Setting::get('logo_light', '');
     $logoDark = \App\Models\Setting::get('logo_dark', '');
+
+    // Favicon (utilise le favicon uploadé, sinon le logo light, sinon le fallback)
+    $faviconSetting = \App\Models\Setting::get('favicon', '');
+    $faviconUrl = $faviconSetting ? Storage::url($faviconSetting) : ($logoLight ? Storage::url($logoLight) : $faviconUrl);
 @endphp
 <!DOCTYPE html>
 <html lang="fr" class="scroll-smooth">
@@ -36,14 +40,14 @@
     <meta property="og:description" content="@yield('og_description', 'Trouvez et réservez votre véhicule en quelques clics.')">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="@yield('og_image', asset('assets/favicon.png'))">
+    <meta property="og:image" content="@yield('og_image', $faviconUrl)">
     <meta property="og:locale" content="fr_DZ">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('og_title', $siteName . ' - ' . $siteSlogan)">
     <meta name="twitter:description" content="@yield('og_description', 'Trouvez et réservez votre véhicule en quelques clics.')">
-    <meta name="twitter:image" content="@yield('og_image', asset('assets/favicon.png'))">
+    <meta name="twitter:image" content="@yield('og_image', $faviconUrl)">
 
     <!-- Geographic tags for Algeria -->
     <meta name="geo.region" content="DZ">
@@ -55,7 +59,7 @@
     <link rel="canonical" href="@yield('canonical', url()->current())">
 
     <!-- Favicon -->
-    <link rel="icon" type="image/png" href="{{ asset('assets/favicon.png') }}">
+    <link rel="icon" type="image/png" href="{{ $faviconUrl }}">
 
     <!-- Fonts - Non-blocking avec display=swap -->
     <link rel="preconnect" href="https://fonts.googleapis.com">

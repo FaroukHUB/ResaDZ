@@ -18,7 +18,7 @@
     "@@type": "Organization",
     "name": "{{ \App\Models\Setting::get('company_name', 'ResaDZ') }}",
     "url": "{{ config('app.url') }}",
-    "logo": "{{ \App\Models\Setting::get('logo_light') ? asset('storage/' . \App\Models\Setting::get('logo_light')) : asset('assets/favicon.png') }}",
+    "logo": "{{ \App\Models\Setting::get('favicon') ? asset('storage/' . \App\Models\Setting::get('favicon')) : (\App\Models\Setting::get('logo_light') ? asset('storage/' . \App\Models\Setting::get('logo_light')) : asset('assets/favicon.png')) }}",
     "description": "Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés.",
     "address": {
         "@@type": "PostalAddress",

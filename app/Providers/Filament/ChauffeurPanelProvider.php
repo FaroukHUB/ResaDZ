@@ -24,6 +24,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class ChauffeurPanelProvider extends PanelProvider
 {
+    use \App\Traits\HasDynamicFavicon;
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -39,7 +40,7 @@ class ChauffeurPanelProvider extends PanelProvider
                 'info' => Color::Sky,
             ])
             ->brandName(\App\Models\Setting::get('company_name', 'ResaDZ') . ' - Espace Chauffeur')
-            ->favicon('/favicon.ico')
+            ->favicon($this->getFaviconUrl())
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Chauffeur/Resources'), for: 'App\\Filament\\Chauffeur\\Resources')
             ->discoverPages(in: app_path('Filament/Chauffeur/Pages'), for: 'App\\Filament\\Chauffeur\\Pages')

@@ -23,6 +23,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class AdminPanelProvider extends PanelProvider
 {
+    use \App\Traits\HasDynamicFavicon;
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -72,7 +73,7 @@ class AdminPanelProvider extends PanelProvider
                     ->collapsed(),
             ])
             ->brandName(\App\Models\Setting::get('company_name', 'ResaDZ') . ' Admin')
-            ->favicon('/favicon.ico')
+            ->favicon($this->getFaviconUrl())
             ->sidebarCollapsibleOnDesktop()
             ->middleware([
                 EncryptCookies::class,

@@ -24,6 +24,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class LoueurPanelProvider extends PanelProvider
 {
+    use \App\Traits\HasDynamicFavicon;
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -38,7 +39,7 @@ class LoueurPanelProvider extends PanelProvider
                 'warning' => Color::Orange,
             ])
             ->brandName(\App\Models\Setting::get('company_name', 'ResaDZ') . ' - Espace Loueur')
-            ->favicon('/favicon.ico')
+            ->favicon($this->getFaviconUrl())
             ->sidebarCollapsibleOnDesktop()
             ->discoverResources(in: app_path('Filament/Loueur/Resources'), for: 'App\\Filament\\Loueur\\Resources')
             ->discoverPages(in: app_path('Filament/Loueur/Pages'), for: 'App\\Filament\\Loueur\\Pages')

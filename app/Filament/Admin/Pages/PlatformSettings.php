@@ -73,7 +73,7 @@ class PlatformSettings extends Page
             'hero_title_line1' => Setting::get('hero_title_line1', 'Louez votre voiture'),
             'hero_title_line2' => Setting::get('hero_title_line2', 'partout en Algérie'),
             'hero_subtitle' => Setting::get('hero_subtitle', 'Comparez et réservez parmi des centaines de véhicules disponibles dans toutes les wilayas'),
-            'hero_wilayas_count' => Setting::get('hero_wilayas_count', 48),
+            'hero_wilayas_count' => Setting::get('hero_wilayas_count', 58),
 
             // How It Works Section
             'how_it_works_title' => Setting::get('how_it_works_title', 'En 3 étapes simples'),
@@ -94,9 +94,10 @@ class PlatformSettings extends Page
             'instagram' => Setting::get('instagram', ''),
             'whatsapp' => Setting::get('whatsapp', ''),
 
-            // Logos
+            // Logos & Favicon
             'logo_light' => Setting::get('logo_light', ''),
             'logo_dark' => Setting::get('logo_dark', ''),
+            'favicon' => Setting::get('favicon', ''),
         ]);
     }
 
@@ -146,6 +147,18 @@ class PlatformSettings extends Page
                                 Forms\Components\Section::make('Logos')
                                     ->description('Uploadez vos logos pour le header et le footer')
                                     ->schema([
+                                        Forms\Components\FileUpload::make('favicon')
+                                            ->label('Favicon')
+                                            ->image()
+                                            ->directory('logos')
+                                            ->disk('public')
+                                            ->imageResizeMode('contain')
+                                            ->imageResizeTargetWidth('96')
+                                            ->imageResizeTargetHeight('96')
+                                            ->acceptedFileTypes(['image/png', 'image/x-icon', 'image/svg+xml', 'image/webp'])
+                                            ->maxSize(1024)
+                                            ->helperText('Favicon du site (icône onglet navigateur). PNG 96x96 recommandé. Si vide, le logo sera utilisé.')
+                                            ->columnSpanFull(),
                                         Forms\Components\FileUpload::make('logo_light')
                                             ->label('Logo fond clair (header)')
                                             ->image()
@@ -474,7 +487,7 @@ class PlatformSettings extends Page
                                         Forms\Components\TextInput::make('whatsapp')
                                             ->label('WhatsApp')
                                             ->tel()
-                                            ->placeholder('+213656697788')
+                                            ->placeholder('+213540565001')
                                             ->prefixIcon('heroicon-o-phone')
                                             ->helperText('Numéro WhatsApp avec indicatif pays (+213...)'),
                                     ]),
@@ -550,9 +563,10 @@ class PlatformSettings extends Page
         Setting::set('instagram', $data['instagram'] ?? '', 'social', 'text');
         Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
 
-        // Logos
+        // Logos & Favicon
         Setting::set('logo_light', $data['logo_light'] ?? '', 'appearance', 'text');
         Setting::set('logo_dark', $data['logo_dark'] ?? '', 'appearance', 'text');
+        Setting::set('favicon', $data['favicon'] ?? '', 'appearance', 'text');
 
         Notification::make()
             ->title('Paramètres enregistrés')

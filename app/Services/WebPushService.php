@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Loueur;
 use App\Models\PushSubscription;
+use App\Models\Setting;
+use Illuminate\Support\Facades\Storage;
 use Minishlink\WebPush\Subscription;
 use Minishlink\WebPush\WebPush;
 
@@ -40,8 +42,8 @@ class WebPushService
             $payload = json_encode([
                 'title' => $title,
                 'body' => $body,
-                'icon' => '/favicon.ico',
-                'badge' => '/favicon.ico',
+                'icon' => $this->getFaviconUrl(),
+                'badge' => $this->getFaviconUrl(),
                 'data' => $data,
                 'tag' => $data['tag'] ?? 'notification',
                 'requireInteraction' => true,
@@ -92,5 +94,20 @@ class WebPushService
     public static function getPublicKey(): string
     {
         return config('services.webpush.public_key', '');
+    }
+
+    protected function getFaviconUrl(): string
+    {
+        $favicon = Setting::get('favicon', '');
+        if ($favicon) {
+            return Storage::url($favicon);
+        }
+
+        $logoLight = Setting::get('logo_light', '');
+        if ($logoLight) {
+            return Storage::url($logoLight);
+        }
+
+        return '/assets/favicon.png';
     }
 }

@@ -98,10 +98,10 @@ class DefaultDataSeeder extends Seeder
             ['group' => 'general', 'key' => 'currency', 'value' => 'DZD', 'type' => 'text', 'label' => 'Devise'],
 
             // Contact
-            ['group' => 'contact', 'key' => 'email', 'value' => 'contact@mbcarsdzrouiba.com', 'type' => 'text', 'label' => 'Email'],
-            ['group' => 'contact', 'key' => 'phone', 'value' => '+213656697788', 'type' => 'text', 'label' => 'Téléphone'],
-            ['group' => 'contact', 'key' => 'whatsapp', 'value' => '+213656697788', 'type' => 'text', 'label' => 'WhatsApp'],
-            ['group' => 'contact', 'key' => 'address', 'value' => 'Rouiba, Alger, Algérie', 'type' => 'text', 'label' => 'Adresse'],
+            ['group' => 'contact', 'key' => 'email', 'value' => 'contact@resadz.com', 'type' => 'text', 'label' => 'Email'],
+            ['group' => 'contact', 'key' => 'phone', 'value' => '+213540565001', 'type' => 'text', 'label' => 'Téléphone'],
+            ['group' => 'contact', 'key' => 'whatsapp', 'value' => '+213540565001', 'type' => 'text', 'label' => 'WhatsApp'],
+            ['group' => 'contact', 'key' => 'address', 'value' => 'Algérie', 'type' => 'text', 'label' => 'Adresse'],
 
             // Réservations
             ['group' => 'booking', 'key' => 'min_rental_days', 'value' => '1', 'type' => 'number', 'label' => 'Durée minimum (jours)'],
