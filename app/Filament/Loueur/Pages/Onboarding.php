@@ -25,26 +25,56 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
     protected static string $view = 'filament.loueur.pages.onboarding';
 
     public ?array $data = [];
-    public int $currentStep = 1;
-    public int $totalSteps = 7;
+    public int $currentStep = 0;
+    public int $totalSteps = 8;
+
+    // CGU checkboxes (not persisted via form, handled in blade/wire)
+    public bool $cguAccepted = false;
+    public bool $contratAccepted = false;
 
     public static function shouldRegisterNavigation(): bool
     {
         $loueur = Auth::user()?->loueur;
-        return $loueur && !$loueur->hasCompletedOnboarding();
+
+        return $loueur
+            && !$loueur->hasCompletedOnboarding()
+            && !empty($loueur->account_type)
+            && $loueur->account_type === 'loueur';
     }
 
     public function mount(): void
     {
-        $loueur = Auth::user()->loueur;
+        $loueur = Auth::user()?->loueur;
 
         if (!$loueur) {
-            redirect()->route('filament.loueur.pages.dashboard');
+            $this->redirect(route('filament.loueur.pages.dashboard'));
             return;
         }
 
-        // Set current step from saved progress
-        $this->currentStep = max(1, min($loueur->onboarding_step + 1, $this->totalSteps));
+        // If no account_type, redirect to choice page
+        if (empty($loueur->account_type)) {
+            $this->redirect(route('filament.loueur.pages.onboarding-choice'));
+            return;
+        }
+
+        // If taxi, redirect to chauffeur onboarding
+        if ($loueur->account_type === 'taxi') {
+            $this->redirect(route('filament.loueur.pages.onboarding-chauffeur'));
+            return;
+        }
+
+        // If already completed, redirect to dashboard
+        if ($loueur->hasCompletedOnboarding()) {
+            $this->redirect(route('filament.loueur.pages.dashboard'));
+            return;
+        }
+
+        // Set current step from saved progress (0-based)
+        $this->currentStep = min($loueur->onboarding_step, $this->totalSteps - 1);
+
+        // Check if CGU already accepted
+        $this->cguAccepted = !empty($loueur->getSetting('cgu_accepted_at'));
+        $this->contratAccepted = !empty($loueur->getSetting('contrat_loueur_accepted_at'));
 
         // Load existing data
         $this->form->fill($this->loadStepData($loueur));
@@ -62,6 +92,10 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             'address' => $loueur->address,
             'city' => $loueur->city,
             'wilaya' => $loueur->wilaya,
+            // Chauffeur toggle in step 1
+            'offers_transfer' => (bool) $loueur->offers_transfer,
+            'offers_delivery' => (bool) $loueur->offers_delivery,
+            'offers_city_rides' => (bool) $loueur->getSetting('offers_city_rides', false),
 
             // Step 2: Zones
             'delivery_zones' => $loueur->deliveryZones()->orderBy('sort_order')->get()->map(fn ($zone) => [
@@ -76,6 +110,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             // Step 3: Reservations
             'advance_percentage' => $loueur->getSetting('advance_percentage', 30),
             'advance_payment_methods' => $loueur->getSetting('advance_payment_methods', []),
+            'paypal_email' => $loueur->paypal_email,
             'cancellation_deadline_hours' => $loueur->getSetting('cancellation_deadline_hours', 48),
             'auto_confirm_bookings' => $loueur->getSetting('auto_confirm_bookings', false),
             'require_documents' => $loueur->getSetting('require_documents', true),
@@ -115,6 +150,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
     protected function getStepSchema(): array
     {
         return match ($this->currentStep) {
+            0 => $this->getCguSchema(),
             1 => $this->getProfileSchema(),
             2 => $this->getZonesSchema(),
             3 => $this->getReservationsSchema(),
@@ -126,6 +162,15 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         };
     }
 
+    // ─── STEP 0: CGU ────────────────────────────────────────────────
+    protected function getCguSchema(): array
+    {
+        // CGU step is handled entirely in Blade (scrollable contract, checkboxes)
+        // We return an empty schema — the blade view handles this step's UI
+        return [];
+    }
+
+    // ─── STEP 1: PROFILE ────────────────────────────────────────────
     protected function getProfileSchema(): array
     {
         return [
@@ -174,9 +219,34 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                                 ->required(),
                         ]),
                 ]),
+
+            // ── Chauffeur toggle section ──
+            Forms\Components\Section::make('Services de chauffeur')
+                ->description('En plus de la location, vous pouvez proposer des services de transport.')
+                ->schema([
+                    Forms\Components\Toggle::make('offers_transfer')
+                        ->label('Je propose aussi mes services de chauffeur 🧑‍✈️')
+                        ->helperText('Activez pour proposer des transferts et courses en plus de la location')
+                        ->live()
+                        ->afterStateUpdated(fn (Forms\Set $set, bool $state) => $state ? null : $set('offers_delivery', false)),
+                    Forms\Components\Grid::make(3)
+                        ->schema([
+                            Forms\Components\Checkbox::make('offers_airport_transfer')
+                                ->label('Transferts aéroport/gare')
+                                ->default(false),
+                            Forms\Components\Checkbox::make('offers_city_rides')
+                                ->label('Courses en ville')
+                                ->default(false),
+                            Forms\Components\Checkbox::make('offers_delivery')
+                                ->label('Livraisons')
+                                ->default(false),
+                        ])
+                        ->visible(fn (Forms\Get $get) => (bool) $get('offers_transfer')),
+                ]),
         ];
     }
 
+    // ─── STEP 2: ZONES ─────────────────────────────────────────────
     protected function getZonesSchema(): array
     {
         return [
@@ -229,6 +299,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
+    // ─── STEP 3: RESERVATIONS + PAYPAL ──────────────────────────────
     protected function getReservationsSchema(): array
     {
         return [
@@ -257,13 +328,22 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                                             'paypal' => 'PayPal',
                                             'bank_transfer' => 'Virement bancaire',
                                         ])
-                                        ->required(),
+                                        ->required()
+                                        ->live(),
                                     Forms\Components\TextInput::make('timer_hours')
                                         ->label('Délai (heures)')
                                         ->numeric()
                                         ->default(24)
                                         ->helperText('Temps accordé pour payer'),
                                 ]),
+                            // PayPal email — visible only when method = paypal
+                            Forms\Components\TextInput::make('paypal_email_inline')
+                                ->label('Votre email PayPal')
+                                ->email()
+                                ->placeholder('exemple@paypal.com')
+                                ->helperText('Vos clients pourront payer leur acompte directement sur votre compte PayPal. Assurez-vous que cet email est bien lié à votre compte PayPal actif.')
+                                ->visible(fn (Forms\Get $get) => ($get('method') ?? '') === 'paypal')
+                                ->required(fn (Forms\Get $get) => ($get('method') ?? '') === 'paypal'),
                         ])
                         ->collapsible()
                         ->defaultItems(0)
@@ -283,6 +363,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
+    // ─── STEP 4: OPTIONS ────────────────────────────────────────────
     protected function getOptionsSchema(): array
     {
         return [
@@ -351,6 +432,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
+    // ─── STEP 5: CONDITIONS ─────────────────────────────────────────
     protected function getConditionsSchema(): array
     {
         return [
@@ -400,6 +482,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
+    // ─── STEP 6: BADGES ────────────────────────────────────────────
     protected function getBadgesSchema(): array
     {
         return [
@@ -440,6 +523,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
+    // ─── STEP 7: NOTIFICATIONS ──────────────────────────────────────
     protected function getNotificationsSchema(): array
     {
         return [
@@ -459,28 +543,34 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         ];
     }
 
+    // ─── STEP INFO ──────────────────────────────────────────────────
     public function getStepInfo(): array
     {
         return [
+            0 => [
+                'title' => 'CGU & Contrat',
+                'description' => 'Conditions d\'utilisation',
+                'icon' => 'heroicon-o-shield-check',
+            ],
             1 => [
-                'title' => 'Profil de l\'agence',
-                'description' => 'Présentez votre agence aux clients',
+                'title' => 'Profil',
+                'description' => 'Présentez votre agence',
                 'icon' => 'heroicon-o-building-storefront',
             ],
             2 => [
-                'title' => 'Zones de livraison',
-                'description' => 'Où pouvez-vous livrer ?',
+                'title' => 'Zones',
+                'description' => 'Où livrez-vous ?',
                 'icon' => 'heroicon-o-map-pin',
             ],
             3 => [
-                'title' => 'Réservations',
-                'description' => 'Acompte et paiements',
-                'icon' => 'heroicon-o-calendar-days',
+                'title' => 'Paiements',
+                'description' => 'Acompte et méthodes',
+                'icon' => 'heroicon-o-credit-card',
             ],
             4 => [
                 'title' => 'Options',
-                'description' => 'Services supplémentaires',
-                'icon' => 'heroicon-o-squares-plus',
+                'description' => 'Extras et services',
+                'icon' => 'heroicon-o-sparkles',
             ],
             5 => [
                 'title' => 'Conditions',
@@ -490,29 +580,49 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             6 => [
                 'title' => 'Badges',
                 'description' => 'Vos avantages',
-                'icon' => 'heroicon-o-star',
+                'icon' => 'heroicon-o-trophy',
             ],
             7 => [
                 'title' => 'Notifications',
-                'description' => 'Comment être alerté',
+                'description' => 'Restez connecté',
                 'icon' => 'heroicon-o-bell',
             ],
         ];
     }
 
+    // ─── NAVIGATION ─────────────────────────────────────────────────
     public function previousStep()
     {
-        if ($this->currentStep > 1) {
+        if ($this->currentStep > 0) {
             $loueur = Auth::user()->loueur;
-            $loueur->update(['onboarding_step' => $this->currentStep - 2]);
+            $loueur->update(['onboarding_step' => max(0, $this->currentStep - 1)]);
         }
 
         return redirect()->route('filament.loueur.pages.onboarding');
     }
 
-    /**
-     * Validate the current step before proceeding
-     */
+    public function acceptCguAndContinue(): void
+    {
+        if (!$this->cguAccepted || !$this->contratAccepted) {
+            Notification::make()
+                ->title('Validation requise')
+                ->body('Vous devez accepter les CGU et le Contrat de Partenariat pour continuer.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        $loueur = Auth::user()->loueur;
+
+        $loueur->setSetting('cgu_accepted_at', now()->toISOString(), 'string');
+        $loueur->setSetting('cgu_version', '1.0', 'string');
+        $loueur->setSetting('contrat_loueur_accepted_at', now()->toISOString(), 'string');
+
+        $loueur->update(['onboarding_step' => 1]);
+
+        $this->redirect(route('filament.loueur.pages.onboarding'));
+    }
+
     protected function validateCurrentStep(Loueur $loueur, array $data): ?string
     {
         return match ($this->currentStep) {
@@ -577,7 +687,6 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             ];
 
             if (!empty($zoneData['id'])) {
-                // Update existing zone
                 $zone = DeliveryZone::where('id', $zoneData['id'])
                     ->where('loueur_id', $loueur->id)
                     ->first();
@@ -587,13 +696,11 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                     $existingIds[] = $zone->id;
                 }
             } else {
-                // Create new zone
                 $zone = DeliveryZone::create($zoneAttributes);
                 $existingIds[] = $zone->id;
             }
         }
 
-        // Delete zones that were removed
         $loueur->deliveryZones()
             ->whereNotIn('id', $existingIds)
             ->delete();
@@ -604,9 +711,18 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         $advancePercentage = $data['advance_percentage'] ?? 0;
         $paymentMethods = $data['advance_payment_methods'] ?? [];
 
-        // If advance payment is required, at least one payment method must be configured
         if ($advancePercentage > 0 && empty($paymentMethods)) {
             return 'Vous avez défini un acompte de ' . $advancePercentage . '%. Veuillez ajouter au moins une méthode de paiement.';
+        }
+
+        // Validate PayPal email if PayPal is selected
+        foreach ($paymentMethods as $pm) {
+            if (($pm['method'] ?? '') === 'paypal') {
+                $email = $pm['paypal_email_inline'] ?? '';
+                if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                    return 'Veuillez renseigner un email PayPal valide pour la méthode PayPal.';
+                }
+            }
         }
 
         return null;
@@ -614,13 +730,17 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public function nextStep()
     {
-        // Validate the current step form
+        // Step 0 is handled by acceptCguAndContinue()
+        if ($this->currentStep === 0) {
+            $this->acceptCguAndContinue();
+            return;
+        }
+
         $this->form->validate();
 
         $loueur = Auth::user()->loueur;
         $data = $this->data;
 
-        // Additional validation per step
         $validationError = $this->validateCurrentStep($loueur, $data);
         if ($validationError) {
             Notification::make()
@@ -634,7 +754,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         // Save current step data
         switch ($this->currentStep) {
             case 1:
-                $loueur->update([
+                $updateData = [
                     'company_name' => $data['company_name'] ?? $loueur->company_name,
                     'description' => $data['description'] ?? null,
                     'phone' => $data['phone'] ?? null,
@@ -643,7 +763,11 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                     'address' => $data['address'] ?? null,
                     'city' => $data['city'] ?? null,
                     'wilaya' => $data['wilaya'] ?? null,
-                ]);
+                    'offers_transfer' => (bool) ($data['offers_transfer'] ?? false),
+                    'offers_delivery' => (bool) ($data['offers_delivery'] ?? false),
+                ];
+                $loueur->update($updateData);
+                $loueur->setSetting('offers_city_rides', (bool) ($data['offers_city_rides'] ?? false), 'boolean');
                 break;
 
             case 2:
@@ -656,77 +780,16 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 $loueur->setSetting('cancellation_deadline_hours', $data['cancellation_deadline_hours'] ?? 48, 'integer');
                 $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
                 $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
-                break;
 
-            case 4:
-                $loueur->setSetting('return_margin_hours', $data['return_margin_hours'] ?? 2, 'integer');
-                $loueur->setSetting('fuel_return_fee', $data['fuel_return_fee'] ?? 0, 'decimal');
-                $loueur->setSetting('wash_return_fee', $data['wash_return_fee'] ?? 0, 'decimal');
-                $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
-                break;
-
-            case 5:
-                $conditionsPdf = $data['conditions_pdf'] ?? null;
-                if (is_array($conditionsPdf)) {
-                    $conditionsPdf = !empty($conditionsPdf) ? reset($conditionsPdf) : null;
+                // Extract PayPal email from payment methods and save to loueur
+                $paypalEmail = null;
+                foreach ($data['advance_payment_methods'] ?? [] as $pm) {
+                    if (($pm['method'] ?? '') === 'paypal' && !empty($pm['paypal_email_inline'])) {
+                        $paypalEmail = $pm['paypal_email_inline'];
+                        break;
+                    }
                 }
-                $loueur->setSetting('conditions_pdf', $conditionsPdf ?: null, 'string');
-                $loueur->setSetting('rental_conditions', $data['rental_conditions'] ?? [], 'json');
-                break;
-
-            case 6:
-                $loueur->setSetting('badge_insurance', $data['badge_insurance'] ?? false, 'boolean');
-                $loueur->setSetting('badge_delivery', $data['badge_delivery'] ?? false, 'boolean');
-                $loueur->setSetting('badge_degressive', $data['badge_degressive'] ?? false, 'boolean');
-                $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
-                $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
-                $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
-                break;
-
-            case 7:
-                $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
-                $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
-                $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');
-                break;
-        }
-
-        // Update progress to next step
-        if ($this->currentStep < $this->totalSteps) {
-            $loueur->update(['onboarding_step' => $this->currentStep]);
-        }
-
-        return redirect()->route('filament.loueur.pages.onboarding');
-    }
-
-    protected function saveCurrentStep(): void
-    {
-        $loueur = Auth::user()->loueur;
-        $data = $this->data;
-
-        switch ($this->currentStep) {
-            case 1:
-                $loueur->update([
-                    'company_name' => $data['company_name'] ?? $loueur->company_name,
-                    'description' => $data['description'] ?? null,
-                    'phone' => $data['phone'] ?? null,
-                    'whatsapp' => $data['whatsapp'] ?? null,
-                    'email_contact' => $data['email_contact'] ?? null,
-                    'address' => $data['address'] ?? null,
-                    'city' => $data['city'] ?? null,
-                    'wilaya' => $data['wilaya'] ?? null,
-                ]);
-                break;
-
-            case 2:
-                $this->saveDeliveryZones($loueur, $data['delivery_zones'] ?? []);
-                break;
-
-            case 3:
-                $loueur->setSetting('advance_percentage', $data['advance_percentage'] ?? 0, 'integer');
-                $loueur->setSetting('advance_payment_methods', $data['advance_payment_methods'] ?? [], 'json');
-                $loueur->setSetting('cancellation_deadline_hours', $data['cancellation_deadline_hours'] ?? 48, 'integer');
-                $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
-                $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
+                $loueur->update(['paypal_email' => $paypalEmail]);
                 break;
 
             case 4:
@@ -762,14 +825,15 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         }
 
         // Update progress
-        if ($this->currentStep > $loueur->onboarding_step) {
-            $loueur->update(['onboarding_step' => $this->currentStep]);
+        if ($this->currentStep < $this->totalSteps - 1) {
+            $loueur->update(['onboarding_step' => $this->currentStep + 1]);
         }
+
+        return redirect()->route('filament.loueur.pages.onboarding');
     }
 
     public function completeOnboarding()
     {
-        // Validate the final step
         $this->form->validate();
 
         $loueur = Auth::user()->loueur;
