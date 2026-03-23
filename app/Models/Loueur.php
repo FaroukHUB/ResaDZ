@@ -14,6 +14,13 @@ class Loueur extends Model
 {
     use HasFactory, HasWebpImages, Notifiable;
 
+    protected static function booted(): void
+    {
+        static::deleting(function (Loueur $loueur) {
+            $loueur->user?->delete();
+        });
+    }
+
     public function getWebpImageFields(): array
     {
         return ['logo', 'cover_image'];
