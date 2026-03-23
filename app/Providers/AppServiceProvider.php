@@ -9,6 +9,7 @@ use App\Models\TransferRoute;
 use App\Models\Vehicle;
 use App\Models\VehicleOffer;
 use App\Observers\ChatbotCacheObserver;
+use App\Observers\AdminNotifyObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -30,6 +31,10 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        // Notify admin on new registrations and vehicles
+        Loueur::observe(AdminNotifyObserver::class);
+        Vehicle::observe(AdminNotifyObserver::class);
 
         // Auto-clear chatbot cache when data changes
         Vehicle::observe(ChatbotCacheObserver::class);
