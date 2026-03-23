@@ -27,6 +27,7 @@ Route::middleware('throttle:public')->prefix('vehicles')->group(function () {
     Route::get('/brand/{slug}', [VehicleController::class, 'byBrand']);
     Route::get('/{slug}', [VehicleController::class, 'show']);
     Route::post('/{slug}/availability', [VehicleController::class, 'checkAvailability']);
+    Route::get('/{slug}/unavailable-dates', [VehicleController::class, 'unavailableDates']);
 });
 
 // Catalogue (marques, catégories, options) - Public read endpoints

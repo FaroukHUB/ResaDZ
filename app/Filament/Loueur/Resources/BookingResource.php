@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\BookingConfirmedMail;
 use App\Mail\ReviewRequestMail;
 use App\Models\Review;
+use Closure;
 
 class BookingResource extends Resource
 {
@@ -115,11 +116,25 @@ class BookingResource extends Resource
                                         Forms\Components\DateTimePicker::make('start_date')
                                             ->label('Date de début')
                                             ->required()
+                                            ->live()
                                             ->helperText('Date et heure de remise du véhicule'),
                                         Forms\Components\DateTimePicker::make('end_date')
                                             ->label('Date de fin')
                                             ->required()
-                                            ->helperText('Date et heure de retour prévue'),
+                                            ->live()
+                                            ->helperText('Date et heure de retour prévue')
+                                            ->rules([
+                                                fn (Forms\Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                                    $vehicleId = $get('vehicle_id');
+                                                    $startDate = $get('start_date');
+                                                    if (!$vehicleId || !$startDate || !$value) return;
+
+                                                    $vehicle = Vehicle::find($vehicleId);
+                                                    if ($vehicle && !$vehicle->isAvailableForDates($startDate, $value)) {
+                                                        $fail('Ce véhicule n\'est pas disponible pour ces dates (dates bloquées ou déjà réservées).');
+                                                    }
+                                                },
+                                            ]),
                                     ]),
                                 Forms\Components\TextInput::make('total_days')
                                     ->label('Nombre de jours')

@@ -619,6 +619,45 @@
     // Vérifier disponibilité des options quand les dates changent
     [startDate, endDate].forEach(el => el.addEventListener('change', checkOptionAvailability));
 
+    // --- Vérification des dates bloquées ---
+    let unavailableDates = [];
+    const availabilityWarning = document.createElement('div');
+    availabilityWarning.id = 'availabilityWarning';
+    availabilityWarning.className = 'hidden mt-3 p-4 bg-red-50 border border-red-200 rounded-xl';
+    availabilityWarning.innerHTML = '<div class="flex items-center gap-2"><svg class="w-5 h-5 text-red-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/></svg><p class="text-sm text-red-700 font-medium">Ce véhicule n\'est pas disponible pour les dates sélectionnées. Certaines dates sont bloquées ou déjà réservées.</p></div>';
+    startDate.closest('.bg-white')?.querySelector('.grid')?.after(availabilityWarning);
+
+    // Charger les dates indisponibles au chargement de la page
+    fetch('/api/vehicles/{{ $vehicle->slug }}/unavailable-dates')
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) unavailableDates = data.dates;
+        })
+        .catch(() => {});
+
+    function hasUnavailableDateInRange(start, end) {
+        if (!start || !end || unavailableDates.length === 0) return false;
+        return unavailableDates.some(d => d >= start && d <= end);
+    }
+
+    function checkDateAvailability() {
+        const s = startDate.value;
+        const e = endDate.value;
+        if (!s || !e) {
+            availabilityWarning.classList.add('hidden');
+            submitBtn.disabled = false;
+            return;
+        }
+        if (unavailableDates.includes(s) || unavailableDates.includes(e) || hasUnavailableDateInRange(s, e)) {
+            availabilityWarning.classList.remove('hidden');
+            submitBtn.disabled = true;
+        } else {
+            availabilityWarning.classList.add('hidden');
+        }
+    }
+
+    [startDate, endDate].forEach(el => el.addEventListener('change', checkDateAvailability));
+
     // Gestion du choix de méthode de paiement d'acompte
     const advanceMethodRadios = document.querySelectorAll('.advance-method-radio');
     const advanceMethodLabels = document.querySelectorAll('.advance-method-label');

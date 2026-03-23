@@ -4,11 +4,13 @@ namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\BookingResource\Pages;
 use App\Models\Booking;
+use App\Models\Vehicle;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Closure;
 
 class BookingResource extends Resource
 {
@@ -74,11 +76,25 @@ class BookingResource extends Resource
 
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Date début')
-                            ->required(),
+                            ->required()
+                            ->live(),
 
                         Forms\Components\DatePicker::make('end_date')
                             ->label('Date fin')
-                            ->required(),
+                            ->required()
+                            ->live()
+                            ->rules([
+                                fn (Forms\Get $get): Closure => function (string $attribute, $value, Closure $fail) use ($get) {
+                                    $vehicleId = $get('vehicle_id');
+                                    $startDate = $get('start_date');
+                                    if (!$vehicleId || !$startDate || !$value) return;
+
+                                    $vehicle = Vehicle::find($vehicleId);
+                                    if ($vehicle && !$vehicle->isAvailableForDates($startDate, $value)) {
+                                        $fail('Ce véhicule n\'est pas disponible pour ces dates (dates bloquées ou déjà réservées).');
+                                    }
+                                },
+                            ]),
 
                         Forms\Components\TextInput::make('total_price')
                             ->label('Prix total (DA)')

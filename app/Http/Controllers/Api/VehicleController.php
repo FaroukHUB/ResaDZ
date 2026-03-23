@@ -213,6 +213,38 @@ class VehicleController extends Controller
     }
 
     /**
+     * Retourne la liste des dates indisponibles pour un véhicule (blocked, maintenance, reserved)
+     */
+    public function unavailableDates(string $slug): JsonResponse
+    {
+        $vehicle = Vehicle::where('slug', $slug)->active()->first();
+
+        if (!$vehicle) {
+            return response()->json(['success' => false, 'message' => 'Véhicule non trouvé'], 404);
+        }
+
+        $availabilities = $vehicle->availabilities()
+            ->where('end_date', '>=', now()->toDateString())
+            ->get(['start_date', 'end_date', 'type']);
+
+        // Expand date ranges into individual dates
+        $dates = [];
+        foreach ($availabilities as $a) {
+            $current = $a->start_date->copy();
+            $end = $a->end_date->copy();
+            while ($current->lte($end)) {
+                $dates[] = $current->format('Y-m-d');
+                $current->addDay();
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'dates' => array_values(array_unique($dates)),
+        ]);
+    }
+
+    /**
      * Formater un véhicule pour l'API
      */
     private function formatVehicle(Vehicle $vehicle, bool $detailed = false): array
