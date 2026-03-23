@@ -37,16 +37,18 @@ class OnboardingChauffeur extends Page implements Forms\Contracts\HasForms
 
     public static function shouldRegisterNavigation(): bool
     {
-        $loueur = Auth::user()?->loueur;
-
-        return $loueur
-            && !$loueur->hasCompletedOnboarding()
-            && $loueur->account_type === 'taxi';
+        return false; // Chauffeur onboarding is now in the Chauffeur panel
     }
 
     public function mount(): void
     {
         $loueur = Auth::user()?->loueur;
+
+        // Taxi users should use the Chauffeur panel onboarding
+        if ($loueur && $loueur->account_type === 'taxi') {
+            $this->redirect(route('filament.chauffeur.pages.onboarding'));
+            return;
+        }
 
         if (!$loueur) {
             $this->redirect(route('filament.loueur.pages.dashboard'));

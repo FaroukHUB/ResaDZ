@@ -2,7 +2,6 @@
 
 namespace App\Filament\Chauffeur\Pages;
 
-use App\Models\CourseAvailability;
 use App\Models\Loueur;
 use App\Models\TransferRoute;
 use Filament\Forms;
@@ -406,14 +405,16 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
     public function previousStep()
     {
         if ($this->currentStep > 0) {
-            $loueur = Auth::user()->loueur;
-            $loueur->update(['onboarding_step' => max(0, $this->currentStep - 1)]);
+            $loueur = Auth::user()?->loueur;
+            if ($loueur) {
+                $loueur->update(['onboarding_step' => max(0, $this->currentStep - 1)]);
+            }
         }
 
         return redirect()->route('filament.chauffeur.pages.onboarding');
     }
 
-    public function acceptCguAndContinue(): void
+    public function acceptCguAndContinue()
     {
         if (!$this->cguAccepted || !$this->contratAccepted) {
             Notification::make()
@@ -424,7 +425,11 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             return;
         }
 
-        $loueur = Auth::user()->loueur;
+        $loueur = Auth::user()?->loueur;
+
+        if (!$loueur) {
+            return redirect()->route('filament.chauffeur.auth.login');
+        }
 
         $loueur->setSetting('cgu_accepted_at', now()->toISOString(), 'string');
         $loueur->setSetting('cgu_version', '1.0', 'string');
@@ -433,7 +438,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
         $loueur->update(['onboarding_step' => 1]);
 
-        $this->redirect(route('filament.chauffeur.pages.onboarding'));
+        return redirect()->route('filament.chauffeur.pages.onboarding');
     }
 
     protected function validateCurrentStep(Loueur $loueur, array $data): ?string
@@ -508,13 +513,15 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
     public function nextStep()
     {
         if ($this->currentStep === 0) {
-            $this->acceptCguAndContinue();
-            return;
+            return $this->acceptCguAndContinue();
         }
 
         $this->form->validate();
 
-        $loueur = Auth::user()->loueur;
+        $loueur = Auth::user()?->loueur;
+        if (!$loueur) {
+            return redirect()->route('filament.chauffeur.auth.login');
+        }
         $data = $this->data;
 
         $validationError = $this->validateCurrentStep($loueur, $data);
@@ -582,7 +589,10 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
     {
         $this->form->validate();
 
-        $loueur = Auth::user()->loueur;
+        $loueur = Auth::user()?->loueur;
+        if (!$loueur) {
+            return redirect()->route('filament.chauffeur.auth.login');
+        }
         $data = $this->data;
 
         $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
@@ -602,7 +612,10 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public function skipOnboarding()
     {
-        $loueur = Auth::user()->loueur;
+        $loueur = Auth::user()?->loueur;
+        if (!$loueur) {
+            return redirect()->route('filament.chauffeur.auth.login');
+        }
         $loueur->completeOnboarding();
 
         Notification::make()
