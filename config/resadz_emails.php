@@ -9,6 +9,7 @@
  *   RESADZ_EMAIL_INSCRIPTION=inscription@resadz.com
  *   RESADZ_EMAIL_RESERVATION=reservation@resadz.com
  *   RESADZ_EMAIL_AVIS=avis@resadz.com
+ *   RESADZ_EMAIL_ADMIN=admin@resadz.com
  *   RESADZ_EMAIL_CONTACT=contact@resadz.com
  */
 
@@ -27,6 +28,11 @@ return [
     'avis' => [
         'address' => env('RESADZ_EMAIL_AVIS', 'avis@resadz.com'),
         'name'    => 'ResaDZ — Avis',
+    ],
+
+    'admin' => [
+        'address' => env('RESADZ_EMAIL_ADMIN', 'admin@resadz.com'),
+        'name'    => 'ResaDZ — Admin',
     ],
 
     'contact' => [

@@ -68,7 +68,7 @@ class AdminNotifyObserver
             "Wilaya : " . ($vehicle->loueur->wilaya ?? '') . "\n\n" .
             "→ Voir dans le panel admin : " . url('/admin/vehicles/' . $vehicle->id);
 
-        $this->sendToAdmins($subject, $body, 'inscription');
+        $this->sendToAdmins($subject, $body, 'admin');
     }
 
     // ─── Réservations ────────────────────────────────────────────
