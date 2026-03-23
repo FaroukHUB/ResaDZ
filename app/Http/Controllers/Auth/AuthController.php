@@ -88,7 +88,8 @@ class AuthController extends Controller
             ? 'Bienvenue sur ResaDZ ! Votre espace chauffeur est prêt.'
             : 'Bienvenue sur ResaDZ ! Votre espace loueur est prêt.';
 
-        return redirect('/loueur')->with('success', $message);
+        $redirectPath = $isTaxi ? '/chauffeur' : '/loueur';
+        return redirect($redirectPath)->with('success', $message);
     }
 
     // Google OAuth
