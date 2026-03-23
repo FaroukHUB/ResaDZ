@@ -76,7 +76,7 @@
                     <p class="text-xs text-gray-500">{{ $bookingsThisMonth }} reservations ce mois</p>
                 </div>
                 <div class="text-right">
-                    <span class="text-xs bg-info-100 text-info-700 px-2 py-1 rounded-full">8-5% degressif</span>
+                    <span class="text-xs bg-info-100 text-info-700 px-2 py-1 rounded-full">8-5% dégressif</span>
                 </div>
             </div>
         </div>
@@ -121,9 +121,9 @@
             <div class="flex items-start gap-3">
                 <x-heroicon-o-building-storefront class="w-5 h-5 text-info-600 dark:text-info-400 mt-0.5" />
                 <div>
-                    <p class="text-sm font-semibold text-info-800 dark:text-info-200">Commission Loueurs (taux degressif)</p>
+                    <p class="text-sm font-semibold text-info-800 dark:text-info-200">Commission Loueurs (taux dégressif)</p>
                     <p class="text-xs text-info-600 dark:text-info-400 mt-1">
-                        <span class="font-semibold">1-3 jours : 8%</span> &bull; <span class="font-semibold">4-7 jours : 6%</span> &bull; <span class="font-semibold">8+ jours : 5%</span><br>
+                        <span class="font-semibold">1-5 jours : 8%</span> &bull; <span class="font-semibold">5-10 jours : 6%</span> &bull; <span class="font-semibold">+10 jours : 5%</span><br>
                         Commission sur le montant HT de la location (hors livraison/options).
                     </p>
                 </div>

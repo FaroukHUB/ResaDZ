@@ -11,26 +11,25 @@ class PricingService
 {
     /**
      * Get commission rate based on rental duration (degressive rates).
-     * New model (2026):
-     * - 1-3 days: 8%
-     * - 4-7 days: 6%
-     * - 8+ days: 5%
+     * - 1-5 days: 8%
+     * - 6-10 days: 6%
+     * - 11+ days: 5%
      *
      * Commission is only charged to loueur, client pays no service fee.
      */
     private function getCommissionRate(int $totalDays): float
     {
         // Get rates from settings with defaults
-        $rate1to3 = (float) Setting::get('commission_rate_1_to_3_days', 8);
-        $rate4to7 = (float) Setting::get('commission_rate_4_to_7_days', 6);
-        $rate8plus = (float) Setting::get('commission_rate_8_plus_days', 5);
+        $rate1to5 = (float) Setting::get('commission_rate_1_to_3_days', 8);
+        $rate6to10 = (float) Setting::get('commission_rate_4_to_7_days', 6);
+        $rate11plus = (float) Setting::get('commission_rate_8_plus_days', 5);
 
-        if ($totalDays >= 8) {
-            return $rate8plus;
-        } elseif ($totalDays >= 4) {
-            return $rate4to7;
+        if ($totalDays > 10) {
+            return $rate11plus;
+        } elseif ($totalDays > 5) {
+            return $rate6to10;
         }
-        return $rate1to3;
+        return $rate1to5;
     }
 
     /**
@@ -38,12 +37,12 @@ class PricingService
      */
     public function getCommissionTierLabel(int $totalDays): string
     {
-        if ($totalDays >= 8) {
-            return '8+ jours';
-        } elseif ($totalDays >= 4) {
-            return '4-7 jours';
+        if ($totalDays > 10) {
+            return '+ de 10 jours';
+        } elseif ($totalDays > 5) {
+            return '5-10 jours';
         }
-        return '1-3 jours';
+        return '1-5 jours';
     }
 
     /**
@@ -130,7 +129,7 @@ class PricingService
         $durationDiscountPercent = 0;
 
         // Récupérer le taux de commission dégressif selon la durée
-        // Taux: 1-3j → 8%, 4-7j → 6%, 8+ → 5%
+        // Taux: 1-5j → 8%, 5-10j → 6%, +10j → 5%
         $commissionRate = $this->getCommissionRate($totalDays);
         $commissionTier = $this->getCommissionTierLabel($totalDays);
 

@@ -467,7 +467,7 @@ CE QUE TU SAIS SUR RESADZ :
 
 💰 TARIFICATION :
 - Clients : GRATUIT, le prix affiché est le prix final
-- Loueurs : Commission dégressive (1-3j: 8%, 4-7j: 6%, 8j+: 5%)
+- Loueurs : Commission dégressive (1-5j: 8%, 5-10j: 6%, +10j: 5%)
 - Transferts/chauffeur : Commission 10%
 - 30 jours d'essai gratuit pour les nouveaux loueurs
 

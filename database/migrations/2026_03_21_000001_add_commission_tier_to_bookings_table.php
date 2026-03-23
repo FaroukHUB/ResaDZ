@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\Schema;
  *
  * Nouveau modèle:
  * - Commission uniquement côté loueur, en % du montant HT
- * - Taux dégressif: 1-3j → 8%, 4-7j → 6%, 8+ → 5%
+ * - Taux dégressif: 1-5j → 8%, 5-10j → 6%, +10j → 5%
  * - Locataire ne paie aucune commission
  */
 return new class extends Migration
@@ -21,7 +21,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('bookings', function (Blueprint $table) {
-            // Ajouter le palier de commission appliqué (ex: "1-3 jours", "4-7 jours", "8+ jours")
+            // Ajouter le palier de commission appliqué (ex: "1-5 jours", "5-10 jours", "+ de 10 jours")
             $table->string('commission_tier')->nullable()->after('commission_rate');
         });
 

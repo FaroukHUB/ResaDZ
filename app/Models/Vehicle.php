@@ -255,7 +255,7 @@ class Vehicle extends Model
         $loueurGrossTotal = $pricePerDay * $days;
 
         // Commission ResaDZ (nouveau modèle 2026) - taux dégressif selon durée
-        // 1-3 jours: 8%, 4-7 jours: 6%, 8+ jours: 5%
+        // 1-5 jours: 8%, 5-10 jours: 6%, +10 jours: 5%
         $commissionRate = $this->getCommissionRate($days);
         $loueurCommissionTotal = round($loueurGrossTotal * $commissionRate / 100, 2);
         $loueurCommissionPerDay = round($loueurCommissionTotal / $days, 2);
@@ -288,20 +288,20 @@ class Vehicle extends Model
 
     /**
      * Get commission rate based on rental duration (degressive rates).
-     * New model (2026): 1-3 days = 8%, 4-7 days = 6%, 8+ days = 5%
+     * 1-5 days = 8%, 6-10 days = 6%, 11+ days = 5%
      */
     public function getCommissionRate(int $days): float
     {
-        $rate1to3 = (float) Setting::get('commission_rate_1_to_3_days', 8);
-        $rate4to7 = (float) Setting::get('commission_rate_4_to_7_days', 6);
-        $rate8plus = (float) Setting::get('commission_rate_8_plus_days', 5);
+        $rate1to5 = (float) Setting::get('commission_rate_1_to_3_days', 8);
+        $rate6to10 = (float) Setting::get('commission_rate_4_to_7_days', 6);
+        $rate11plus = (float) Setting::get('commission_rate_8_plus_days', 5);
 
-        if ($days >= 8) {
-            return $rate8plus;
-        } elseif ($days >= 4) {
-            return $rate4to7;
+        if ($days > 10) {
+            return $rate11plus;
+        } elseif ($days > 5) {
+            return $rate6to10;
         }
-        return $rate1to3;
+        return $rate1to5;
     }
 
     // Prix affiché au client (pas de frais de service - nouveau modèle 2026)

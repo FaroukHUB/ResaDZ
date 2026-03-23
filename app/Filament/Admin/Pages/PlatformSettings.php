@@ -199,32 +199,32 @@ class PlatformSettings extends Page
                                             ->content('La commission est calculée sur le montant total HT de la location (prix/jour × nombre de jours). Les frais de livraison et options ne sont pas commissionnés.')
                                             ->columnSpanFull(),
                                         Forms\Components\TextInput::make('commission_rate_1_to_3_days')
-                                            ->label('Taux 1-3 jours')
+                                            ->label('Taux 1-5 jours')
                                             ->numeric()
                                             ->required()
                                             ->default(8)
                                             ->suffix('%')
                                             ->minValue(0)
                                             ->maxValue(100)
-                                            ->helperText('Commission pour les locations de 1 à 3 jours'),
+                                            ->helperText('Commission pour les locations de 1 à 5 jours'),
                                         Forms\Components\TextInput::make('commission_rate_4_to_7_days')
-                                            ->label('Taux 4-7 jours')
+                                            ->label('Taux 5-10 jours')
                                             ->numeric()
                                             ->required()
                                             ->default(6)
                                             ->suffix('%')
                                             ->minValue(0)
                                             ->maxValue(100)
-                                            ->helperText('Commission pour les locations de 4 à 7 jours'),
+                                            ->helperText('Commission pour les locations de 5 à 10 jours'),
                                         Forms\Components\TextInput::make('commission_rate_8_plus_days')
-                                            ->label('Taux 8+ jours')
+                                            ->label('Taux +10 jours')
                                             ->numeric()
                                             ->required()
                                             ->default(5)
                                             ->suffix('%')
                                             ->minValue(0)
                                             ->maxValue(100)
-                                            ->helperText('Commission pour les locations de 8 jours ou plus'),
+                                            ->helperText('Commission pour les locations de plus de 10 jours'),
                                     ])
                                     ->columns(3),
 

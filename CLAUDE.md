@@ -33,7 +33,7 @@ Laravel 11 + Filament (admin + loueur panels). Hébergé sur O2Switch.
 - `Setting` : config globale du site
 
 ## Commission
-- Location véhicule : 1-3j → 8%, 4-7j → 6%, 8j+ → 5%
+- Location véhicule : 1-5j → 8%, 5-10j → 6%, +10j → 5%
 - Transferts/livraisons : 10% fixe
 - Configurable via Settings (commission_rate_1_to_3_days, etc.)
 
