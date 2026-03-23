@@ -16,7 +16,7 @@ class HomeController extends Controller
     public function index()
     {
         // Notre sélection pour vous : boostés d'abord, puis mieux notés, max 4
-        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'activeOffer'])
+        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'offers'])
             ->where('is_active', true)
             ->where('status', 'available')
             ->whereNotNull('image')
@@ -34,7 +34,7 @@ class HomeController extends Controller
         if ($selectedVehicles->count() < 4) {
             $remaining = 4 - $selectedVehicles->count();
             $excludeIds = $selectedVehicles->pluck('id')->toArray();
-            $topRated = Vehicle::with(['brand', 'category', 'loueur.settings', 'activeOffer'])
+            $topRated = Vehicle::with(['brand', 'category', 'loueur.settings', 'offers'])
                 ->where('is_active', true)
                 ->where('status', 'available')
                 ->whereNotNull('image')
@@ -48,7 +48,7 @@ class HomeController extends Controller
         }
 
         // Véhicules récents : 8 derniers, excluant la sélection
-        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'activeOffer'])
+        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'offers'])
             ->where('is_active', true)
             ->where('status', 'available')
             ->whereNotNull('image')
