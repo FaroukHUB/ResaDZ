@@ -15,45 +15,12 @@ class HomeController extends Controller
 {
     public function index()
     {
-        // Notre sélection pour vous : boostés d'abord, puis mieux notés, max 4
-        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'offers'])
+        // Notre sélection pour vous (choisis manuellement depuis l'admin)
+        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
             ->where('is_active', true)
             ->where('status', 'available')
-            ->whereNotNull('image')
-            ->where('price_per_day', '>', 0)
-            ->where(function ($q) {
-                $q->where('is_featured', true)
-                  ->orWhere('is_in_selection', true);
-            })
-            ->orderByRaw('(is_featured = 1 OR is_in_selection = 1) DESC')
-            ->orderByDesc('created_at')
-            ->limit(4)
-            ->get();
-
-        // Si moins de 4, compléter avec les mieux notés
-        if ($selectedVehicles->count() < 4) {
-            $remaining = 4 - $selectedVehicles->count();
-            $excludeIds = $selectedVehicles->pluck('id')->toArray();
-            $topRated = Vehicle::with(['brand', 'category', 'loueur.settings', 'offers'])
-                ->where('is_active', true)
-                ->where('status', 'available')
-                ->whereNotNull('image')
-                ->where('price_per_day', '>', 0)
-                ->whereNotIn('id', $excludeIds)
-                ->orderByDesc('created_at')
-                ->orderByDesc('created_at')
-                ->limit($remaining)
-                ->get();
-            $selectedVehicles = $selectedVehicles->concat($topRated);
-        }
-
-        // Véhicules récents : 8 derniers, excluant la sélection
-        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'offers'])
-            ->where('is_active', true)
-            ->where('status', 'available')
-            ->whereNotNull('image')
-            ->where('price_per_day', '>', 0)
-            ->whereNotIn('id', $selectedVehicles->pluck('id')->toArray())
+            ->where('is_in_selection', true)
+            ->orderBy('selection_order')
             ->orderByDesc('created_at')
             ->limit(8)
             ->get();
@@ -138,7 +105,6 @@ class HomeController extends Controller
 
         return view('front.pages.home', compact(
             'selectedVehicles',
-            'recentVehicles',
             'vehiclesByCategory',
             'brands',
             'categories',
