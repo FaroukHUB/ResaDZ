@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Models\Availability;
+use App\Models\Booking;
 use App\Models\ChauffeurVehicle;
 use App\Models\Loueur;
 use App\Models\Review;
@@ -10,6 +12,7 @@ use App\Models\Setting;
 use App\Models\TransferRoute;
 use App\Models\Vehicle;
 use App\Models\VehicleOffer;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -19,7 +22,7 @@ use Illuminate\Support\Facades\Log;
 class ChatbotController extends Controller
 {
     public const CACHE_KEY = 'chatbot_knowledge_base';
-    public const CACHE_TTL = 600; // 10 min fallback
+    public const CACHE_TTL = 300; // 5 min (contient des données de disponibilité)
 
     /**
      * Handle chatbot message via Groq API (free)
@@ -136,11 +139,13 @@ class ChatbotController extends Controller
      */
     private function buildVehicleCatalog(): string
     {
-        $vehicles = Vehicle::with(['brand', 'category', 'loueur'])
+        $vehicles = Vehicle::with(['brand', 'category', 'loueur', 'availabilities', 'bookings'])
             ->active()
             ->available()
             ->orderBy('price_per_day')
             ->get();
+
+        $baseUrl = rtrim(config('app.url', 'https://resadz.com'), '/');
 
         if ($vehicles->isEmpty()) {
             return "🚗 CATALOGUE VÉHICULES : Aucun véhicule disponible pour le moment.";
@@ -191,7 +196,29 @@ class ChatbotController extends Controller
                 $duree .= " | Max {$v->max_rental_days}j";
             }
 
-            $catalog .= "- {$v->full_name} ({$year}) | {$price} DA/jour{$degressif} | {$wilaya} | {$category} | {$transmission} | {$fuel} | {$seats} places | {$clim}{$caution}{$duree} | Loueur: {$loueurName} | /vehicule/{$v->slug}\n";
+            // Dates bloquées (availabilities + bookings confirmés/actifs)
+            $blockedPeriods = [];
+            $now = now();
+            $horizon = $now->copy()->addDays(30);
+
+            foreach ($v->availabilities as $avail) {
+                if ($avail->end_date >= $now && $avail->start_date <= $horizon) {
+                    $blockedPeriods[] = $avail->start_date->format('d/m') . '-' . $avail->end_date->format('d/m');
+                }
+            }
+
+            foreach ($v->bookings as $booking) {
+                if (in_array($booking->status, ['confirmed', 'active']) && $booking->end_date >= $now && $booking->start_date <= $horizon) {
+                    $blockedPeriods[] = $booking->start_date->format('d/m') . '-' . $booking->end_date->format('d/m');
+                }
+            }
+
+            $availStr = '';
+            if (!empty($blockedPeriods)) {
+                $availStr = ' | ⛔ INDISPONIBLE: ' . implode(', ', $blockedPeriods);
+            }
+
+            $catalog .= "- {$v->full_name} ({$year}) | {$price} DA/jour{$degressif} | {$wilaya} | {$category} | {$transmission} | {$fuel} | {$seats} places | {$clim}{$caution}{$duree} | Loueur: {$loueurName}{$availStr} | {$baseUrl}/vehicule/{$v->slug}\n";
         }
 
         // Stats
@@ -312,6 +339,8 @@ class ChatbotController extends Controller
      */
     private function buildActiveOffers(): string
     {
+        $baseUrl = rtrim(config('app.url', 'https://resadz.com'), '/');
+
         $offers = VehicleOffer::with(['vehicle', 'vehicle.brand'])
             ->where('is_active', true)
             ->where('start_date', '<=', now())
@@ -333,7 +362,7 @@ class ChatbotController extends Controller
             $badge = $offer->badge_text ?? $offer->title;
             $endDate = $offer->end_date?->format('d/m/Y') ?? '';
 
-            $catalog .= "- {$vehicleName} : {$discount} ({$badge}) | Jusqu'au {$endDate} | /vehicule/{$slug}\n";
+            $catalog .= "- {$vehicleName} : {$discount} ({$badge}) | Jusqu'au {$endDate} | {$baseUrl}/vehicule/{$slug}\n";
         }
 
         return $catalog;
@@ -385,15 +414,24 @@ class ChatbotController extends Controller
         $phone = Setting::get('phone', '');
         $whatsapp = Setting::get('whatsapp', '');
 
+        $now = now();
+        $dateStr = $now->translatedFormat('l j F Y');
+        $timeStr = $now->format('H:i');
+        $baseUrl = rtrim(config('app.url', 'https://resadz.com'), '/');
+
         return <<<PROMPT
-Tu es Résabot, le CERVEAU de {$companyName}. Tu connais TOUT le site : chaque véhicule, chaque prix, chaque loueur, chaque chauffeur, chaque promo, chaque avis client. Tes données sont mises à jour en temps réel.
+Tu es Résabot, le CERVEAU de {$companyName}. Tu connais TOUT le site : chaque véhicule, chaque prix, chaque loueur, chaque chauffeur, chaque promo, chaque avis client, et surtout la DISPONIBILITÉ en temps réel de chaque véhicule. Tes données sont mises à jour en temps réel.
+
+📅 DATE ET HEURE ACTUELLES : {$dateStr}, {$timeStr} (heure d'Algérie, UTC+1)
+Tu connais la date du jour. Utilise-la pour répondre aux questions de disponibilité ("demain", "ce weekend", "la semaine prochaine", etc.)
 
 PERSONNALITÉ :
-- Tu parles en français simple et chaleureux, avec une touche algérienne (tu peux utiliser "Salam", "Inchallah", etc.)
+- Tu parles en français simple et chaleureux, avec une touche algérienne
 - Tu utilises des emojis avec modération
 - Tu es enthousiaste, professionnel et rassurant
 - Tu tutoies l'utilisateur
 - Tes réponses sont COURTES (3-5 phrases max), claires et directes
+- IMPORTANT : Ne dis "Salam" que dans ton PREMIER message de la conversation. Ensuite, commence directement par ta réponse sans salutation répétée. Si l'utilisateur te dit "Salam", tu peux répondre "Wa alaikum salam" UNE SEULE FOIS
 
 ⚠️ COMPRÉHENSION DES MESSAGES :
 Les utilisateurs écrivent souvent en abrégé, avec des fautes, ou en mélangeant français/arabe/darija. Tu DOIS comprendre :
@@ -448,14 +486,15 @@ Les utilisateurs écrivent souvent en abrégé, avec des fautes, ou en mélangea
 2. Cite un avis récent si disponible
 3. Rassure sur la fiabilité du loueur
 
-🔗 LIENS À DONNER :
-- Véhicule spécifique : /vehicule/slug (TOUJOURS quand tu parles d'un véhicule)
-- Tous les véhicules : /vehicules
-- Par wilaya : /vehicules?wilaya=NomWilaya
-- Par marque : /vehicules?marque=NomMarque
-- S'inscrire comme loueur : /loueur
-- Comment ça marche : /comment-ca-marche
-- Blog : /blog
+🔗 LIENS À DONNER (TOUJOURS avec le domaine complet) :
+- Véhicule spécifique : {$baseUrl}/vehicule/slug-exact (TOUJOURS quand tu parles d'un véhicule, utilise le slug EXACT du catalogue ci-dessous)
+- Tous les véhicules : {$baseUrl}/vehicules
+- Par wilaya : {$baseUrl}/vehicules?wilaya=NomWilaya
+- Par marque : {$baseUrl}/vehicules?marque=NomMarque
+- S'inscrire comme loueur : {$baseUrl}/loueur
+- Comment ça marche : {$baseUrl}/comment-ca-marche
+- Blog : {$baseUrl}/blog
+⚠️ N'invente JAMAIS un slug ! Utilise UNIQUEMENT les slugs exacts listés dans le catalogue véhicules ci-dessous
 
 CE QUE TU SAIS SUR RESADZ :
 
@@ -493,9 +532,13 @@ CE QUE TU SAIS SUR RESADZ :
 - Téléphone : {$phone}
 - WhatsApp : {$whatsapp}
 
-RÈGLES :
+RÈGLES STRICTES :
 - Utilise TOUJOURS les données réelles ci-dessous, JAMAIS d'invention
-- Donne TOUJOURS le lien /vehicule/slug quand tu parles d'un véhicule
+- Donne TOUJOURS le lien COMPLET ({$baseUrl}/vehicule/slug) quand tu parles d'un véhicule
+- N'invente JAMAIS un slug ou un lien — utilise uniquement ceux du catalogue
+- Quand on demande la disponibilité, vérifie les DATES BLOQUÉES dans le catalogue (marquées ⛔ INDISPONIBLE). Si un véhicule est bloqué sur la période demandée, dis-le clairement et propose des alternatives
+- Tu connais la date d'aujourd'hui ({$dateStr}). Utilise-la pour calculer "demain", "ce weekend", "la semaine prochaine", etc.
+- Ne répète PAS "Salam" à chaque message — une seule fois au début de la conversation suffit
 - Hors-sujet → dis poliment que tu ne gères que la location de voitures
 - Info introuvable → dis que tu ne sais pas et suggère de contacter le support
 PROMPT;
