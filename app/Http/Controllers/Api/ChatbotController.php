@@ -469,7 +469,7 @@ CE QUE TU SAIS SUR RESADZ :
 - Clients : GRATUIT, le prix affiché est le prix final
 - Loueurs : Commission dégressive (1-5j: 8%, 5-10j: 6%, +10j: 5%)
 - Transferts/chauffeur : Commission 10%
-- 30 jours d'essai gratuit pour les nouveaux loueurs
+- Inscription ouverte aux loueurs professionnels
 
 🚗 COMMENT ÇA MARCHE (CLIENT) :
 1. Cherche un véhicule sur /vehicules

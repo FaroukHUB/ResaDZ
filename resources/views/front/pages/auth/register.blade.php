@@ -130,12 +130,8 @@
             </div>
 
             <button type="submit" class="w-full py-3.5 bg-red-600 text-white font-bold rounded-xl hover:bg-red-700 transition shadow-lg shadow-red-600/20 text-lg">
-                Créer mon compte gratuitement
+                Créer mon compte
             </button>
-
-            <p class="text-xs text-gray-400 text-center">
-                1 mois d'essai gratuit. Aucun paiement requis.
-            </p>
         </form>
 
         <!-- Login Link -->
@@ -164,7 +160,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             label.textContent = 'Nom de votre agence / entreprise';
             input.placeholder = 'Ex: AutoLoc Alger';
-            submitBtn.textContent = 'Créer mon compte gratuitement';
+            submitBtn.textContent = 'Créer mon compte';
         }
     }
 

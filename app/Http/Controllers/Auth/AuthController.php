@@ -79,7 +79,6 @@ class AuthController extends Controller
             'wilaya' => $validated['wilaya'],
             'is_active' => true,
             'offers_transfer' => $isTaxi, // Taxis have transfer enabled by default
-            'trial_ends_at' => now()->addDays(config('resadz.trial_days', 30)),
         ]);
 
         Auth::login($user);
@@ -125,7 +124,6 @@ class AuthController extends Controller
                 'company_name' => $googleUser->getName(),
                 'slug' => Str::slug($googleUser->getName()) . '-' . Str::random(4),
                 'is_active' => true,
-                'trial_ends_at' => now()->addDays(config('resadz.trial_days', 30)),
             ]);
         }
 

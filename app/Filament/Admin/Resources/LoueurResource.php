@@ -185,12 +185,11 @@ class LoueurResource extends Resource
                             ->icon('heroicon-o-banknotes')
                             ->schema([
                                 Forms\Components\Section::make('Période d\'essai')
-                                    ->description('1 mois gratuit par défaut, renouvelable')
+                                    ->description('Offrir une période sans commission (optionnel)')
                                     ->schema([
                                         Forms\Components\DatePicker::make('trial_ends_at')
                                             ->label('Fin de période d\'essai')
-                                            ->default(now()->addMonth())
-                                            ->helperText('Pendant l\'essai, aucune commission n\'est prélevée'),
+                                            ->helperText('Laisser vide si pas de période offerte. Aucune commission prélevée pendant cette période.'),
                                     ]),
                                 Forms\Components\Section::make('Commission')
                                     ->description('Suivi des paiements')

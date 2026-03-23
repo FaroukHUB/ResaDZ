@@ -34,12 +34,6 @@ class CreateLoueur extends CreateRecord
             $data['slug'] = Str::slug($data['company_name']);
         }
 
-        // Définir la période d'essai (1 mois par défaut si non définie)
-        if (empty($data['trial_ends_at'])) {
-            $trialDays = config('resadz.trial_days', 30);
-            $data['trial_ends_at'] = now()->addDays($trialDays);
-        }
-
         // Sauvegarder les wilayas pour synchronisation après création
         $this->wilayasToSync = $data['wilayas'] ?? [];
 

@@ -461,7 +461,7 @@ class PlatformSettings extends Page
                                             ->numeric()
                                             ->required()
                                             ->suffix('jours')
-                                            ->helperText('Nombre de jours d\'essai gratuit pour les nouveaux loueurs'),
+                                            ->helperText('Durée par défaut quand vous offrez une période sans commission'),
                                     ]),
                             ]),
 
