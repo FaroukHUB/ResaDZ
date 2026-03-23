@@ -4,15 +4,15 @@
             {{-- ========== TAXI/CHAUFFEUR DASHBOARD ========== --}}
 
             {{-- Welcome Banner with Guide --}}
-            <div class="hero-card" style="background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%);">
-                <div class="relative z-10">
+            <div class="ch-hero" style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); box-shadow: 0 4px 20px rgba(99,102,241,0.25);">
+                <div class="relative z-10 w-full">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
                             <div class="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
                                 <x-heroicon-o-chart-bar-square class="w-7 h-7 text-white" />
                             </div>
                             <div>
-                                <h2 class="text-2xl font-bold">Tableau de bord financier</h2>
+                                <h2 class="text-2xl font-bold text-white">Tableau de bord financier 💹</h2>
                                 <p class="text-white/80 text-sm mt-1">Suivez vos revenus et depenses en temps reel</p>
                             </div>
                         </div>
@@ -51,14 +51,14 @@
             </div>
 
             {{-- Quick Tips --}}
-            <div class="bg-gradient-to-r from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-4 border border-indigo-200 dark:border-indigo-800">
+            <div style="background: linear-gradient(90deg, #EEF2FF 0%, #F5F3FF 100%); border: 1px solid #C7D2FE; border-radius: 1rem; padding: 1rem;">
                 <div class="flex items-start gap-3">
-                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+                    <div class="w-10 h-10 flex items-center justify-center flex-shrink-0 rounded-xl" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
                         <x-heroicon-o-light-bulb class="w-5 h-5 text-white" />
                     </div>
                     <div class="flex-1">
-                        <p class="font-semibold text-indigo-900 dark:text-indigo-100">Astuce du jour</p>
-                        <p class="text-sm text-indigo-700 dark:text-indigo-300 mt-1">
+                        <p class="font-bold" style="color: #312E81;">Astuce du jour</p>
+                        <p class="text-sm mt-1" style="color: #4338CA;">
                             Enregistrez vos depenses regulierement (carburant, peages, entretien) dans l'onglet <strong>Transactions</strong> pour avoir une vision precise de votre rentabilite. Un suivi quotidien vous aide a optimiser vos gains !
                         </p>
                     </div>
@@ -68,9 +68,9 @@
             {{-- Period Stats with CA breakdown --}}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 {{-- Today --}}
-                <div class="stat-card group hover:shadow-lg">
+                <div class="ch-stat-card group">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="icon-container icon-container-md bg-gradient-to-br from-indigo-500 to-purple-600">
+                        <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
                             <x-heroicon-o-sun class="w-5 h-5 text-white" />
                         </div>
                         <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wide">Aujourd'hui</h3>

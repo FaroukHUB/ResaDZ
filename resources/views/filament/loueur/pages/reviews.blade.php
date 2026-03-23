@@ -2,20 +2,19 @@
     <div class="space-y-8" style="background: #F8FAFF; min-height: 100vh; margin: -1.5rem; padding: 1.5rem;">
 
         {{-- Hero Card --}}
-        <div class="hero-card" style="background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%); border-radius: 1.25rem; padding: 2.25rem; color: white; position: relative; overflow: hidden;">
+        <div class="ch-hero" style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); border-radius: 1.25rem; padding: 2.25rem; position: relative; overflow: hidden;">
             <div style="position: absolute; top: -30px; right: -30px; width: 140px; height: 140px; background: rgba(255,255,255,0.1); border-radius: 50%;"></div>
             <div style="position: absolute; bottom: -40px; right: 80px; width: 100px; height: 100px; background: rgba(255,255,255,0.07); border-radius: 50%;"></div>
-            <div style="position: absolute; top: 50%; left: 80%; width: 60px; height: 60px; background: rgba(255,255,255,0.05); border-radius: 50%;"></div>
-            <div class="relative z-10">
+            <div class="relative z-10 w-full">
                 <div class="flex items-center gap-4">
                     <div style="width: 60px; height: 60px; background: rgba(255,255,255,0.2); backdrop-filter: blur(12px); border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <svg class="w-8 h-8 text-white animate-star" fill="currentColor" viewBox="0 0 20 20">
+                        <svg class="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>
                     </div>
                     <div>
-                        <h2 style="font-size: 1.625rem; font-weight: 800; margin: 0; letter-spacing: -0.025em;">Avis clients</h2>
-                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9375rem; margin-top: 0.375rem; font-weight: 500;">Vos clients lisent vos réponses avant de réserver</p>
+                        <h2 style="font-size: 1.625rem; font-weight: 800; margin: 0; letter-spacing: -0.025em; color: #fff;">Votre réputation ⭐</h2>
+                        <p style="color: rgba(255,255,255,0.9); font-size: 0.9375rem; margin-top: 0.375rem; font-weight: 500;">Les clients lisent vos avis avant de réserver</p>
                     </div>
                 </div>
             </div>
@@ -24,12 +23,12 @@
         {{-- Stats Cards --}}
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             {{-- Note moyenne --}}
-            <div class="stat-card stat-card-orange" style="background: white; border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 4px 24px rgba(99,102,241,0.08); transition: all 0.2s ease; border: 1px solid rgba(255,107,44,0.12);"
+            <div class="ch-stat-card" style="background: white; border-radius: 1.25rem; padding: 1.75rem; box-shadow: 0 4px 24px rgba(99,102,241,0.08); transition: all 0.2s ease; border: 1px solid rgba(245,158,11,0.15);"
                  onmouseenter="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 8px 32px rgba(99,102,241,0.14)'"
                  onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 24px rgba(99,102,241,0.08)'">
                 <div class="flex items-center gap-4">
-                    <div class="icon-container icon-container-lg" style="width: 60px; height: 60px; background: linear-gradient(135deg, #FF6B2C, #F59E0B); border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
-                        <svg class="w-7 h-7 text-white animate-star" fill="currentColor" viewBox="0 0 20 20">
+                    <div style="width: 60px; height: 60px; background: linear-gradient(135deg, #F59E0B, #D97706); border-radius: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                        <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                         </svg>
                     </div>
@@ -82,7 +81,7 @@
         {{-- Star Distribution --}}
         <div class="card-modern" style="background: white; border-radius: 1.25rem; padding: 2rem; box-shadow: 0 4px 24px rgba(99,102,241,0.08);">
             <div class="flex items-center gap-3 mb-5">
-                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #FF6B2C, #F59E0B); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
+                <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #6366F1, #8B5CF6); border-radius: 12px; display: flex; align-items: center; justify-content: center;">
                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zm6-4a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zm6-3a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
                     </svg>
@@ -93,13 +92,13 @@
                 @foreach($stats['distribution'] as $rating => $data)
                     @php
                         $barColors = [
-                            5 => '#FF6B2C',
+                            5 => '#6366F1',
                             4 => '#F59E0B',
                             3 => '#FBBF24',
                             2 => '#FB923C',
                             1 => '#EF4444',
                         ];
-                        $barColor = $barColors[$rating] ?? '#FF6B2C';
+                        $barColor = $barColors[$rating] ?? '#6366F1';
                     @endphp
                     <div class="flex items-center gap-4">
                         <div class="flex items-center gap-2" style="min-width: 70px;">
@@ -133,7 +132,7 @@
 
             @if($reviews->isEmpty())
                 <div class="empty-state card-modern" style="background: white; border-radius: 1.25rem; padding: 4rem 2rem; text-align: center; box-shadow: 0 4px 24px rgba(99,102,241,0.08);">
-                    <div class="empty-state-icon" style="width: 80px; height: 80px; background: linear-gradient(135deg, #FF6B2C, #F59E0B); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
+                    <div class="empty-state-icon" style="width: 80px; height: 80px; background: linear-gradient(135deg, #6366F1, #818CF8); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem;">
                         <svg class="w-9 h-9 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"/>
                         </svg>
@@ -151,7 +150,7 @@
                             {{-- Header --}}
                             <div class="flex items-start justify-between mb-4">
                                 <div class="flex items-center gap-3">
-                                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #FF6B2C, #F59E0B); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                                    <div style="width: 50px; height: 50px; background: linear-gradient(135deg, #6366F1, #818CF8); border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
                                         <span style="color: white; font-weight: 700; font-size: 1.125rem;">
                                             {{ $review->reviewer ? strtoupper(substr($review->reviewer->name, 0, 1)) : '?' }}
                                         </span>
@@ -167,18 +166,18 @@
                                             <span>{{ $review->created_at->format('d/m/Y') }}</span>
                                             @if($review->booking && $review->booking->vehicle)
                                                 <span style="color: #CBD5E1;">|</span>
-                                                <span style="color: #FF6B2C; font-weight: 500;">{{ $review->booking->vehicle->full_name ?? '' }}</span>
+                                                <span style="color: #6366F1; font-weight: 500;">{{ $review->booking->vehicle->full_name ?? '' }}</span>
                                             @endif
                                         </div>
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1" style="background: linear-gradient(135deg, #FFF7ED, #FFFBEB); padding: 0.5rem 0.875rem; border-radius: 999px; border: 1px solid rgba(255,107,44,0.15);">
                                     @for($i = 1; $i <= 5; $i++)
-                                        <svg class="w-4 h-4" style="color: {{ $i <= $review->rating_overall ? '#FF6B2C' : '#E2E8F0' }};" fill="currentColor" viewBox="0 0 20 20">
+                                        <svg class="w-4 h-4" style="color: {{ $i <= $review->rating_overall ? '#6366F1' : '#E2E8F0' }};" fill="currentColor" viewBox="0 0 20 20">
                                             <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
                                         </svg>
                                     @endfor
-                                    <span style="font-weight: 700; color: #FF6B2C; font-size: 0.8125rem; margin-left: 0.375rem;">{{ $review->rating_overall }}/5</span>
+                                    <span style="font-weight: 700; color: #6366F1; font-size: 0.8125rem; margin-left: 0.375rem;">{{ $review->rating_overall }}/5</span>
                                 </div>
                             </div>
 
@@ -201,7 +200,7 @@
                                         @if($review->$field)
                                             <span class="badge-modern badge-info" style="display: inline-flex; align-items: center; gap: 0.375rem; font-size: 0.75rem; color: #64748B; background: #F1F5F9; padding: 0.4375rem 0.875rem; border-radius: 999px; border: 1px solid #E2E8F0;">
                                                 {{ $label }}
-                                                <span style="font-weight: 700; color: #FF6B2C;">{{ $review->$field }}/5</span>
+                                                <span style="font-weight: 700; color: #6366F1;">{{ $review->$field }}/5</span>
                                             </span>
                                         @endif
                                     @endforeach
@@ -210,14 +209,14 @@
 
                             {{-- Existing Response --}}
                             @if($review->response)
-                                <div style="background: linear-gradient(135deg, #FFF7ED, #FEF3C7); border-radius: 14px; padding: 1.25rem; border-left: 4px solid #FF6B2C; margin-top: 0.5rem;">
+                                <div style="background: linear-gradient(135deg, #EEF2FF, #E0E7FF); border-radius: 14px; padding: 1.25rem; border-left: 4px solid #6366F1; margin-top: 0.5rem;">
                                     <div class="flex items-center gap-2 mb-2">
-                                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #FF6B2C, #F59E0B); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                                        <div style="width: 28px; height: 28px; background: linear-gradient(135deg, #6366F1, #818CF8); border-radius: 8px; display: flex; align-items: center; justify-content: center;">
                                             <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
                                             </svg>
                                         </div>
-                                        <span style="font-size: 0.8125rem; font-weight: 700; color: #FF6B2C;">Votre réponse</span>
+                                        <span style="font-size: 0.8125rem; font-weight: 700; color: #6366F1;">Votre réponse</span>
                                         <span style="font-size: 0.75rem; color: #94A3B8; margin-left: auto;">{{ $review->responded_at?->format('d/m/Y') }}</span>
                                     </div>
                                     <p style="font-size: 0.9375rem; color: #334155; line-height: 1.7;">{{ $review->response }}</p>
@@ -226,7 +225,7 @@
                                 {{-- Response Form --}}
                                 <div style="background: #F8FAFF; border-radius: 14px; padding: 1.5rem; margin-top: 1rem; border: 1.5px solid #E2E8F0;">
                                     <label style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; font-weight: 700; color: #1E293B; margin-bottom: 0.75rem;">
-                                        <svg class="w-4 h-4" style="color: #FF6B2C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <svg class="w-4 h-4" style="color: #6366F1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>
                                         </svg>
                                         Votre réponse
@@ -235,7 +234,7 @@
                                         wire:model="responseText"
                                         rows="3"
                                         style="width: 100%; padding: 0.875rem 1.125rem; background: white; border: 1.5px solid #E2E8F0; border-radius: 14px; color: #1E293B; font-size: 0.9375rem; resize: vertical; outline: none; transition: all 0.2s ease; line-height: 1.6;"
-                                        onfocus="this.style.borderColor='#FF6B2C'; this.style.boxShadow='0 0 0 3px rgba(255,107,44,0.1)'"
+                                        onfocus="this.style.borderColor='#6366F1'; this.style.boxShadow='0 0 0 3px rgba(255,107,44,0.1)'"
                                         onblur="this.style.borderColor='#E2E8F0'; this.style.boxShadow='none'"
                                         placeholder="Remerciez le client ou apportez des précisions..."
                                     ></textarea>
@@ -253,7 +252,7 @@
                                             type="button"
                                             wire:click="submitResponse"
                                             class="btn-modern btn-gradient-primary"
-                                            style="background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%); padding: 0.625rem 1.5rem; font-size: 0.875rem; font-weight: 700; color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem;"
+                                            style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); padding: 0.625rem 1.5rem; font-size: 0.875rem; font-weight: 700; color: white; border: none; border-radius: 12px; cursor: pointer; transition: all 0.2s ease; display: inline-flex; align-items: center; gap: 0.5rem;"
                                             onmouseenter="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 16px rgba(255,107,44,0.35)'"
                                             onmouseleave="this.style.transform='translateY(0)'; this.style.boxShadow='none'"
                                         >
@@ -270,9 +269,9 @@
                                     type="button"
                                     wire:click="startResponding({{ $review->id }})"
                                     class="btn-modern btn-outline-orange"
-                                    style="margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #FF6B2C; font-weight: 600; background: none; border: 1.5px solid #FF6B2C; padding: 0.625rem 1.25rem; border-radius: 12px; cursor: pointer; transition: all 0.2s ease;"
-                                    onmouseenter="this.style.background='#FF6B2C'; this.style.color='white'; this.style.boxShadow='0 4px 12px rgba(255,107,44,0.25)'"
-                                    onmouseleave="this.style.background='none'; this.style.color='#FF6B2C'; this.style.boxShadow='none'"
+                                    style="margin-top: 0.75rem; display: inline-flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: #6366F1; font-weight: 600; background: none; border: 1.5px solid #6366F1; padding: 0.625rem 1.25rem; border-radius: 12px; cursor: pointer; transition: all 0.2s ease;"
+                                    onmouseenter="this.style.background='#6366F1'; this.style.color='white'; this.style.boxShadow='0 4px 12px rgba(255,107,44,0.25)'"
+                                    onmouseleave="this.style.background='none'; this.style.color='#6366F1'; this.style.boxShadow='none'"
                                 >
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"/>

@@ -1,0 +1,561 @@
+/*
+ * ResaDZ — Chauffeur Panel Theme
+ * Couleur primaire: #6366F1 (indigo)
+ * Couleur secondaire: #8B5CF6 (violet)
+ * Accent: #10B981 (vert succès)
+ * ────────────────────────────────────
+ * Ce fichier est chargé uniquement pour
+ * les account_type = 'taxi' via le panel
+ * ────────────────────────────────────
+ */
+
+/* ━━━ Variables ━━━ */
+:root {
+    --ch-primary: #6366F1;
+    --ch-primary-light: #818CF8;
+    --ch-primary-dark: #4F46E5;
+    --ch-secondary: #8B5CF6;
+    --ch-accent: #10B981;
+    --ch-danger: #EF4444;
+    --ch-warning: #F59E0B;
+    --ch-bg: #F8FAFF;
+    --ch-card-shadow: 0 4px 24px rgba(99,102,241,0.08);
+    --ch-card-hover-shadow: 0 8px 32px rgba(99,102,241,0.16);
+}
+
+/* ━━━ Layout fond général ━━━ */
+body.is-chauffeur .fi-body,
+body.is-chauffeur .fi-main-ctn {
+    background: var(--ch-bg) !important;
+}
+
+/* ━━━ Sidebar ━━━ */
+body.is-chauffeur .fi-sidebar {
+    background: #fff !important;
+    border-right: 1px solid #E2E8F0 !important;
+    box-shadow: none !important;
+}
+
+body.is-chauffeur .fi-sidebar-header {
+    border-bottom: 1px solid #E2E8F0 !important;
+}
+
+/* Nav items */
+body.is-chauffeur .fi-sidebar-item a {
+    border-radius: 0.75rem !important;
+    margin: 2px 8px !important;
+    transition: all 0.2s ease !important;
+}
+
+body.is-chauffeur .fi-sidebar-item a:hover {
+    background: #F5F3FF !important;
+}
+
+/* Active nav item */
+body.is-chauffeur .fi-sidebar-item-active > a,
+body.is-chauffeur .fi-sidebar-item a[aria-current="page"] {
+    background: #EEF2FF !important;
+    color: var(--ch-primary) !important;
+    border-left: 3px solid var(--ch-primary) !important;
+    font-weight: 600 !important;
+}
+
+body.is-chauffeur .fi-sidebar-item-active > a .fi-sidebar-item-icon,
+body.is-chauffeur .fi-sidebar-item a[aria-current="page"] .fi-sidebar-item-icon {
+    color: var(--ch-primary) !important;
+}
+
+/* Nav group labels */
+body.is-chauffeur .fi-sidebar-group-label {
+    color: #94A3B8 !important;
+    font-size: 0.65rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.08em !important;
+    padding: 0 12px !important;
+}
+
+/* ━━━ Topbar ━━━ */
+body.is-chauffeur .fi-topbar {
+    background: #fff !important;
+    border-bottom: 1px solid #E2E8F0 !important;
+    box-shadow: none !important;
+}
+
+/* ━━━ Cards globales ━━━ */
+body.is-chauffeur .fi-section,
+body.is-chauffeur .fi-wi-stats-overview-stat,
+body.is-chauffeur .fi-ta {
+    border-radius: 1rem !important;
+    box-shadow: var(--ch-card-shadow) !important;
+    border: 1px solid rgba(99,102,241,0.06) !important;
+    transition: all 0.2s ease !important;
+}
+
+body.is-chauffeur .fi-section:hover,
+body.is-chauffeur .fi-wi-stats-overview-stat:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: var(--ch-card-hover-shadow) !important;
+}
+
+/* ━━━ Stats Widget Cards ━━━ */
+body.is-chauffeur .fi-wi-stats-overview-stat {
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+    position: relative !important;
+}
+
+/* ━━━ Buttons primaires ━━━ */
+body.is-chauffeur .fi-btn-primary,
+body.is-chauffeur .fi-btn[data-action-color="primary"],
+body.is-chauffeur button[type="submit"].fi-btn {
+    background: linear-gradient(135deg, var(--ch-primary), var(--ch-secondary)) !important;
+    border: none !important;
+    box-shadow: 0 4px 14px rgba(99,102,241,0.3) !important;
+    border-radius: 0.75rem !important;
+    transition: all 0.2s ease !important;
+}
+
+body.is-chauffeur .fi-btn-primary:hover,
+body.is-chauffeur .fi-btn[data-action-color="primary"]:hover {
+    transform: translateY(-1px) !important;
+    box-shadow: 0 6px 20px rgba(99,102,241,0.4) !important;
+}
+
+/* ━━━ Inputs focus ━━━ */
+body.is-chauffeur .fi-input:focus,
+body.is-chauffeur .fi-select:focus,
+body.is-chauffeur input:focus,
+body.is-chauffeur textarea:focus,
+body.is-chauffeur select:focus {
+    border-color: var(--ch-primary) !important;
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.15) !important;
+}
+
+/* ━━━ Toggle ON ━━━ */
+body.is-chauffeur .fi-toggle-on,
+body.is-chauffeur input[type="checkbox"]:checked + div {
+    background: linear-gradient(135deg, var(--ch-primary), var(--ch-secondary)) !important;
+}
+
+/* ━━━ Tables ━━━ */
+body.is-chauffeur .fi-ta {
+    border-radius: 1rem !important;
+    overflow: hidden !important;
+}
+
+body.is-chauffeur .fi-ta-row:hover td {
+    background: #F8FAFF !important;
+}
+
+/* ━━━ Badges ━━━ */
+body.is-chauffeur .fi-badge {
+    border-radius: 999px !important;
+    font-weight: 600 !important;
+    font-size: 0.7rem !important;
+    letter-spacing: 0.02em !important;
+}
+
+/* ━━━ Animations globales ━━━ */
+@keyframes ch-fade-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes ch-pulse-badge {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+body.is-chauffeur .fi-page > div {
+    animation: ch-fade-in 0.3s ease-out;
+}
+
+/* ━━━ Breadcrumbs ━━━ */
+body.is-chauffeur .fi-breadcrumbs a {
+    color: var(--ch-primary) !important;
+}
+
+/* ━━━ Page header ━━━ */
+body.is-chauffeur .fi-header-heading {
+    color: #1E293B !important;
+}
+
+/* ━━━ Responsive tweaks ━━━ */
+@media (max-width: 640px) {
+    body.is-chauffeur .fi-wi-stats-overview-stat {
+        border-radius: 0.75rem !important;
+    }
+}
+
+/* ━━━ Chauffeur dashboard custom cards ━━━ */
+.ch-stat-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: var(--ch-card-shadow);
+    border: 1px solid rgba(99,102,241,0.06);
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+}
+.ch-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--ch-card-hover-shadow);
+}
+.ch-stat-card .ch-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+}
+.ch-stat-card .ch-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #1E293B;
+    line-height: 1.1;
+}
+.ch-stat-card .ch-label {
+    font-size: 0.8rem;
+    color: #64748B;
+    margin-top: 0.25rem;
+}
+.ch-stat-card .ch-trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 999px;
+}
+.ch-trend-up { background: #ECFDF5; color: #059669; }
+.ch-trend-down { background: #FEF2F2; color: #DC2626; }
+
+/* ━━━ Course cards (booking/transfer/delivery) ━━━ */
+.ch-course-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.06);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+.ch-course-card:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--ch-card-shadow);
+}
+.ch-course-icon {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    font-size: 1.25rem;
+}
+.ch-course-ref {
+    font-weight: 700;
+    color: #1E293B;
+    font-size: 0.875rem;
+}
+.ch-course-route {
+    color: #64748B;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+}
+.ch-course-amount {
+    font-weight: 700;
+    color: #1E293B;
+    font-size: 1rem;
+}
+.ch-course-commission {
+    font-size: 0.7rem;
+    color: #94A3B8;
+}
+
+/* ━━━ Status badges ━━━ */
+.ch-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.625rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+}
+.ch-badge-pending { background: #FEF3C7; color: #D97706; }
+.ch-badge-confirmed { background: #D1FAE5; color: #059669; }
+.ch-badge-active, .ch-badge-in_transit { background: #DBEAFE; color: #2563EB; }
+.ch-badge-completed, .ch-badge-delivered { background: #F1F5F9; color: #475569; }
+.ch-badge-cancelled { background: #FEE2E2; color: #DC2626; }
+.ch-badge-picked_up { background: #E0E7FF; color: #4F46E5; }
+
+.ch-badge-pending { animation: ch-pulse-badge 2s infinite; }
+
+/* ━━━ Calendar chauffeur ━━━ */
+.ch-calendar {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: var(--ch-card-shadow);
+    overflow: hidden;
+}
+.ch-calendar-header {
+    background: linear-gradient(135deg, var(--ch-primary), var(--ch-secondary));
+    color: #fff;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.ch-calendar-nav {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    background: rgba(255,255,255,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.ch-calendar-nav:hover {
+    background: rgba(255,255,255,0.3);
+}
+.ch-calendar-day {
+    min-height: 5rem;
+    padding: 0.5rem;
+    border-bottom: 1px solid #F1F5F9;
+    border-right: 1px solid #F1F5F9;
+    transition: all 0.15s;
+    cursor: pointer;
+}
+.ch-calendar-day:hover:not(.ch-day-past) {
+    background: #F8FAFF;
+}
+.ch-day-available {
+    background: #EEF2FF;
+}
+.ch-day-available .ch-day-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ch-primary);
+}
+.ch-day-unavailable {
+    background: #FEF2F2;
+}
+.ch-day-unavailable .ch-day-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ch-danger);
+}
+.ch-day-partial {
+    background: #FFF7ED;
+}
+.ch-day-partial .ch-day-dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--ch-warning);
+}
+.ch-day-past {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+.ch-day-today .ch-day-number {
+    background: var(--ch-primary);
+    color: #fff;
+    width: 1.75rem;
+    height: 1.75rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+/* ━━━ Legend pills ━━━ */
+.ch-legend {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 0.75rem 1.5rem;
+    background: #F8FAFF;
+    border-top: 1px solid #F1F5F9;
+}
+.ch-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    font-size: 0.75rem;
+    color: #64748B;
+}
+.ch-legend-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+}
+
+/* ━━━ Hero cards ━━━ */
+.ch-hero {
+    background: linear-gradient(135deg, var(--ch-primary), var(--ch-secondary));
+    border-radius: 1rem;
+    padding: 1.5rem;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 4px 20px rgba(99,102,241,0.25);
+}
+.ch-hero-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    background: rgba(255,255,255,0.15);
+    border-radius: 0.875rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.ch-hero h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.ch-hero p {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 0.25rem;
+}
+
+.ch-hero-teal {
+    background: linear-gradient(135deg, #10B981, #059669);
+    box-shadow: 0 4px 20px rgba(16,185,129,0.25);
+}
+
+/* ━━━ Messages / Chat ━━━ */
+.ch-msg-sent {
+    background: linear-gradient(135deg, var(--ch-primary), var(--ch-secondary)) !important;
+    color: #fff !important;
+    border-radius: 1rem 1rem 0.25rem 1rem !important;
+}
+.ch-msg-received {
+    background: #F1F5F9 !important;
+    color: #1E293B !important;
+    border-radius: 1rem 1rem 1rem 0.25rem !important;
+}
+
+/* ━━━ Reviews ━━━ */
+.ch-star-bar {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #F1F5F9;
+    overflow: hidden;
+}
+.ch-star-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    transition: width 0.6s ease-out;
+}
+
+/* ━━━ Finance / Invoice cards ━━━ */
+.ch-invoice-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.06);
+    transition: all 0.2s ease;
+}
+.ch-invoice-card:hover {
+    box-shadow: var(--ch-card-shadow);
+}
+
+/* ━━━ Settings sections ━━━ */
+.ch-settings-section {
+    background: #fff;
+    border-radius: 1rem;
+    box-shadow: var(--ch-card-shadow);
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+}
+.ch-settings-header {
+    background: #EEF2FF;
+    padding: 1rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    color: #1E293B;
+}
+.ch-settings-header svg {
+    color: var(--ch-primary);
+}
+.ch-settings-body {
+    padding: 1.5rem;
+}
+
+/* ━━━ Expense cards ━━━ */
+.ch-expense-card {
+    background: #fff;
+    border-radius: 1rem;
+    padding: 1rem 1.25rem;
+    box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+    border: 1px solid rgba(99,102,241,0.06);
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    transition: all 0.2s ease;
+}
+.ch-expense-card:hover {
+    box-shadow: var(--ch-card-shadow);
+}
+
+/* ━━━ Filter pills ━━━ */
+.ch-filter-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid #E2E8F0;
+    color: #64748B;
+    background: #fff;
+}
+.ch-filter-pill:hover {
+    border-color: var(--ch-primary);
+    color: var(--ch-primary);
+    background: #EEF2FF;
+}
+.ch-filter-pill.active {
+    background: var(--ch-primary);
+    color: #fff;
+    border-color: var(--ch-primary);
+}
+
+/* ━━━ Progress bars animated ━━━ */
+.ch-progress {
+    height: 0.5rem;
+    border-radius: 999px;
+    background: #F1F5F9;
+    overflow: hidden;
+}
+.ch-progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    animation: ch-progress-grow 0.6s ease-out;
+}
+@keyframes ch-progress-grow {
+    from { width: 0; }
+}

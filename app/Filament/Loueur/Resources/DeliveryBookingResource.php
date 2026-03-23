@@ -17,7 +17,7 @@ class DeliveryBookingResource extends Resource
 {
     protected static ?string $model = DeliveryBooking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     protected static ?string $navigationGroup = 'Livraison';
 
@@ -188,26 +188,39 @@ class DeliveryBookingResource extends Resource
                     ->label('Réf.')
                     ->searchable()
                     ->copyable()
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->color('primary')
+                    ->icon('heroicon-o-document-text'),
 
                 Tables\Columns\TextColumn::make('tracking_code')
                     ->label('Suivi')
                     ->searchable()
                     ->copyable()
                     ->badge()
-                    ->color('gray'),
+                    ->color('gray')
+                    ->icon('heroicon-o-qr-code')
+                    ->copyMessage('Code copié !'),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Statut')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
-                        'confirmed' => 'info',
+                        'confirmed' => 'success',
                         'picked_up' => 'info',
                         'in_transit' => 'primary',
                         'delivered' => 'success',
                         'cancelled' => 'danger',
                         default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'pending' => 'heroicon-o-clock',
+                        'confirmed' => 'heroicon-o-check-circle',
+                        'picked_up' => 'heroicon-o-hand-raised',
+                        'in_transit' => 'heroicon-o-truck',
+                        'delivered' => 'heroicon-o-check-badge',
+                        'cancelled' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'En attente',
@@ -228,6 +241,12 @@ class DeliveryBookingResource extends Resource
                         'repas' => 'warning',
                         default => 'gray',
                     })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'colis' => 'heroicon-o-cube',
+                        'document' => 'heroicon-o-document',
+                        'repas' => 'heroicon-o-fire',
+                        default => 'heroicon-o-cube',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'colis' => 'Colis',
                         'document' => 'Document',
@@ -236,46 +255,44 @@ class DeliveryBookingResource extends Resource
                     }),
 
                 Tables\Columns\TextColumn::make('pickup_city')
-                    ->label('De')
-                    ->searchable(),
+                    ->label('Trajet')
+                    ->searchable()
+                    ->icon('heroicon-o-map-pin')
+                    ->description(fn ($record) => '→ ' . $record->delivery_city),
 
-                Tables\Columns\TextColumn::make('delivery_city')
-                    ->label('Vers')
-                    ->searchable(),
+                Tables\Columns\TextColumn::make('client_name')
+                    ->label('Expéditeur')
+                    ->searchable()
+                    ->icon('heroicon-o-user')
+                    ->description(fn ($record) => $record->recipient_name ? 'Pour: ' . $record->recipient_name : null),
+
+                Tables\Columns\TextColumn::make('pickup_date')
+                    ->label('Date')
+                    ->date('d/m/Y')
+                    ->sortable()
+                    ->icon('heroicon-o-calendar'),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Prix total')
+                    ->label('Prix')
                     ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('commission_amount')
-                    ->label('Commission')
-                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
-                    ->color('danger')
-                    ->description(fn ($record) => $record->commission_rate . '%'),
+                    ->sortable()
+                    ->weight('bold')
+                    ->color('success')
+                    ->description(fn ($record) => '-' . number_format($record->commission_amount ?? 0, 0, ',', ' ') . ' comm.'),
 
                 Tables\Columns\TextColumn::make('net_amount')
-                    ->label('Montant net')
+                    ->label('Net')
                     ->formatStateUsing(fn ($record) => number_format($record->net_amount ?? 0, 0, ',', ' ') . ' DA')
-                    ->color('success')
+                    ->color('primary')
                     ->weight('bold'),
 
                 Tables\Columns\IconColumn::make('commission_paid')
-                    ->label('Payée')
+                    ->label('Comm.')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-clock')
                     ->trueColor('success')
                     ->falseColor('warning'),
-
-                Tables\Columns\TextColumn::make('client_name')
-                    ->label('Expéditeur')
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('pickup_date')
-                    ->label('Date')
-                    ->date('d/m/Y')
-                    ->sortable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créée le')
@@ -304,11 +321,14 @@ class DeliveryBookingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('confirm')
-                    ->label('Confirmer')
+                    ->label('Accepter')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
+                    ->button()
                     ->visible(fn (DeliveryBooking $record) => $record->status === 'pending')
                     ->requiresConfirmation()
+                    ->modalHeading('Accepter cette livraison ?')
+                    ->modalDescription('Le client sera notifié.')
                     ->action(function (DeliveryBooking $record) {
                         $record->update(['status' => 'confirmed', 'confirmed_at' => now()]);
                         $record->addTrackingEvent('confirmed', null, 'Commande confirmée par le chauffeur');
@@ -316,8 +336,9 @@ class DeliveryBookingResource extends Resource
 
                 Tables\Actions\Action::make('pickup')
                     ->label('Récupéré')
-                    ->icon('heroicon-o-cube')
+                    ->icon('heroicon-o-hand-raised')
                     ->color('info')
+                    ->button()
                     ->visible(fn (DeliveryBooking $record) => $record->status === 'confirmed')
                     ->form([
                         Forms\Components\TextInput::make('location')
@@ -333,6 +354,7 @@ class DeliveryBookingResource extends Resource
                     ->label('En route')
                     ->icon('heroicon-o-truck')
                     ->color('primary')
+                    ->button()
                     ->visible(fn (DeliveryBooking $record) => $record->status === 'picked_up')
                     ->form([
                         Forms\Components\TextInput::make('location')
@@ -348,6 +370,7 @@ class DeliveryBookingResource extends Resource
                     ->label('Livré')
                     ->icon('heroicon-o-check-badge')
                     ->color('success')
+                    ->button()
                     ->visible(fn (DeliveryBooking $record) => in_array($record->status, ['picked_up', 'in_transit']))
                     ->requiresConfirmation()
                     ->action(function (DeliveryBooking $record) {
@@ -356,8 +379,11 @@ class DeliveryBookingResource extends Resource
                         Notification::make()->title('Livraison terminée !')->success()->send();
                     }),
 
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('gray'),
             ])
+            ->striped()
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

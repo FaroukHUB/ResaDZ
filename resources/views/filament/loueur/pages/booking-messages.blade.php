@@ -16,14 +16,14 @@
             transform: translateY(-2px);
         }
         .conversation-item.active {
-            background-color: #FFF3ED;
-            border-left-color: #FF6B2C;
+            background-color: #EEF2FF;
+            border-left-color: #6366F1;
         }
         .chat-bubble-sent {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
             color: #fff;
             border-radius: 1.25rem 1.25rem 0.375rem 1.25rem;
-            box-shadow: 0 4px 12px rgba(255,107,44,0.25);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.25);
         }
         .chat-bubble-received {
             background: #F1F5F9;
@@ -47,18 +47,18 @@
             transform: translateY(-2px);
         }
         .btn-gradient-primary {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
             color: #fff;
         }
         .btn-gradient-primary:hover {
-            box-shadow: 0 8px 25px rgba(255,107,44,0.4);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
         }
         .scrollbar-modern::-webkit-scrollbar { width: 6px; }
         .scrollbar-modern::-webkit-scrollbar-track { background: transparent; }
         .scrollbar-modern::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
         .scrollbar-modern::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
         .sidebar-header {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
             position: relative;
             overflow: hidden;
         }
@@ -75,11 +75,11 @@
         .chat-header-bar {
             background: #fff;
             border-bottom: 2px solid transparent;
-            border-image: linear-gradient(90deg, #FF6B2C, #F97316, transparent) 1;
+            border-image: linear-gradient(90deg, #6366F1, #818CF8, transparent) 1;
         }
         .chat-bg-pattern {
             background-color: #F8FAFC;
-            background-image: radial-gradient(circle at 20% 50%, rgba(255,107,44,0.03) 0%, transparent 50%),
+            background-image: radial-gradient(circle at 20% 50%, rgba(99,102,241,0.03) 0%, transparent 50%),
                               radial-gradient(circle at 80% 20%, rgba(99,102,241,0.03) 0%, transparent 50%);
         }
         .message-time {
@@ -92,13 +92,13 @@
             box-shadow: 0 -4px 16px rgba(0,0,0,0.03);
         }
         .unread-badge {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
-            box-shadow: 0 2px 8px rgba(255,107,44,0.35);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
+            box-shadow: 0 2px 8px rgba(99,102,241,0.35);
             animation: unreadPulse 2s ease-in-out infinite;
         }
         @keyframes unreadPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,44,0.4); }
-            50% { box-shadow: 0 0 0 6px rgba(255,107,44,0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(99,102,241,0); }
         }
         .security-banner {
             background: linear-gradient(135deg, #FFFBEB 0%, #FEF3C7 100%);
@@ -106,12 +106,12 @@
             border-radius: 0.75rem;
         }
         .vehicle-thumb {
-            border: 2px solid #FFF3ED;
-            box-shadow: 0 2px 8px rgba(255,107,44,0.12);
+            border: 2px solid #EEF2FF;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.12);
         }
         .dark .card-modern { background: #1E293B; }
-        .dark .conversation-item:hover { background-color: rgba(255,107,44,0.1); }
-        .dark .conversation-item.active { background-color: rgba(255,107,44,0.15); border-left-color: #FF6B2C; }
+        .dark .conversation-item:hover { background-color: rgba(99,102,241,0.1); }
+        .dark .conversation-item.active { background-color: rgba(99,102,241,0.15); border-left-color: #6366F1; }
         .dark .chat-bubble-received { background: #334155; color: #E2E8F0; }
         .dark .chat-header-bar { background: #1E293B; }
         .dark .input-area-modern { background: #1E293B; border-top-color: #334155; }
@@ -148,8 +148,8 @@
                             @if($conversation->booking?->vehicle?->image)
                                 <img src="{{ asset('storage/' . $conversation->booking->vehicle->image) }}" alt="" class="w-12 h-12 rounded-xl object-cover flex-shrink-0 vehicle-thumb">
                             @else
-                                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%);">
-                                    <x-heroicon-o-user class="w-6 h-6" style="color: #FF6B2C;" />
+                                <div class="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%);">
+                                    <x-heroicon-o-user class="w-6 h-6" style="color: #6366F1;" />
                                 </div>
                             @endif
                             <div class="flex-1 min-w-0">
@@ -164,7 +164,7 @@
                                     @endif
                                 </div>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-0.5 flex items-center gap-1">
-                                    <svg class="w-3 h-3 flex-shrink-0" style="color: #FF6B2C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-3 h-3 flex-shrink-0" style="color: #6366F1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                     {{ $conversation->booking?->vehicle?->full_name ?? 'Réservation' }}
@@ -179,8 +179,8 @@
                     </button>
                 @empty
                     <div class="flex flex-col items-center justify-center h-full p-8 text-center">
-                        <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%);">
-                            <x-heroicon-o-chat-bubble-bottom-center-text class="w-10 h-10" style="color: #FF6B2C;" />
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%);">
+                            <x-heroicon-o-chat-bubble-bottom-center-text class="w-10 h-10" style="color: #6366F1;" />
                         </div>
                         <p class="text-gray-700 dark:text-gray-300 font-semibold">Aucune conversation</p>
                         <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Les messages de vos clients apparaîtront ici.</p>
@@ -196,13 +196,13 @@
                 <div class="flex-shrink-0 px-6 py-4 chat-header-bar dark:bg-gray-800">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
-                            <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 12px rgba(255,107,44,0.25);">
+                            <div class="w-11 h-11 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 12px rgba(99,102,241,0.25);">
                                 <x-heroicon-o-user class="w-5 h-5 text-white" />
                             </div>
                             <div>
                                 <h4 class="font-bold text-gray-900 dark:text-white text-base">{{ $selectedConversation->client_display_name }}</h4>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1">
-                                    <svg class="w-3.5 h-3.5" style="color: #FF6B2C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <svg class="w-3.5 h-3.5" style="color: #6366F1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                                     </svg>
                                     {{ $selectedConversation->booking?->vehicle?->full_name }} &bull; {{ $selectedConversation->booking?->reference }}
@@ -212,9 +212,9 @@
                         <a
                             href="{{ route('filament.loueur.resources.bookings.edit', $selectedConversation->booking_id) }}"
                             class="btn-modern flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all duration-200"
-                            style="color: #FF6B2C; background: #FFF3ED; border: 1px solid #FDBA74;"
-                            onmouseover="this.style.background='linear-gradient(135deg, #FF6B2C 0%, #F97316 100%)'; this.style.color='#fff'; this.style.borderColor='transparent';"
-                            onmouseout="this.style.background='#FFF3ED'; this.style.color='#FF6B2C'; this.style.borderColor='#FDBA74';"
+                            style="color: #6366F1; background: #EEF2FF; border: 1px solid #A5B4FC;"
+                            onmouseover="this.style.background='linear-gradient(135deg, #6366F1 0%, #818CF8 100%)'; this.style.color='#fff'; this.style.borderColor='transparent';"
+                            onmouseout="this.style.background='#EEF2FF'; this.style.color='#6366F1'; this.style.borderColor='#A5B4FC';"
                         >
                             Voir réservation
                             <x-heroicon-o-arrow-right class="w-4 h-4" />
@@ -239,8 +239,8 @@
                             {{-- Client message (left) - Gray --}}
                             <div class="flex justify-start">
                                 <div class="flex items-end gap-2">
-                                    <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mb-5" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%);">
-                                        <x-heroicon-o-user class="w-3.5 h-3.5" style="color: #FF6B2C;" />
+                                    <div class="flex-shrink-0 w-7 h-7 rounded-lg flex items-center justify-center mb-5" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%);">
+                                        <x-heroicon-o-user class="w-3.5 h-3.5" style="color: #6366F1;" />
                                     </div>
                                     <div class="max-w-[70%]">
                                         <div class="chat-bubble-received px-5 py-3">
@@ -253,8 +253,8 @@
                         @endif
                     @empty
                         <div class="flex flex-col items-center justify-center h-full text-center py-12">
-                            <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%);">
-                                <x-heroicon-o-chat-bubble-bottom-center-text class="w-10 h-10" style="color: #FF6B2C;" />
+                            <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%);">
+                                <x-heroicon-o-chat-bubble-bottom-center-text class="w-10 h-10" style="color: #6366F1;" />
                             </div>
                             <h4 class="font-bold text-gray-700 dark:text-gray-300 text-base">Aucun message</h4>
                             <p class="text-sm text-gray-400 dark:text-gray-500 mt-1">Commencez la conversation avec votre client.</p>
@@ -289,7 +289,7 @@
                         <button
                             type="submit"
                             class="btn-modern flex-shrink-0 h-12 px-6 text-white rounded-2xl flex items-center justify-center gap-2 font-semibold text-sm"
-                            style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 15px rgba(255,107,44,0.4);"
+                            style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 15px rgba(99,102,241,0.4);"
                         >
                             <span class="hidden sm:inline">Envoyer</span>
                             <x-heroicon-o-paper-airplane class="w-5 h-5" />
@@ -299,8 +299,8 @@
             @else
                 {{-- No conversation selected --}}
                 <div class="flex-1 flex flex-col items-center justify-center text-center p-8 chat-bg-pattern">
-                    <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%); box-shadow: 0 8px 30px rgba(255,107,44,0.12);">
-                        <x-heroicon-o-inbox class="w-12 h-12" style="color: #FF6B2C;" />
+                    <div class="w-24 h-24 rounded-full flex items-center justify-center mb-6" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%); box-shadow: 0 8px 30px rgba(99,102,241,0.12);">
+                        <x-heroicon-o-inbox class="w-12 h-12" style="color: #6366F1;" />
                     </div>
                     <h4 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Sélectionnez une conversation</h4>
                     <p class="text-sm text-gray-500 dark:text-gray-400 max-w-sm">Choisissez une conversation dans la liste pour commencer.</p>

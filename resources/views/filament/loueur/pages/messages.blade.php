@@ -7,8 +7,8 @@
             overflow: hidden;
         }
         .welcome-banner {
-            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #FFF3ED 100%);
-            border: 1px solid #FDBA74;
+            background: linear-gradient(135deg, #FFF7ED 0%, #FFEDD5 50%, #EEF2FF 100%);
+            border: 1px solid #A5B4FC;
             border-radius: 1rem;
             position: relative;
             overflow: hidden;
@@ -20,7 +20,7 @@
             right: -30px;
             width: 120px;
             height: 120px;
-            background: radial-gradient(circle, rgba(255,107,44,0.12) 0%, transparent 70%);
+            background: radial-gradient(circle, rgba(99,102,241,0.12) 0%, transparent 70%);
             border-radius: 50%;
         }
         .welcome-banner::after {
@@ -43,14 +43,14 @@
             transform: translateY(-2px);
         }
         .conversation-item.active {
-            background-color: #FFF3ED;
-            border-left-color: #FF6B2C;
+            background-color: #EEF2FF;
+            border-left-color: #6366F1;
         }
         .chat-bubble-sent {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
             color: #fff;
             border-radius: 1.25rem 1.25rem 0.375rem 1.25rem;
-            box-shadow: 0 4px 12px rgba(255,107,44,0.25);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.25);
         }
         .chat-bubble-received {
             background: #F1F5F9;
@@ -74,11 +74,11 @@
             transform: translateY(-2px);
         }
         .btn-gradient-primary {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
             color: #fff;
         }
         .btn-gradient-primary:hover {
-            box-shadow: 0 8px 25px rgba(255,107,44,0.4);
+            box-shadow: 0 8px 25px rgba(99,102,241,0.4);
         }
         .scrollbar-modern::-webkit-scrollbar { width: 6px; }
         .scrollbar-modern::-webkit-scrollbar-track { background: transparent; }
@@ -91,7 +91,7 @@
         }
         .stat-card:hover { transform: translateY(-2px); }
         .sidebar-header {
-            background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%);
+            background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%);
             position: relative;
             overflow: hidden;
         }
@@ -118,14 +118,14 @@
         .chat-header-bar {
             background: #fff;
             border-bottom: 2px solid transparent;
-            border-image: linear-gradient(90deg, #FF6B2C, #F97316, transparent) 1;
+            border-image: linear-gradient(90deg, #6366F1, #818CF8, transparent) 1;
         }
         .unread-pulse {
             animation: unreadPulse 2s ease-in-out infinite;
         }
         @keyframes unreadPulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(255,107,44,0.4); }
-            50% { box-shadow: 0 0 0 6px rgba(255,107,44,0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+            50% { box-shadow: 0 0 0 6px rgba(99,102,241,0); }
         }
         .date-divider-line {
             height: 1px;
@@ -142,16 +142,16 @@
         }
         .chat-bg-pattern {
             background-color: #F8FAFC;
-            background-image: radial-gradient(circle at 20% 50%, rgba(255,107,44,0.03) 0%, transparent 50%),
+            background-image: radial-gradient(circle at 20% 50%, rgba(99,102,241,0.03) 0%, transparent 50%),
                               radial-gradient(circle at 80% 20%, rgba(99,102,241,0.03) 0%, transparent 50%),
-                              radial-gradient(circle at 50% 80%, rgba(255,107,44,0.02) 0%, transparent 50%);
+                              radial-gradient(circle at 50% 80%, rgba(99,102,241,0.02) 0%, transparent 50%);
         }
         .dark .card-modern { background: #1E293B; }
-        .dark .conversation-item:hover { background-color: rgba(255,107,44,0.1); }
-        .dark .conversation-item.active { background-color: rgba(255,107,44,0.15); border-left-color: #FF6B2C; }
+        .dark .conversation-item:hover { background-color: rgba(99,102,241,0.1); }
+        .dark .conversation-item.active { background-color: rgba(99,102,241,0.15); border-left-color: #6366F1; }
         .dark .chat-bubble-received { background: #334155; color: #E2E8F0; }
-        .dark .welcome-banner { background: linear-gradient(135deg, rgba(255,107,44,0.1) 0%, rgba(249,115,22,0.08) 100%); border-color: rgba(255,107,44,0.3); }
-        .dark .chat-header-bar { background: #1E293B; border-image: linear-gradient(90deg, #FF6B2C, #F97316, transparent) 1; }
+        .dark .welcome-banner { background: linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(249,115,22,0.08) 100%); border-color: rgba(99,102,241,0.3); }
+        .dark .chat-header-bar { background: #1E293B; border-image: linear-gradient(90deg, #6366F1, #818CF8, transparent) 1; }
         .dark .input-area-modern { background: #1E293B; border-top-color: #334155; }
         .dark .chat-bg-pattern { background-color: #0F172A; background-image: none; }
     </style>
@@ -159,14 +159,14 @@
     {{-- Guide Banner --}}
     <div class="welcome-banner mb-6 p-5">
         <div class="flex items-start gap-4 relative z-10">
-            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 15px rgba(255,107,44,0.3);">
+            <div class="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 15px rgba(99,102,241,0.3);">
                 <x-heroicon-o-chat-bubble-left-right class="w-6 h-6 text-white" />
             </div>
             <div class="flex-1">
                 <p class="font-bold text-gray-900 dark:text-white text-base">Centre de messagerie</p>
                 <p class="text-sm text-gray-600 dark:text-gray-300 mt-1 leading-relaxed">
                     Communiquez directement avec l'equipe ResaDZ pour toute question concernant votre compte, vos reservations ou vos paiements.
-                    <strong style="color: #FF6B2C;">Temps de reponse moyen : 2-4 heures</strong> (jours ouvrables).
+                    <strong style="color: #6366F1;">Temps de reponse moyen : 2-4 heures</strong> (jours ouvrables).
                 </p>
             </div>
         </div>
@@ -215,7 +215,7 @@
                     >
                         <div class="flex items-start gap-3">
                             {{-- Avatar --}}
-                            <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 2px 8px rgba(255,107,44,0.25);">
+                            <div class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 2px 8px rgba(99,102,241,0.25);">
                                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
                                 </svg>
@@ -226,7 +226,7 @@
                                         {{ $conversation->subject }}
                                     </h4>
                                     @if($conversation->loueur_unread)
-                                        <span class="flex-shrink-0 w-3 h-3 rounded-full unread-pulse" style="background-color: #FF6B2C;"></span>
+                                        <span class="flex-shrink-0 w-3 h-3 rounded-full unread-pulse" style="background-color: #6366F1;"></span>
                                     @endif
                                 </div>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 truncate mt-1">
@@ -251,8 +251,8 @@
                     </button>
                 @empty
                     <div class="flex flex-col items-center justify-center h-full p-8 text-center">
-                        <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%);">
-                            <svg class="w-10 h-10" style="color: #FF6B2C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-20 h-20 rounded-full flex items-center justify-center mb-4" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%);">
+                            <svg class="w-10 h-10" style="color: #6366F1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
                         </div>
@@ -278,7 +278,7 @@
                 <div class="flex-shrink-0 px-6 py-4 chat-header-bar dark:bg-gray-800">
                     <div class="flex items-center justify-between">
                         <div class="flex items-center gap-4">
-                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 15px rgba(255,107,44,0.3);">
+                            <div class="w-12 h-12 rounded-2xl flex items-center justify-center" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 15px rgba(99,102,241,0.3);">
                                 <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
                                 </svg>
@@ -286,7 +286,7 @@
                             <div>
                                 <h3 class="font-bold text-gray-900 dark:text-white text-base">Support ResaDZ</h3>
                                 <p class="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
-                                    <svg class="w-3.5 h-3.5" style="color: #FF6B2C;" fill="currentColor" viewBox="0 0 20 20">
+                                    <svg class="w-3.5 h-3.5" style="color: #6366F1;" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"/>
                                     </svg>
                                     {{ $selectedConversation->subject }}
@@ -335,7 +335,7 @@
                         @else
                             <div class="flex {{ $message->sender_type === 'loueur' ? 'justify-end' : 'justify-start' }} group">
                                 @if($message->sender_type === 'admin')
-                                    <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mr-3 mt-1" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 2px 6px rgba(255,107,44,0.25);">
+                                    <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center mr-3 mt-1" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 2px 6px rgba(99,102,241,0.25);">
                                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"/>
                                         </svg>
@@ -351,7 +351,7 @@
                                         </span>
                                         @if($message->sender_type === 'loueur')
                                             @if($message->read_at)
-                                                <svg class="w-4 h-4" style="color: #FF6B2C;" fill="currentColor" viewBox="0 0 24 24">
+                                                <svg class="w-4 h-4" style="color: #6366F1;" fill="currentColor" viewBox="0 0 24 24">
                                                     <path d="M18 7l-1.41-1.41-6.34 6.34 1.41 1.41L18 7zm4.24-1.41L11.66 16.17 7.48 12l-1.41 1.41L11.66 19l12-12-1.42-1.41zM.41 13.41L6 19l1.41-1.41L1.83 12 .41 13.41z"/>
                                                 </svg>
                                             @else
@@ -386,7 +386,7 @@
                             <button
                                 type="submit"
                                 class="btn-modern flex-shrink-0 w-14 h-14 text-white rounded-2xl flex items-center justify-center"
-                                style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 15px rgba(255,107,44,0.4);"
+                                style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 15px rgba(99,102,241,0.4);"
                             >
                                 <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
@@ -409,8 +409,8 @@
             @else
                 <div class="flex-1 flex items-center justify-center chat-bg-pattern">
                     <div class="text-center">
-                        <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style="background: linear-gradient(135deg, #FFF3ED 0%, #FFEDD5 100%); box-shadow: 0 8px 30px rgba(255,107,44,0.12);">
-                            <svg class="w-12 h-12" style="color: #FF6B2C;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6" style="background: linear-gradient(135deg, #EEF2FF 0%, #FFEDD5 100%); box-shadow: 0 8px 30px rgba(99,102,241,0.12);">
+                            <svg class="w-12 h-12" style="color: #6366F1;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                             </svg>
                         </div>
@@ -442,7 +442,7 @@
     <x-filament::modal id="new-conversation" width="lg">
         <x-slot name="heading">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 12px rgba(255,107,44,0.25);">
+                <div class="w-10 h-10 rounded-xl flex items-center justify-center" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 12px rgba(99,102,241,0.25);">
                     <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
                     </svg>
@@ -492,7 +492,7 @@
                 <x-filament::button type="button" color="gray" x-on:click="$dispatch('close-modal', { id: 'new-conversation' })">
                     Annuler
                 </x-filament::button>
-                <x-filament::button type="submit" style="background: linear-gradient(135deg, #FF6B2C 0%, #F97316 100%); box-shadow: 0 4px 12px rgba(255,107,44,0.25);">
+                <x-filament::button type="submit" style="background: linear-gradient(135deg, #6366F1 0%, #818CF8 100%); box-shadow: 0 4px 12px rgba(99,102,241,0.25);">
                     Envoyer
                 </x-filament::button>
             </div>

@@ -93,26 +93,38 @@ class ExpenseCategoryResource extends Resource
                 Tables\Columns\TextColumn::make('name')
                     ->label('Nom')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->weight('bold')
+                    ->icon('heroicon-o-tag'),
                 Tables\Columns\ColorColumn::make('color')
                     ->label('Couleur'),
                 Tables\Columns\IconColumn::make('is_default')
                     ->label('Par défaut')
-                    ->boolean(),
+                    ->boolean()
+                    ->trueColor('primary')
+                    ->falseColor('gray'),
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Active')
-                    ->boolean(),
+                    ->boolean()
+                    ->trueColor('success')
+                    ->falseColor('danger'),
                 Tables\Columns\TextColumn::make('sort_order')
                     ->label('Ordre')
-                    ->sortable(),
+                    ->sortable()
+                    ->badge()
+                    ->color('gray'),
             ])
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Active'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
                 Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger')
                     ->visible(fn ($record) => !$record->is_default),
             ])
             ->bulkActions([

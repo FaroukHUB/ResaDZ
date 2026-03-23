@@ -95,7 +95,35 @@ class LoueurPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::BODY_START,
                 fn () => $this->renderOnboardingBanner()
+            )
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => $this->renderChauffeurTheme()
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_START,
+                fn () => $this->renderChauffeurBodyClass()
             );
+    }
+
+    protected function renderChauffeurTheme(): string
+    {
+        $user = Auth::user();
+        if (!$user || !$user->loueur || $user->loueur->account_type !== 'taxi') {
+            return '';
+        }
+
+        return '<link rel="stylesheet" href="/css/chauffeur-theme.css">';
+    }
+
+    protected function renderChauffeurBodyClass(): string
+    {
+        $user = Auth::user();
+        if (!$user || !$user->loueur || $user->loueur->account_type !== 'taxi') {
+            return '';
+        }
+
+        return '<script>document.body.classList.add("is-chauffeur");</script>';
     }
 
     protected function renderOnboardingBanner(): string

@@ -16,7 +16,7 @@ class TransferRouteResource extends Resource
 {
     protected static ?string $model = TransferRoute::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-map-pin';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-path-rounded-square';
 
     protected static ?string $navigationGroup = 'Chauffeur';
 
@@ -124,21 +124,35 @@ class TransferRouteResource extends Resource
                 Tables\Columns\TextColumn::make('departure')
                     ->label('Départ')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-map-pin')
+                    ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('destination')
                     ->label('Destination')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-flag')
+                    ->color('primary'),
 
                 Tables\Columns\TextColumn::make('price')
                     ->label('Prix')
-                    ->money('DZD')
-                    ->sortable(),
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
+                    ->sortable()
+                    ->badge()
+                    ->color('success'),
 
                 Tables\Columns\TextColumn::make('vehicle_type')
                     ->label('Véhicule')
                     ->badge()
+                    ->color('primary')
+                    ->icon(fn (string $state): string => match ($state) {
+                        'berline' => 'heroicon-o-truck',
+                        'suv' => 'heroicon-o-truck',
+                        'van' => 'heroicon-o-truck',
+                        'minibus' => 'heroicon-o-truck',
+                        default => 'heroicon-o-truck',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'berline' => 'Berline',
                         'suv' => 'SUV',
@@ -149,16 +163,27 @@ class TransferRouteResource extends Resource
 
                 Tables\Columns\TextColumn::make('max_passengers')
                     ->label('Places')
-                    ->alignCenter(),
+                    ->alignCenter()
+                    ->icon('heroicon-o-user-group'),
 
-                Tables\Columns\IconColumn::make('round_trip')
+                Tables\Columns\TextColumn::make('round_trip')
                     ->label('A/R')
-                    ->boolean()
-                    ->alignCenter(),
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state ? 'A/R dispo' : 'Simple')
+                    ->color(fn ($state) => $state ? 'primary' : 'gray')
+                    ->icon(fn ($state) => $state ? 'heroicon-o-arrow-path' : 'heroicon-o-arrow-right'),
+
+                Tables\Columns\TextColumn::make('round_trip_price')
+                    ->label('Prix A/R')
+                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', ' ') . ' DA' : '-')
+                    ->badge()
+                    ->color(fn ($state) => $state ? 'info' : 'gray'),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Actif')
                     ->boolean()
+                    ->trueColor('success')
+                    ->falseColor('danger')
                     ->alignCenter(),
             ])
             ->filters([
@@ -174,8 +199,12 @@ class TransferRouteResource extends Resource
                     ->label('Actif'),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

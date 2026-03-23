@@ -112,14 +112,12 @@ class DeliveryRateResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('from_city')
-                    ->label('De')
+                    ->label('Trajet')
                     ->searchable()
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('to_city')
-                    ->label('Vers')
-                    ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-map-pin')
+                    ->weight('bold')
+                    ->description(fn ($record) => '→ ' . $record->to_city),
 
                 Tables\Columns\TextColumn::make('package_type')
                     ->label('Type')
@@ -130,6 +128,12 @@ class DeliveryRateResource extends Resource
                         'repas' => 'warning',
                         default => 'gray',
                     })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'colis' => 'heroicon-o-cube',
+                        'document' => 'heroicon-o-document',
+                        'repas' => 'heroicon-o-fire',
+                        default => 'heroicon-o-cube',
+                    })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'colis' => 'Colis',
                         'document' => 'Document',
@@ -139,22 +143,27 @@ class DeliveryRateResource extends Resource
 
                 Tables\Columns\TextColumn::make('base_price')
                     ->label('Prix de base')
-                    ->money('DZD')
-                    ->sortable(),
+                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
+                    ->sortable()
+                    ->badge()
+                    ->color('success')
+                    ->weight('bold'),
 
                 Tables\Columns\TextColumn::make('price_per_kg')
                     ->label('Prix/kg')
-                    ->money('DZD')
-                    ->placeholder('—'),
+                    ->formatStateUsing(fn ($state) => $state ? number_format($state, 0, ',', ' ') . ' DA/kg' : '—')
+                    ->color('info'),
 
                 Tables\Columns\TextColumn::make('max_weight')
                     ->label('Poids max')
-                    ->suffix(' kg')
-                    ->placeholder('—'),
+                    ->formatStateUsing(fn ($state) => $state ? $state . ' kg' : '—')
+                    ->icon('heroicon-o-scale'),
 
                 Tables\Columns\IconColumn::make('is_active')
                     ->label('Actif')
                     ->boolean()
+                    ->trueColor('success')
+                    ->falseColor('danger')
                     ->alignCenter(),
             ])
             ->filters([
@@ -167,9 +176,14 @@ class DeliveryRateResource extends Resource
                     ]),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-                Tables\Actions\DeleteAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('primary'),
+                Tables\Actions\DeleteAction::make()
+                    ->icon('heroicon-o-trash')
+                    ->color('danger'),
             ])
+            ->striped()
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

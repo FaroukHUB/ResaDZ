@@ -126,22 +126,30 @@ class StatsOverview extends BaseWidget
             Stat::make('Courses ce mois', $totalCourses)
                 ->description($monthlyTransfers . ' transferts | ' . $monthlyDeliveries . ' livraisons')
                 ->descriptionIcon('heroicon-m-truck')
-                ->color('primary'),
+                ->chart($totalCourses > 0 ? [2, 4, 6, 8, $totalCourses] : [0])
+                ->chartColor('primary')
+                ->color('primary')
+                ->extraAttributes(['class' => 'ch-stat-card-courses']),
 
             Stat::make('En attente', $totalPending)
                 ->description($totalActive . ' en cours | ' . ($courseTrend >= 0 ? '+' : '') . $courseTrend . '% vs mois dernier')
                 ->descriptionIcon('heroicon-m-clock')
-                ->color($totalPending > 0 ? 'warning' : 'success'),
+                ->color($totalPending > 0 ? 'warning' : 'success')
+                ->extraAttributes(['class' => 'ch-stat-card-pending']),
 
-            Stat::make('CA ce mois', number_format($totalCA, 0, ',', ' ') . ' DA')
+            Stat::make('Revenus du mois', number_format($totalCA, 0, ',', ' ') . ' DA')
                 ->description(number_format($caTransfers, 0, ',', ' ') . ' DA transferts | ' . number_format($caDeliveries, 0, ',', ' ') . ' DA livraisons')
-                ->descriptionIcon('heroicon-m-banknotes')
-                ->color('success'),
+                ->descriptionIcon('heroicon-m-wallet')
+                ->chart($totalCA > 0 ? [1, 3, 5, 7, 8] : [0])
+                ->chartColor('success')
+                ->color('success')
+                ->extraAttributes(['class' => 'ch-stat-card-revenue']),
 
             Stat::make('Commission due (10%)', number_format($totalCommissionDue, 0, ',', ' ') . ' DA')
-                ->description('Net apres commission: ' . number_format($netRevenue, 0, ',', ' ') . ' DA')
+                ->description('Net : ' . number_format($netRevenue, 0, ',', ' ') . ' DA')
                 ->descriptionIcon('heroicon-m-receipt-percent')
-                ->color($totalCommissionDue > 0 ? 'danger' : 'success'),
+                ->color($totalCommissionDue > 0 ? 'danger' : 'success')
+                ->extraAttributes(['class' => 'ch-stat-card-commission']),
         ];
     }
 

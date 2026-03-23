@@ -151,22 +151,27 @@ class TransactionResource extends Resource
                 Tables\Columns\TextColumn::make('transaction_date')
                     ->label('Date')
                     ->date('d/m/Y')
-                    ->sortable(),
+                    ->sortable()
+                    ->icon('heroicon-o-calendar'),
                 Tables\Columns\TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
-                    ->limit(40),
+                    ->limit(40)
+                    ->weight('bold'),
                 Tables\Columns\TextColumn::make('expenseCategory.name')
                     ->label('Catégorie')
                     ->badge()
-                    ->color('gray'),
+                    ->color('primary')
+                    ->icon('heroicon-o-tag'),
                 Tables\Columns\TextColumn::make('vehicle.full_name')
                     ->label('Véhicule')
-                    ->placeholder('-'),
+                    ->placeholder('-')
+                    ->icon('heroicon-o-truck'),
                 Tables\Columns\TextColumn::make('amount')
                     ->label('Montant')
                     ->formatStateUsing(fn ($record) => '-' . number_format($record->amount, 0, ',', ' ') . ' ' . ($record->currency === 'EUR' ? '€' : 'DA'))
                     ->color('danger')
+                    ->weight('bold')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('payment_method')
                     ->label('Méthode')

@@ -30,17 +30,26 @@ class RecentBookings extends BaseWidget
             ->columns([
                 Tables\Columns\TextColumn::make('reference')
                     ->label('Réf.')
-                    ->searchable(),
+                    ->searchable()
+                    ->weight('bold')
+                    ->color('primary')
+                    ->icon('heroicon-o-document-text'),
                 Tables\Columns\TextColumn::make('client_name')
-                    ->label('Client'),
+                    ->label('Client')
+                    ->icon('heroicon-o-user'),
                 Tables\Columns\TextColumn::make('vehicle.full_name')
-                    ->label('Véhicule'),
+                    ->label('Véhicule')
+                    ->icon('heroicon-o-truck')
+                    ->limit(25),
                 Tables\Columns\TextColumn::make('start_date')
                     ->label('Début')
-                    ->date('d/m/Y'),
+                    ->date('d/m/Y')
+                    ->icon('heroicon-o-calendar'),
                 Tables\Columns\TextColumn::make('total_price')
                     ->label('Total')
-                    ->formatStateUsing(fn ($record) => $record->getFormattedTotal()),
+                    ->formatStateUsing(fn ($record) => $record->getFormattedTotal())
+                    ->weight('bold')
+                    ->color('success'),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Statut')
                     ->colors([
@@ -63,8 +72,10 @@ class RecentBookings extends BaseWidget
                 Tables\Actions\Action::make('view')
                     ->label('Voir')
                     ->icon('heroicon-o-eye')
+                    ->color('primary')
                     ->url(fn (Booking $record): string => route('filament.loueur.resources.bookings.view', $record)),
             ])
+            ->striped()
             ->paginated(false);
     }
 }

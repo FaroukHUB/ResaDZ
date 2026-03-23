@@ -16,7 +16,7 @@ class TransferBookingResource extends Resource
 {
     protected static ?string $model = TransferBooking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-check';
 
     protected static ?string $navigationGroup = 'Chauffeur';
 
@@ -164,17 +164,26 @@ class TransferBookingResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->copyable()
-                    ->weight('bold'),
+                    ->weight('bold')
+                    ->color('primary')
+                    ->icon('heroicon-o-document-text'),
 
                 Tables\Columns\TextColumn::make('status')
                     ->label('Statut')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'pending' => 'warning',
-                        'confirmed' => 'info',
-                        'completed' => 'success',
+                        'confirmed' => 'success',
+                        'completed' => 'gray',
                         'cancelled' => 'danger',
                         default => 'gray',
+                    })
+                    ->icon(fn (string $state): string => match ($state) {
+                        'pending' => 'heroicon-o-clock',
+                        'confirmed' => 'heroicon-o-check-circle',
+                        'completed' => 'heroicon-o-flag',
+                        'cancelled' => 'heroicon-o-x-circle',
+                        default => 'heroicon-o-question-mark-circle',
                     })
                     ->formatStateUsing(fn (string $state): string => match ($state) {
                         'pending' => 'En attente',
@@ -184,64 +193,53 @@ class TransferBookingResource extends Resource
                         default => $state,
                     }),
 
-                Tables\Columns\TextColumn::make('departure')
-                    ->label('Départ')
+                Tables\Columns\TextColumn::make('client_name')
+                    ->label('Client')
                     ->searchable()
-                    ->limit(25),
+                    ->icon('heroicon-o-user')
+                    ->description(fn ($record) => $record->client_phone),
 
-                Tables\Columns\TextColumn::make('destination')
-                    ->label('Destination')
+                Tables\Columns\TextColumn::make('departure')
+                    ->label('Trajet')
                     ->searchable()
-                    ->limit(25),
+                    ->icon('heroicon-o-map-pin')
+                    ->description(fn ($record) => '→ ' . $record->destination)
+                    ->limit(30),
 
                 Tables\Columns\TextColumn::make('transfer_date')
-                    ->label('Date')
+                    ->label('Date & heure')
                     ->date('d/m/Y')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('transfer_time')
-                    ->label('Heure'),
+                    ->sortable()
+                    ->icon('heroicon-o-calendar')
+                    ->description(fn ($record) => $record->transfer_time),
 
                 Tables\Columns\TextColumn::make('passengers')
-                    ->label('Passagers')
-                    ->alignCenter(),
-
-                Tables\Columns\TextColumn::make('luggage_count')
-                    ->label('Bagages')
-                    ->alignCenter(),
+                    ->label('Pass.')
+                    ->alignCenter()
+                    ->icon('heroicon-o-user-group')
+                    ->description(fn ($record) => ($record->luggage_count ?? 0) . ' bag.'),
 
                 Tables\Columns\TextColumn::make('price')
-                    ->label('Prix total')
+                    ->label('Prix')
                     ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
-                    ->sortable(),
-
-                Tables\Columns\TextColumn::make('commission_amount')
-                    ->label('Commission')
-                    ->formatStateUsing(fn ($state) => number_format($state ?? 0, 0, ',', ' ') . ' DA')
-                    ->color('danger')
-                    ->description(fn ($record) => $record->commission_rate . '%'),
+                    ->sortable()
+                    ->weight('bold')
+                    ->color('success')
+                    ->description(fn ($record) => '-' . number_format($record->commission_amount ?? 0, 0, ',', ' ') . ' comm.'),
 
                 Tables\Columns\TextColumn::make('net_amount')
-                    ->label('Montant net')
+                    ->label('Net')
                     ->formatStateUsing(fn ($record) => number_format($record->net_amount ?? 0, 0, ',', ' ') . ' DA')
-                    ->color('success')
+                    ->color('primary')
                     ->weight('bold'),
 
                 Tables\Columns\IconColumn::make('commission_paid')
-                    ->label('Payée')
+                    ->label('Comm.')
                     ->boolean()
                     ->trueIcon('heroicon-o-check-circle')
                     ->falseIcon('heroicon-o-clock')
                     ->trueColor('success')
                     ->falseColor('warning'),
-
-                Tables\Columns\TextColumn::make('client_name')
-                    ->label('Client')
-                    ->searchable(),
-
-                Tables\Columns\TextColumn::make('client_phone')
-                    ->label('Tél.')
-                    ->searchable(),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Créée le')
@@ -261,11 +259,14 @@ class TransferBookingResource extends Resource
             ])
             ->actions([
                 Tables\Actions\Action::make('confirm')
-                    ->label('Confirmer')
+                    ->label('Accepter')
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
+                    ->button()
                     ->visible(fn (TransferBooking $record) => $record->status === 'pending')
                     ->requiresConfirmation()
+                    ->modalHeading('Confirmer cette course ?')
+                    ->modalDescription('Le client sera notifié que vous avez accepté sa demande.')
                     ->action(fn (TransferBooking $record) => $record->update([
                         'status' => 'confirmed',
                         'confirmed_at' => now(),
@@ -274,14 +275,19 @@ class TransferBookingResource extends Resource
                 Tables\Actions\Action::make('complete')
                     ->label('Terminer')
                     ->icon('heroicon-o-flag')
-                    ->color('info')
+                    ->color('primary')
+                    ->button()
                     ->visible(fn (TransferBooking $record) => $record->status === 'confirmed')
                     ->requiresConfirmation()
+                    ->modalHeading('Course terminée ?')
+                    ->modalDescription('Confirmez que la course est terminée.')
                     ->action(fn (TransferBooking $record) => $record->update([
                         'status' => 'completed',
                     ])),
 
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->icon('heroicon-o-pencil-square')
+                    ->color('gray'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
