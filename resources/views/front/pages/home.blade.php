@@ -109,6 +109,7 @@
                         <span class="block text-green-400">{{ $homeContent['hero_subtitle'] ?? 'partout en Algérie' }}</span>
                     </h1>
                 @endif
+                @if($totalVehicles >= 10 && $totalLoueurs >= 10 && $wilayas->count() >= 10)
                 <div class="mt-3 sm:mt-10 flex gap-4 sm:gap-12">
                     <div class="text-center">
                         <div class="text-lg sm:text-4xl font-bold text-white">{{ $totalVehicles }}+</div>
@@ -123,6 +124,7 @@
                         <div class="text-xs sm:text-sm text-white/50">Wilayas</div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
 
@@ -247,6 +249,52 @@
                 <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full transition shadow-lg shadow-green-600/20 text-lg">
                     Voir tous nos véhicules
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+    @endif
+
+    <!-- Ajoutés récemment -->
+    @if(isset($recentVehicles) && $recentVehicles->count() > 0)
+    <section class="py-16 lg:py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-end justify-between mb-8 lg:mb-12">
+                <div>
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="w-1 h-8 bg-gradient-to-b from-green-500 to-green-700 rounded-full"></div>
+                        <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Nouveautés</span>
+                    </div>
+                    <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">Ajoutés récemment</h2>
+                    <p class="mt-2 text-gray-500 text-sm lg:text-base">Les derniers véhicules publiés par nos loueurs</p>
+                </div>
+                <a href="{{ route('vehicles.index') }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
+                    Voir tout
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+            </div>
+
+            {{-- Desktop: grid 4 colonnes --}}
+            <div class="hidden lg:grid grid-cols-4 gap-6">
+                @foreach($recentVehicles as $vehicle)
+                    @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                @endforeach
+            </div>
+            {{-- Mobile: scroll horizontal --}}
+            <div class="lg:hidden overflow-x-auto scrollbar-hide -mx-4 px-4">
+                <div class="flex gap-4" style="width: max-content;">
+                    @foreach($recentVehicles as $vehicle)
+                        <div class="w-[280px] flex-shrink-0">
+                            @include('front.components.vehicle-card', ['vehicle' => $vehicle])
+                        </div>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="mt-8 text-center sm:hidden">
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
+                    Voir tous les véhicules
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
             </div>
         </div>

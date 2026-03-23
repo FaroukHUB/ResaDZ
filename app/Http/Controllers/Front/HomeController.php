@@ -25,6 +25,17 @@ class HomeController extends Controller
             ->limit(8)
             ->get();
 
+        // Véhicules ajoutés récemment (excluant ceux déjà dans la sélection)
+        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            ->where('is_active', true)
+            ->where('status', 'available')
+            ->whereNotNull('image')
+            ->where('price_per_day', '>', 0)
+            ->whereNotIn('id', $selectedVehicles->pluck('id')->toArray())
+            ->orderByDesc('created_at')
+            ->limit(8)
+            ->get();
+
         // Véhicules par catégorie (seulement les "featured" choisis par l'admin)
         // Triés par prix croissant, limité à 4 pour l'affichage homepage
         $categories = Category::active()->ordered()->get();
@@ -105,6 +116,7 @@ class HomeController extends Controller
 
         return view('front.pages.home', compact(
             'selectedVehicles',
+            'recentVehicles',
             'vehiclesByCategory',
             'brands',
             'categories',
