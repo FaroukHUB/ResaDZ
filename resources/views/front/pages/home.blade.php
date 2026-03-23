@@ -197,7 +197,7 @@
     </div>
 
     <!-- ===== SECTION 3 : BARRE DE CONFIANCE ===== -->
-    <section class="bg-white border-t border-b border-green-100 py-4 relative z-10" style="margin-top: -1px;">
+    <section class="bg-white border-t border-b border-green-100 py-4 relative z-10 pt-8 sm:pt-[100px]">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between gap-6 overflow-x-auto scrollbar-hide sm:overflow-visible">
                 @foreach([
@@ -205,7 +205,7 @@
                     ['icon' => 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => 'Réservation en ligne 24h/24'],
                     ['icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2z', 'text' => 'Paiement directement au loueur'],
                     ['icon' => 'M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z', 'text' => 'Support WhatsApp 7j/7'],
-                    ['icon' => 'M6 18L18 6M6 6l12 12', 'text' => 'Annulation flexible'],
+                    ['icon' => 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', 'text' => 'Annulation flexible'],
                 ] as $item)
                     <div class="flex items-center gap-2 flex-shrink-0">
                         <svg class="w-4 h-4 text-green-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $item['icon'] }}"/></svg>
@@ -220,7 +220,7 @@
     </section>
 
     <!-- ===== SECTION 4 : RECHERCHE PAR WILAYA ===== -->
-    <section class="py-12 lg:py-16 pt-8 sm:pt-[180px]" style="background: #F8FAFF;">
+    <section class="py-12 lg:py-16" style="background: #F8FAFF;">
         <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 class="text-2xl font-bold text-gray-900">Où voulez-vous louer ?</h2>
             <p class="mt-2 text-gray-500 text-sm">Trouvez un véhicule dans votre wilaya</p>
