@@ -353,9 +353,6 @@ class VehicleResource extends Resource
                                     ->label('Disponible jusqu\'au')
                                     ->helperText('Laissez vide si pas de date de fin'),
                             ]),
-                        Forms\Components\Toggle::make('is_featured')
-                            ->label('Mettre en avant sur la page d\'accueil')
-                            ->helperText('Les véhicules mis en avant apparaissent dans la section "Sélection" de la page d\'accueil'),
                     ]),
             ]);
     }
