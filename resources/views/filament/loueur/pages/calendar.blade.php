@@ -178,34 +178,36 @@
                 const e = this.rangeStart < end ? end : this.rangeStart;
                 return dateStr >= s && dateStr <= e;
             },
+            rangeMode: false,
+            startRangeMode() { this.rangeMode = true; this.selecting = false; this.resetRange(); },
+            exitRangeMode() { this.rangeMode = false; this.resetRange(); },
             onDayClick(dateStr, status) {
                 if (!this.selectedVehicleId) return;
                 if (status === 'past' || status === 'booked' || status === 'maintenance' || status === 'unavailable' || status === 'no-vehicle') return;
 
-                if (status === 'blocked') {
-                    this.$wire.toggleBlock(parseInt(this.selectedVehicleId), dateStr);
-                    return;
-                }
+                // Mode plage : sélection start puis end
+                if (this.rangeMode) {
+                    if (status === 'blocked') return; // ignorer les bloqués en mode plage
 
-                if (!this.selecting) {
-                    this.rangeStart = dateStr;
-                    this.selecting = true;
-                    this.hoverDate = dateStr;
-                } else {
-                    this.rangeEnd = dateStr;
-                    this.selecting = false;
-                    const start = this.rangeStart < dateStr ? this.rangeStart : dateStr;
-                    const end = this.rangeStart < dateStr ? dateStr : this.rangeStart;
-                    if (start === end) {
-                        this.$wire.toggleBlock(parseInt(this.selectedVehicleId), start);
-                        this.resetRange();
+                    if (!this.selecting) {
+                        this.rangeStart = dateStr;
+                        this.selecting = true;
+                        this.hoverDate = dateStr;
                     } else {
+                        const start = this.rangeStart < dateStr ? this.rangeStart : dateStr;
+                        const end = this.rangeStart < dateStr ? dateStr : this.rangeStart;
                         this.panelDates = { start, end };
                         this.blockReason = '';
                         this.blockNote = '';
                         this.showPanel = true;
+                        this.selecting = false;
+                        this.rangeMode = false;
                     }
+                    return;
                 }
+
+                // Mode normal : 1 clic = toggle immédiat
+                this.$wire.toggleBlock(parseInt(this.selectedVehicleId), dateStr);
             },
             onDayHover(dateStr) {
                 if (this.selecting) this.hoverDate = dateStr;
@@ -222,14 +224,14 @@
                 this.showPanel = false;
                 this.resetRange();
             },
-            cancelBlock() { this.showPanel = false; this.resetRange(); },
+            cancelBlock() { this.showPanel = false; this.rangeMode = false; this.resetRange(); },
             formatDate(dateStr) {
                 if (!dateStr) return '';
                 const d = new Date(dateStr + 'T00:00:00');
                 return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
             },
         }"
-        @keyup.escape.window="if(selecting) cancelRange(); if(showPanel) cancelBlock();"
+        @keyup.escape.window="if(rangeMode) exitRangeMode(); if(showPanel) cancelBlock();"
     >
 
         {{-- Vehicle selector --}}
@@ -268,11 +270,22 @@
             </div>
         </div>
 
-        {{-- Selection hint --}}
-        <div x-show="selecting" x-transition class="flex items-center gap-3 px-5 py-3 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700">
+        {{-- Range mode button --}}
+        <div class="flex items-center gap-3" x-show="!rangeMode">
+            <button @click="startRangeMode()" class="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl border-2 border-dashed border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                Bloquer une plage de dates
+            </button>
+            <span class="text-xs text-gray-400 dark:text-gray-500">ou cliquez directement sur un jour pour le bloquer/débloquer</span>
+        </div>
+
+        {{-- Range selection hint --}}
+        <div x-show="rangeMode" x-transition class="flex items-center gap-3 px-5 py-3 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700">
             <svg class="w-5 h-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/></svg>
             <p class="text-sm text-orange-700 dark:text-orange-300 font-medium">
-                Cliquez sur la date de fin pour bloquer la plage, ou recliquez la même date pour bloquer un seul jour. <button @click="cancelRange()" class="underline ml-1">Annuler</button>
+                <span x-show="!selecting">Cliquez sur la <strong>date de début</strong> de la plage.</span>
+                <span x-show="selecting">Maintenant cliquez sur la <strong>date de fin</strong>.</span>
+                <button @click="exitRangeMode()" class="underline ml-2">Annuler</button>
             </p>
         </div>
 
@@ -314,7 +327,7 @@
                         :class="{
                             'cal-day--in-range': isInRange('{{ $dateStr }}') && '{{ $status }}' === 'available',
                             'cal-day--range-start': rangeStart === '{{ $dateStr }}' && selecting,
-                            'cal-day--selecting': selecting && '{{ $status }}' === 'available',
+                            'cal-day--selecting': rangeMode && '{{ $status }}' === 'available',
                         }"
                         @click="onDayClick('{{ $dateStr }}', '{{ $status }}')"
                         @mouseenter="onDayHover('{{ $dateStr }}')"
