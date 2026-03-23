@@ -669,18 +669,23 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
         $sortOrder = 0;
 
         foreach ($zones as $zoneData) {
+            if (empty($zoneData['name'])) {
+                continue;
+            }
+
             $sortOrder++;
+            $deliveryFee = is_numeric($zoneData['delivery_fee'] ?? null) ? $zoneData['delivery_fee'] : 0;
 
             $zoneAttributes = [
                 'loueur_id' => $loueur->id,
                 'name' => $zoneData['name'],
-                'type' => $zoneData['type'] ?? 'city',
+                'type' => !empty($zoneData['type']) ? $zoneData['type'] : 'city',
                 'city' => $zoneData['city'] ?? null,
-                'wilaya' => $loueur->wilaya,
-                'delivery_fee' => $zoneData['delivery_fee'] ?? 0,
-                'return_fee' => $zoneData['delivery_fee'] ?? 0,
+                'wilaya' => $loueur->wilaya ?? null,
+                'delivery_fee' => $deliveryFee,
+                'return_fee' => $deliveryFee,
                 'currency' => 'DZD',
-                'is_active' => $zoneData['is_active'] ?? true,
+                'is_active' => (bool) ($zoneData['is_active'] ?? true),
                 'delivery_available' => true,
                 'return_available' => true,
                 'sort_order' => $sortOrder,
@@ -694,9 +699,14 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 if ($zone) {
                     $zone->update($zoneAttributes);
                     $existingIds[] = $zone->id;
+                } else {
+                    unset($zoneAttributes['loueur_id']);
+                    $zone = $loueur->deliveryZones()->create($zoneAttributes);
+                    $existingIds[] = $zone->id;
                 }
             } else {
-                $zone = DeliveryZone::create($zoneAttributes);
+                unset($zoneAttributes['loueur_id']);
+                $zone = $loueur->deliveryZones()->create($zoneAttributes);
                 $existingIds[] = $zone->id;
             }
         }
