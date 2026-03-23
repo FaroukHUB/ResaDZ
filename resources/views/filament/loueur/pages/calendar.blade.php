@@ -85,17 +85,20 @@
 
         /* ── States ── */
         .cal-day--empty { background: transparent; border-color: transparent; }
-        .cal-day--past { background: #F8FAFF; }
-        .cal-day--past .cal-day-num { color: #CBD5E1; }
+        .cal-day--past { background: #E2E8F0; }
+        .cal-day--past .cal-day-num { color: #94A3B8; }
         .cal-day--available { cursor: pointer; }
         .cal-day--available:hover { background: #FFF3ED; border-color: #FF6B2C; box-shadow: 0 2px 8px rgba(255,107,44,0.1); }
-        .cal-day--blocked { background: #FEE2E2; cursor: pointer; }
-        .cal-day--blocked .cal-day-num { color: #EF4444; }
-        .cal-day--blocked:hover { background: #FECACA; }
-        .cal-day--booked { background: #DCFCE7; }
-        .cal-day--booked .cal-day-num { color: #16A34A; }
-        .cal-day--maintenance { background: #FEF3C7; }
-        .cal-day--maintenance .cal-day-num { color: #D97706; }
+        .cal-day--blocked { background: #DC2626; cursor: pointer; }
+        .cal-day--blocked .cal-day-num { color: white; }
+        .cal-day--blocked .cal-day-icon { color: white; opacity: 0.8; }
+        .cal-day--blocked:hover { background: #B91C1C; }
+        .cal-day--booked { background: #059669; }
+        .cal-day--booked .cal-day-num { color: white; }
+        .cal-day--booked .cal-day-icon { color: white; opacity: 0.8; }
+        .cal-day--maintenance { background: #F59E0B; }
+        .cal-day--maintenance .cal-day-num { color: white; }
+        .cal-day--maintenance .cal-day-icon { color: white; opacity: 0.8; }
         .cal-day--unavailable { background: #F1F5F9; }
         .cal-day--unavailable .cal-day-num { color: #CBD5E1; }
         .cal-day--today .cal-day-num {
@@ -161,10 +164,10 @@
         .dark .cal-day--past { background: #111827; }
         .dark .cal-day--past .cal-day-num { color: #4B5563; }
         .dark .cal-day--available:hover { background: #FF6B2C15; border-color: #FF6B2C; }
-        .dark .cal-day--blocked { background: #7F1D1D30; }
-        .dark .cal-day--blocked .cal-day-num { color: #FCA5A5; }
-        .dark .cal-day--booked { background: #14532D30; }
-        .dark .cal-day--booked .cal-day-num { color: #86EFAC; }
+        .dark .cal-day--blocked { background: #991B1B; }
+        .dark .cal-day--blocked .cal-day-num { color: white; }
+        .dark .cal-day--booked { background: #065F46; }
+        .dark .cal-day--booked .cal-day-num { color: white; }
         .dark .cal-day--today { background: #FF6B2C15; }
         .dark .cal-day--in-range { background: #FF6B2C20; border-color: #FF6B2C; }
         .dark .cal-stat { background: #1F2937; border-color: #374151; }
@@ -308,22 +311,33 @@
         </div>
 
         {{-- ═══ Legend ═══ --}}
-        <div class="flex flex-wrap items-center gap-5 text-sm px-1">
-            <div class="flex items-center gap-2">
-                <div class="cal-legend-dot" style="background: white; border: 1px solid #E2E8F0;"></div>
-                <span class="text-gray-600 dark:text-gray-400">Disponible</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="cal-legend-dot" style="background: #FEE2E2;"></div>
-                <span class="text-gray-600 dark:text-gray-400">Bloqué par vous</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="cal-legend-dot" style="background: #DCFCE7;"></div>
-                <span class="text-gray-600 dark:text-gray-400">Réservé</span>
-            </div>
-            <div class="flex items-center gap-2">
-                <div class="cal-legend-dot" style="background: #FF6B2C; border-radius: 50%;"></div>
-                <span class="text-gray-600 dark:text-gray-400">Aujourd'hui</span>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-5 shadow-sm border border-gray-100 dark:border-gray-700">
+            <p class="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest mb-4">Légende</p>
+            <div class="flex flex-wrap items-center gap-6 text-sm">
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-md bg-white border-2 border-emerald-400"></div>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Disponible</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-md bg-red-600"></div>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Bloqué par vous</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-md bg-emerald-600"></div>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Réservé</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-full" style="background: linear-gradient(135deg, #FF6B2C, #F59E0B);"></div>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Aujourd'hui</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-md bg-gray-800 dark:bg-gray-400"></div>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Passé</span>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-5 h-5 rounded-md bg-amber-500"></div>
+                    <span class="font-medium text-gray-700 dark:text-gray-300">Maintenance</span>
+                </div>
             </div>
         </div>
 
