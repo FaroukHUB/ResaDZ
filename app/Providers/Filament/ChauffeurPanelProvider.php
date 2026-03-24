@@ -25,6 +25,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class ChauffeurPanelProvider extends PanelProvider
 {
     use \App\Traits\HasDynamicFavicon;
+    use \App\Traits\HasPwa;
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -74,6 +75,18 @@ class ChauffeurPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::BODY_START,
                 fn () => $this->renderOnboardingBanner()
+            )
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => $this->renderPwaHead()
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => $this->renderPwaScripts()
+            )
+            ->renderHook(
+                PanelsRenderHook::CONTENT_START,
+                fn () => $this->renderPwaInstallCard()
             );
     }
 

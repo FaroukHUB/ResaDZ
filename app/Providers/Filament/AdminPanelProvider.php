@@ -14,6 +14,7 @@ use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
 use Filament\Navigation\NavigationGroup;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -24,6 +25,7 @@ use Illuminate\View\Middleware\ShareErrorsFromSession;
 class AdminPanelProvider extends PanelProvider
 {
     use \App\Traits\HasDynamicFavicon;
+    use \App\Traits\HasPwa;
     public function panel(Panel $panel): Panel
     {
         return $panel
@@ -89,6 +91,18 @@ class AdminPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
                 EnsureUserIsAdmin::class,
-            ]);
+            ])
+            ->renderHook(
+                PanelsRenderHook::HEAD_END,
+                fn () => $this->renderPwaHead()
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => $this->renderPwaScripts()
+            )
+            ->renderHook(
+                PanelsRenderHook::CONTENT_START,
+                fn () => $this->renderPwaInstallCard()
+            );
     }
 }
