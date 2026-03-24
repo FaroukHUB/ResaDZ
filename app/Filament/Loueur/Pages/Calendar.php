@@ -211,226 +211,6 @@ class Calendar extends Page
             ->send();
     }
 
-    /**
-     * Block a range of dates for a vehicle.
-     */
-    public function blockRange(int $vehicleId, string $startDate, string $endDate, string $reason = ''): void
-    {
-        $loueur = Auth::user()->loueur;
-        if (!$loueur) return;
-
-        $vehicle = Vehicle::where('id', $vehicleId)
-            ->where('loueur_id', $loueur->id)
-            ->first();
-
-        if (!$vehicle) return;
-
-        $start = Carbon::parse($startDate);
-        $end = Carbon::parse($endDate);
-
-        if ($end->lt($start)) {
-            [$start, $end] = [$end, $start];
-        }
-
-        // Check for conflicts
-        $hasBooking = Booking::where('vehicle_id', $vehicleId)
-            ->where('loueur_id', $loueur->id)
-            ->whereIn('status', ['pending', 'confirmed', 'active'])
-            ->where('start_date', '<=', $end)
-            ->where('end_date', '>=', $start)
-            ->exists();
-
-        if ($hasBooking) {
-            Notification::make()
-                ->title('Conflit')
-                ->body('Des réservations existent sur cette période')
-                ->warning()
-                ->send();
-            return;
-        }
-
-        // Remove existing blocks in range
-        Availability::where('vehicle_id', $vehicleId)
-            ->where('type', 'blocked')
-            ->where('start_date', '<=', $end)
-            ->where('end_date', '>=', $start)
-            ->delete();
-
-        Availability::create([
-            'vehicle_id' => $vehicleId,
-            'start_date' => $start,
-            'end_date' => $end,
-            'type' => 'blocked',
-            'reason' => $reason ?: 'Bloqué manuellement',
-        ]);
-
-        Notification::make()
-            ->title('Période bloquée')
-            ->body($start->format('d/m') . ' → ' . $end->format('d/m'))
-            ->success()
-            ->send();
-    }
-
-    /**
-     * Import events from a Google Calendar iCal URL.
-     */
-    public function importGoogleCalendar(int $vehicleId, string $icalUrl): void
-    {
-        $loueur = Auth::user()->loueur;
-        if (!$loueur) return;
-
-        $vehicle = Vehicle::where('id', $vehicleId)
-            ->where('loueur_id', $loueur->id)
-            ->first();
-
-        if (!$vehicle) return;
-
-        try {
-            $icalContent = @file_get_contents($icalUrl);
-
-            if (!$icalContent) {
-                Notification::make()
-                    ->title('Erreur')
-                    ->body('Impossible de récupérer le calendrier. Vérifiez le lien.')
-                    ->danger()
-                    ->send();
-                return;
-            }
-
-            $events = $this->parseIcal($icalContent);
-
-            if (empty($events)) {
-                Notification::make()
-                    ->title('Aucun événement')
-                    ->body('Le calendrier ne contient aucun événement à importer.')
-                    ->warning()
-                    ->send();
-                return;
-            }
-
-            $imported = 0;
-            foreach ($events as $event) {
-                $start = Carbon::parse($event['start']);
-                $end = Carbon::parse($event['end']);
-
-                // Skip past events
-                if ($end->isPast()) continue;
-
-                // Skip if date already has a booking
-                $hasBooking = Booking::where('vehicle_id', $vehicleId)
-                    ->where('loueur_id', $loueur->id)
-                    ->whereIn('status', ['pending', 'confirmed', 'active'])
-                    ->where('start_date', '<=', $end)
-                    ->where('end_date', '>=', $start)
-                    ->exists();
-
-                if ($hasBooking) continue;
-
-                // Remove existing blocks in this range
-                Availability::where('vehicle_id', $vehicleId)
-                    ->where('type', 'blocked')
-                    ->where('start_date', '<=', $end)
-                    ->where('end_date', '>=', $start)
-                    ->delete();
-
-                Availability::create([
-                    'vehicle_id' => $vehicleId,
-                    'start_date' => $start,
-                    'end_date' => $end,
-                    'type' => 'blocked',
-                    'reason' => 'Google Calendar: ' . ($event['summary'] ?? 'Événement'),
-                ]);
-
-                $imported++;
-            }
-
-            Notification::make()
-                ->title('Import réussi')
-                ->body($imported . ' événement(s) importé(s) comme dates bloquées.')
-                ->success()
-                ->send();
-
-        } catch (\Exception $e) {
-            Notification::make()
-                ->title('Erreur d\'import')
-                ->body('Le format du calendrier n\'est pas reconnu.')
-                ->danger()
-                ->send();
-        }
-    }
-
-    /**
-     * Parse iCal content and extract events.
-     */
-    private function parseIcal(string $content): array
-    {
-        $events = [];
-        $lines = explode("\n", str_replace("\r\n", "\n", $content));
-
-        $inEvent = false;
-        $currentEvent = [];
-
-        foreach ($lines as $line) {
-            $line = trim($line);
-
-            if ($line === 'BEGIN:VEVENT') {
-                $inEvent = true;
-                $currentEvent = [];
-                continue;
-            }
-
-            if ($line === 'END:VEVENT') {
-                $inEvent = false;
-                if (!empty($currentEvent['start']) && !empty($currentEvent['end'])) {
-                    $events[] = $currentEvent;
-                }
-                continue;
-            }
-
-            if (!$inEvent) continue;
-
-            if (str_starts_with($line, 'DTSTART')) {
-                $currentEvent['start'] = $this->parseIcalDate($line);
-            } elseif (str_starts_with($line, 'DTEND')) {
-                $date = $this->parseIcalDate($line);
-                if ($date) {
-                    // iCal end date is exclusive for DATE values, adjust
-                    $parsed = Carbon::parse($date);
-                    if (str_contains($line, 'VALUE=DATE') && !str_contains($line, 'VALUE=DATE-TIME')) {
-                        $parsed->subDay();
-                    }
-                    $currentEvent['end'] = $parsed->format('Y-m-d');
-                }
-            } elseif (str_starts_with($line, 'SUMMARY:')) {
-                $currentEvent['summary'] = substr($line, 8);
-            }
-        }
-
-        return $events;
-    }
-
-    /**
-     * Parse an iCal date line.
-     */
-    private function parseIcalDate(string $line): ?string
-    {
-        // Extract the date value after the last colon
-        $parts = explode(':', $line);
-        $value = end($parts);
-
-        // Remove any trailing Z or timezone info
-        $value = preg_replace('/[TZ]/', '', trim($value));
-
-        if (strlen($value) >= 8) {
-            $year = substr($value, 0, 4);
-            $month = substr($value, 4, 2);
-            $day = substr($value, 6, 2);
-            return "$year-$month-$day";
-        }
-
-        return null;
-    }
-
     public function getViewData(): array
     {
         $loueur = Auth::user()->loueur;
@@ -456,7 +236,6 @@ class Calendar extends Page
             'currentMonth' => $this->currentMonth,
             'currentYear' => $this->currentYear,
             'monthName' => $startOfMonth->translatedFormat('F Y'),
-            'icalUrl' => '',
             'today' => now()->format('Y-m-d'),
         ];
 
@@ -590,10 +369,6 @@ class Calendar extends Page
             ];
         }
 
-        // Generate iCal URL
-        $token = \App\Http\Controllers\Api\CalendarController::generateToken($loueur->id);
-        $icalUrl = url('/calendar/ical/' . $token . '.ics');
-
         return [
             'vehicles' => $vehicles,
             'statusMap' => $statusMap,
@@ -604,7 +379,6 @@ class Calendar extends Page
             'currentMonth' => $this->currentMonth,
             'currentYear' => $this->currentYear,
             'monthName' => $startOfMonth->translatedFormat('F Y'),
-            'icalUrl' => $icalUrl,
             'today' => $todayStr,
         ];
     }

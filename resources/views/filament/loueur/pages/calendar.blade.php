@@ -73,12 +73,6 @@
             border-radius: 50%; display: flex; align-items: center; justify-content: center;
         }
 
-        /* Range selection — Alpine overlay */
-        .cal-day--in-range { background: #FFF3ED !important; border: 2px dashed #FF6B2C !important; }
-        .cal-day--range-start { background: #FF6B2C !important; }
-        .cal-day--range-start .cal-day-num { color: white !important; }
-        .cal-day--selecting { cursor: crosshair !important; }
-
         /* Legend */
         .cal-legend-dot { width: 14px; height: 14px; border-radius: 4px; flex-shrink: 0; }
 
@@ -89,27 +83,6 @@
         }
         .cal-stat-num { font-size: 28px; font-weight: 800; line-height: 1; }
         .cal-stat-label { font-size: 13px; color: #64748B; margin-top: 4px; font-weight: 500; }
-
-        /* Panel */
-        .cal-panel {
-            position: fixed; top: 0; right: 0; bottom: 0; width: 380px; max-width: 90vw;
-            background: white; z-index: 100; box-shadow: -8px 0 40px rgba(0,0,0,0.12);
-            transform: translateX(100%); transition: transform 0.3s cubic-bezier(0.4,0,0.2,1);
-            overflow-y: auto;
-        }
-        .cal-panel--open { transform: translateX(0); }
-        .cal-panel-backdrop {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.3);
-            backdrop-filter: blur(2px); z-index: 99;
-        }
-        .cal-reason-pill {
-            display: inline-flex; align-items: center; gap: 6px;
-            padding: 8px 16px; border-radius: 24px; border: 2px solid #E2E8F0;
-            background: white; font-size: 14px; font-weight: 500; color: #475569;
-            cursor: pointer; transition: all 0.2s;
-        }
-        .cal-reason-pill:hover { border-color: #FF6B2C; color: #FF6B2C; }
-        .cal-reason-pill--active { border-color: #FF6B2C; background: #FFF3ED; color: #FF6B2C; }
 
         .cal-slide-enter { animation: calSlideIn 0.25s ease-out; }
         @keyframes calSlideIn {
@@ -133,11 +106,8 @@
         .dark .cal-day--booked { background: #065F46; }
         .dark .cal-day--booked .cal-day-num { color: white; }
         .dark .cal-day--today .cal-day-num { background: #FF6B2C; }
-        .dark .cal-day--in-range { background: #FF6B2C20 !important; border-color: #FF6B2C !important; }
         .dark .cal-stat { background: #1F2937; border-color: #374151; }
         .dark .cal-stat-label { color: #9CA3AF; }
-        .dark .cal-panel { background: #1F2937; }
-        .dark .cal-reason-pill { background: #111827; border-color: #374151; color: #D1D5DB; }
 
         @media (max-width: 640px) {
             .cal-day { min-height: 56px; padding: 4px; border-radius: 8px; }
@@ -145,93 +115,18 @@
             .cal-day-icon { font-size: 10px; bottom: 2px; right: 4px; }
             .cal-stat { padding: 14px; }
             .cal-stat-num { font-size: 22px; }
-            .cal-panel { width: 100%; max-width: 100%; }
         }
     </style>
 
     <div class="cal-page space-y-6"
         x-data="{
             selectedVehicleId: {{ $vehicles->first()?->id ?? 'null' }},
-            vehicles: {{ Js::from($vehiclesArray) }},
-            rangeStart: null,
-            rangeEnd: null,
-            hoverDate: null,
-            selecting: false,
-            showPanel: false,
-            panelDates: { start: null, end: null },
-            blockReason: '',
-            blockNote: '',
-            reasonOptions: [
-                { key: 'entretien', label: 'Entretien', icon: '🔧' },
-                { key: 'personnel', label: 'Usage personnel', icon: '🚗' },
-                { key: 'hors_plateforme', label: 'Réservé hors plateforme', icon: '📦' },
-                { key: 'autre', label: 'Autre', icon: '✏️' },
-            ],
-            get selectedVehicle() {
-                return this.vehicles.find(v => v.id == this.selectedVehicleId) || null;
-            },
-            isInRange(dateStr) {
-                if (!this.selecting || !this.rangeStart) return false;
-                const end = this.hoverDate || this.rangeEnd;
-                if (!end) return false;
-                const s = this.rangeStart < end ? this.rangeStart : end;
-                const e = this.rangeStart < end ? end : this.rangeStart;
-                return dateStr >= s && dateStr <= e;
-            },
-            rangeMode: false,
-            startRangeMode() { this.rangeMode = true; this.selecting = false; this.resetRange(); },
-            exitRangeMode() { this.rangeMode = false; this.resetRange(); },
             onDayClick(dateStr, status) {
                 if (!this.selectedVehicleId) return;
                 if (status === 'past' || status === 'booked' || status === 'maintenance' || status === 'unavailable' || status === 'no-vehicle') return;
-
-                // Mode plage : sélection start puis end
-                if (this.rangeMode) {
-                    if (status === 'blocked') return; // ignorer les bloqués en mode plage
-
-                    if (!this.selecting) {
-                        this.rangeStart = dateStr;
-                        this.selecting = true;
-                        this.hoverDate = dateStr;
-                    } else {
-                        const start = this.rangeStart < dateStr ? this.rangeStart : dateStr;
-                        const end = this.rangeStart < dateStr ? dateStr : this.rangeStart;
-                        this.panelDates = { start, end };
-                        this.blockReason = '';
-                        this.blockNote = '';
-                        this.showPanel = true;
-                        this.selecting = false;
-                        this.rangeMode = false;
-                    }
-                    return;
-                }
-
-                // Mode normal : 1 clic = toggle immédiat
                 this.$wire.toggleBlock(parseInt(this.selectedVehicleId), dateStr);
             },
-            onDayHover(dateStr) {
-                if (this.selecting) this.hoverDate = dateStr;
-            },
-            cancelRange() { this.resetRange(); },
-            resetRange() { this.rangeStart = null; this.rangeEnd = null; this.hoverDate = null; this.selecting = false; },
-            confirmBlock() {
-                if (!this.selectedVehicleId || !this.panelDates.start || !this.panelDates.end) return;
-                let reason = '';
-                const found = this.reasonOptions.find(r => r.key === this.blockReason);
-                if (found) reason = found.label;
-                if (this.blockNote) reason += (reason ? ' — ' : '') + this.blockNote;
-                this.$wire.blockRange(parseInt(this.selectedVehicleId), this.panelDates.start, this.panelDates.end, reason || 'Bloqué manuellement');
-                this.showPanel = false;
-                this.resetRange();
-            },
-            cancelBlock() { this.showPanel = false; this.rangeMode = false; this.resetRange(); },
-            formatDate(dateStr) {
-                if (!dateStr) return '';
-                const d = new Date(dateStr + 'T00:00:00');
-                return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-            },
         }"
-        @keyup.escape.window="if(rangeMode) exitRangeMode(); if(showPanel) cancelBlock();"
     >
 
         {{-- Vehicle selector --}}
@@ -270,23 +165,9 @@
             </div>
         </div>
 
-        {{-- Range mode button --}}
-        <div class="flex items-center gap-3" x-show="!rangeMode">
-            <button @click="startRangeMode()" class="flex items-center gap-2 px-5 py-2.5 text-sm font-semibold rounded-xl border-2 border-dashed border-orange-300 dark:border-orange-600 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 transition">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                Bloquer une plage de dates
-            </button>
-            <span class="text-xs text-gray-400 dark:text-gray-500">ou cliquez directement sur un jour pour le bloquer/débloquer</span>
-        </div>
-
-        {{-- Range selection hint --}}
-        <div x-show="rangeMode" x-transition class="flex items-center gap-3 px-5 py-3 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-700">
-            <svg class="w-5 h-5 text-orange-500 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.042 21.672L13.684 16.6m0 0l-2.51 2.225.569-9.47 5.227 7.917-3.286-.672zM12 2.25V4.5m5.834.166l-1.591 1.591M20.25 10.5H18M7.757 14.743l-1.59 1.59M6 10.5H3.75m4.007-4.243l-1.59-1.59"/></svg>
-            <p class="text-sm text-orange-700 dark:text-orange-300 font-medium">
-                <span x-show="!selecting">Cliquez sur la <strong>date de début</strong> de la plage.</span>
-                <span x-show="selecting">Maintenant cliquez sur la <strong>date de fin</strong>.</span>
-                <button @click="exitRangeMode()" class="underline ml-2">Annuler</button>
-            </p>
+        {{-- Hint: clic simple pour bloquer/débloquer --}}
+        <div class="flex items-center gap-3">
+            <span class="text-xs text-gray-400 dark:text-gray-500">Cliquez directement sur un jour pour le bloquer/débloquer</span>
         </div>
 
         {{-- Calendar grid --}}
@@ -324,13 +205,7 @@
 
                     <div
                         class="cal-day cal-day--{{ $status }} @if($isToday) cal-day--today @endif"
-                        :class="{
-                            'cal-day--in-range': isInRange('{{ $dateStr }}') && '{{ $status }}' === 'available',
-                            'cal-day--range-start': rangeStart === '{{ $dateStr }}' && selecting,
-                            'cal-day--selecting': rangeMode && '{{ $status }}' === 'available',
-                        }"
                         @click="onDayClick('{{ $dateStr }}', '{{ $status }}')"
-                        @mouseenter="onDayHover('{{ $dateStr }}')"
                         @if($status === 'booked' && $booking)
                             title="Réservé par {{ $booking['client_name'] }} ({{ $booking['start'] }} → {{ $booking['end'] }})"
                         @elseif($status === 'blocked')
@@ -403,100 +278,6 @@
             </div>
         @endif
 
-        {{-- Toolbar --}}
-        <div class="flex flex-wrap gap-3" x-data="{ showImportModal: false, importVehicleId: null, importUrl: '', copied: false }">
-            <button @click="showImportModal = true" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition bg-white dark:bg-gray-800">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                Importer un calendrier
-            </button>
-            <button @click="navigator.clipboard.writeText('{{ $icalUrl }}'); copied = true; setTimeout(() => copied = false, 2000)" class="flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-xl border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 transition bg-white dark:bg-gray-800">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"/></svg>
-                <span x-text="copied ? 'Lien copié !' : 'Copier lien iCal'"></span>
-            </button>
-
-            {{-- Import modal --}}
-            <template x-teleport="body">
-                <div x-show="showImportModal" x-transition.opacity class="fixed inset-0 z-[100] flex items-center justify-center p-4" style="display:none;">
-                    <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showImportModal = false"></div>
-                    <div x-show="showImportModal" x-transition class="relative bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md p-6 space-y-5">
-                        <div class="flex items-start justify-between">
-                            <div>
-                                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Importer un calendrier</h3>
-                                <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Importer les blocages depuis un calendrier externe</p>
-                            </div>
-                            <button @click="showImportModal = false" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                            </button>
-                        </div>
-                        <div class="space-y-4">
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Véhicule</label>
-                                <select x-model="importVehicleId" class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 px-4 py-3">
-                                    <option value="">-- Sélectionnez un véhicule --</option>
-                                    @foreach($vehicles as $v)
-                                        <option value="{{ $v->id }}">{{ $v->full_name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div>
-                                <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Lien iCal</label>
-                                <input x-model="importUrl" type="url" placeholder="https://calendar.google.com/calendar/ical/..." class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 px-4 py-3" />
-                            </div>
-                        </div>
-                        <div class="flex gap-3 pt-1">
-                            <button @click="showImportModal = false" class="flex-1 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">Annuler</button>
-                            <button @click="if(importUrl && importVehicleId) { $wire.importGoogleCalendar(parseInt(importVehicleId), importUrl); showImportModal = false; }" class="flex-1 px-4 py-2.5 text-sm font-semibold text-white bg-primary-600 rounded-xl hover:bg-primary-700 transition shadow-sm" :class="{ 'opacity-50 cursor-not-allowed': !importUrl || !importVehicleId }" :disabled="!importUrl || !importVehicleId">Importer</button>
-                        </div>
-                    </div>
-                </div>
-            </template>
-        </div>
-
-        {{-- Block panel (slide-in) --}}
-        <template x-teleport="body">
-            <div x-show="showPanel" x-transition.opacity class="cal-panel-backdrop" @click="cancelBlock()" style="display: none;"></div>
-            <div class="cal-panel" :class="{ 'cal-panel--open': showPanel }" style="display: block;">
-                <div class="p-6 space-y-6">
-                    <div class="flex items-start justify-between">
-                        <div>
-                            <h3 class="text-lg font-bold text-gray-900 dark:text-white">Bloquer des dates</h3>
-                            <p class="text-sm text-gray-500 dark:text-gray-400 mt-1" x-text="'Du ' + formatDate(panelDates.start) + ' au ' + formatDate(panelDates.end)"></p>
-                        </div>
-                        <button @click="cancelBlock()" class="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-400">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
-                        </button>
-                    </div>
-                    <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-xl" x-show="selectedVehicle">
-                        <template x-if="selectedVehicle?.image">
-                            <img :src="selectedVehicle.image" class="w-10 h-10 rounded-lg object-cover" />
-                        </template>
-                        <div>
-                            <div class="text-sm font-semibold text-gray-900 dark:text-white" x-text="selectedVehicle?.name"></div>
-                            <div class="text-xs text-gray-500" x-text="selectedVehicle?.price + ' DA/jour'"></div>
-                        </div>
-                    </div>
-                    <div>
-                        <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Raison du blocage <span class="font-normal text-gray-400">(optionnel)</span></p>
-                        <div class="flex flex-wrap gap-2">
-                            <template x-for="opt in reasonOptions" :key="opt.key">
-                                <button class="cal-reason-pill" :class="{ 'cal-reason-pill--active': blockReason === opt.key }" @click="blockReason = blockReason === opt.key ? '' : opt.key">
-                                    <span x-text="opt.icon"></span>
-                                    <span x-text="opt.label"></span>
-                                </button>
-                            </template>
-                        </div>
-                    </div>
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Note interne <span class="font-normal text-gray-400">(optionnel)</span></label>
-                        <input x-model="blockNote" type="text" placeholder="Ex: Révision chez le garagiste" class="w-full rounded-xl border-gray-300 dark:border-gray-600 dark:bg-gray-900 text-sm px-4 py-3 focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
-                    </div>
-                    <div class="flex gap-3 pt-2">
-                        <button @click="cancelBlock()" class="flex-1 px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-600 transition">Annuler</button>
-                        <button @click="confirmBlock()" class="flex-1 px-4 py-3 text-sm font-semibold text-white rounded-xl transition shadow-sm" style="background: linear-gradient(135deg, #EF4444, #FF6B2C);">Bloquer ces dates</button>
-                    </div>
-                </div>
-            </div>
-        </template>
     </div>
 
     {{-- Loading overlay --}}

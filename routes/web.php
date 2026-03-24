@@ -1,6 +1,5 @@
 <?php
 
-use App\Http\Controllers\Api\CalendarController;
 use App\Http\Controllers\Front\BookingController;
 use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\ClientAreaController;
@@ -80,9 +79,6 @@ Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 Route::get('/mentions-legales', [LegalController::class, 'mentionsLegales'])->name('legal.mentions-legales');
 Route::get('/conditions-generales-utilisation', [LegalController::class, 'cgu'])->name('legal.cgu');
 Route::get('/politique-confidentialite', [LegalController::class, 'confidentialite'])->name('legal.confidentialite');
-
-// Calendar iCal Feed (for Google Calendar sync)
-Route::get('/calendar/ical/{token}.ics', [CalendarController::class, 'icalFeed'])->name('calendar.ical');
 
 // Contract PDF (requires auth)
 Route::middleware(['auth'])->group(function () {
