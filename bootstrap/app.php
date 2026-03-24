@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\TokenMismatchException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -18,12 +19,27 @@ return Application::configure(basePath: dirname(__DIR__))
             \App\Http\Middleware\TrackPageVisits::class,
         ]);
 
-        // Exclude logout route from CSRF verification
+        // Exclude routes from CSRF verification
         $middleware->validateCsrfTokens(except: [
             'deconnexion',
+            'webhook/*',
+            'api/*',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // 419 CSRF Token Mismatch — auto-reload the page
+        $exceptions->renderable(function (TokenMismatchException $e, $request) {
+            if ($request->expectsJson()) {
+                return response()->json(['message' => 'Session expirée, veuillez recharger la page.'], 419);
+            }
+
+            $redirectUrl = url()->current();
+
+            return response()->view('errors.419', [
+                'redirectUrl' => $redirectUrl,
+            ], 419);
+        });
+
         $exceptions->renderable(function (HttpException $e, $request) {
             if ($e->getStatusCode() === 403) {
                 $path = $request->path();
