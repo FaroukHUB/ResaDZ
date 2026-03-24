@@ -122,3 +122,41 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/invoices/{invoice}/pdf/view', [\App\Http\Controllers\Admin\InvoicePdfController::class, 'stream'])
         ->name('admin.invoices.pdf.view');
 });
+
+// PWA Manifest (dynamique — utilise le logo ResaDZ depuis Settings)
+Route::get('/manifest.json', function () {
+    $logoUrl = '/assets/favicon.png'; // fallback
+    try {
+        $logoSetting = \App\Models\Setting::get('logo_light', '');
+        if ($logoSetting) {
+            $logoUrl = \Illuminate\Support\Facades\Storage::url($logoSetting);
+        }
+    } catch (\Exception $e) {}
+
+    return response()->json([
+        'name' => \App\Models\Setting::get('company_name', 'ResaDZ'),
+        'short_name' => 'ResaDZ',
+        'description' => 'Location de voitures entre particuliers en Algérie',
+        'start_url' => '/loueur',
+        'scope' => '/',
+        'display' => 'standalone',
+        'background_color' => '#F8FAFF',
+        'theme_color' => '#FF6B2C',
+        'orientation' => 'portrait',
+        'lang' => 'fr',
+        'icons' => [
+            [
+                'src' => $logoUrl,
+                'sizes' => '192x192',
+                'type' => 'image/png',
+                'purpose' => 'any',
+            ],
+            [
+                'src' => $logoUrl,
+                'sizes' => '512x512',
+                'type' => 'image/png',
+                'purpose' => 'any maskable',
+            ],
+        ],
+    ], 200, ['Content-Type' => 'application/manifest+json']);
+})->name('manifest.json');
