@@ -148,6 +148,11 @@ class Vehicle extends Model
         return $this->hasMany(VehicleBoost::class);
     }
 
+    public function seasonalRates(): HasMany
+    {
+        return $this->hasMany(SeasonalRate::class);
+    }
+
     /**
      * Get the active boost for this vehicle.
      */

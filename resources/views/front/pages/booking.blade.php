@@ -526,7 +526,14 @@
                     html += `<div class="flex justify-between text-green-600"><span>Remise durée</span><span>-${fmt(data.duration_discount)} ${symbol}</span></div>`;
                 }
                 if (data.season_surcharge > 0) {
-                    html += `<div class="flex justify-between text-orange-600"><span>${data.season_name || 'Haute saison'}</span><span>+${fmt(data.season_surcharge)} ${symbol}</span></div>`;
+                    if (data.seasonal_details && data.seasonal_details.length > 0) {
+                        data.seasonal_details.forEach(sd => {
+                            html += `<div class="flex justify-between text-orange-600"><span>🌞 ${sd.name} <span class="text-xs text-orange-400">(${sd.days}j × +${fmt(sd.supplement_per_day)} ${symbol})</span></span><span>+${fmt(sd.total)} ${symbol}</span></div>`;
+                            html += `<div class="text-xs text-orange-400 text-right -mt-1">du ${sd.start} au ${sd.end}</div>`;
+                        });
+                    } else {
+                        html += `<div class="flex justify-between text-orange-600"><span>${data.season_name || 'Haute saison'}</span><span>+${fmt(data.season_surcharge)} ${symbol}</span></div>`;
+                    }
                 }
                 if (data.delivery_fee > 0) {
                     html += `<div class="flex justify-between"><span class="text-gray-600">Livraison</span><span>+${fmt(data.delivery_fee)} ${symbol}</span></div>`;

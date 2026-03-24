@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\Setting;
 use App\Models\Vehicle;
+use App\Models\SeasonalRate;
 use App\Models\DeliveryZone;
 use Carbon\Carbon;
 
@@ -129,17 +130,61 @@ class PricingService
         // Config du véhicule pour surcharges
         $pricing = $vehicle->pricing ?? [];
 
-        // 4. Surcharge saison (configurée par le loueur dans pricing.by_season)
+        // 4. Surcharge haute saison (table seasonal_rates — montant fixe en DA par jour)
         $seasonSurcharge = 0;
         $seasonName = null;
-        $seasonRules = $pricing['by_season'] ?? [];
+        $seasonalDetails = [];
 
-        foreach ($seasonRules as $season) {
-            if ($this->isInSeason($start, $end, $season['start'] ?? '', $season['end'] ?? '')) {
-                $seasonPercent = $season['percent'] ?? 0;
-                $seasonSurcharge = round($basePrice * $seasonPercent / 100);
-                $seasonName = $season['name'] ?? 'Haute saison';
-                break;
+        $activeSeasonalRates = $vehicle->seasonalRates()
+            ->active()
+            ->overlapping($startDate, $endDate)
+            ->get();
+
+        if ($activeSeasonalRates->isNotEmpty()) {
+            // Calcul jour par jour : pour chaque jour de la réservation,
+            // on prend le supplement le plus élevé parmi les périodes actives
+            $current = $start->copy();
+            $dayEnd = $end->copy()->subDay(); // end date = jour de retour, pas facturé
+
+            while ($current->lt($end)) {
+                $bestSupplement = 0;
+                $bestPeriodName = null;
+
+                foreach ($activeSeasonalRates as $rate) {
+                    if ($current->between($rate->start_date, $rate->end_date) && $rate->supplement_amount > $bestSupplement) {
+                        $bestSupplement = $rate->supplement_amount;
+                        $bestPeriodName = $rate->name;
+                    }
+                }
+
+                if ($bestSupplement > 0) {
+                    $seasonSurcharge += $bestSupplement;
+
+                    // Regrouper les détails par période
+                    if (!isset($seasonalDetails[$bestPeriodName])) {
+                        $seasonalDetails[$bestPeriodName] = [
+                            'name' => $bestPeriodName,
+                            'supplement_per_day' => $bestSupplement,
+                            'days' => 0,
+                            'total' => 0,
+                            'start' => $current->format('d/m/Y'),
+                            'end' => $current->format('d/m/Y'),
+                        ];
+                    }
+                    $seasonalDetails[$bestPeriodName]['days']++;
+                    $seasonalDetails[$bestPeriodName]['total'] += $bestSupplement;
+                    $seasonalDetails[$bestPeriodName]['end'] = $current->format('d/m/Y');
+                }
+
+                $current->addDay();
+            }
+
+            $seasonalDetails = array_values($seasonalDetails);
+
+            if ($seasonSurcharge > 0) {
+                $seasonName = count($seasonalDetails) === 1
+                    ? $seasonalDetails[0]['name']
+                    : 'Haute saison';
             }
         }
 
@@ -287,6 +332,7 @@ class PricingService
             'degressive_from_days' => $degressiveFromDays,
             'season_surcharge' => $seasonSurcharge,
             'season_name' => $seasonName,
+            'seasonal_details' => $seasonalDetails,
             'weekend_surcharge' => $weekendSurcharge,
             'delivery_fee' => $deliveryFee,
             'return_fee' => $returnFee,
@@ -313,22 +359,6 @@ class PricingService
             'formatted_deposit_da' => $depositAmountDa > 0 ? number_format($depositAmountDa, 0, ',', ' ') . ' DA' : '',
             'formatted_deposit_eur' => $depositAmountEur > 0 ? number_format($depositAmountEur, 0, ',', ' ') . ' €' : '',
         ];
-    }
-
-    /**
-     * Vérifie si la période de location tombe dans une saison.
-     */
-    private function isInSeason(Carbon $start, Carbon $end, string $seasonStart, string $seasonEnd): bool
-    {
-        if (empty($seasonStart) || empty($seasonEnd)) {
-            return false;
-        }
-
-        $year = $start->year;
-        $sStart = Carbon::createFromFormat('m-d', $seasonStart)->year($year);
-        $sEnd = Carbon::createFromFormat('m-d', $seasonEnd)->year($year);
-
-        return $start->lte($sEnd) && $end->gte($sStart);
     }
 
     /**

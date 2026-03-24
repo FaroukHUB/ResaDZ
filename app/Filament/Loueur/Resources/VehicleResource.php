@@ -281,6 +281,82 @@ class VehicleResource extends Resource
                             ),
                     ]),
 
+                // Section 3bis: Tarifs saisonniers
+                Forms\Components\Section::make('Tarifs saisonniers 🌞')
+                    ->icon('heroicon-o-sun')
+                    ->description('Définissez des suppléments pour les périodes de forte demande.')
+                    ->collapsed()
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Placeholder::make('seasonal_help')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-2xl">
+                                    <div class="flex items-start gap-3">
+                                        <span class="text-2xl flex-shrink-0">💡</span>
+                                        <div>
+                                            <p class="font-bold text-amber-900 dark:text-amber-100">Augmentez votre tarif pendant les périodes de forte demande</p>
+                                            <p class="text-sm text-amber-800 dark:text-amber-200 mt-1">
+                                                Été, Aïd, vacances scolaires… Vos clients verront clairement le supplément avant de réserver.
+                                                Le prix affiché sera automatiquement majoré pendant ces périodes.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ')),
+                        Forms\Components\Repeater::make('seasonalRates')
+                            ->label('')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Nom de la période')
+                                            ->required()
+                                            ->placeholder('Ex: Été 2026, Aïd el-Fitr, Vacances scolaires')
+                                            ->maxLength(255),
+                                        Forms\Components\TextInput::make('supplement_amount')
+                                            ->label('Supplément / jour')
+                                            ->numeric()
+                                            ->required()
+                                            ->suffix('DA')
+                                            ->placeholder('Ex: 1000')
+                                            ->helperText('+1000 DA = prix affiché automatiquement majoré pendant cette période'),
+                                    ]),
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\DatePicker::make('start_date')
+                                            ->label('Date de début')
+                                            ->required()
+                                            ->native(false)
+                                            ->displayFormat('d/m/Y'),
+                                        Forms\Components\DatePicker::make('end_date')
+                                            ->label('Date de fin')
+                                            ->required()
+                                            ->native(false)
+                                            ->displayFormat('d/m/Y')
+                                            ->after('start_date'),
+                                    ]),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Période active')
+                                    ->default(true)
+                                    ->helperText('Désactivez pour suspendre cette période sans la supprimer'),
+                            ])
+                            ->defaultItems(0)
+                            ->addActionLabel('Ajouter une période')
+                            ->addActionColor('warning')
+                            ->itemLabel(fn (array $state): ?string =>
+                                isset($state['name']) && isset($state['supplement_amount'])
+                                    ? "{$state['name']} — +{$state['supplement_amount']} DA/jour"
+                                    : null
+                            )
+                            ->extraItemActions([])
+                            ->collapsible()
+                            ->collapseAllAction(
+                                fn (Forms\Components\Actions\Action $action) => $action->label('Tout replier'),
+                            ),
+                    ]),
+
                 // Section 4: Photos
                 Forms\Components\Section::make('Photos')
                     ->icon('heroicon-o-photo')

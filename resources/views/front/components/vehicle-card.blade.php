@@ -59,6 +59,18 @@
             </div>
         @endif
 
+        {{-- Haute saison Badge --}}
+        @php
+            $activeSeasonCard = $vehicle->relationLoaded('seasonalRates')
+                ? $vehicle->seasonalRates->filter(fn ($r) => $r->is_active && $r->start_date->lte(now()) && $r->end_date->gte(now()))->first()
+                : null;
+        @endphp
+        @if($activeSeasonCard)
+            <div class="absolute bottom-3 left-3 bg-amber-500/90 backdrop-blur-sm px-2.5 py-1 rounded">
+                <span class="text-[10px] font-black text-white uppercase tracking-wider">🌞 Haute saison</span>
+            </div>
+        @endif
+
         {{-- Loueur name overlay --}}
         @if($loueur && $loueur->company_name)
             <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded">

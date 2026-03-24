@@ -16,7 +16,7 @@ class HomeController extends Controller
     public function index()
     {
         // Notre sélection pour vous (choisis manuellement depuis l'admin)
-        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('is_active', true)
             ->where('status', 'available')
             ->where('is_in_selection', true)
@@ -26,7 +26,7 @@ class HomeController extends Controller
             ->get();
 
         // Véhicules ajoutés récemment (excluant ceux déjà dans la sélection)
-        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('is_active', true)
             ->where('status', 'available')
             ->whereNotNull('image')
@@ -42,7 +42,7 @@ class HomeController extends Controller
 
         $vehiclesByCategory = [];
         foreach ($categories as $category) {
-            $vehiclesByCategory[$category->slug] = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            $vehiclesByCategory[$category->slug] = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
                 ->where('is_active', true)
                 ->where('status', 'available')
                 ->where('category_id', $category->id)

@@ -155,6 +155,28 @@
                         @endif
                     </div>
 
+                    {{-- Haute saison badge --}}
+                    @php
+                        $now = now();
+                        $activeSeasonNow = $vehicle->seasonalRates
+                            ->filter(fn ($rate) => $rate->is_active && $rate->start_date->lte($now) && $rate->end_date->gte($now))
+                            ->first();
+                    @endphp
+                    @if($activeSeasonNow)
+                        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800">
+                                    🌞 Haute saison
+                                </span>
+                                <span class="text-sm font-semibold text-amber-800">{{ $activeSeasonNow->name }}</span>
+                            </div>
+                            <p class="text-sm text-amber-700 mt-2">
+                                + {{ number_format($activeSeasonNow->supplement_amount, 0, ',', ' ') }} DA/jour
+                                <span class="text-amber-500">(du {{ $activeSeasonNow->start_date->format('d/m') }} au {{ $activeSeasonNow->end_date->format('d/m') }})</span>
+                            </p>
+                        </div>
+                    @endif
+
                     {{-- Special Offer Banner --}}
                     @if($vehicle->activeOffer)
                         @php

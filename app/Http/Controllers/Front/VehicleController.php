@@ -16,7 +16,7 @@ class VehicleController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Vehicle::with(['brand', 'category', 'loueur.settings'])
+        $query = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('vehicles.is_active', true)
             ->where('vehicles.status', 'available');
 
@@ -149,12 +149,12 @@ class VehicleController extends Controller
 
     public function show(string $slug)
     {
-        $vehicle = Vehicle::with(['brand', 'category', 'loueur.settings'])
+        $vehicle = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
-        $relatedVehicles = Vehicle::with(['brand', 'loueur.settings'])
+        $relatedVehicles = Vehicle::with(['brand', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('is_active', true)
             ->where('status', 'available')
             ->where('id', '!=', $vehicle->id)
@@ -185,7 +185,7 @@ class VehicleController extends Controller
             })
             ->pluck('id');
 
-        $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+        $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('is_active', true)
             ->where('status', 'available')
             ->whereIn('loueur_id', $loueurIds)

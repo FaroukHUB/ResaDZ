@@ -98,6 +98,46 @@ class VehicleResource extends Resource
                             ->label('Mis en avant')
                             ->helperText('Affiché sur la page d\'accueil dans sa catégorie'),
                     ])->columns(2),
+
+                Forms\Components\Section::make('Tarifs saisonniers')
+                    ->icon('heroicon-o-sun')
+                    ->collapsed()
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Repeater::make('seasonalRates')
+                            ->label('')
+                            ->relationship()
+                            ->schema([
+                                Forms\Components\Grid::make(4)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Période')
+                                            ->required(),
+                                        Forms\Components\TextInput::make('supplement_amount')
+                                            ->label('Supplément/jour')
+                                            ->numeric()
+                                            ->required()
+                                            ->suffix('DA'),
+                                        Forms\Components\DatePicker::make('start_date')
+                                            ->label('Début')
+                                            ->required(),
+                                        Forms\Components\DatePicker::make('end_date')
+                                            ->label('Fin')
+                                            ->required(),
+                                    ]),
+                                Forms\Components\Toggle::make('is_active')
+                                    ->label('Active')
+                                    ->default(true),
+                            ])
+                            ->defaultItems(0)
+                            ->addActionLabel('Ajouter une période')
+                            ->itemLabel(fn (array $state): ?string =>
+                                isset($state['name']) && isset($state['supplement_amount'])
+                                    ? "{$state['name']} — +{$state['supplement_amount']} DA/jour"
+                                    : null
+                            )
+                            ->collapsible(),
+                    ]),
             ]);
     }
 
