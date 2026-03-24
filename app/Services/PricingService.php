@@ -198,19 +198,40 @@ class PricingService
 
         // 6. Frais de livraison (configurés par zone)
         $deliveryFee = 0;
+        $pickupZone = null;
         if ($pickupZoneId) {
-            $zone = DeliveryZone::find($pickupZoneId);
-            if ($zone) {
-                $deliveryFee = $zone->delivery_fee ?? 0;
+            $pickupZone = DeliveryZone::find($pickupZoneId);
+            if ($pickupZone) {
+                $deliveryFee = $pickupZone->delivery_fee ?? 0;
             }
         }
 
         // 7. Frais de retour
         $returnFee = 0;
+        $returnZone = null;
         if ($returnZoneId) {
-            $zone = DeliveryZone::find($returnZoneId);
-            if ($zone) {
-                $returnFee = $zone->return_fee ?? 0;
+            $returnZone = DeliveryZone::find($returnZoneId);
+            if ($returnZone) {
+                $returnFee = $returnZone->return_fee ?? 0;
+            }
+        }
+
+        // 7bis. Livraison aéroport offerte (si seuil de jours atteint)
+        $freeAirportDelivery = false;
+        $freeAirportDeliveryDays = 0;
+        $loueurForSettings = $vehicle->loueur;
+        if ($loueurForSettings) {
+            $freeAirportDeliveryDays = (int) $loueurForSettings->getSetting('free_airport_delivery_days', 0);
+            if ($freeAirportDeliveryDays > 0 && $totalDays >= $freeAirportDeliveryDays) {
+                // Offrir la livraison si la zone est de type airport
+                if ($pickupZone && $pickupZone->type === 'airport') {
+                    $deliveryFee = 0;
+                    $freeAirportDelivery = true;
+                }
+                if ($returnZone && $returnZone->type === 'airport') {
+                    $returnFee = 0;
+                    $freeAirportDelivery = true;
+                }
             }
         }
 
@@ -336,6 +357,8 @@ class PricingService
             'weekend_surcharge' => $weekendSurcharge,
             'delivery_fee' => $deliveryFee,
             'return_fee' => $returnFee,
+            'free_airport_delivery' => $freeAirportDelivery,
+            'free_airport_delivery_days' => $freeAirportDeliveryDays,
             'options_total' => $optionsTotal,
             'options_detail' => $optionsDetail,
             'advance_percentage' => $advancePercentage,

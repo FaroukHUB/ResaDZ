@@ -78,6 +78,8 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'badge_airport' => $loueur->getSetting('badge_airport', false),
                 'badge_km_unlimited' => $loueur->getSetting('badge_km_unlimited', false),
                 'custom_badges' => $loueur->getSetting('custom_badges', []),
+                'free_airport_delivery_enabled' => $loueur->getSetting('free_airport_delivery_days', 0) > 0,
+                'free_airport_delivery_days' => $loueur->getSetting('free_airport_delivery_days', 0),
                 // Predefined conditions
                 'cond_no_smoking' => $loueur->getSetting('cond_no_smoking', false),
                 'cond_km_limit' => $loueur->getSetting('cond_km_limit', false),
@@ -426,6 +428,34 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->defaultItems(0)
                                             ->addActionLabel('Ajouter un badge'),
                                     ]),
+                                Forms\Components\Section::make('Livraison aéroport offerte 🎁')
+                                    ->schema([
+                                        Forms\Components\Placeholder::make('free_airport_help')
+                                            ->label('')
+                                            ->content(new \Illuminate\Support\HtmlString('
+                                                <div class="p-4 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-700 rounded-2xl">
+                                                    <div class="flex items-start gap-3">
+                                                        <span class="text-2xl flex-shrink-0">✈️</span>
+                                                        <div>
+                                                            <p class="font-bold text-sky-900 dark:text-sky-100">Offrir la livraison aéroport à partir de 7 jours est un argument très fort pour la diaspora qui rentre en été.</p>
+                                                            <p class="text-sm text-sky-800 dark:text-sky-200 mt-1">Ça booste les longues locations ! Le badge apparaîtra automatiquement sur vos véhicules et les clients verront la livraison gratuite dans le récapitulatif.</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ')),
+                                        Forms\Components\Toggle::make('free_airport_delivery_enabled')
+                                            ->label('Activer la livraison aéroport offerte')
+                                            ->live()
+                                            ->helperText('Si activé, la livraison aéroport sera automatiquement gratuite à partir du seuil défini'),
+                                        Forms\Components\TextInput::make('free_airport_delivery_days')
+                                            ->label('À partir de combien de jours ?')
+                                            ->numeric()
+                                            ->minValue(1)
+                                            ->placeholder('Ex: 7')
+                                            ->suffix('jours')
+                                            ->helperText('La livraison aéroport sera automatiquement gratuite pour toute location de ce nombre de jours ou plus')
+                                            ->visible(fn (Forms\Get $get) => (bool) $get('free_airport_delivery_enabled')),
+                                    ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Conditions')
                             ->icon('heroicon-o-clipboard-document-list')
@@ -732,6 +762,12 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
         $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
         $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
+
+        // Livraison aéroport offerte
+        $freeAirportDays = ($data['free_airport_delivery_enabled'] ?? false)
+            ? max(0, (int) ($data['free_airport_delivery_days'] ?? 0))
+            : 0;
+        $loueur->setSetting('free_airport_delivery_days', $freeAirportDays, 'integer');
 
         // Predefined conditions
         $predefinedKeys = [

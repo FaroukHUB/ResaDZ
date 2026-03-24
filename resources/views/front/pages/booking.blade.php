@@ -140,6 +140,9 @@
                                 @error('pickup_zone_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
 
+                            {{-- Message livraison aéroport offerte (dynamique via JS) --}}
+                            <div id="airportDeliveryHint" class="hidden"></div>
+
                             {{-- Toggle retour différent (seulement si plusieurs zones de retour) --}}
                             @if($deliveryZones->where('return_available', true)->count() > 1)
                             <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
@@ -371,6 +374,11 @@
     const csrfToken = '{{ csrf_token() }}';
     const returnMarginHours = {{ $returnMarginHours ?? 2 }};
 
+    // Types des zones de livraison (pour détecter les zones aéroport)
+    const zoneTypes = {!! json_encode($deliveryZones->pluck('type', 'id')->toArray()) !!};
+    const freeAirportDeliveryDays = {{ $vehicle->loueur ? (int) $vehicle->loueur->getSetting('free_airport_delivery_days', 0) : 0 }};
+    const airportDeliveryHint = document.getElementById('airportDeliveryHint');
+
     const startDate = document.getElementById('start_date');
     const endDate = document.getElementById('end_date');
     const pickupTime = document.getElementById('pickup_time');
@@ -535,11 +543,15 @@
                         html += `<div class="flex justify-between text-orange-600"><span>${data.season_name || 'Haute saison'}</span><span>+${fmt(data.season_surcharge)} ${symbol}</span></div>`;
                     }
                 }
-                if (data.delivery_fee > 0) {
+                if (data.free_airport_delivery) {
+                    html += `<div class="flex justify-between text-green-600"><span>✈️ Livraison aéroport</span><span class="font-semibold">Offerte ✓</span></div>`;
+                } else if (data.delivery_fee > 0) {
                     html += `<div class="flex justify-between"><span class="text-gray-600">Livraison</span><span>+${fmt(data.delivery_fee)} ${symbol}</span></div>`;
                 }
-                if (data.return_fee > 0) {
+                if (!data.free_airport_delivery && data.return_fee > 0) {
                     html += `<div class="flex justify-between"><span class="text-gray-600">Retour</span><span>+${fmt(data.return_fee)} ${symbol}</span></div>`;
+                } else if (data.free_airport_delivery && data.return_fee === 0) {
+                    // Return also free for airport, already included in the "Offerte" message
                 }
 
                 // Afficher chaque option par son nom
@@ -588,6 +600,25 @@
                 }
 
                 priceBreakdown.innerHTML = html;
+
+                // Hint livraison aéroport offerte
+                if (airportDeliveryHint && freeAirportDeliveryDays > 0) {
+                    const selectedZoneId = pickupZone ? pickupZone.value : null;
+                    const isAirportZone = selectedZoneId && zoneTypes[selectedZoneId] === 'airport';
+
+                    if (isAirportZone && data.free_airport_delivery) {
+                        airportDeliveryHint.innerHTML = '<div class="p-3 bg-green-50 border border-green-200 rounded-xl text-sm text-green-700 font-medium">✅ Livraison aéroport offerte pour cette durée !</div>';
+                        airportDeliveryHint.classList.remove('hidden');
+                    } else if (isAirportZone && !data.free_airport_delivery && data.total_days < freeAirportDeliveryDays) {
+                        const joursManquants = freeAirportDeliveryDays - data.total_days;
+                        airportDeliveryHint.innerHTML = `<div class="p-3 bg-amber-50 border border-amber-200 rounded-xl text-sm text-amber-700">💡 Réservez ${freeAirportDeliveryDays} jours ou plus pour bénéficier de la livraison aéroport gratuite <span class="font-medium">(encore ${joursManquants} jour${joursManquants > 1 ? 's' : ''})</span></div>`;
+                        airportDeliveryHint.classList.remove('hidden');
+                    } else {
+                        airportDeliveryHint.classList.add('hidden');
+                    }
+                } else if (airportDeliveryHint) {
+                    airportDeliveryHint.classList.add('hidden');
+                }
 
                 // Afficher/masquer la section choix méthode de paiement acompte
                 const advSection = document.getElementById('advancePaymentSection');

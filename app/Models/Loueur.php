@@ -467,6 +467,11 @@ class Loueur extends Model
             $badges[] = ['icon' => 'infinity', 'text' => 'Kilométrage illimité', 'color' => 'green'];
         }
 
+        $freeAirportDays = (int) $this->getSetting('free_airport_delivery_days', 0);
+        if ($freeAirportDays > 0) {
+            $badges[] = ['icon' => 'plane', 'text' => "Livraison offerte dès {$freeAirportDays}j", 'color' => 'green'];
+        }
+
         $customBadges = $this->getSetting('custom_badges', []);
         if (is_array($customBadges)) {
             foreach ($customBadges as $custom) {

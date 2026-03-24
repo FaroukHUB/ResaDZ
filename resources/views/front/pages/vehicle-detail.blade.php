@@ -177,6 +177,23 @@
                         </div>
                     @endif
 
+                    {{-- Livraison aéroport offerte --}}
+                    @php
+                        $freeAirportDays = $vehicle->loueur ? (int) $vehicle->loueur->getSetting('free_airport_delivery_days', 0) : 0;
+                    @endphp
+                    @if($freeAirportDays > 0)
+                        <div class="bg-green-50 border border-green-200 rounded-xl p-4">
+                            <div class="flex items-center gap-2">
+                                <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-800">
+                                    ✈️ Livraison aéroport offerte
+                                </span>
+                            </div>
+                            <p class="text-sm text-green-700 mt-2">
+                                Livraison aéroport gratuite à partir de <strong>{{ $freeAirportDays }} jours</strong> de location
+                            </p>
+                        </div>
+                    @endif
+
                     {{-- Special Offer Banner --}}
                     @if($vehicle->activeOffer)
                         @php
