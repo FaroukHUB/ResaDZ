@@ -81,6 +81,7 @@
                         ['label' => 'Portes', 'field' => 'doors'],
                         ['label' => 'Km/jour', 'field' => 'mileage_limit_per_day', 'format' => fn($v) => $v ? $v . ' km' : 'Illimité'],
                         ['label' => 'Caution', 'field' => 'deposit_amount', 'format' => fn($v) => $v ? number_format($v, 0, ',', ' ') . ' DA' : '-'],
+                        ['label' => 'Climatisation', 'field' => 'has_air_conditioning', 'format' => fn($v) => $v ? '✅ Oui' : '❌ Non'],
                     ];
                 @endphp
 

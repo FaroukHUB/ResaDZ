@@ -103,6 +103,12 @@
                             <div class="font-bold text-gray-900 mt-1">{{ $vehicle->color }}</div>
                         </div>
                         @endif
+                        <div class="bg-gray-50 rounded-xl p-4 text-center">
+                            <div class="text-sm text-gray-500">Climatisation</div>
+                            <div class="font-bold mt-1 {{ $vehicle->has_air_conditioning ? 'text-green-600' : 'text-gray-400' }}">
+                                {{ $vehicle->has_air_conditioning ? '✅ Oui' : '❌ Non' }}
+                            </div>
+                        </div>
                     </div>
                 </div>
 
