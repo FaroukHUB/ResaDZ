@@ -45,13 +45,9 @@ class BookingController extends Controller
             ? $vehicle->loueur->getSetting('advance_payment_methods', [])
             : [];
 
-        // Return options settings
-        $fuelReturnFee = $vehicle->loueur
-            ? (float) $vehicle->loueur->getSetting('fuel_return_fee', 0)
-            : 0;
-        $washReturnFee = $vehicle->loueur
-            ? (float) $vehicle->loueur->getSetting('wash_return_fee', 0)
-            : 0;
+        // Return options settings (from vehicle)
+        $fuelReturnFee = (float) ($vehicle->fuel_return_fee ?? 0);
+        $washReturnFee = (float) ($vehicle->wash_return_fee ?? 0);
         $returnMarginHours = $vehicle->loueur
             ? (int) $vehicle->loueur->getSetting('return_margin_hours', 2)
             : 2;
@@ -118,8 +114,8 @@ class BookingController extends Controller
         $optionsDetail = [];
 
         // Options de retour (plein/lavage)
-        $fuelReturnFee = $loueur ? (float) $loueur->getSetting('fuel_return_fee', 0) : 0;
-        $washReturnFee = $loueur ? (float) $loueur->getSetting('wash_return_fee', 0) : 0;
+        $fuelReturnFee = (float) ($vehicle->fuel_return_fee ?? 0);
+        $washReturnFee = (float) ($vehicle->wash_return_fee ?? 0);
 
         if (in_array('Retour sans plein', $selectedOptions) && $fuelReturnFee > 0) {
             $optionsFees += $fuelReturnFee;
@@ -291,8 +287,8 @@ class BookingController extends Controller
         $optionsFees = 0;
 
         // Options de retour (plein/lavage)
-        $fuelReturnFee = $loueur ? (float) $loueur->getSetting('fuel_return_fee', 0) : 0;
-        $washReturnFee = $loueur ? (float) $loueur->getSetting('wash_return_fee', 0) : 0;
+        $fuelReturnFee = (float) ($vehicle->fuel_return_fee ?? 0);
+        $washReturnFee = (float) ($vehicle->wash_return_fee ?? 0);
 
         if (in_array('Retour sans plein', $selectedOptions) && $fuelReturnFee > 0) {
             $optionsFees += $fuelReturnFee;

@@ -42,6 +42,8 @@ class Vehicle extends Model
         'available_options',
         'vehicle_badges',
         'vehicle_options',
+        'fuel_return_fee',
+        'wash_return_fee',
         'transmission',
         'fuel_type',
         'has_air_conditioning',

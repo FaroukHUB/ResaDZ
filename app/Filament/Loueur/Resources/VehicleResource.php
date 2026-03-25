@@ -507,6 +507,26 @@ class VehicleResource extends Resource
                                     : null
                             )
                             ->collapsible(),
+
+                        Forms\Components\Section::make('Frais de retour')
+                            ->description('Frais facturés au client si le véhicule est rendu sans le plein ou sans lavage. Mettez 0 pour désactiver.')
+                            ->schema([
+                                Forms\Components\Grid::make(2)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('fuel_return_fee')
+                                            ->label('Frais retour sans plein')
+                                            ->numeric()
+                                            ->default(0)
+                                            ->suffix('DA')
+                                            ->helperText('0 = option désactivée'),
+                                        Forms\Components\TextInput::make('wash_return_fee')
+                                            ->label('Frais retour sans lavage')
+                                            ->numeric()
+                                            ->default(0)
+                                            ->suffix('DA')
+                                            ->helperText('0 = option désactivée'),
+                                    ]),
+                            ]),
                     ]),
             ]);
     }
