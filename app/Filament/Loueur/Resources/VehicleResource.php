@@ -297,7 +297,7 @@ class VehicleResource extends Resource
                                         <div>
                                             <p class="font-bold text-amber-900 dark:text-amber-100">Augmentez votre tarif pendant les périodes de forte demande</p>
                                             <p class="text-sm text-amber-800 dark:text-amber-200 mt-1">
-                                                Été, Aïd, vacances scolaires… Vos clients verront clairement le supplément avant de réserver.
+                                                Été, vacances scolaires… Vos clients verront clairement le supplément avant de réserver.
                                                 Le prix affiché sera automatiquement majoré pendant ces périodes.
                                             </p>
                                         </div>
@@ -313,7 +313,7 @@ class VehicleResource extends Resource
                                         Forms\Components\TextInput::make('name')
                                             ->label('Nom de la période')
                                             ->required()
-                                            ->placeholder('Ex: Été 2026, Aïd el-Fitr, Vacances scolaires')
+                                            ->placeholder('Ex: Été 2026, Vacances scolaires')
                                             ->maxLength(255),
                                         Forms\Components\TextInput::make('supplement_amount')
                                             ->label('Supplément / jour')
