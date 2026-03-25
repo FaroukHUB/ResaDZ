@@ -216,6 +216,17 @@ class BookingResource extends Resource
                                                 : []
                                             )
                                             ->helperText('Zone prédéfinie — les frais seront appliqués automatiquement'),
+                                        Forms\Components\TextInput::make('custom_pickup_location')
+                                            ->label('📍 Lieu personnalisé demandé par le client')
+                                            ->disabled()
+                                            ->visible(fn ($record) => !empty($record?->custom_pickup_location))
+                                            ->extraAttributes(['class' => 'bg-amber-50 border-amber-300 font-semibold']),
+                                        Forms\Components\TextInput::make('custom_delivery_fee')
+                                            ->label('Frais de livraison personnalisés')
+                                            ->numeric()
+                                            ->suffix('DA')
+                                            ->visible(fn ($record) => !empty($record?->custom_pickup_location))
+                                            ->helperText('Fixez le prix pour la livraison à ce lieu personnalisé'),
                                         Forms\Components\TextInput::make('pickup_address')
                                             ->label('Adresse de récupération')
                                             ->helperText('Adresse exacte pour le point de rendez-vous'),
@@ -234,6 +245,17 @@ class BookingResource extends Resource
                                                 : []
                                             )
                                             ->helperText('Peut être différent de la zone de récupération'),
+                                        Forms\Components\TextInput::make('custom_return_location')
+                                            ->label('📍 Lieu de retour personnalisé demandé par le client')
+                                            ->disabled()
+                                            ->visible(fn ($record) => !empty($record?->custom_return_location))
+                                            ->extraAttributes(['class' => 'bg-amber-50 border-amber-300 font-semibold']),
+                                        Forms\Components\TextInput::make('custom_return_fee')
+                                            ->label('Frais de retour personnalisés')
+                                            ->numeric()
+                                            ->suffix('DA')
+                                            ->visible(fn ($record) => !empty($record?->custom_return_location))
+                                            ->helperText('Fixez le prix pour le retour à ce lieu personnalisé'),
                                         Forms\Components\TextInput::make('return_address')
                                             ->label('Adresse de retour')
                                             ->helperText('Laissez vide si identique à la récupération'),

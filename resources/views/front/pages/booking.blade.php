@@ -120,7 +120,8 @@
                     </div>
 
                     <!-- Lieu de prise en charge & retour -->
-                    @if($deliveryZones->where('delivery_available', true)->count() > 0)
+                    @php $customLocationEnabled = $vehicle->loueur ? (bool) $vehicle->loueur->getSetting('custom_location_enabled', false) : false; @endphp
+                    @if($deliveryZones->where('delivery_available', true)->count() > 0 || $customLocationEnabled)
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Lieu de prise en charge</h2>
                         <div class="space-y-4">
@@ -128,30 +129,43 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Zone *</label>
                                 <select name="pickup_zone_id" id="pickup_zone_id" required
                                         class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
-                                    @if($deliveryZones->where('delivery_available', true)->count() > 1)
+                                    @if($deliveryZones->where('delivery_available', true)->count() > 1 || $customLocationEnabled)
                                         <option value="">Sélectionnez une zone</option>
                                     @endif
                                     @foreach($deliveryZones->where('delivery_available', true) as $zone)
-                                        <option value="{{ $zone->id }}" {{ $deliveryZones->where('delivery_available', true)->count() === 1 ? 'selected' : '' }}>
+                                        <option value="{{ $zone->id }}" {{ $deliveryZones->where('delivery_available', true)->count() === 1 && !$customLocationEnabled ? 'selected' : '' }}>
                                             {{ $zone->name }} {{ $zone->delivery_fee > 0 ? '(+' . $zone->getFormattedDeliveryFee() . ')' : '(Gratuit)' }}
                                         </option>
                                     @endforeach
+                                    @if($customLocationEnabled)
+                                        <option value="custom">📍 Autre lieu — À confirmer par le loueur</option>
+                                    @endif
                                 </select>
                                 @error('pickup_zone_id') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                            </div>
+
+                            {{-- Champ lieu personnalisé prise en charge --}}
+                            <div id="custom_pickup_fields" class="hidden space-y-3">
+                                <div class="p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                                    <p class="text-sm text-amber-800 font-medium">📍 Indiquez l'adresse exacte souhaitée. Le loueur confirmera la disponibilité et le prix.</p>
+                                </div>
+                                <input type="text" name="custom_pickup_location" id="custom_pickup_location"
+                                       placeholder="Ex: Hôtel Sheraton, Oran centre, Devant la gare..."
+                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
                             </div>
 
                             {{-- Message livraison aéroport offerte (dynamique via JS) --}}
                             <div id="airportDeliveryHint" class="hidden"></div>
 
-                            {{-- Toggle retour différent (seulement si plusieurs zones de retour) --}}
-                            @if($deliveryZones->where('return_available', true)->count() > 1)
+                            {{-- Toggle retour différent --}}
+                            @if($deliveryZones->where('return_available', true)->count() > 1 || $customLocationEnabled)
                             <label class="flex items-center gap-3 p-3 bg-gray-50 rounded-xl cursor-pointer hover:bg-gray-100 transition">
                                 <input type="checkbox" id="different_return" class="w-5 h-5 text-amber-600 rounded focus:ring-amber-500">
                                 <span class="text-sm text-gray-700">Je souhaite rendre le véhicule à un endroit différent</span>
                             </label>
 
                             {{-- Zone de retour (masqué par défaut) --}}
-                            <div id="return_fields" class="hidden pt-4 border-t border-gray-200">
+                            <div id="return_fields" class="hidden pt-4 border-t border-gray-200 space-y-3">
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Zone de retour *</label>
                                 <select name="return_zone_id" id="return_zone_id"
                                         class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
@@ -159,7 +173,17 @@
                                     @foreach($deliveryZones->where('return_available', true) as $zone)
                                         <option value="{{ $zone->id }}">{{ $zone->name }} {{ $zone->return_fee > 0 ? '(+' . number_format($zone->return_fee, 0, ',', ' ') . ' DA)' : '(Gratuit)' }}</option>
                                     @endforeach
+                                    @if($customLocationEnabled)
+                                        <option value="custom">📍 Autre lieu — À confirmer par le loueur</option>
+                                    @endif
                                 </select>
+
+                                {{-- Champ lieu personnalisé retour --}}
+                                <div id="custom_return_fields" class="hidden">
+                                    <input type="text" name="custom_return_location" id="custom_return_location"
+                                           placeholder="Ex: Aéroport Houari Boumediene, Terminal 1..."
+                                           class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
+                                </div>
                             </div>
                             @endif
 
@@ -543,15 +567,21 @@
                         html += `<div class="flex justify-between text-orange-600"><span>${data.season_name || 'Haute saison'}</span><span>+${fmt(data.season_surcharge)} ${symbol}</span></div>`;
                     }
                 }
-                if (data.free_airport_delivery) {
+                // Affichage livraison/retour (custom ou zone)
+                const isCustomPickup = pickupZone && pickupZone.value === 'custom';
+                const isCustomReturn = returnZone && returnZone.value === 'custom';
+
+                if (isCustomPickup) {
+                    html += `<div class="flex justify-between text-amber-600"><span>📍 Livraison lieu personnalisé</span><span class="font-medium text-xs">À confirmer</span></div>`;
+                } else if (data.free_airport_delivery) {
                     html += `<div class="flex justify-between text-green-600"><span>✈️ Livraison aéroport</span><span class="font-semibold">Offerte ✓</span></div>`;
                 } else if (data.delivery_fee > 0) {
                     html += `<div class="flex justify-between"><span class="text-gray-600">Livraison</span><span>+${fmt(data.delivery_fee)} ${symbol}</span></div>`;
                 }
-                if (!data.free_airport_delivery && data.return_fee > 0) {
+                if (isCustomReturn) {
+                    html += `<div class="flex justify-between text-amber-600"><span>📍 Retour lieu personnalisé</span><span class="font-medium text-xs">À confirmer</span></div>`;
+                } else if (!data.free_airport_delivery && data.return_fee > 0) {
                     html += `<div class="flex justify-between"><span class="text-gray-600">Retour</span><span>+${fmt(data.return_fee)} ${symbol}</span></div>`;
-                } else if (data.free_airport_delivery && data.return_fee === 0) {
-                    // Return also free for airport, already included in the "Offerte" message
                 }
 
                 // Afficher chaque option par son nom
@@ -648,10 +678,35 @@
         return new Intl.NumberFormat('fr-DZ', { maximumFractionDigits: 0 }).format(n);
     }
 
+    // Gestion des lieux personnalisés
+    const customPickupFields = document.getElementById('custom_pickup_fields');
+    const customReturnFields = document.getElementById('custom_return_fields');
+
+    if (pickupZone) {
+        pickupZone.addEventListener('change', function() {
+            if (customPickupFields) {
+                customPickupFields.classList.toggle('hidden', this.value !== 'custom');
+            }
+            // Si custom, on ne requiert plus le zone_id réel
+            if (this.value === 'custom') {
+                this.removeAttribute('required');
+            } else {
+                this.setAttribute('required', 'required');
+            }
+            recalculate();
+        });
+    }
+    if (returnZone) {
+        returnZone.addEventListener('change', function() {
+            if (customReturnFields) {
+                customReturnFields.classList.toggle('hidden', this.value !== 'custom');
+            }
+            recalculate();
+        });
+    }
+
     // Recalculer quand les champs changent
     [startDate, endDate, pickupTime].forEach(el => el.addEventListener('change', recalculate));
-    if (pickupZone) pickupZone.addEventListener('change', recalculate);
-    if (returnZone) returnZone.addEventListener('change', recalculate);
     optionBoxes.forEach(cb => cb.addEventListener('change', recalculate));
 
     // Vérifier disponibilité des options quand les dates changent

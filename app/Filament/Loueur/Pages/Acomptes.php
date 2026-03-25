@@ -45,6 +45,7 @@ class Acomptes extends Page implements Forms\Contracts\HasForms
                 'auto_confirm_bookings' => $loueur->getSetting('auto_confirm_bookings', false),
                 'require_documents' => $loueur->getSetting('require_documents', true),
                 'return_margin_hours' => $loueur->getSetting('return_margin_hours', 2),
+                'custom_location_enabled' => $loueur->getSetting('custom_location_enabled', false),
             ]);
         }
     }
@@ -115,6 +116,13 @@ class Acomptes extends Page implements Forms\Contracts\HasForms
                         Forms\Components\Toggle::make('require_documents')
                             ->label('Exiger les documents du client (pièce d\'identité + permis)'),
                     ]),
+                Forms\Components\Section::make('Lieu de livraison personnalisé')
+                    ->description('Permettez aux clients de proposer un lieu de récupération/retour personnalisé en dehors de vos zones prédéfinies.')
+                    ->schema([
+                        Forms\Components\Toggle::make('custom_location_enabled')
+                            ->label('Accepter les demandes de lieu personnalisé')
+                            ->helperText('Le client pourra indiquer une adresse libre. Vous fixerez le prix manuellement sur chaque réservation concernée.'),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -132,6 +140,7 @@ class Acomptes extends Page implements Forms\Contracts\HasForms
         $loueur->setSetting('auto_confirm_bookings', $data['auto_confirm_bookings'] ?? false, 'boolean');
         $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
         $loueur->setSetting('return_margin_hours', $data['return_margin_hours'] ?? 2, 'integer');
+        $loueur->setSetting('custom_location_enabled', $data['custom_location_enabled'] ?? false, 'boolean');
 
         Notification::make()
             ->title('Paramètres enregistrés')

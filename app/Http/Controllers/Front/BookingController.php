@@ -212,18 +212,25 @@ class BookingController extends Controller
         // Validation is now handled by StoreBookingRequest
         $advancePaymentMethod = $request->advance_payment_method;
 
-        // Si retour au même endroit, copier la zone de pickup vers return
-        $pickupZoneId = $request->pickup_zone_id ? (int) $request->pickup_zone_id : null;
-        $returnZoneId = $request->return_zone_id ? (int) $request->return_zone_id : null;
+        // Gérer les lieux personnalisés vs zones prédéfinies
+        $isCustomPickup = $request->pickup_zone_id === 'custom';
+        $isCustomReturn = $request->return_zone_id === 'custom';
+        $customPickupLocation = $isCustomPickup ? $request->custom_pickup_location : null;
+        $customReturnLocation = $isCustomReturn ? $request->custom_return_location : null;
+
+        $pickupZoneId = (!$isCustomPickup && $request->pickup_zone_id) ? (int) $request->pickup_zone_id : null;
+        $returnZoneId = (!$isCustomReturn && $request->return_zone_id) ? (int) $request->return_zone_id : null;
         if ($request->input('same_return_location', '1') === '1') {
             $returnZoneId = $pickupZoneId;
+            $isCustomReturn = $isCustomPickup;
+            $customReturnLocation = $customPickupLocation;
         }
 
         // Récupérer les noms des zones pour les adresses
         $pickupZone = $pickupZoneId ? DeliveryZone::find($pickupZoneId) : null;
         $returnZone = $returnZoneId ? DeliveryZone::find($returnZoneId) : $pickupZone;
-        $pickupAddress = $pickupZone?->name ?? '';
-        $returnAddress = $returnZone?->name ?? $pickupAddress;
+        $pickupAddress = $isCustomPickup ? ($customPickupLocation ?? 'Lieu personnalisé') : ($pickupZone?->name ?? '');
+        $returnAddress = $isCustomReturn ? ($customReturnLocation ?? 'Lieu personnalisé') : ($returnZone?->name ?? $pickupAddress);
 
         $vehicle = Vehicle::with('loueur')->findOrFail($request->vehicle_id);
         $loueur = $vehicle->loueur;
@@ -359,8 +366,10 @@ class BookingController extends Controller
             'pickup_zone_id' => $pickupZoneId,
             'return_zone_id' => $returnZoneId,
             'pickup_address' => $pickupAddress,
+            'custom_pickup_location' => $customPickupLocation,
             'pickup_time' => $request->pickup_time,
             'return_address' => $returnAddress,
+            'custom_return_location' => $customReturnLocation,
             'return_time' => $returnTime,
             'currency' => $request->currency ?? 'DZD',
             'base_price' => $pricing['base_price'],

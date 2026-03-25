@@ -38,8 +38,10 @@ class StoreBookingRequest extends FormRequest
                 'regex:/^[\d\s\+\-\(\)]+$/'
             ],
             'client_email' => 'required|email:rfc,dns|max:255',
-            'pickup_zone_id' => 'nullable|exists:delivery_zones,id',
-            'return_zone_id' => 'nullable|exists:delivery_zones,id',
+            'pickup_zone_id' => 'nullable',
+            'return_zone_id' => 'nullable',
+            'custom_pickup_location' => 'nullable|string|max:255',
+            'custom_return_location' => 'nullable|string|max:255',
             'same_return_location' => 'nullable|in:0,1',
             'options' => 'nullable|array',
             'options.*' => 'string|max:100',
