@@ -60,8 +60,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'iban' => $loueur->iban,
                 'wise_email' => $loueur->wise_email,
                 'baridimob_rip' => $loueur->baridimob_rip,
-                'meta_title' => $loueur->meta_title,
-                'meta_description' => $loueur->meta_description,
                 // Settings from loueur_settings table
                 'notify_push' => $loueur->getSetting('notify_push', true),
                 'notify_whatsapp' => $loueur->getSetting('notify_whatsapp', true),
@@ -173,37 +171,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     ->helperText('Recevoir les notifications de réservation sur WhatsApp (bientôt disponible)')
                                     ->disabled(),
                             ]),
-                        Forms\Components\Tabs\Tab::make('Synchronisation')
-                            ->icon('heroicon-o-arrow-path')
-                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
-                            ->schema([
-                                Forms\Components\Section::make('Synchronisation Google Agenda')
-                                    ->description('Synchronisez vos réservations et blocages avec Google Agenda, Apple Calendar ou Outlook.')
-                                    ->schema([
-                                        Forms\Components\Placeholder::make('ical_instructions')
-                                            ->label('Comment synchroniser')
-                                            ->content('Pour synchroniser votre calendrier ResaDZ avec Google Agenda :
-
-1. Copiez le lien iCal ci-dessous
-2. Ouvrez Google Agenda (calendar.google.com)
-3. Cliquez sur "+" à côté de "Autres agendas"
-4. Sélectionnez "À partir de l\'URL"
-5. Collez le lien et cliquez sur "Ajouter un agenda"
-
-Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
-                                        Forms\Components\TextInput::make('ical_url_display')
-                                            ->label('Votre lien iCal')
-                                            ->default(function () {
-                                                $loueur = Auth::user()->loueur;
-                                                if (!$loueur) return 'Non disponible';
-                                                $token = \App\Http\Controllers\Api\CalendarController::generateToken($loueur->id);
-                                                return url('/calendar/ical/' . $token . '.ics');
-                                            })
-                                            ->disabled()
-                                            ->dehydrated(false)
-                                            ->helperText('Copiez ce lien et collez-le dans Google Agenda'),
-                                    ]),
-                            ]),
                         Forms\Components\Tabs\Tab::make('Services')
                             ->icon('heroicon-o-squares-plus')
                             ->schema([
@@ -229,19 +196,6 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
                                             ->content('Le service de transfert est activé par défaut pour les comptes Taxi/VTC.')
                                             ->visible(fn () => Auth::user()->loueur?->isTaxi()),
                                     ]),
-                            ]),
-                        Forms\Components\Tabs\Tab::make('SEO')
-                            ->icon('heroicon-o-magnifying-glass')
-                            ->schema([
-                                Forms\Components\TextInput::make('meta_title')
-                                    ->label('Titre SEO')
-                                    ->maxLength(60)
-                                    ->helperText('Titre affiché dans les moteurs de recherche (max 60 caractères)'),
-                                Forms\Components\Textarea::make('meta_description')
-                                    ->label('Description SEO')
-                                    ->rows(2)
-                                    ->maxLength(160)
-                                    ->helperText('Description affichée dans les résultats de recherche (max 160 caractères)'),
                             ]),
                         Forms\Components\Tabs\Tab::make('Sécurité')
                             ->icon('heroicon-o-lock-closed')
@@ -327,8 +281,6 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
             'iban' => $data['iban'] ?? null,
             'wise_email' => $data['wise_email'] ?? null,
             'baridimob_rip' => $data['baridimob_rip'] ?? null,
-            'meta_title' => $data['meta_title'] ?? null,
-            'meta_description' => $data['meta_description'] ?? null,
         ]);
 
         // Update settings
