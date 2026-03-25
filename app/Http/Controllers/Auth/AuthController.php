@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\WelcomeChauffeurMail;
+use App\Mail\WelcomeLoueurMail;
 use App\Models\Loueur;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -81,6 +85,9 @@ class AuthController extends Controller
             'offers_transfer' => $isTaxi, // Taxis have transfer enabled by default
         ]);
 
+        // Send welcome email
+        $this->sendWelcomeEmail($user->loueur);
+
         Auth::login($user);
 
         $message = $isTaxi
@@ -119,12 +126,15 @@ class AuthController extends Controller
             ]);
 
             // Create loueur profile with minimal info - they'll complete it later
-            Loueur::create([
+            $loueur = Loueur::create([
                 'user_id' => $user->id,
                 'company_name' => $googleUser->getName(),
                 'slug' => Str::slug($googleUser->getName()) . '-' . Str::random(4),
                 'is_active' => true,
             ]);
+
+            // Send welcome email for new Google OAuth accounts
+            $this->sendWelcomeEmail($loueur);
         }
 
         Auth::login($user, true);
@@ -139,6 +149,24 @@ class AuthController extends Controller
         $request->session()->regenerateToken();
 
         return redirect()->route('home');
+    }
+
+    protected function sendWelcomeEmail(Loueur $loueur): void
+    {
+        try {
+            $email = $loueur->user->email ?? null;
+            if (!$email) {
+                return;
+            }
+
+            $mailable = $loueur->account_type === 'taxi'
+                ? new WelcomeChauffeurMail($loueur)
+                : new WelcomeLoueurMail($loueur);
+
+            Mail::to($email)->send($mailable);
+        } catch (\Exception $e) {
+            Log::warning('Failed to send welcome email to loueur #' . $loueur->id . ': ' . $e->getMessage());
+        }
     }
 
     protected function redirectAfterLogin()

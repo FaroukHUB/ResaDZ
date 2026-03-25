@@ -3,15 +3,21 @@
 namespace App\Filament\Admin\Resources;
 
 use App\Filament\Admin\Resources\LoueurResource\Pages;
+use App\Mail\WelcomeChauffeurMail;
+use App\Mail\WelcomeLoueurMail;
 use App\Models\Loueur;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Filament\Infolists;
 use Filament\Infolists\Infolist;
+use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class LoueurResource extends Resource
@@ -293,10 +299,48 @@ class LoueurResource extends Resource
                     ->url(fn (Loueur $record) => '/loueur')
                     ->openUrlInNewTab()
                     ->visible(fn (Loueur $record) => $record->is_active),
+                Tables\Actions\Action::make('sendWelcomeEmail')
+                    ->label('Renvoyer mail bienvenue')
+                    ->icon('heroicon-o-envelope')
+                    ->color('warning')
+                    ->requiresConfirmation()
+                    ->modalHeading('Renvoyer le mail de bienvenue')
+                    ->modalDescription(fn (Loueur $record) => "Envoyer le mail de bienvenue à {$record->company_name} ({$record->user?->email}) ?")
+                    ->action(function (Loueur $record) {
+                        static::sendWelcomeEmailTo($record);
+                        Notification::make()
+                            ->title('Mail envoyé')
+                            ->body("Mail de bienvenue envoyé à {$record->user?->email}")
+                            ->success()
+                            ->send();
+                    })
+                    ->visible(fn (Loueur $record) => $record->user?->email),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
+                    Tables\Actions\BulkAction::make('sendWelcomeEmails')
+                        ->label('Envoyer mail bienvenue')
+                        ->icon('heroicon-o-envelope')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->modalHeading('Envoyer les mails de bienvenue')
+                        ->modalDescription('Envoyer le mail de bienvenue à tous les loueurs/chauffeurs sélectionnés ?')
+                        ->action(function (Collection $records) {
+                            $sent = 0;
+                            foreach ($records as $record) {
+                                if ($record->user?->email) {
+                                    static::sendWelcomeEmailTo($record);
+                                    $sent++;
+                                }
+                            }
+                            Notification::make()
+                                ->title('Mails envoyés')
+                                ->body("{$sent} mail(s) de bienvenue envoyé(s)")
+                                ->success()
+                                ->send();
+                        })
+                        ->deselectRecordsAfterCompletion(),
                 ]),
             ]);
     }
@@ -378,6 +422,30 @@ class LoueurResource extends Resource
                     ])
                     ->columns(3),
             ]);
+    }
+
+    public static function sendWelcomeEmailTo(Loueur $loueur): void
+    {
+        try {
+            $email = $loueur->user?->email;
+            if (!$email) {
+                return;
+            }
+
+            $mailable = $loueur->account_type === 'taxi'
+                ? new WelcomeChauffeurMail($loueur)
+                : new WelcomeLoueurMail($loueur);
+
+            Mail::to($email)->send($mailable);
+        } catch (\Exception $e) {
+            Log::warning('Failed to send welcome email to loueur #' . $loueur->id . ': ' . $e->getMessage());
+
+            Notification::make()
+                ->title('Erreur d\'envoi')
+                ->body('Impossible d\'envoyer le mail : ' . $e->getMessage())
+                ->danger()
+                ->send();
+        }
     }
 
     public static function getRelations(): array
