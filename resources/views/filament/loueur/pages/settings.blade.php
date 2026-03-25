@@ -46,51 +46,15 @@
                     </div>
                     <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                            <x-heroicon-o-calendar class="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span class="dark:text-gray-300"><strong class="dark:text-white">Reservations</strong> : Acompte, delais d'annulation et options de retour</span>
-                    </div>
-                    <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                            <x-heroicon-o-squares-plus class="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span class="dark:text-gray-300"><strong class="dark:text-white">Options</strong> : Equipements payants (siege bebe, GPS, chauffeur...)</span>
-                    </div>
-                    <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
                             <x-heroicon-o-bell class="w-3.5 h-3.5 text-white" />
                         </div>
                         <span class="dark:text-gray-300"><strong class="dark:text-white">Notifications</strong> : Alertes push, email et WhatsApp</span>
                     </div>
                     <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                            <x-heroicon-o-tag class="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span class="dark:text-gray-300"><strong class="dark:text-white">Badges</strong> : Badges affiches sur vos vehicules (assurance, livraison...)</span>
-                    </div>
-                    <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                            <x-heroicon-o-clipboard-document-list class="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span class="dark:text-gray-300"><strong class="dark:text-white">Conditions</strong> : Regles de location (age, permis, caution...)</span>
-                    </div>
-                    <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                            <x-heroicon-o-arrow-path class="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span class="dark:text-gray-300"><strong class="dark:text-white">Synchronisation</strong> : Lien iCal pour Google Agenda/Outlook</span>
-                    </div>
-                    <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
                             <x-heroicon-o-truck class="w-3.5 h-3.5 text-white" />
                         </div>
                         <span class="dark:text-gray-300"><strong class="dark:text-white">Services</strong> : Activer le transfert ou la livraison</span>
-                    </div>
-                    <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
-                        <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
-                            <x-heroicon-o-magnifying-glass class="w-3.5 h-3.5 text-white" />
-                        </div>
-                        <span class="dark:text-gray-300"><strong class="dark:text-white">SEO</strong> : Titre et description pour les moteurs de recherche</span>
                     </div>
                     <div class="flex items-start gap-2 p-2.5 bg-white/70 dark:bg-gray-800/50 rounded-xl" style="transition: all 0.2s ease;" onmouseenter="this.style.transform='translateY(-2px)';this.style.boxShadow='0 4px 12px rgba(99,102,241,0.1)'" onmouseleave="this.style.transform='';this.style.boxShadow=''">
                         <div class="w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0" style="background: linear-gradient(135deg, #6366F1, #8B5CF6);">
