@@ -106,15 +106,13 @@
                     <td class="p-3 bg-gray-50 font-semibold text-sm text-gray-500">Services</td>
                     @foreach($vehicles as $vehicle)
                         <td class="p-3 text-center">
-                            @if($vehicle->loueur)
-                                @foreach($vehicle->loueur->getBadges() as $badge)
-                                    <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mb-1">
-                                        {{ $badge['text'] }}
-                                    </span>
-                                @endforeach
-                            @else
+                            @forelse($vehicle->getBadges() as $badge)
+                                <span class="inline-flex items-center gap-1 text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full mb-1">
+                                    {{ $badge['text'] }}
+                                </span>
+                            @empty
                                 <span class="text-gray-400">-</span>
-                            @endif
+                            @endforelse
                         </td>
                     @endforeach
                 </tr>

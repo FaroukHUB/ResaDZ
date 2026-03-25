@@ -37,35 +37,8 @@ class BookingController extends Controller
             ->orderBy('sort_order')
             ->get();
 
-        // Options de location: fusionner les options globales (admin) avec les options du loueur
-        // Les options du loueur ont priorité si elles ont le même nom
-        $loueurOptions = $vehicle->loueur
-            ? $vehicle->loueur->getSetting('rental_options', [])
-            : [];
-
-        // Récupérer les options globales actives
-        $globalOptions = Option::active()->ordered()->get()->map(function ($opt) {
-            return [
-                'name' => $opt->name,
-                'description' => $opt->description,
-                'price' => $opt->price ?? 0,
-                'per' => $opt->price_type === 'per_day' ? 'day' : 'booking',
-                'is_free' => $opt->price_type === 'free',
-                'image' => $opt->icon,
-                'is_global' => true,
-            ];
-        })->toArray();
-
-        // Fusionner: les options du loueur écrasent les options globales avec le même nom
-        $loueurOptionNames = collect($loueurOptions)->pluck('name')->map(fn($n) => strtolower(trim($n)))->toArray();
-        $rentalOptions = $loueurOptions;
-
-        foreach ($globalOptions as $globalOpt) {
-            $normalizedName = strtolower(trim($globalOpt['name']));
-            if (!in_array($normalizedName, $loueurOptionNames)) {
-                $rentalOptions[] = $globalOpt;
-            }
-        }
+        // Options de location: depuis le véhicule directement
+        $rentalOptions = $vehicle->getRentalOptions();
 
         // Méthodes de paiement d'acompte configurées par le loueur (avec timers)
         $advancePaymentMethods = $vehicle->loueur
@@ -157,25 +130,8 @@ class BookingController extends Controller
             $optionsDetail[] = ['name' => 'Retour sans lavage', 'total' => $washReturnFee];
         }
 
-        // Options de location: fusionner loueur + globales
-        $loueurOptions = $loueur ? $loueur->getSetting('rental_options', []) : [];
-        $globalOptions = Option::active()->get()->map(function ($opt) {
-            return [
-                'name' => $opt->name,
-                'price' => $opt->price ?? 0,
-                'per' => $opt->price_type === 'per_day' ? 'day' : 'booking',
-                'is_free' => $opt->price_type === 'free',
-            ];
-        })->toArray();
-
-        // Fusionner: loueur prioritaire
-        $loueurOptionNames = collect($loueurOptions)->pluck('name')->map(fn($n) => strtolower(trim($n)))->toArray();
-        $allOptions = $loueurOptions;
-        foreach ($globalOptions as $gOpt) {
-            if (!in_array(strtolower(trim($gOpt['name'])), $loueurOptionNames)) {
-                $allOptions[] = $gOpt;
-            }
-        }
+        // Options de location: depuis le véhicule
+        $allOptions = $vehicle->getRentalOptions();
 
         foreach ($allOptions as $option) {
             $optionName = $option['name'] ?? '';
@@ -345,25 +301,8 @@ class BookingController extends Controller
             $optionsFees += $washReturnFee;
         }
 
-        // Options de location: fusionner loueur + globales
-        $loueurOptions = $loueur ? $loueur->getSetting('rental_options', []) : [];
-        $globalOptions = Option::active()->get()->map(function ($opt) {
-            return [
-                'name' => $opt->name,
-                'price' => $opt->price ?? 0,
-                'per' => $opt->price_type === 'per_day' ? 'day' : 'booking',
-                'is_free' => $opt->price_type === 'free',
-            ];
-        })->toArray();
-
-        // Fusionner: loueur prioritaire
-        $loueurOptionNames = collect($loueurOptions)->pluck('name')->map(fn($n) => strtolower(trim($n)))->toArray();
-        $allOptions = $loueurOptions;
-        foreach ($globalOptions as $gOpt) {
-            if (!in_array(strtolower(trim($gOpt['name'])), $loueurOptionNames)) {
-                $allOptions[] = $gOpt;
-            }
-        }
+        // Options de location: depuis le véhicule
+        $allOptions = $vehicle->getRentalOptions();
 
         foreach ($allOptions as $option) {
             $optionName = $option['name'] ?? '';

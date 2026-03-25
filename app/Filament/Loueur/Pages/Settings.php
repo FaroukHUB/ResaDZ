@@ -71,15 +71,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'notify_push' => $loueur->getSetting('notify_push', true),
                 'notify_whatsapp' => $loueur->getSetting('notify_whatsapp', true),
                 'notify_email' => $loueur->getSetting('notify_email', true),
-                // Badges
-                'badge_insurance' => $loueur->getSetting('badge_insurance', false),
-                'badge_delivery' => $loueur->getSetting('badge_delivery', false),
-                'badge_degressive' => $loueur->getSetting('badge_degressive', false),
-                'badge_airport' => $loueur->getSetting('badge_airport', false),
-                'badge_km_unlimited' => $loueur->getSetting('badge_km_unlimited', false),
-                'custom_badges' => $loueur->getSetting('custom_badges', []),
-                'free_airport_delivery_enabled' => $loueur->getSetting('free_airport_delivery_days', 0) > 0,
-                'free_airport_delivery_days' => $loueur->getSetting('free_airport_delivery_days', 0),
                 // Predefined conditions
                 'cond_no_smoking' => $loueur->getSetting('cond_no_smoking', false),
                 'cond_km_limit' => $loueur->getSetting('cond_km_limit', false),
@@ -105,8 +96,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'return_margin_hours' => $loueur->getSetting('return_margin_hours', 2),
                 'fuel_return_fee' => $loueur->getSetting('fuel_return_fee', 0),
                 'wash_return_fee' => $loueur->getSetting('wash_return_fee', 0),
-                // Rental options (siège bébé, GPS, etc.)
-                'rental_options' => $loueur->getSetting('rental_options', []),
                 // Services
                 'offers_transfer' => $loueur->offers_transfer,
                 'offers_delivery' => $loueur->offers_delivery,
@@ -292,89 +281,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ]),
                                     ]),
                             ]),
-                        Forms\Components\Tabs\Tab::make('Options')
-                            ->icon('heroicon-o-squares-plus')
-                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
-                            ->schema([
-                                Forms\Components\Section::make('Options de location')
-                                    ->description('Configurez les options payantes ou offertes que vous proposez à vos clients (siège bébé, GPS, chauffeur, etc.)')
-                                    ->schema([
-                                        Forms\Components\Repeater::make('rental_options')
-                                            ->label('')
-                                            ->schema([
-                                                Forms\Components\Grid::make(4)
-                                                    ->schema([
-                                                        Forms\Components\TextInput::make('name')
-                                                            ->label('Nom de l\'option')
-                                                            ->required()
-                                                            ->maxLength(100)
-                                                            ->placeholder('Ex: Siège bébé'),
-                                                        Forms\Components\TextInput::make('price')
-                                                            ->label('Prix')
-                                                            ->numeric()
-                                                            ->minValue(0)
-                                                            ->suffix('DA')
-                                                            ->placeholder('0 = offert')
-                                                            ->helperText('Laisser 0 pour offrir'),
-                                                        Forms\Components\Select::make('per')
-                                                            ->label('Facturation')
-                                                            ->options([
-                                                                'day' => 'Par jour',
-                                                                'booking' => 'Par location',
-                                                            ])
-                                                            ->default('day'),
-                                                        Forms\Components\TextInput::make('quantity')
-                                                            ->label('Quantité')
-                                                            ->numeric()
-                                                            ->minValue(1)
-                                                            ->default(1)
-                                                            ->helperText('Stock disponible'),
-                                                    ]),
-                                                Forms\Components\Grid::make(2)
-                                                    ->schema([
-                                                        Forms\Components\FileUpload::make('image')
-                                                            ->label('Photo (optionnel)')
-                                                            ->image()
-                                                            ->directory('rental-options')
-                                                            ->maxSize(2048)
-                                                            ->helperText('Image de l\'option (max 2 Mo)'),
-                                                        Forms\Components\Textarea::make('description')
-                                                            ->label('Description (optionnel)')
-                                                            ->rows(2)
-                                                            ->placeholder('Description courte de l\'option...'),
-                                                    ]),
-                                                Forms\Components\Toggle::make('is_free')
-                                                    ->label('Option offerte')
-                                                    ->helperText('Affiche un badge "Offert" à côté de cette option')
-                                                    ->live(),
-                                            ])
-                                            ->defaultItems(0)
-                                            ->addActionLabel('Ajouter une option')
-                                            ->reorderable()
-                                            ->collapsible()
-                                            ->itemLabel(fn (array $state): ?string =>
-                                                ($state['name'] ?? 'Nouvelle option') .
-                                                (isset($state['quantity']) && $state['quantity'] > 1 ? ' (x' . $state['quantity'] . ')' : '') .
-                                                (($state['is_free'] ?? false) ? ' - Offert' : (isset($state['price']) && $state['price'] > 0 ? ' - ' . number_format($state['price'], 0, ',', ' ') . ' DA' : ''))
-                                            ),
-                                    ]),
-                                Forms\Components\Section::make('Exemples d\'options')
-                                    ->description('Voici quelques idées d\'options à proposer :')
-                                    ->schema([
-                                        Forms\Components\Placeholder::make('examples')
-                                            ->label('')
-                                            ->content('
-                                                • **Siège bébé** : 500 DA/jour
-                                                • **GPS** : 1 000 DA/jour ou offert
-                                                • **Chauffeur** : 3 000 DA/jour
-                                                • **Wifi portable** : 800 DA/jour
-                                                • **Assurance tous risques** : 2 000 DA/jour
-                                                • **Kilométrage illimité** : 1 500 DA/location (offert)
-                                            ')
-                                            ->extraAttributes(['class' => 'text-sm text-gray-600']),
-                                    ])
-                                    ->collapsed(),
-                            ]),
                         Forms\Components\Tabs\Tab::make('Notifications')
                             ->icon('heroicon-o-bell')
                             ->schema([
@@ -388,74 +294,6 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     ->label('Notifications WhatsApp')
                                     ->helperText('Recevoir les notifications de réservation sur WhatsApp (bientôt disponible)')
                                     ->disabled(),
-                            ]),
-                        Forms\Components\Tabs\Tab::make('Badges')
-                            ->icon('heroicon-o-tag')
-                            ->visible(fn () => Auth::user()->loueur?->isLoueur())
-                            ->schema([
-                                Forms\Components\Section::make('Badges des cartes véhicules')
-                                    ->description('Sélectionnez les badges à afficher sur vos cartes véhicules. Ces badges apparaissent sur le marketplace pour rassurer les clients.')
-                                    ->schema([
-                                        Forms\Components\Toggle::make('badge_insurance')
-                                            ->label('Assurance incluse')
-                                            ->helperText('Affiche "Assurance incluse" sur vos véhicules'),
-                                        Forms\Components\Toggle::make('badge_delivery')
-                                            ->label('Livraison offerte')
-                                            ->helperText('Affiche "Livraison offerte" sur vos véhicules'),
-                                        Forms\Components\Toggle::make('badge_degressive')
-                                            ->label('Prix dégressif')
-                                            ->helperText('Affiche "Prix dégressif selon la durée" sur vos véhicules'),
-                                        Forms\Components\Toggle::make('badge_airport')
-                                            ->label('Livraison aéroport')
-                                            ->helperText('Affiche "Livraison aéroport" sur vos véhicules'),
-                                        Forms\Components\Toggle::make('badge_km_unlimited')
-                                            ->label('Kilométrage illimité')
-                                            ->helperText('Affiche "Kilométrage illimité" sur vos véhicules'),
-                                    ]),
-                                Forms\Components\Section::make('Badges personnalisés')
-                                    ->description('Ajoutez vos propres badges (max 3)')
-                                    ->schema([
-                                        Forms\Components\Repeater::make('custom_badges')
-                                            ->label('')
-                                            ->schema([
-                                                Forms\Components\TextInput::make('text')
-                                                    ->label('Texte du badge')
-                                                    ->required()
-                                                    ->maxLength(50)
-                                                    ->placeholder('Ex: GPS inclus'),
-                                            ])
-                                            ->maxItems(3)
-                                            ->defaultItems(0)
-                                            ->addActionLabel('Ajouter un badge'),
-                                    ]),
-                                Forms\Components\Section::make('Livraison aéroport offerte 🎁')
-                                    ->schema([
-                                        Forms\Components\Placeholder::make('free_airport_help')
-                                            ->label('')
-                                            ->content(new \Illuminate\Support\HtmlString('
-                                                <div class="p-4 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-700 rounded-2xl">
-                                                    <div class="flex items-start gap-3">
-                                                        <span class="text-2xl flex-shrink-0">✈️</span>
-                                                        <div>
-                                                            <p class="font-bold text-sky-900 dark:text-sky-100">Offrir la livraison aéroport à partir de 7 jours est un argument très fort pour la diaspora qui rentre en été.</p>
-                                                            <p class="text-sm text-sky-800 dark:text-sky-200 mt-1">Ça booste les longues locations ! Le badge apparaîtra automatiquement sur vos véhicules et les clients verront la livraison gratuite dans le récapitulatif.</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ')),
-                                        Forms\Components\Toggle::make('free_airport_delivery_enabled')
-                                            ->label('Activer la livraison aéroport offerte')
-                                            ->live()
-                                            ->helperText('Si activé, la livraison aéroport sera automatiquement gratuite à partir du seuil défini'),
-                                        Forms\Components\TextInput::make('free_airport_delivery_days')
-                                            ->label('À partir de combien de jours ?')
-                                            ->numeric()
-                                            ->minValue(1)
-                                            ->placeholder('Ex: 7')
-                                            ->suffix('jours')
-                                            ->helperText('La livraison aéroport sera automatiquement gratuite pour toute location de ce nombre de jours ou plus')
-                                            ->visible(fn (Forms\Get $get) => (bool) $get('free_airport_delivery_enabled')),
-                                    ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Conditions')
                             ->icon('heroicon-o-clipboard-document-list')
@@ -755,19 +593,6 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
         $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');
 
-        // Badges
-        $loueur->setSetting('badge_insurance', $data['badge_insurance'] ?? false, 'boolean');
-        $loueur->setSetting('badge_delivery', $data['badge_delivery'] ?? false, 'boolean');
-        $loueur->setSetting('badge_degressive', $data['badge_degressive'] ?? false, 'boolean');
-        $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
-        $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
-        $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
-
-        // Livraison aéroport offerte
-        $freeAirportDays = ($data['free_airport_delivery_enabled'] ?? false)
-            ? max(0, (int) ($data['free_airport_delivery_days'] ?? 0))
-            : 0;
-        $loueur->setSetting('free_airport_delivery_days', $freeAirportDays, 'integer');
 
         // Predefined conditions
         $predefinedKeys = [
@@ -794,9 +619,6 @@ Le calendrier sera automatiquement mis à jour toutes les quelques heures.'),
         $loueur->setSetting('fuel_return_fee', $data['fuel_return_fee'] ?? 0, 'decimal');
         $loueur->setSetting('wash_return_fee', $data['wash_return_fee'] ?? 0, 'decimal');
 
-
-        // Rental options
-        $loueur->setSetting('rental_options', $data['rental_options'] ?? [], 'json');
 
         // Services
         if ($loueur->isLoueur()) {

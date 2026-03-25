@@ -1,6 +1,6 @@
 @php
     $loueur = $vehicle->loueur;
-    $badges = $loueur ? $loueur->getBadges() : [];
+    $badges = $vehicle->getBadges();
     $degressivePricing = $vehicle->degressive_pricing;
     $showSelectionBorder = $showSelectionBorder ?? false;
     $hasGoldenBorder = $vehicle->is_boosted || $showSelectionBorder;

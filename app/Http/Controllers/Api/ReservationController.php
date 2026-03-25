@@ -56,8 +56,8 @@ class ReservationController extends Controller
         // Calculer le prix des options
         $optionsPrice = 0;
         $selectedOptions = $validated['selected_options'] ?? [];
-        if (!empty($selectedOptions) && $vehicle->loueur) {
-            $rentalOptions = $vehicle->loueur->getSetting('rental_options', []);
+        if (!empty($selectedOptions)) {
+            $rentalOptions = $vehicle->getRentalOptions();
             foreach ($rentalOptions as $option) {
                 $optionName = $option['name'] ?? '';
                 if (in_array($optionName, $selectedOptions)) {

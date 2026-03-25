@@ -425,6 +425,89 @@ class VehicleResource extends Resource
                                     ->helperText('Laissez vide si pas de date de fin'),
                             ]),
                     ]),
+
+                // Section 6: Badges
+                Forms\Components\Section::make('Badges du véhicule')
+                    ->icon('heroicon-o-check-badge')
+                    ->description('Les badges apparaissent sur la carte du véhicule et rassurent les clients. Cochez ceux qui s\'appliquent à ce véhicule.')
+                    ->schema([
+                        Forms\Components\Grid::make(2)
+                            ->schema([
+                                Forms\Components\Toggle::make('vehicle_badges.badge_insurance')
+                                    ->label('Assurance incluse')
+                                    ->helperText('Le véhicule est assuré tous risques'),
+                                Forms\Components\Toggle::make('vehicle_badges.badge_delivery')
+                                    ->label('Livraison offerte')
+                                    ->helperText('Vous livrez le véhicule gratuitement'),
+                                Forms\Components\Toggle::make('vehicle_badges.badge_degressive')
+                                    ->label('Prix dégressif selon la durée')
+                                    ->helperText('Tarifs réduits pour les longues durées'),
+                                Forms\Components\Toggle::make('vehicle_badges.badge_airport')
+                                    ->label('Livraison aéroport')
+                                    ->helperText('Vous livrez à l\'aéroport'),
+                                Forms\Components\Toggle::make('vehicle_badges.badge_km_unlimited')
+                                    ->label('Kilométrage illimité')
+                                    ->helperText('Pas de limite de kilomètres'),
+                            ]),
+                        Forms\Components\Repeater::make('vehicle_badges.custom_badges')
+                            ->label('Badges personnalisés')
+                            ->schema([
+                                Forms\Components\TextInput::make('text')
+                                    ->label('Texte du badge')
+                                    ->required()
+                                    ->maxLength(50)
+                                    ->placeholder('Ex: Wifi inclus, Siège bébé offert...'),
+                            ])
+                            ->defaultItems(0)
+                            ->maxItems(3)
+                            ->addActionLabel('Ajouter un badge personnalisé'),
+                    ]),
+
+                // Section 7: Options de location
+                Forms\Components\Section::make('Options de location (facultatif)')
+                    ->icon('heroicon-o-squares-plus')
+                    ->description('Proposez des options payantes ou gratuites aux clients. Ex: GPS, siège bébé, conducteur additionnel...')
+                    ->collapsed()
+                    ->collapsible()
+                    ->schema([
+                        Forms\Components\Repeater::make('vehicle_options')
+                            ->label('')
+                            ->schema([
+                                Forms\Components\Grid::make(3)
+                                    ->schema([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Nom de l\'option')
+                                            ->required()
+                                            ->maxLength(100)
+                                            ->placeholder('Ex: GPS, Siège bébé, Conducteur additionnel...'),
+                                        Forms\Components\TextInput::make('price')
+                                            ->label('Prix')
+                                            ->numeric()
+                                            ->suffix('DA')
+                                            ->default(0)
+                                            ->helperText('Mettez 0 pour une option gratuite'),
+                                        Forms\Components\Select::make('per')
+                                            ->label('Facturation')
+                                            ->options([
+                                                'day' => 'Par jour',
+                                                'booking' => 'Par location',
+                                            ])
+                                            ->default('day'),
+                                    ]),
+                                Forms\Components\TextInput::make('description')
+                                    ->label('Description courte (optionnel)')
+                                    ->maxLength(255)
+                                    ->placeholder('Ex: Système de navigation GPS intégré'),
+                            ])
+                            ->defaultItems(0)
+                            ->addActionLabel('Ajouter une option')
+                            ->itemLabel(fn (array $state): ?string =>
+                                isset($state['name'])
+                                    ? $state['name'] . (isset($state['price']) && $state['price'] > 0 ? ' — ' . number_format($state['price'], 0, ',', ' ') . ' DA' : ' — OFFERT')
+                                    : null
+                            )
+                            ->collapsible(),
+                    ]),
             ]);
     }
 

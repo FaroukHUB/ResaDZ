@@ -26,7 +26,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public ?array $data = [];
     public int $currentStep = 0;
-    public int $totalSteps = 8;
+    public int $totalSteps = 7;
 
     // CGU checkboxes (not persisted via form, handled in blade/wire)
     public bool $cguAccepted = false;
@@ -142,15 +142,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             'conditions_pdf' => $loueur->getSetting('conditions_pdf', null) ?: null,
             'rental_conditions' => $loueur->getSetting('rental_conditions', []) ?: [],
 
-            // Step 6: Badges
-            'badge_insurance' => $loueur->getSetting('badge_insurance', false),
-            'badge_delivery' => $loueur->getSetting('badge_delivery', false),
-            'badge_degressive' => $loueur->getSetting('badge_degressive', false),
-            'badge_airport' => $loueur->getSetting('badge_airport', false),
-            'badge_km_unlimited' => $loueur->getSetting('badge_km_unlimited', false),
-            'custom_badges' => $loueur->getSetting('custom_badges', []),
-
-            // Step 7: Notifications
+            // Step 6: Notifications
             'notify_push' => $loueur->getSetting('notify_push', true),
             'notify_whatsapp' => $loueur->getSetting('notify_whatsapp', true),
             'notify_email' => $loueur->getSetting('notify_email', true),
@@ -173,8 +165,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             3 => $this->getReservationsSchema(),
             4 => $this->getOptionsSchema(),
             5 => $this->getConditionsSchema(),
-            6 => $this->getBadgesSchema(),
-            7 => $this->getNotificationsSchema(),
+            6 => $this->getNotificationsSchema(),
             default => [],
         };
     }
@@ -935,15 +926,6 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 break;
 
             case 6:
-                $loueur->setSetting('badge_insurance', $data['badge_insurance'] ?? false, 'boolean');
-                $loueur->setSetting('badge_delivery', $data['badge_delivery'] ?? false, 'boolean');
-                $loueur->setSetting('badge_degressive', $data['badge_degressive'] ?? false, 'boolean');
-                $loueur->setSetting('badge_airport', $data['badge_airport'] ?? false, 'boolean');
-                $loueur->setSetting('badge_km_unlimited', $data['badge_km_unlimited'] ?? false, 'boolean');
-                $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
-                break;
-
-            case 7:
                 $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
                 $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
                 $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');

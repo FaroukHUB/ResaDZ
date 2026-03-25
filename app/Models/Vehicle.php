@@ -40,6 +40,8 @@ class Vehicle extends Model
         'deposit_amount_eur',
         'deposit_currency',
         'available_options',
+        'vehicle_badges',
+        'vehicle_options',
         'transmission',
         'fuel_type',
         'has_air_conditioning',
@@ -78,6 +80,8 @@ class Vehicle extends Model
         'deposit_amount' => 'decimal:2',
         'deposit_amount_eur' => 'decimal:2',
         'available_options' => 'array',
+        'vehicle_badges' => 'array',
+        'vehicle_options' => 'array',
         'mileage_limit_per_day' => 'integer',
         'has_air_conditioning' => 'boolean',
         'extra_mileage_fee' => 'decimal:2',
@@ -232,6 +236,50 @@ class Vehicle extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('sort_order')->orderBy('full_name');
+    }
+
+    /**
+     * Get badges configured for this vehicle.
+     */
+    public function getBadges(): array
+    {
+        $badges = [];
+        $config = $this->vehicle_badges ?? [];
+
+        if (!empty($config['badge_insurance'])) {
+            $badges[] = ['icon' => 'check', 'text' => 'Assurance incluse', 'color' => 'green'];
+        }
+        if (!empty($config['badge_delivery'])) {
+            $badges[] = ['icon' => 'truck', 'text' => 'Livraison offerte', 'color' => 'blue'];
+        }
+        if (!empty($config['badge_degressive'])) {
+            $badges[] = ['icon' => 'arrow-down', 'text' => 'Prix dégressif selon la durée', 'color' => 'amber'];
+        }
+        if (!empty($config['badge_airport'])) {
+            $badges[] = ['icon' => 'plane', 'text' => 'Livraison aéroport', 'color' => 'blue'];
+        }
+        if (!empty($config['badge_km_unlimited'])) {
+            $badges[] = ['icon' => 'infinity', 'text' => 'Kilométrage illimité', 'color' => 'green'];
+        }
+
+        $customBadges = $config['custom_badges'] ?? [];
+        if (is_array($customBadges)) {
+            foreach ($customBadges as $custom) {
+                if (!empty($custom['text'])) {
+                    $badges[] = ['icon' => 'star', 'text' => $custom['text'], 'color' => 'amber'];
+                }
+            }
+        }
+
+        return $badges;
+    }
+
+    /**
+     * Get rental options configured for this vehicle.
+     */
+    public function getRentalOptions(): array
+    {
+        return $this->vehicle_options ?? [];
     }
 
     // Calculer le prix selon la durée avec prix dégressif et commission

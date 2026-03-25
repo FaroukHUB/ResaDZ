@@ -95,8 +95,7 @@ class Loueur extends Model
         3 => 'reservations',
         4 => 'options',
         5 => 'conditions',
-        6 => 'badges',
-        7 => 'notifications',
+        6 => 'notifications',
     ];
 
     /**
