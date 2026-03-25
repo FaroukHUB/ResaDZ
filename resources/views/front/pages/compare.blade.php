@@ -81,7 +81,6 @@
                         ['label' => 'Portes', 'field' => 'doors'],
                         ['label' => 'Km/jour', 'field' => 'mileage_limit_per_day', 'format' => fn($v) => $v ? $v . ' km' : 'Illimité'],
                         ['label' => 'Caution', 'field' => 'deposit_amount', 'format' => fn($v) => $v ? number_format($v, 0, ',', ' ') . ' DA' : '-'],
-                        ['label' => 'Climatisation', 'field' => 'has_air_conditioning', 'format' => fn($v) => $v ? '✅ Oui' : '❌ Non'],
                     ];
                 @endphp
 
@@ -101,6 +100,22 @@
                         @endforeach
                     </tr>
                 @endforeach
+
+                {{-- Équipements --}}
+                <tr class="border-t border-gray-100">
+                    <td class="p-3 bg-gray-50 font-semibold text-sm text-gray-500">Équipements</td>
+                    @foreach($vehicles as $vehicle)
+                        <td class="p-3 text-center">
+                            @forelse($vehicle->getActiveFeatures() as $feature)
+                                <span class="inline-flex items-center gap-1 text-xs bg-green-50 text-green-700 px-2 py-1 rounded-full mb-1">
+                                    {{ $feature['icon'] }} {{ $feature['label'] }}
+                                </span>
+                            @empty
+                                <span class="text-gray-400">-</span>
+                            @endforelse
+                        </td>
+                    @endforeach
+                </tr>
 
                 {{-- Badges --}}
                 <tr class="border-t border-gray-100">

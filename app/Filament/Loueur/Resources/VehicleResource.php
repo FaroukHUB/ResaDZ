@@ -136,10 +136,55 @@ class VehicleResource extends Resource
                                     ->suffix('valises')
                                     ->helperText('Capacité du coffre en nombre de valises'),
                             ]),
+                    ]),
+
+                // Section 1b: Équipements & Caractéristiques
+                Forms\Components\Section::make('Équipements & Caractéristiques')
+                    ->icon('heroicon-o-wrench-screwdriver')
+                    ->iconColor('info')
+                    ->description('Cochez les équipements présents dans le véhicule. Plus il y en a, plus les clients seront convaincus.')
+                    ->collapsible()
+                    ->schema([
                         Forms\Components\Toggle::make('has_air_conditioning')
-                            ->label('Climatisation')
-                            ->default(true)
-                            ->helperText('Cochez si le véhicule est climatisé — très recherché en été'),
+                            ->label('❄️ Climatisation')
+                            ->default(true),
+                        Forms\Components\Grid::make(3)
+                            ->schema([
+                                Forms\Components\Toggle::make('features.onboard_computer')
+                                    ->label('🖥️ Ordinateur de bord'),
+                                Forms\Components\Toggle::make('features.carplay')
+                                    ->label('📱 CarPlay / Android Auto'),
+                                Forms\Components\Toggle::make('features.cruise_control')
+                                    ->label('🚀 Régulateur de vitesse'),
+                                Forms\Components\Toggle::make('features.bluetooth')
+                                    ->label('🔵 Bluetooth'),
+                                Forms\Components\Toggle::make('features.rear_camera')
+                                    ->label('📷 Caméra de recul'),
+                                Forms\Components\Toggle::make('features.parking_sensors')
+                                    ->label('📡 Radar de stationnement'),
+                                Forms\Components\Toggle::make('features.gps')
+                                    ->label('🗺️ GPS intégré'),
+                                Forms\Components\Toggle::make('features.heated_seats')
+                                    ->label('🔥 Sièges chauffants'),
+                                Forms\Components\Toggle::make('features.sunroof')
+                                    ->label('☀️ Toit ouvrant'),
+                                Forms\Components\Toggle::make('features.electric_windows')
+                                    ->label('🪟 Vitres électriques'),
+                                Forms\Components\Toggle::make('features.central_locking')
+                                    ->label('🔒 Verrouillage centralisé'),
+                                Forms\Components\Toggle::make('features.dashcam')
+                                    ->label('🎥 Dashcam'),
+                                Forms\Components\Toggle::make('features.usb_port')
+                                    ->label('🔌 Port USB'),
+                                Forms\Components\Toggle::make('features.start_stop')
+                                    ->label('⏯️ Start & Stop'),
+                                Forms\Components\Toggle::make('features.keyless_entry')
+                                    ->label('🔑 Démarrage sans clé'),
+                                Forms\Components\Toggle::make('features.abs_esp')
+                                    ->label('🛡️ ABS / ESP'),
+                                Forms\Components\Toggle::make('features.led_lights')
+                                    ->label('💡 Phares LED'),
+                            ]),
                     ]),
 
                 // Section 2: Tarification

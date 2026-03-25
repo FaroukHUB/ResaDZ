@@ -103,14 +103,24 @@
                             <div class="font-bold text-gray-900 mt-1">{{ $vehicle->color }}</div>
                         </div>
                         @endif
-                        <div class="bg-gray-50 rounded-xl p-4 text-center">
-                            <div class="text-sm text-gray-500">Climatisation</div>
-                            <div class="font-bold mt-1 {{ $vehicle->has_air_conditioning ? 'text-green-600' : 'text-gray-400' }}">
-                                {{ $vehicle->has_air_conditioning ? '✅ Oui' : '❌ Non' }}
-                            </div>
-                        </div>
                     </div>
                 </div>
+
+                <!-- Équipements -->
+                @php $activeFeatures = $vehicle->getActiveFeatures(); @endphp
+                @if(count($activeFeatures) > 0)
+                <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-4">Équipements</h2>
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        @foreach($activeFeatures as $feature)
+                        <div class="flex items-center gap-2 bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                            <span class="text-lg">{{ $feature['icon'] }}</span>
+                            <span class="text-sm font-semibold text-green-800">{{ $feature['label'] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
 
                 <!-- Loueur Info -->
                 @if($vehicle->loueur)

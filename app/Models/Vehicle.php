@@ -15,6 +15,27 @@ class Vehicle extends Model
 {
     use HasFactory, SoftDeletes, HasWebpImages;
 
+    const AVAILABLE_FEATURES = [
+        'air_conditioning' => ['label' => 'Climatisation', 'icon' => '❄️'],
+        'onboard_computer' => ['label' => 'Ordinateur de bord', 'icon' => '🖥️'],
+        'carplay' => ['label' => 'Apple CarPlay / Android Auto', 'icon' => '📱'],
+        'cruise_control' => ['label' => 'Régulateur de vitesse', 'icon' => '🚀'],
+        'bluetooth' => ['label' => 'Bluetooth', 'icon' => '🔵'],
+        'rear_camera' => ['label' => 'Caméra de recul', 'icon' => '📷'],
+        'parking_sensors' => ['label' => 'Radar de stationnement', 'icon' => '📡'],
+        'gps' => ['label' => 'GPS intégré', 'icon' => '🗺️'],
+        'heated_seats' => ['label' => 'Sièges chauffants', 'icon' => '🔥'],
+        'sunroof' => ['label' => 'Toit ouvrant', 'icon' => '☀️'],
+        'electric_windows' => ['label' => 'Vitres électriques', 'icon' => '🪟'],
+        'central_locking' => ['label' => 'Verrouillage centralisé', 'icon' => '🔒'],
+        'dashcam' => ['label' => 'Dashcam', 'icon' => '🎥'],
+        'usb_port' => ['label' => 'Port USB', 'icon' => '🔌'],
+        'start_stop' => ['label' => 'Start & Stop', 'icon' => '⏯️'],
+        'keyless_entry' => ['label' => 'Démarrage sans clé', 'icon' => '🔑'],
+        'abs_esp' => ['label' => 'ABS / ESP', 'icon' => '🛡️'],
+        'led_lights' => ['label' => 'Phares LED', 'icon' => '💡'],
+    ];
+
     /**
      * Image fields to convert to WebP
      */
@@ -84,6 +105,7 @@ class Vehicle extends Model
         'available_options' => 'array',
         'vehicle_badges' => 'array',
         'vehicle_options' => 'array',
+        'features' => 'array',
         'mileage_limit_per_day' => 'integer',
         'has_air_conditioning' => 'boolean',
         'extra_mileage_fee' => 'decimal:2',
@@ -168,6 +190,28 @@ class Vehicle extends Model
             ->where('status', 'active')
             ->where('ends_at', '>=', now())
             ->first();
+    }
+
+    /**
+     * Get active features with labels and icons.
+     */
+    public function getActiveFeatures(): array
+    {
+        $features = $this->features ?? [];
+        $active = [];
+
+        // Legacy: migrate has_air_conditioning to features
+        if ($this->has_air_conditioning && empty($features['air_conditioning'])) {
+            $features['air_conditioning'] = true;
+        }
+
+        foreach (self::AVAILABLE_FEATURES as $key => $meta) {
+            if (!empty($features[$key])) {
+                $active[] = ['key' => $key, 'label' => $meta['label'], 'icon' => $meta['icon']];
+            }
+        }
+
+        return $active;
     }
 
     /**
