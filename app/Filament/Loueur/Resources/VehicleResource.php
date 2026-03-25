@@ -344,17 +344,12 @@ class VehicleResource extends Resource
                             ])
                             ->defaultItems(0)
                             ->addActionLabel('Ajouter une période')
-                            ->addActionColor('warning')
                             ->itemLabel(fn (array $state): ?string =>
                                 isset($state['name']) && isset($state['supplement_amount'])
                                     ? "{$state['name']} — +{$state['supplement_amount']} DA/jour"
                                     : null
                             )
-                            ->extraItemActions([])
-                            ->collapsible()
-                            ->collapseAllAction(
-                                fn (Forms\Components\Actions\Action $action) => $action->label('Tout replier'),
-                            ),
+                            ->collapsible(),
                     ]),
 
                 // Section 4: Photos
