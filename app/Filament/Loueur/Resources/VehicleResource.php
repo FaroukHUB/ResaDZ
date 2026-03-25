@@ -52,6 +52,7 @@ class VehicleResource extends Resource
                 // Section 1: Informations du véhicule
                 Forms\Components\Section::make('Informations du véhicule')
                     ->icon('heroicon-o-truck')
+                    ->iconColor('primary')
                     ->description('Ces informations sont affichées sur la fiche de votre véhicule côté client. Plus c\'est complet, plus les clients auront confiance.')
                     ->collapsible()
                     ->schema([
@@ -144,6 +145,7 @@ class VehicleResource extends Resource
                 // Section 2: Tarification
                 Forms\Components\Section::make('Tarification')
                     ->icon('heroicon-o-currency-euro')
+                    ->iconColor('success')
                     ->description('Définissez vos tarifs. Le prix affiché aux clients inclut la commission ResaDZ.')
                     ->collapsible()
                     ->schema([
@@ -230,6 +232,7 @@ class VehicleResource extends Resource
                 // Section 3: Prix dégressifs (optionnel)
                 Forms\Components\Section::make('Prix dégressifs (optionnel)')
                     ->icon('heroicon-o-arrow-trending-down')
+                    ->iconColor('warning')
                     ->description('Attirez plus de clients avec des réductions longue durée ! Les prix dégressifs sont affichés sur votre fiche véhicule et incitent les clients à réserver plus longtemps.')
                     ->collapsed()
                     ->collapsible()
@@ -282,8 +285,9 @@ class VehicleResource extends Resource
                     ]),
 
                 // Section 3bis: Tarifs saisonniers
-                Forms\Components\Section::make('Tarifs saisonniers 🌞')
+                Forms\Components\Section::make('Tarifs saisonniers')
                     ->icon('heroicon-o-sun')
+                    ->iconColor('warning')
                     ->description('Définissez des suppléments pour les périodes de forte demande.')
                     ->collapsed()
                     ->collapsible()
@@ -355,6 +359,7 @@ class VehicleResource extends Resource
                 // Section 4: Photos
                 Forms\Components\Section::make('Photos')
                     ->icon('heroicon-o-photo')
+                    ->iconColor('info')
                     ->description('Des photos de qualité augmentent vos réservations de 60% ! Prenez des photos en journée, véhicule propre, sous plusieurs angles.')
                     ->collapsible()
                     ->schema([
@@ -394,6 +399,7 @@ class VehicleResource extends Resource
                 // Section 5: Disponibilité
                 Forms\Components\Section::make('Disponibilité')
                     ->icon('heroicon-o-calendar')
+                    ->iconColor('gray')
                     ->description('Contrôlez quand et si votre véhicule apparaît dans les résultats de recherche.')
                     ->collapsible()
                     ->schema([
@@ -429,6 +435,7 @@ class VehicleResource extends Resource
                 // Section 6: Badges
                 Forms\Components\Section::make('Badges du véhicule')
                     ->icon('heroicon-o-check-badge')
+                    ->iconColor('success')
                     ->description('Les badges apparaissent sur la carte du véhicule et rassurent les clients. Cochez ceux qui s\'appliquent à ce véhicule.')
                     ->schema([
                         Forms\Components\Grid::make(2)
@@ -466,6 +473,7 @@ class VehicleResource extends Resource
                 // Section 7: Options de location
                 Forms\Components\Section::make('Options de location (facultatif)')
                     ->icon('heroicon-o-squares-plus')
+                    ->iconColor('primary')
                     ->description('Proposez des options payantes ou gratuites aux clients. Ex: GPS, siège bébé, conducteur additionnel...')
                     ->collapsed()
                     ->collapsible()
@@ -507,25 +515,41 @@ class VehicleResource extends Resource
                                     : null
                             )
                             ->collapsible(),
+                    ]),
 
-                        Forms\Components\Section::make('Frais de retour')
-                            ->description('Frais facturés au client si le véhicule est rendu sans le plein ou sans lavage. Mettez 0 pour désactiver.')
+                // Section 8: Frais de retour
+                Forms\Components\Section::make('Frais de retour')
+                    ->icon('heroicon-o-arrow-uturn-left')
+                    ->iconColor('danger')
+                    ->description('Frais facturés au client si le véhicule est rendu sans le plein ou sans lavage. Mettez 0 pour désactiver.')
+                    ->schema([
+                        Forms\Components\Placeholder::make('return_fees_info')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 rounded-xl">
+                                    <div class="flex items-start gap-3">
+                                        <span class="text-xl flex-shrink-0">⛽</span>
+                                        <div>
+                                            <p class="font-semibold text-red-900 dark:text-red-100">Ces frais apparaissent comme options cochables sur la page de réservation</p>
+                                            <p class="text-sm text-red-800 dark:text-red-200 mt-1">Le client peut choisir de payer ces frais à l\'avance s\'il sait qu\'il ne rendra pas le véhicule avec le plein ou lavé.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ')),
+                        Forms\Components\Grid::make(2)
                             ->schema([
-                                Forms\Components\Grid::make(2)
-                                    ->schema([
-                                        Forms\Components\TextInput::make('fuel_return_fee')
-                                            ->label('Frais retour sans plein')
-                                            ->numeric()
-                                            ->default(0)
-                                            ->suffix('DA')
-                                            ->helperText('0 = option désactivée'),
-                                        Forms\Components\TextInput::make('wash_return_fee')
-                                            ->label('Frais retour sans lavage')
-                                            ->numeric()
-                                            ->default(0)
-                                            ->suffix('DA')
-                                            ->helperText('0 = option désactivée'),
-                                    ]),
+                                Forms\Components\TextInput::make('fuel_return_fee')
+                                    ->label('Frais retour sans plein')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->suffix('DA')
+                                    ->helperText('0 = option désactivée'),
+                                Forms\Components\TextInput::make('wash_return_fee')
+                                    ->label('Frais retour sans lavage')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->suffix('DA')
+                                    ->helperText('0 = option désactivée'),
                             ]),
                     ]),
             ]);
