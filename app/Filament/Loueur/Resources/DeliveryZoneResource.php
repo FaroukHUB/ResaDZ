@@ -18,7 +18,7 @@ class DeliveryZoneResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-map-pin';
 
-    protected static ?string $navigationGroup = 'Configuration';
+    protected static ?string $navigationGroup = 'Catalogue';
 
     protected static ?string $navigationLabel = 'Zones de livraison';
 
@@ -26,7 +26,7 @@ class DeliveryZoneResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Zones de livraison';
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 2;
 
     public static function shouldRegisterNavigation(): bool
     {
