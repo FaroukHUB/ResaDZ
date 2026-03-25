@@ -46,6 +46,8 @@ class Acomptes extends Page implements Forms\Contracts\HasForms
                 'require_documents' => $loueur->getSetting('require_documents', true),
                 'return_margin_hours' => $loueur->getSetting('return_margin_hours', 2),
                 'custom_location_enabled' => $loueur->getSetting('custom_location_enabled', false),
+                'free_airport_delivery_enabled' => $loueur->getSetting('free_airport_delivery_days', 0) > 0,
+                'free_airport_delivery_days' => $loueur->getSetting('free_airport_delivery_days', 0),
             ]);
         }
     }
@@ -123,6 +125,34 @@ class Acomptes extends Page implements Forms\Contracts\HasForms
                             ->label('Accepter les demandes de lieu personnalisé')
                             ->helperText('Le client pourra indiquer une adresse libre. Vous fixerez le prix manuellement sur chaque réservation concernée.'),
                     ]),
+                Forms\Components\Section::make('Livraison aéroport offerte')
+                    ->description('Offrez la livraison aéroport à partir d\'un certain nombre de jours de location.')
+                    ->schema([
+                        Forms\Components\Placeholder::make('airport_help')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-4 bg-sky-50 dark:bg-sky-900/20 border border-sky-200 dark:border-sky-700 rounded-xl">
+                                    <div class="flex items-start gap-3">
+                                        <span class="text-xl flex-shrink-0">✈️</span>
+                                        <div>
+                                            <p class="font-semibold text-sky-900 dark:text-sky-100">Un argument très fort pour la diaspora qui rentre en été</p>
+                                            <p class="text-sm text-sky-800 dark:text-sky-200 mt-1">Ça booste les longues locations ! Le badge apparaîtra sur vos véhicules et les clients verront la livraison gratuite dans le récapitulatif.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ')),
+                        Forms\Components\Toggle::make('free_airport_delivery_enabled')
+                            ->label('Activer la livraison aéroport offerte')
+                            ->live(),
+                        Forms\Components\TextInput::make('free_airport_delivery_days')
+                            ->label('À partir de combien de jours ?')
+                            ->numeric()
+                            ->minValue(1)
+                            ->suffix('jours')
+                            ->placeholder('Ex: 7')
+                            ->helperText('La livraison aéroport sera gratuite pour toute location de ce nombre de jours ou plus')
+                            ->visible(fn (Forms\Get $get) => (bool) $get('free_airport_delivery_enabled')),
+                    ]),
             ])
             ->statePath('data');
     }
@@ -141,6 +171,11 @@ class Acomptes extends Page implements Forms\Contracts\HasForms
         $loueur->setSetting('require_documents', $data['require_documents'] ?? true, 'boolean');
         $loueur->setSetting('return_margin_hours', $data['return_margin_hours'] ?? 2, 'integer');
         $loueur->setSetting('custom_location_enabled', $data['custom_location_enabled'] ?? false, 'boolean');
+
+        $freeAirportDays = ($data['free_airport_delivery_enabled'] ?? false)
+            ? max(0, (int) ($data['free_airport_delivery_days'] ?? 0))
+            : 0;
+        $loueur->setSetting('free_airport_delivery_days', $freeAirportDays, 'integer');
 
         Notification::make()
             ->title('Paramètres enregistrés')
