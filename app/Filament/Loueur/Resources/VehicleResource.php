@@ -453,7 +453,6 @@ class VehicleResource extends Resource
                 Tables\Columns\TextColumn::make('price_per_day')
                     ->label('Prix/jour')
                     ->formatStateUsing(fn ($state) => number_format($state, 0, ',', ' ') . ' DA')
-                    ->description(fn ($record) => 'Net: ' . number_format($record->price_per_day - 150, 0, ',', ' ') . ' DA')
                     ->sortable(),
                 Tables\Columns\BadgeColumn::make('status')
                     ->label('Statut')
