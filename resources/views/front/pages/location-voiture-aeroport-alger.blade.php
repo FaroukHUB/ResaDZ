@@ -7,13 +7,13 @@
 @section('meta_extra')
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
+    "@@context": "https://schema.org",
+    "@@type": "WebPage",
     "name": "Location voiture Aéroport Alger Houari Boumédiène",
     "description": "Louez une voiture à l'aéroport d'Alger — livraison directe au terminal, loueurs vérifiés.",
     "url": "{{ url('/location-voiture-aeroport-alger') }}",
     "publisher": {
-        "@type": "Organization",
+        "@@type": "Organization",
         "name": "ResaDZ",
         "url": "{{ url('/') }}"
     }
@@ -330,7 +330,7 @@
 
         <div class="space-y-4" x-data="{ open: null }">
             <div class="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
-                <button @click="open = open === 1 ? null : 1" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 1 ? null : 1" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Peut-on réserver le jour même ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 1 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -340,7 +340,7 @@
             </div>
 
             <div class="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
-                <button @click="open = open === 2 ? null : 2" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 2 ? null : 2" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">La voiture est-elle disponible la nuit ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 2 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -350,7 +350,7 @@
             </div>
 
             <div class="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
-                <button @click="open = open === 3 ? null : 3" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 3 ? null : 3" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Que faire si le vol est retardé ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 3 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -360,7 +360,7 @@
             </div>
 
             <div class="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
-                <button @click="open = open === 4 ? null : 4" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 4 ? null : 4" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Peut-on rendre la voiture à l'aéroport ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 4 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -370,7 +370,7 @@
             </div>
 
             <div class="bg-gray-50 rounded-2xl border border-gray-200 overflow-hidden">
-                <button @click="open = open === 5 ? null : 5" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 5 ? null : 5" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Un permis étranger est-il accepté ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 5 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -383,14 +383,14 @@
         {{-- FAQ Schema --}}
         <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
+            "@@context": "https://schema.org",
+            "@@type": "FAQPage",
             "mainEntity": [
-                {"@type": "Question", "name": "Peut-on réserver le jour même ?", "acceptedAnswer": {"@type": "Answer", "text": "C'est possible mais risqué en haute saison. Mieux vaut réserver au moins 48h à l'avance."}},
-                {"@type": "Question", "name": "La voiture est-elle disponible la nuit ?", "acceptedAnswer": {"@type": "Answer", "text": "Certains loueurs assurent la livraison 24h/24. Précisez votre heure d'arrivée lors de la réservation."}},
-                {"@type": "Question", "name": "Que faire si le vol est retardé ?", "acceptedAnswer": {"@type": "Answer", "text": "Prévenez le loueur par message sur ResaDZ. La majorité s'adapte aux retards sans frais supplémentaires."}},
-                {"@type": "Question", "name": "Peut-on rendre la voiture à l'aéroport ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui, la plupart des loueurs acceptent la restitution au terminal. À confirmer lors de la réservation."}},
-                {"@type": "Question", "name": "Un permis étranger est-il accepté ?", "acceptedAnswer": {"@type": "Answer", "text": "Oui. Permis français, belge, canadien et international sont acceptés."}}
+                {"@@type": "Question", "name": "Peut-on réserver le jour même ?", "acceptedAnswer": {"@@type": "Answer", "text": "C'est possible mais risqué en haute saison. Mieux vaut réserver au moins 48h à l'avance."}},
+                {"@@type": "Question", "name": "La voiture est-elle disponible la nuit ?", "acceptedAnswer": {"@@type": "Answer", "text": "Certains loueurs assurent la livraison 24h/24. Précisez votre heure d'arrivée lors de la réservation."}},
+                {"@@type": "Question", "name": "Que faire si le vol est retardé ?", "acceptedAnswer": {"@@type": "Answer", "text": "Prévenez le loueur par message sur ResaDZ. La majorité s'adapte aux retards sans frais supplémentaires."}},
+                {"@@type": "Question", "name": "Peut-on rendre la voiture à l'aéroport ?", "acceptedAnswer": {"@@type": "Answer", "text": "Oui, la plupart des loueurs acceptent la restitution au terminal. À confirmer lors de la réservation."}},
+                {"@@type": "Question", "name": "Un permis étranger est-il accepté ?", "acceptedAnswer": {"@@type": "Answer", "text": "Oui. Permis français, belge, canadien et international sont acceptés."}}
             ]
         }
         </script>

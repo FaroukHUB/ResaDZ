@@ -7,13 +7,13 @@
 @section('meta_extra')
 <script type="application/ld+json">
 {
-    "@context": "https://schema.org",
-    "@type": "WebPage",
+    "@@context": "https://schema.org",
+    "@@type": "WebPage",
     "name": "Location voiture Alger",
     "description": "Louez une voiture à Alger entre particuliers — tarifs réels 2026, livraison aéroport, loueurs vérifiés.",
     "url": "{{ url('/location-voiture-alger') }}",
     "publisher": {
-        "@type": "Organization",
+        "@@type": "Organization",
         "name": "ResaDZ",
         "url": "{{ url('/') }}"
     }
@@ -334,7 +334,7 @@
         <div class="space-y-4" x-data="{ open: null }">
             {{-- Q1 --}}
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                <button @click="open = open === 1 ? null : 1" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 1 ? null : 1" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Peut-on louer une voiture à Alger sans se déplacer ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 1 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -345,7 +345,7 @@
 
             {{-- Q2 --}}
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                <button @click="open = open === 2 ? null : 2" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 2 ? null : 2" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Quelle est la durée minimale de location à Alger ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 2 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -356,7 +356,7 @@
 
             {{-- Q3 --}}
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                <button @click="open = open === 3 ? null : 3" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 3 ? null : 3" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Les prix augmentent-ils en été ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 3 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -367,7 +367,7 @@
 
             {{-- Q4 --}}
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                <button @click="open = open === 4 ? null : 4" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 4 ? null : 4" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Un Algérien résidant en France peut-il louer sur ResaDZ ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 4 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -378,7 +378,7 @@
 
             {{-- Q5 --}}
             <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm">
-                <button @click="open = open === 5 ? null : 5" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
+                <button x-on:click="open = open === 5 ? null : 5" class="w-full px-6 py-5 text-left flex items-center justify-between gap-4">
                     <span class="font-bold text-gray-900">Comment éviter les arnaques ?</span>
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 5 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
@@ -391,46 +391,46 @@
         {{-- FAQ Schema --}}
         <script type="application/ld+json">
         {
-            "@context": "https://schema.org",
-            "@type": "FAQPage",
+            "@@context": "https://schema.org",
+            "@@type": "FAQPage",
             "mainEntity": [
                 {
-                    "@type": "Question",
+                    "@@type": "Question",
                     "name": "Peut-on louer une voiture à Alger sans se déplacer ?",
                     "acceptedAnswer": {
-                        "@type": "Answer",
+                        "@@type": "Answer",
                         "text": "Oui. La plupart des loueurs sur ResaDZ proposent la livraison à domicile ou à l'aéroport. Indiquez votre adresse lors de la réservation."
                     }
                 },
                 {
-                    "@type": "Question",
+                    "@@type": "Question",
                     "name": "Quelle est la durée minimale de location à Alger ?",
                     "acceptedAnswer": {
-                        "@type": "Answer",
+                        "@@type": "Answer",
                         "text": "La plupart des loueurs acceptent des locations à partir de 24 heures. Certains proposent des demi-journées selon disponibilité."
                     }
                 },
                 {
-                    "@type": "Question",
+                    "@@type": "Question",
                     "name": "Les prix augmentent-ils en été ?",
                     "acceptedAnswer": {
-                        "@type": "Answer",
+                        "@@type": "Answer",
                         "text": "Oui, entre juillet et août les tarifs montent de 20 à 30% sur toute la région algéroise. Réservez au moins 2 semaines à l'avance pendant cette période."
                     }
                 },
                 {
-                    "@type": "Question",
+                    "@@type": "Question",
                     "name": "Un Algérien résidant en France peut-il louer sur ResaDZ ?",
                     "acceptedAnswer": {
-                        "@type": "Answer",
+                        "@@type": "Answer",
                         "text": "Absolument. Votre permis français est accepté. Beaucoup de loueurs proposent la livraison directe à l'aéroport dès votre arrivée."
                     }
                 },
                 {
-                    "@type": "Question",
+                    "@@type": "Question",
                     "name": "Comment éviter les arnaques ?",
                     "acceptedAnswer": {
-                        "@type": "Answer",
+                        "@@type": "Answer",
                         "text": "Passez uniquement par des plateformes avec contrat et traçabilité. Vérifiez toujours la carte grise et l'assurance avant de partir."
                     }
                 }
