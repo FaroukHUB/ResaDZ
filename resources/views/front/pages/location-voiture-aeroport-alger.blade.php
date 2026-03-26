@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('title', 'Location voiture Aéroport Alger — Livraison au terminal | ResaDZ')
-@section('meta_description', 'Louez une voiture à l\'aéroport d\'Alger Houari Boumédiène — livraison directe au terminal, loueurs vérifiés, réservation en ligne. Dès 4 500 DA.')
+@section('meta_description', "Louez une voiture à l'aéroport d'Alger Houari Boumédiène — livraison directe au terminal, loueurs vérifiés, réservation en ligne. Dès 4 500 DA.")
 @section('canonical', url('/location-voiture-aeroport-alger'))
 
 @section('meta_extra')
