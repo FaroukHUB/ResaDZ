@@ -80,6 +80,26 @@ class SitemapController extends Controller
             ];
         }
 
+        // Static pages
+        $staticPages = [
+            ['loc' => route('comment-ca-marche'), 'changefreq' => 'monthly', 'priority' => '0.7'],
+            ['loc' => url('/guide'), 'changefreq' => 'monthly', 'priority' => '0.6'],
+            ['loc' => route('legal.mentions-legales'), 'changefreq' => 'yearly', 'priority' => '0.3'],
+            ['loc' => route('legal.cgu'), 'changefreq' => 'yearly', 'priority' => '0.3'],
+            ['loc' => route('legal.confidentialite'), 'changefreq' => 'yearly', 'priority' => '0.3'],
+        ];
+        $urls = array_merge($urls, $staticPages);
+
+        // SEO landing pages
+        $seoPages = [
+            ['loc' => url('/location-voiture-alger'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-aeroport-alger'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-oran'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-constantine'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-annaba'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+        ];
+        $urls = array_merge($urls, $seoPages);
+
         // Vehicles by wilaya pages
         $wilayas = config('resadz.wilayas', []);
 
@@ -125,7 +145,11 @@ class SitemapController extends Controller
         $content .= "Disallow: /admin/*\n";
         $content .= "Disallow: /loueur\n";
         $content .= "Disallow: /loueur/*\n";
+        $content .= "Disallow: /chauffeur\n";
+        $content .= "Disallow: /chauffeur/*\n";
         $content .= "Disallow: /livewire/*\n";
+        $content .= "Disallow: /espace-client/*\n";
+        $content .= "Disallow: /ma-reservation/*\n";
         $content .= "\n";
         $content .= "Sitemap: {$sitemapUrl}\n";
 
