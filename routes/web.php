@@ -71,6 +71,9 @@ Route::post('/avis/{token}', [ReviewController::class, 'store'])->name('review.s
 Route::get('/location-voiture-alger', function () {
     return view('front.pages.location-voiture-alger');
 })->name('seo.location-alger');
+Route::get('/location-voiture-aeroport-alger', function () {
+    return view('front.pages.location-voiture-aeroport-alger');
+})->name('seo.location-aeroport-alger');
 
 // Pages SEO par wilaya (wildcard — doit rester APRÈS les routes dédiées)
 Route::get('/location-voiture-{wilaya}', [VehicleController::class, 'byWilaya'])->name('vehicles.by-wilaya');
