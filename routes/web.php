@@ -67,7 +67,12 @@ Route::prefix('espace-client/{token}')->group(function () {
 Route::get('/avis/{token}', [ReviewController::class, 'create'])->name('review.create');
 Route::post('/avis/{token}', [ReviewController::class, 'store'])->name('review.store');
 
-// Pages SEO par wilaya
+// Pages SEO dédiées par wilaya
+Route::get('/location-voiture-alger', function () {
+    return view('front.pages.location-voiture-alger');
+})->name('seo.location-alger');
+
+// Pages SEO par wilaya (wildcard — doit rester APRÈS les routes dédiées)
 Route::get('/location-voiture-{wilaya}', [VehicleController::class, 'byWilaya'])->name('vehicles.by-wilaya');
 
 // Comparateur de véhicules
