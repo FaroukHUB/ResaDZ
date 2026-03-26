@@ -74,6 +74,15 @@ Route::get('/location-voiture-alger', function () {
 Route::get('/location-voiture-aeroport-alger', function () {
     return view('front.pages.location-voiture-aeroport-alger');
 })->name('seo.location-aeroport-alger');
+Route::get('/location-voiture-oran', function () {
+    return view('front.pages.location-voiture-oran');
+})->name('seo.location-oran');
+Route::get('/location-voiture-constantine', function () {
+    return view('front.pages.location-voiture-constantine');
+})->name('seo.location-constantine');
+Route::get('/location-voiture-annaba', function () {
+    return view('front.pages.location-voiture-annaba');
+})->name('seo.location-annaba');
 
 // Pages SEO par wilaya (wildcard — doit rester APRÈS les routes dédiées)
 Route::get('/location-voiture-{wilaya}', [VehicleController::class, 'byWilaya'])->name('vehicles.by-wilaya');
