@@ -94,6 +94,12 @@ class LoueurPanelProvider extends PanelProvider
                     ->icon('heroicon-o-cog-6-tooth')
                     ->collapsible(),
             ])
+            ->navigationItems([
+                \Filament\Navigation\NavigationItem::make('Guide d\'utilisation')
+                    ->icon('heroicon-o-book-open')
+                    ->url('/guide', shouldOpenInNewTab: true)
+                    ->sort(99),
+            ])
             ->renderHook(
                 PanelsRenderHook::BODY_START,
                 fn () => $this->renderOnboardingBanner()

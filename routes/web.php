@@ -3,6 +3,7 @@
 use App\Http\Controllers\Front\BookingController;
 use App\Http\Controllers\Front\BlogController;
 use App\Http\Controllers\Front\ClientAreaController;
+use App\Http\Controllers\Front\GuideController;
 use App\Http\Controllers\Front\HomeController;
 use App\Http\Controllers\Front\LoueurController;
 use App\Http\Controllers\Front\ReviewController;
@@ -28,6 +29,7 @@ Route::get('/auth/google/callback', [AuthController::class, 'handleGoogleCallbac
 // Marketplace Frontend
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('/comment-ca-marche', [HomeController::class, 'commentCaMarche'])->name('comment-ca-marche');
+Route::get('/guide', [GuideController::class, 'index'])->name('guide');
 Route::get('/vehicules', [VehicleController::class, 'index'])->name('vehicles.index');
 Route::get('/vehicule/{slug}', [VehicleController::class, 'show'])->name('vehicles.show');
 Route::get('/loueurs', [LoueurController::class, 'index'])->name('loueurs.index');
