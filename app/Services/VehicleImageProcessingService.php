@@ -9,7 +9,7 @@ use Illuminate\Support\Str;
 
 class VehicleImageProcessingService
 {
-    private const API_URL = 'http://84.247.191.205:5000/process-image';
+    private const API_URL = 'https://api.resadz.com/process-image';
     private const API_TOKEN = 'resadz_vps_secret_2026';
     private const ORIGINALS_DIR = 'vehicles/originals';
 
