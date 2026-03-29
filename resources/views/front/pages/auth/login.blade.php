@@ -37,6 +37,12 @@
         <form method="POST" action="{{ route('login') }}" class="space-y-4">
             @csrf
 
+            @if(session('success'))
+                <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-xl text-sm">
+                    {{ session('success') }}
+                </div>
+            @endif
+
             @if($errors->has('email'))
                 <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-xl text-sm">
                     {{ $errors->first('email') }}
@@ -62,6 +68,9 @@
                     <input type="checkbox" name="remember" class="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500">
                     <span class="text-sm text-gray-600">Se souvenir de moi</span>
                 </label>
+                <a href="{{ route('password.request') }}" class="text-sm text-red-600 hover:text-red-700 transition font-medium">
+                    Mot de passe oublié ?
+                </a>
             </div>
 
             <button type="submit" class="w-full py-3 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg">

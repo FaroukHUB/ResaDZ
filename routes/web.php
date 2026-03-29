@@ -11,6 +11,7 @@ use App\Http\Controllers\Front\SitemapController;
 use App\Http\Controllers\Front\TransferController;
 use App\Http\Controllers\Front\VehicleController;
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Front\LegalController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,6 +22,12 @@ Route::get('/inscription', [AuthController::class, 'showRegister'])->name('regis
 Route::post('/inscription', [AuthController::class, 'register']);
 Route::post('/deconnexion', [AuthController::class, 'logout'])->name('logout');
 Route::get('/deconnexion', [AuthController::class, 'logout'])->name('logout.get');
+
+// Mot de passe oublié
+Route::get('/mot-de-passe/oublie', [ForgotPasswordController::class, 'showForgotForm'])->name('password.request');
+Route::post('/mot-de-passe/oublie', [ForgotPasswordController::class, 'sendResetLink'])->name('password.email');
+Route::get('/mot-de-passe/reset/{token}', [ForgotPasswordController::class, 'showResetForm'])->name('password.reset');
+Route::post('/mot-de-passe/reset', [ForgotPasswordController::class, 'resetPassword'])->name('password.update');
 
 // Google OAuth
 Route::get('/auth/google', [AuthController::class, 'redirectToGoogle'])->name('auth.google');
