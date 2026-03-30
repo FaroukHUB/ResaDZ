@@ -3,7 +3,6 @@
 namespace App\Filament\Loueur\Resources\VehicleResource\Pages;
 
 use App\Filament\Loueur\Resources\VehicleResource;
-use App\Services\VehicleImageProcessingService;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Support\Facades\Auth;
 
@@ -18,12 +17,6 @@ class CreateVehicle extends CreateRecord
 
         if ($loueur) {
             $data['loueur_id'] = $loueur->id;
-        }
-
-        // Traiter la photo principale via l'API externe
-        if (!empty($data['image'])) {
-            $service = new VehicleImageProcessingService();
-            $data['image'] = $service->processMainImage($data['image']);
         }
 
         return $data;
