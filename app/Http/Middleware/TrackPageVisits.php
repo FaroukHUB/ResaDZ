@@ -23,6 +23,9 @@ class TrackPageVisits
         'petalbot', 'uptimerobot', 'pingdom', 'curl', 'wget',
         'python-requests', 'go-http-client', 'headlesschrome',
         'phantomjs', 'selenium', 'lighthouse', 'pagespeed', 'scraper',
+        'chatgpt', 'gptbot', 'claudebot', 'anthropic', 'bytespider',
+        'applebot', 'dataforseo', 'seznambot', 'rogerbot', 'archive.org',
+        'ia_archiver', 'amazonbot', 'ccbot', 'meta-externalagent',
     ];
 
     public function __construct(GeoLocationService $geoService)
@@ -174,7 +177,40 @@ class TrackPageVisits
     protected function isExcludedIp(string $ip): bool
     {
         $configExcluded = config('resadz.excluded_tracking_ips', []);
-        return in_array($ip, $configExcluded);
+
+        foreach ($configExcluded as $excluded) {
+            $excluded = trim($excluded);
+            if (empty($excluded)) continue;
+
+            // Support CIDR notation (ex: 105.235.0.0/16)
+            if (str_contains($excluded, '/')) {
+                if ($this->ipInCidr($ip, $excluded)) {
+                    return true;
+                }
+            }
+            // Support wildcard (ex: 105.235.*)
+            elseif (str_contains($excluded, '*')) {
+                $pattern = str_replace('.', '\.', str_replace('*', '.*', $excluded));
+                if (preg_match('/^' . $pattern . '$/', $ip)) {
+                    return true;
+                }
+            }
+            // Exact match
+            elseif ($ip === $excluded) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected function ipInCidr(string $ip, string $cidr): bool
+    {
+        [$subnet, $bits] = explode('/', $cidr);
+        $ip = ip2long($ip);
+        $subnet = ip2long($subnet);
+        $mask = -1 << (32 - (int)$bits);
+        return ($ip & $mask) === ($subnet & $mask);
     }
 
     protected function isBot(string $userAgent): bool
