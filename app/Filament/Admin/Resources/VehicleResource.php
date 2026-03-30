@@ -99,6 +99,23 @@ class VehicleResource extends Resource
                             ->helperText('Affiché sur la page d\'accueil dans sa catégorie'),
                     ])->columns(2),
 
+                Forms\Components\Section::make('Photos')
+                    ->schema([
+                        Forms\Components\FileUpload::make('image')
+                            ->label('Photo principale')
+                            ->image()
+                            ->directory('vehicles')
+                            ->visibility('public')
+                            ->helperText('Photo affichée sur les cartes et en haut de la fiche véhicule'),
+                        Forms\Components\FileUpload::make('gallery')
+                            ->label('Galerie')
+                            ->image()
+                            ->multiple()
+                            ->directory('vehicles/gallery')
+                            ->visibility('public')
+                            ->reorderable(),
+                    ]),
+
                 Forms\Components\Section::make('Tarifs saisonniers')
                     ->icon('heroicon-o-sun')
                     ->collapsed()
