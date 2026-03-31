@@ -70,6 +70,7 @@ class Loueur extends Model
         'account_type',
         'offers_transfer',
         'offers_delivery',
+        'disponible_national',
     ];
 
     protected $casts = [
@@ -80,6 +81,7 @@ class Loueur extends Model
         'is_suspended' => 'boolean',
         'offers_transfer' => 'boolean',
         'offers_delivery' => 'boolean',
+        'disponible_national' => 'boolean',
         'verified_at' => 'datetime',
         'onboarding_completed_at' => 'datetime',
         'onboarding_step' => 'integer',

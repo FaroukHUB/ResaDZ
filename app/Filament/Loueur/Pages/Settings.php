@@ -52,6 +52,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'address' => $loueur->address,
                 'city' => $loueur->city,
                 'wilaya' => $loueur->wilaya,
+                'disponible_national' => $loueur->disponible_national ?? false,
                 'facebook' => $loueur->facebook,
                 'instagram' => $loueur->instagram,
                 'tiktok' => $loueur->tiktok,
@@ -97,6 +98,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     ]),
                                 Forms\Components\TextInput::make('address')
                                     ->label('Adresse'),
+                                Forms\Components\Toggle::make('disponible_national')
+                                    ->label('Je propose mes véhicules partout en Algérie')
+                                    ->helperText('Votre profil et vos véhicules apparaîtront dans toutes les wilayas'),
                             ]),
                         Forms\Components\Tabs\Tab::make('Contact')
                             ->icon('heroicon-o-phone')
@@ -273,6 +277,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
             'address' => $data['address'] ?? null,
             'city' => $data['city'] ?? null,
             'wilaya' => $data['wilaya'] ?? null,
+            'disponible_national' => $data['disponible_national'] ?? false,
             'facebook' => $data['facebook'] ?? null,
             'instagram' => $data['instagram'] ?? null,
             'tiktok' => $data['tiktok'] ?? null,

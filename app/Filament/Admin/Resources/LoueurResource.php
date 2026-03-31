@@ -180,6 +180,9 @@ class LoueurResource extends Resource
                                         Forms\Components\Toggle::make('is_suspended')
                                             ->label('Suspendu')
                                             ->helperText('Bloque l\'accès au compte'),
+                                        Forms\Components\Toggle::make('disponible_national')
+                                            ->label('Disponible national')
+                                            ->helperText('Apparaît dans toutes les wilayas'),
                                     ]),
                                 Forms\Components\Textarea::make('suspension_reason')
                                     ->label('Raison de suspension')
@@ -264,6 +267,12 @@ class LoueurResource extends Resource
                     ->color(fn ($record) => $record->isInTrial() ? 'success' : 'warning')
                     ->description(fn ($record) => $record->isInTrial() ? 'En cours' : ($record->trial_ends_at ? 'Expiré' : '-'))
                     ->sortable(),
+                Tables\Columns\IconColumn::make('disponible_national')
+                    ->label('National')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-globe-alt')
+                    ->trueColor('success')
+                    ->falseColor('gray'),
                 Tables\Columns\IconColumn::make('is_verified')
                     ->label('Vérifié')
                     ->boolean(),
@@ -282,6 +291,8 @@ class LoueurResource extends Resource
                     ->label('Vérifié'),
                 Tables\Filters\TernaryFilter::make('is_suspended')
                     ->label('Suspendu'),
+                Tables\Filters\TernaryFilter::make('disponible_national')
+                    ->label('Disponible national'),
                 Tables\Filters\Filter::make('in_trial')
                     ->label('En période d\'essai')
                     ->query(fn ($query) => $query->inTrial()),

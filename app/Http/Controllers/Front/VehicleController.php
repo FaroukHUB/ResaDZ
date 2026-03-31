@@ -40,7 +40,7 @@ class VehicleController extends Controller
             $query->where('vehicles.price_per_day', '<=', $request->max_price);
         }
         if ($request->filled('wilaya')) {
-            $query->whereHas('loueur', fn ($q) => $q->where('wilaya', $request->wilaya));
+            $query->whereHas('loueur', fn ($q) => $q->where('wilaya', $request->wilaya)->orWhere('disponible_national', true));
         }
 
         // Filtre aéroport : prioriser les loueurs avec livraison aéroport
@@ -176,12 +176,14 @@ class VehicleController extends Controller
         // Normalize wilaya slug to name
         $wilayaName = str_replace('-', ' ', ucwords($wilaya, '-'));
 
-        // Find loueurs in this wilaya
+        // Find loueurs in this wilaya + loueurs disponibles nationalement
         $loueurIds = Loueur::where('is_active', true)
             ->where('is_suspended', false)
             ->where(function ($q) use ($wilayaName, $wilaya) {
-                $q->whereRaw('LOWER(wilaya) = ?', [strtolower($wilayaName)])
-                  ->orWhereRaw('LOWER(wilaya) = ?', [strtolower($wilaya)]);
+                $q->where(function ($sub) use ($wilayaName, $wilaya) {
+                    $sub->whereRaw('LOWER(wilaya) = ?', [strtolower($wilayaName)])
+                        ->orWhereRaw('LOWER(wilaya) = ?', [strtolower($wilaya)]);
+                })->orWhere('disponible_national', true);
             })
             ->pluck('id');
 

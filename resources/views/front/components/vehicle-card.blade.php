@@ -90,6 +90,15 @@
         <p class="text-white/60 text-sm mt-1">Prix / jour</p>
     </div>
 
+    {{-- National availability badge --}}
+    @if($loueur && $loueur->disponible_national)
+        <div class="px-4 py-2 border-b border-neutral-800">
+            <span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-green-600/20 border border-green-500/30 rounded text-xs font-semibold text-green-400">
+                🇩🇿 Disponible partout en Algérie
+            </span>
+        </div>
+    @endif
+
     {{-- Badges Section (only if loueur has badges configured) --}}
     @if(count($badges) > 0)
         <div class="px-4 py-3 space-y-2 border-b border-neutral-800">
