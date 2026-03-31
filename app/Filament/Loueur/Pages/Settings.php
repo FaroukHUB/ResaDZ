@@ -55,6 +55,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'disponible_national' => $loueur->disponible_national ?? false,
                 'logo' => $loueur->logo,
                 'cover_image' => $loueur->cover_image,
+                'specialites' => $loueur->specialites ?? [],
+                'langues' => $loueur->langues ?? [],
+                'horaires' => $loueur->horaires,
                 'facebook' => $loueur->facebook,
                 'instagram' => $loueur->instagram,
                 'tiktok' => $loueur->tiktok,
@@ -115,10 +118,26 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                             ->imageResizeTargetHeight('200')
                                             ->helperText('Logo affiché sur votre profil et les cartes véhicules (carré, 200x200px)'),
                                         Forms\Components\FileUpload::make('cover_image')
-                                            ->label('Photo de couverture')
+                                            ->label('Photo de couverture / Bannière')
                                             ->image()
                                             ->directory('loueurs/covers')
-                                            ->helperText('Image affichée en haut de votre page loueur'),
+                                            ->helperText('Image affichée en bannière sur votre profil (idéal: 1400x400px)'),
+                                    ]),
+                                Forms\Components\Section::make('Présentation')
+                                    ->schema([
+                                        Forms\Components\CheckboxList::make('specialites')
+                                            ->label('Spécialités')
+                                            ->options(\App\Models\Loueur::SPECIALITES)
+                                            ->columns(2)
+                                            ->helperText('Sélectionnez vos domaines d\'expertise'),
+                                        Forms\Components\CheckboxList::make('langues')
+                                            ->label('Langues parlées')
+                                            ->options(\App\Models\Loueur::LANGUES)
+                                            ->columns(4),
+                                        Forms\Components\TextInput::make('horaires')
+                                            ->label('Horaires d\'ouverture')
+                                            ->placeholder('Ex: Lun-Sam 8h-20h, Dim sur RDV')
+                                            ->maxLength(255),
                                     ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Contact')
@@ -299,6 +318,9 @@ class Settings extends Page implements Forms\Contracts\HasForms
             'disponible_national' => $data['disponible_national'] ?? false,
             'logo' => $data['logo'] ?? null,
             'cover_image' => $data['cover_image'] ?? null,
+            'specialites' => $data['specialites'] ?? [],
+            'langues' => $data['langues'] ?? [],
+            'horaires' => $data['horaires'] ?? null,
             'facebook' => $data['facebook'] ?? null,
             'instagram' => $data['instagram'] ?? null,
             'tiktok' => $data['tiktok'] ?? null,

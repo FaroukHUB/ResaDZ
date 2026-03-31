@@ -71,6 +71,9 @@ class Loueur extends Model
         'offers_transfer',
         'offers_delivery',
         'disponible_national',
+        'specialites',
+        'langues',
+        'horaires',
     ];
 
     protected $casts = [
@@ -82,6 +85,8 @@ class Loueur extends Model
         'offers_transfer' => 'boolean',
         'offers_delivery' => 'boolean',
         'disponible_national' => 'boolean',
+        'specialites' => 'array',
+        'langues' => 'array',
         'verified_at' => 'datetime',
         'onboarding_completed_at' => 'datetime',
         'onboarding_step' => 'integer',
@@ -484,6 +489,109 @@ class Loueur extends Model
 
         return $badges;
     }
+
+    /**
+     * Get auto-calculated badges for the loueur profile.
+     */
+    public function getAutoBadges(): array
+    {
+        $badges = [];
+
+        // Loueur vérifié
+        if ($this->is_verified) {
+            $badges[] = ['icon' => '✅', 'text' => 'Loueur vérifié', 'color' => 'green'];
+        }
+
+        // Réponse rapide (< 1h en moyenne)
+        $avgResponse = $this->getAverageResponseTime();
+        if ($avgResponse !== null && $avgResponse < 60) {
+            $badges[] = ['icon' => '⚡', 'text' => 'Réponse rapide', 'color' => 'blue'];
+        }
+
+        // Super Loueur (note > 4.5 ET +10 locations)
+        if ($this->rating >= 4.5 && $this->total_rentals >= 10) {
+            $badges[] = ['icon' => '🏆', 'text' => 'Super Loueur', 'color' => 'amber'];
+        }
+
+        // Disponible partout en Algérie
+        if ($this->disponible_national) {
+            $badges[] = ['icon' => '🇩🇿', 'text' => 'Disponible partout en Algérie', 'color' => 'green'];
+        }
+
+        // Flotte premium (+5 véhicules actifs)
+        $activeVehicles = $this->vehicles()->where('is_active', true)->count();
+        if ($activeVehicles >= 5) {
+            $badges[] = ['icon' => '💎', 'text' => 'Flotte premium', 'color' => 'purple'];
+        }
+
+        // Livraison aéroport
+        if ($this->getSetting('badge_airport', false)) {
+            $badges[] = ['icon' => '✈️', 'text' => 'Livraison aéroport', 'color' => 'blue'];
+        }
+
+        return $badges;
+    }
+
+    /**
+     * Calculate average response time in minutes (last 30 days).
+     */
+    public function getAverageResponseTime(): ?float
+    {
+        $conversations = $this->bookingConversations()
+            ->where('created_at', '>=', now()->subDays(30))
+            ->with(['messages' => function ($q) {
+                $q->orderBy('created_at', 'asc');
+            }])
+            ->get();
+
+        if ($conversations->isEmpty()) {
+            return null;
+        }
+
+        $totalMinutes = 0;
+        $count = 0;
+
+        foreach ($conversations as $conversation) {
+            $messages = $conversation->messages;
+            $clientMessage = $messages->where('sender_type', 'client')->first();
+            $loueurMessage = $messages->where('sender_type', 'loueur')->first();
+
+            if ($clientMessage && $loueurMessage && $loueurMessage->created_at->gt($clientMessage->created_at)) {
+                $totalMinutes += $clientMessage->created_at->diffInMinutes($loueurMessage->created_at);
+                $count++;
+            }
+        }
+
+        return $count > 0 ? round($totalMinutes / $count) : null;
+    }
+
+    /**
+     * Get formatted average response time.
+     */
+    public function getFormattedResponseTime(): string
+    {
+        $minutes = $this->getAverageResponseTime();
+        if ($minutes === null) return 'N/A';
+        if ($minutes < 60) return $minutes . ' min';
+        $hours = round($minutes / 60, 1);
+        return $hours . 'h';
+    }
+
+    const SPECIALITES = [
+        'longue_duree' => 'Location longue durée',
+        'mariage' => 'Mariage et événements',
+        'transfert_aeroport' => 'Transferts aéroport',
+        'utilitaires' => 'Véhicules utilitaires',
+        'premium' => 'Flotte premium',
+        'avec_chauffeur' => 'Location avec chauffeur',
+    ];
+
+    const LANGUES = [
+        'arabe' => 'Arabe',
+        'francais' => 'Français',
+        'anglais' => 'Anglais',
+        'kabyle' => 'Kabyle',
+    ];
 
     /**
      * Check if loueur is in trial period.

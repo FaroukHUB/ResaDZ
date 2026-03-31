@@ -47,6 +47,16 @@ class LoueurController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
-        return view('front.pages.loueur', compact('loueur', 'vehicles'));
+        $activeOffers = \App\Models\VehicleOffer::where('loueur_id', $loueur->id)
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where('end_date', '>=', now())
+            ->with('vehicle')
+            ->get();
+
+        $conditions = $loueur->getConditions();
+        $autoBadges = $loueur->getAutoBadges();
+
+        return view('front.pages.loueur', compact('loueur', 'vehicles', 'activeOffers', 'conditions', 'autoBadges'));
     }
 }
