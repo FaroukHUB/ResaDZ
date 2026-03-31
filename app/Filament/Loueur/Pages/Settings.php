@@ -53,6 +53,8 @@ class Settings extends Page implements Forms\Contracts\HasForms
                 'city' => $loueur->city,
                 'wilaya' => $loueur->wilaya,
                 'disponible_national' => $loueur->disponible_national ?? false,
+                'logo' => $loueur->logo,
+                'cover_image' => $loueur->cover_image,
                 'facebook' => $loueur->facebook,
                 'instagram' => $loueur->instagram,
                 'tiktok' => $loueur->tiktok,
@@ -101,6 +103,23 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                 Forms\Components\Toggle::make('disponible_national')
                                     ->label('Je propose mes véhicules partout en Algérie')
                                     ->helperText('Votre profil et vos véhicules apparaîtront dans toutes les wilayas'),
+                                Forms\Components\Section::make('Images')
+                                    ->schema([
+                                        Forms\Components\FileUpload::make('logo')
+                                            ->label('Logo')
+                                            ->image()
+                                            ->directory('loueurs/logos')
+                                            ->imageResizeMode('cover')
+                                            ->imageCropAspectRatio('1:1')
+                                            ->imageResizeTargetWidth('200')
+                                            ->imageResizeTargetHeight('200')
+                                            ->helperText('Logo affiché sur votre profil et les cartes véhicules (carré, 200x200px)'),
+                                        Forms\Components\FileUpload::make('cover_image')
+                                            ->label('Photo de couverture')
+                                            ->image()
+                                            ->directory('loueurs/covers')
+                                            ->helperText('Image affichée en haut de votre page loueur'),
+                                    ]),
                             ]),
                         Forms\Components\Tabs\Tab::make('Contact')
                             ->icon('heroicon-o-phone')
@@ -278,6 +297,8 @@ class Settings extends Page implements Forms\Contracts\HasForms
             'city' => $data['city'] ?? null,
             'wilaya' => $data['wilaya'] ?? null,
             'disponible_national' => $data['disponible_national'] ?? false,
+            'logo' => $data['logo'] ?? null,
+            'cover_image' => $data['cover_image'] ?? null,
             'facebook' => $data['facebook'] ?? null,
             'instagram' => $data['instagram'] ?? null,
             'tiktok' => $data['tiktok'] ?? null,
