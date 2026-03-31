@@ -257,6 +257,42 @@ class VehicleResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('shareOnSocial')
+                    ->label('Publier')
+                    ->icon('heroicon-o-share')
+                    ->color('info')
+                    ->modalHeading('Publier sur les réseaux sociaux')
+                    ->modalWidth('2xl')
+                    ->modalContent(function (Vehicle $record) {
+                        $vehicle = $record->load(['brand', 'category', 'loueur']);
+                        $imageUrl = $record->image ? asset('storage/' . $record->image) : null;
+                        $vehicleUrl = url('/vehicule/' . $record->slug);
+                        $price = number_format($record->price_per_day, 0, ',', ' ');
+                        $brand = $record->brand?->name ?? '';
+                        $model = $record->model ?? '';
+                        $year = $record->year ?? '';
+                        $transmission = $record->transmission === 'automatic' ? 'Automatique' : 'Manuelle';
+                        $fuel = ucfirst($record->fuel_type ?? '');
+                        $wilaya = $record->loueur?->wilaya ?? '';
+                        $seats = $record->seats ?? '';
+                        $clim = $record->has_air_conditioning ? 'Oui' : 'Non';
+
+                        $text = "🚗 {$brand} {$model} {$year} — Location à {$wilaya}\n\n";
+                        $text .= "💰 {$price} DA / jour\n";
+                        $text .= "⚙️ {$transmission} | ⛽ {$fuel}\n";
+                        if ($seats) $text .= "👥 {$seats} places | ❄️ Clim: {$clim}\n";
+                        $text .= "\n📱 Réservez en ligne sur ResaDZ :\n{$vehicleUrl}\n";
+                        $text .= "\n#LocationVoiture #ResaDZ #{$wilaya} #{$brand}";
+
+                        $fbShareUrl = 'https://www.facebook.com/sharer/sharer.php?u=' . urlencode($vehicleUrl);
+                        $waShareUrl = 'https://wa.me/?text=' . urlencode($text);
+
+                        return view('filament.admin.partials.share-vehicle-modal', compact(
+                            'imageUrl', 'vehicleUrl', 'text', 'fbShareUrl', 'waShareUrl', 'vehicle', 'price', 'brand', 'model', 'year', 'wilaya'
+                        ));
+                    })
+                    ->modalSubmitAction(false)
+                    ->modalCancelActionLabel('Fermer'),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
