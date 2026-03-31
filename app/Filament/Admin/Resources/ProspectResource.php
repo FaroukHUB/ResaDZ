@@ -20,7 +20,7 @@ class ProspectResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user-plus';
 
-    protected static ?string $navigationGroup = 'CRM';
+    protected static ?string $navigationGroup = 'Gestion';
 
     protected static ?string $navigationLabel = 'Prospects';
 
