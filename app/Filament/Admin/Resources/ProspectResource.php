@@ -291,17 +291,17 @@ class ProspectResource extends Resource
                             ->label('Fichier CSV')
                             ->acceptedFileTypes(['text/csv', 'text/plain', 'application/vnd.ms-excel'])
                             ->required()
-                            ->disk('local')
-                            ->directory('temp-imports'),
+                            ->storeFiles(false),
                     ])
                     ->action(function (array $data) {
-                        $path = storage_path('app/' . $data['csv_file']);
-                        if (!file_exists($path)) {
+                        $file = $data['csv_file'];
+
+                        if (!$file || !method_exists($file, 'getRealPath')) {
                             Notification::make()->title('Fichier introuvable')->danger()->send();
                             return;
                         }
 
-                        $handle = fopen($path, 'r');
+                        $handle = fopen($file->getRealPath(), 'r');
                         $header = fgetcsv($handle, 0, ',');
                         if (!$header) {
                             fclose($handle);
@@ -342,7 +342,6 @@ class ProspectResource extends Resource
                         }
 
                         fclose($handle);
-                        @unlink($path);
 
                         Notification::make()
                             ->title("Import terminé : {$imported} importé(s), {$skipped} ignoré(s)")
