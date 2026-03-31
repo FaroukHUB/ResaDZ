@@ -10,8 +10,9 @@ use App\Models\TransferBooking;
 use App\Models\TransferRoute;
 use App\Models\Vehicle;
 use App\Models\VehicleOffer;
-use App\Observers\ChatbotCacheObserver;
 use App\Observers\AdminNotifyObserver;
+use App\Observers\ChatbotCacheObserver;
+use App\Observers\ProspectObserver;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
@@ -33,6 +34,9 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiting();
+
+        // Auto-link prospect when loueur is created
+        Loueur::observe(ProspectObserver::class);
 
         // Notify admin on new registrations, bookings, and reviews
         Loueur::observe(AdminNotifyObserver::class);
