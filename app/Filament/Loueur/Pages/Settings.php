@@ -141,7 +141,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                         'baridimob' => 'BaridiMob',
                                         'paypal' => 'PayPal',
                                         'bank_transfer' => 'Virement bancaire',
-                                        'wise' => 'Wise',
+                                        'wise' => 'En ligne (Wise, Revolut...)',
                                     ])
                                     ->columns(3),
                                 Forms\Components\Section::make('Détails des méthodes')
@@ -151,7 +151,7 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                         Forms\Components\TextInput::make('iban')
                                             ->label('IBAN (virement)'),
                                         Forms\Components\TextInput::make('wise_email')
-                                            ->label('Email Wise'),
+                                            ->label('Email paiement en ligne (Wise, Revolut...)'),
                                         Forms\Components\TextInput::make('baridimob_rip')
                                             ->label('RIP BaridiMob'),
                                     ])

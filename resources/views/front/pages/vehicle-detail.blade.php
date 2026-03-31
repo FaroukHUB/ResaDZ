@@ -262,7 +262,7 @@
                                             'baridimob' => 'BaridiMob',
                                             'paypal' => 'PayPal',
                                             'bank_transfer' => 'Virement',
-                                            'wise' => 'Wise',
+                                            'wise' => 'En ligne (Wise, Revolut...)',
                                         ];
                                     @endphp
                                     <span class="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-lg">

@@ -524,7 +524,7 @@ CE QUE TU SAIS SUR RESADZ :
 3. Reçois des demandes de réservation
 4. Gère tout depuis ton tableau de bord
 
-💳 MOYENS DE PAIEMENT : Espèces, CIB, Virement bancaire, BaridiMob, PayPal, Wise
+💳 MOYENS DE PAIEMENT : Espèces, CIB, Virement bancaire, BaridiMob, PayPal, En ligne (Wise, Revolut...)
 
 📄 DOCUMENTS REQUIS : CNI ou passeport + Permis de conduire valide
 

@@ -160,7 +160,7 @@ class LoueurResource extends Resource
                                         'baridimob' => 'BaridiMob',
                                         'paypal' => 'PayPal',
                                         'bank_transfer' => 'Virement',
-                                        'wise' => 'Wise',
+                                        'wise' => 'En ligne (Wise, Revolut...)',
                                     ])
                                     ->columns(3),
                             ]),
