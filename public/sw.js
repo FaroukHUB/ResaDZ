@@ -1,6 +1,6 @@
 // Service Worker for ResaDZ PWA — Cache offline + Push Notifications
 
-const CACHE_NAME = 'resadz-v1';
+const CACHE_NAME = 'resadz-v2';
 const STATIC_ASSETS = [
     '/assets/favicon.png',
     '/assets/favicon-96x96.png',
@@ -17,9 +17,9 @@ self.addEventListener('install', (event) => {
     );
 });
 
-// ─── ACTIVATE: Clean old caches ───
+// ─── ACTIVATE: Clean ALL old caches ───
 self.addEventListener('activate', (event) => {
-    console.log('[SW] Activated');
+    console.log('[SW] Activated — clearing old caches');
     event.waitUntil(
         caches.keys().then((keys) =>
             Promise.all(
@@ -31,7 +31,7 @@ self.addEventListener('activate', (event) => {
     );
 });
 
-// ─── FETCH: Network-first with cache fallback ───
+// ─── FETCH: Network-first, NEVER cache HTML pages or errors ───
 self.addEventListener('fetch', (event) => {
     const { request } = event;
 
@@ -46,10 +46,24 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
+    // HTML pages: ALWAYS network, never serve from cache
+    if (request.mode === 'navigate' || request.headers.get('accept')?.includes('text/html')) {
+        event.respondWith(
+            fetch(request).catch(() => {
+                return new Response(
+                    '<html><body style="font-family:Arial;text-align:center;padding:60px;"><h1>Hors ligne</h1><p>Vérifiez votre connexion internet et réessayez.</p></body></html>',
+                    { headers: { 'Content-Type': 'text/html; charset=utf-8' } }
+                );
+            })
+        );
+        return;
+    }
+
+    // Static assets only: network-first with cache fallback
     event.respondWith(
         fetch(request)
             .then((response) => {
-                // Cache successful responses for static assets
+                // Only cache successful responses for static assets
                 if (response.ok && (
                     request.url.includes('/assets/') ||
                     request.url.includes('/build/') ||
