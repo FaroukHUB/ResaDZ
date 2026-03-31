@@ -655,6 +655,33 @@ class VehicleResource extends Resource
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\Action::make('duplicate')
+                    ->label('Dupliquer')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('gray')
+                    ->requiresConfirmation()
+                    ->modalHeading('Dupliquer ce véhicule')
+                    ->modalDescription('Un nouveau véhicule sera créé avec les mêmes informations (sans les photos). Vous pourrez ensuite le modifier.')
+                    ->action(function (Vehicle $record) {
+                        $loueur = \Illuminate\Support\Facades\Auth::user()->loueur;
+                        $newVehicle = $record->replicate([
+                            'slug', 'image', 'gallery', 'is_featured', 'is_in_selection',
+                        ]);
+                        $newVehicle->slug = \Illuminate\Support\Str::slug($record->full_name) . '-' . \Illuminate\Support\Str::random(4);
+                        $newVehicle->full_name = $record->full_name . ' (copie)';
+                        $newVehicle->loueur_id = $loueur->id;
+                        $newVehicle->status = 'unavailable';
+                        $newVehicle->is_active = false;
+                        $newVehicle->save();
+
+                        \Filament\Notifications\Notification::make()
+                            ->title('Véhicule dupliqué')
+                            ->body('Modifiez le nom, le prix et ajoutez les photos.')
+                            ->success()
+                            ->send();
+
+                        return redirect(VehicleResource::getUrl('edit', ['record' => $newVehicle]));
+                    }),
                 Tables\Actions\Action::make('toggleStatus')
                     ->label('Changer statut')
                     ->icon('heroicon-o-arrow-path')
