@@ -139,7 +139,20 @@
 </head>
 <body>
     <div class="container">
-        <div class="logo">Resa<span>DZ</span></div>
+        @php
+            $logoPath = null;
+            try {
+                $logoSetting = \App\Models\Setting::get('logo_light', '');
+                if ($logoSetting) { $logoPath = \Illuminate\Support\Facades\Storage::url($logoSetting); }
+            } catch (\Exception $e) {}
+            $siteName = 'ResaDZ';
+            try { $siteName = \App\Models\Setting::get('company_name', 'ResaDZ'); } catch (\Exception $e) {}
+        @endphp
+        @if($logoPath)
+            <img src="{{ $logoPath }}" alt="{{ $siteName }}" style="height: 60px; width: auto; margin: 0 auto 32px;">
+        @else
+            <div class="logo">{{ $siteName }}</div>
+        @endif
 
         <div class="icon-wrapper">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">

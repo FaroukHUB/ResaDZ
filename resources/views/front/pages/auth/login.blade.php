@@ -7,7 +7,14 @@
     <div class="w-full max-w-md space-y-6">
         <!-- Header -->
         <div class="text-center">
-            <a href="{{ route('home') }}" class="text-3xl font-black text-gray-900">Resa<span class="text-red-600">DZ</span></a>
+            @php $logoLight = \App\Models\Setting::get('logo_light', ''); $siteName = \App\Models\Setting::get('company_name', 'ResaDZ'); @endphp
+            <a href="{{ route('home') }}">
+                @if($logoLight)
+                    <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-16 w-auto mx-auto">
+                @else
+                    <span class="text-3xl font-black text-gray-900">{{ $siteName }}</span>
+                @endif
+            </a>
             <h2 class="mt-4 text-2xl font-bold text-gray-900">Connexion</h2>
             <p class="mt-2 text-gray-500">Accédez à votre espace loueur</p>
         </div>
