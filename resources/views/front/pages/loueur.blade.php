@@ -32,67 +32,68 @@ if ($loueur->total_reviews > 0) {
 @section('content')
 
     {{-- Bannière Hero --}}
-    <div class="relative h-56 md:h-72 lg:h-80">
+    <div class="relative h-48 md:h-64 lg:h-72">
         @if($loueur->cover_image)
             <img src="{{ asset('storage/' . $loueur->cover_image) }}" alt="{{ $loueur->company_name }}" class="w-full h-full object-cover">
         @else
             <div class="w-full h-full bg-gradient-to-br from-gray-900 via-green-900 to-gray-900"></div>
         @endif
         <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
-        <div class="absolute bottom-6 right-6 text-right">
-            <h1 class="text-3xl md:text-4xl font-black text-white drop-shadow-lg">{{ $loueur->company_name }}</h1>
-            <p class="text-white/70 text-sm mt-1 flex items-center justify-end gap-1.5">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                {{ $loueur->city ?? '' }} {{ $loueur->wilaya ? '- ' . $loueur->wilaya : '' }}
-            </p>
-        </div>
-        {{-- Logo chevauchant --}}
-        <div class="absolute -bottom-12 left-6 md:left-10">
-            @if($loueur->logo)
-                <img src="{{ asset('storage/' . $loueur->logo) }}" alt="{{ $loueur->company_name }}" class="w-24 h-24 md:w-28 md:h-28 rounded-2xl object-cover shadow-xl border-4 border-white bg-white">
-            @else
-                <div class="w-24 h-24 md:w-28 md:h-28 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex flex-col items-center justify-center shadow-xl border-4 border-white">
-                    <span class="text-white font-black text-2xl">{{ strtoupper(substr($loueur->company_name, 0, 2)) }}</span>
-                </div>
-            @endif
-        </div>
     </div>
 
-    {{-- Barre d'infos rapides --}}
+    {{-- Section profil --}}
     <section class="bg-white border-b border-gray-100">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 
-            {{-- Rating + Réponse --}}
-            <div class="flex flex-wrap items-center gap-4 mb-4">
+            {{-- Logo + Nom + Location --}}
+            <div class="flex items-start gap-4 md:gap-6 -mt-16 md:-mt-20 mb-6">
+                @if($loueur->logo)
+                    <img src="{{ asset('storage/' . $loueur->logo) }}" alt="{{ $loueur->company_name }}" class="w-20 h-20 md:w-24 md:h-24 rounded-2xl object-cover shadow-xl border-4 border-white bg-white flex-shrink-0">
+                @else
+                    <div class="w-20 h-20 md:w-24 md:h-24 bg-gradient-to-br from-green-600 to-green-700 rounded-2xl flex items-center justify-center shadow-xl border-4 border-white flex-shrink-0">
+                        <span class="text-white font-black text-xl md:text-2xl">{{ strtoupper(substr($loueur->company_name, 0, 2)) }}</span>
+                    </div>
+                @endif
+
+                <div class="pt-8 md:pt-10">
+                    <h1 class="text-2xl md:text-3xl font-black text-gray-900">{{ $loueur->company_name }}</h1>
+                    <p class="text-gray-500 text-sm mt-1 flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                        {{ $loueur->city ?? '' }} {{ $loueur->wilaya ? '- ' . $loueur->wilaya : '' }}
+                    </p>
+                </div>
+            </div>
+
+            {{-- Infos rapides --}}
+            <div class="flex flex-wrap items-center gap-x-4 gap-y-2 mb-4 text-sm text-gray-500">
                 @if($loueur->total_reviews > 0)
                     <div class="flex items-center gap-1.5">
                         <div class="flex items-center gap-0.5">
                             @for($i = 1; $i <= 5; $i++)
-                                <svg class="w-5 h-5 {{ $i <= round($loueur->rating) ? 'text-amber-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                <svg class="w-4 h-4 {{ $i <= round($loueur->rating) ? 'text-amber-400' : 'text-gray-200' }}" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                             @endfor
                         </div>
                         <span class="font-bold text-gray-900">{{ number_format($loueur->rating, 1) }}</span>
-                        <a href="#avis" class="text-sm text-gray-500 hover:text-green-600 transition">({{ $loueur->total_reviews }} avis)</a>
+                        <a href="#avis" class="hover:text-green-600 transition">({{ $loueur->total_reviews }} avis)</a>
                     </div>
                 @else
-                    <span class="text-sm text-gray-400">Nouveau partenaire</span>
+                    <span class="text-gray-400">Nouveau partenaire</span>
                 @endif
-
-                <span class="text-gray-300">|</span>
-                <span class="text-sm text-gray-500">📅 Membre depuis {{ $loueur->created_at->diffForHumans(null, true) }}</span>
-                <span class="text-gray-300">|</span>
-                <span class="text-sm text-gray-500">🚗 {{ $vehicles->total() }} véhicule{{ $vehicles->total() > 1 ? 's' : '' }}</span>
-                <span class="text-gray-300">|</span>
-                <span class="text-sm text-gray-500">✅ {{ $loueur->total_rentals ?? 0 }} location{{ ($loueur->total_rentals ?? 0) > 1 ? 's' : '' }}</span>
+                <span class="hidden sm:inline text-gray-300">|</span>
+                <span>Membre depuis {{ $loueur->created_at->diffForHumans(null, true) }}</span>
+                <span class="hidden sm:inline text-gray-300">|</span>
+                <span>{{ $vehicles->total() }} véhicule{{ $vehicles->total() > 1 ? 's' : '' }}</span>
+                <span class="hidden sm:inline text-gray-300">|</span>
+                <span>{{ $loueur->total_rentals ?? 0 }} location{{ ($loueur->total_rentals ?? 0) > 1 ? 's' : '' }}</span>
                 @php $responseTime = $loueur->getFormattedResponseTime(); @endphp
                 @if($responseTime !== 'N/A')
-                    <span class="text-gray-300">|</span>
-                    <span class="text-sm text-gray-500">⚡ Répond en {{ $responseTime }}</span>
+                    <span class="hidden sm:inline text-gray-300">|</span>
+                    <span class="text-green-600 font-medium">⚡ Répond en {{ $responseTime }}</span>
                 @endif
             </div>
 
-            {{-- Liens sociaux --}}
-            <div class="flex flex-wrap items-center gap-3">
+            {{-- Réseaux sociaux --}}
+            <div class="flex flex-wrap items-center gap-2">
                 @if($loueur->facebook)
                     <a href="{{ $loueur->facebook }}" target="_blank" rel="noopener" class="w-9 h-9 bg-blue-600 hover:bg-blue-700 text-white rounded-full flex items-center justify-center transition" title="Facebook">
                         <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.77 7.46H14.5v-1.9c0-.9.6-1.1 1-1.1h3V.5h-4.33C10.24.5 9.5 3.44 9.5 5.32v2.15h-3v4h3v12h5v-12h3.85l.42-4z"/></svg>
