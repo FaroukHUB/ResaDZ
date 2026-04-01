@@ -92,8 +92,78 @@ class Settings extends Page implements Forms\Contracts\HasForms
                                     ->maxLength(255),
                                 Forms\Components\Textarea::make('description')
                                     ->label('Description')
-                                    ->rows(3)
+                                    ->rows(4)
+                                    ->id('loueur-description')
                                     ->helperText('Présentez votre agence en quelques phrases'),
+                                Forms\Components\Actions::make([
+                                    Forms\Components\Actions\Action::make('generateDescription')
+                                        ->label('Générer avec l\'IA')
+                                        ->icon('heroicon-o-sparkles')
+                                        ->color('gray')
+                                        ->modalHeading('Générer une description avec l\'IA')
+                                        ->modalDescription('Renseignez les informations de votre agence et l\'IA rédigera une description professionnelle.')
+                                        ->modalWidth('lg')
+                                        ->form([
+                                            Forms\Components\TextInput::make('annee_creation')
+                                                ->label('Année de création')
+                                                ->placeholder('Ex: 2022')
+                                                ->numeric(),
+                                            Forms\Components\TextInput::make('ville')
+                                                ->label('Ville / Wilaya')
+                                                ->placeholder('Ex: Birkhadem, Alger'),
+                                            Forms\Components\TextInput::make('types_vehicules')
+                                                ->label('Types de véhicules')
+                                                ->placeholder('Ex: SUV, berlines, citadines, 7 places, utilitaires'),
+                                            Forms\Components\TextInput::make('services')
+                                                ->label('Services proposés')
+                                                ->placeholder('Ex: livraison aéroport, location longue durée, avec chauffeur'),
+                                            Forms\Components\TextInput::make('clientele')
+                                                ->label('Clientèle cible')
+                                                ->placeholder('Ex: diaspora, touristes, professionnels, familles'),
+                                            Forms\Components\TextInput::make('avantages')
+                                                ->label('Points forts / Avantages')
+                                                ->placeholder('Ex: véhicules récents, prix compétitifs, disponible 24h/24'),
+                                        ])
+                                        ->action(function (array $data, $livewire) {
+                                            try {
+                                                $response = \Illuminate\Support\Facades\Http::withHeaders([
+                                                    'Authorization' => 'Bearer ' . config('services.groq.api_key'),
+                                                    'Content-Type' => 'application/json',
+                                                ])
+                                                ->timeout(15)
+                                                ->post('https://api.groq.com/openai/v1/chat/completions', [
+                                                    'model' => config('services.groq.model', 'llama-3.3-70b-versatile'),
+                                                    'messages' => [
+                                                        ['role' => 'user', 'content' => $this->buildDescriptionPrompt($data)],
+                                                    ],
+                                                    'temperature' => 0.7,
+                                                    'max_tokens' => 300,
+                                                ]);
+
+                                                if ($response->successful()) {
+                                                    $description = trim(str_replace(['"', '«', '»'], '', $response->json('choices.0.message.content', '')));
+                                                    $livewire->data['description'] = $description;
+                                                    \Filament\Notifications\Notification::make()
+                                                        ->title('Description générée')
+                                                        ->body('Vous pouvez la modifier avant d\'enregistrer.')
+                                                        ->success()
+                                                        ->send();
+                                                } else {
+                                                    \Filament\Notifications\Notification::make()
+                                                        ->title('Erreur')
+                                                        ->body('Impossible de générer la description. Réessayez.')
+                                                        ->danger()
+                                                        ->send();
+                                                }
+                                            } catch (\Exception $e) {
+                                                \Filament\Notifications\Notification::make()
+                                                    ->title('Erreur')
+                                                    ->body('Service IA indisponible. Réessayez dans quelques instants.')
+                                                    ->danger()
+                                                    ->send();
+                                            }
+                                        }),
+                                ]),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('city')
@@ -375,6 +445,37 @@ class Settings extends Page implements Forms\Contracts\HasForms
             ->body('Vos paramètres ont été mis à jour avec succès.')
             ->success()
             ->send();
+    }
+
+    protected function buildDescriptionPrompt(array $data): string
+    {
+        $loueur = Auth::user()->loueur;
+        $companyName = $loueur?->company_name ?? 'Mon agence';
+
+        return "Tu es un expert en rédaction de profils d'agences de location de voiture en Algérie.
+
+Rédige une description professionnelle et convaincante pour cette agence :
+
+- Nom de l'agence : {$companyName}
+- Créée en : " . ($data['annee_creation'] ?? 'non précisé') . "
+- Basée à : " . ($data['ville'] ?? 'non précisé') . "
+- Types de véhicules : " . ($data['types_vehicules'] ?? 'non précisé') . "
+- Services proposés : " . ($data['services'] ?? 'non précisé') . "
+- Clientèle cible : " . ($data['clientele'] ?? 'non précisé') . "
+- Points forts : " . ($data['avantages'] ?? 'non précisé') . "
+- Plateforme : ResaDZ
+
+La description doit :
+- Faire 3 à 4 phrases maximum
+- Être rédigée à la 3ème personne (l'agence, pas nous)
+- Inspirer confiance aux clients
+- Mentionner la localisation si fournie
+- Être en français
+- Ne pas utiliser de superlatifs comme 'meilleur' ou 'numéro 1'
+- Sonner humaine et authentique, pas publicitaire
+- Ne pas commencer par 'Bienvenue'
+
+Réponds uniquement avec la description, sans introduction ni commentaire.";
     }
 
     protected function getFormActions(): array

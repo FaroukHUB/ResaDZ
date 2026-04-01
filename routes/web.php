@@ -106,6 +106,10 @@ Route::get('/mentions-legales', [LegalController::class, 'mentionsLegales'])->na
 Route::get('/conditions-generales-utilisation', [LegalController::class, 'cgu'])->name('legal.cgu');
 Route::get('/politique-confidentialite', [LegalController::class, 'confidentialite'])->name('legal.confidentialite');
 
+// Loueur AI description generator
+Route::middleware(['auth'])->post('/loueur/generate-description', \App\Http\Controllers\Loueur\GenerateDescriptionController::class)
+    ->name('loueur.generate-description');
+
 // Contract PDF (requires auth)
 Route::middleware(['auth'])->group(function () {
     Route::get('/contrat/{booking}/telecharger', [\App\Http\Controllers\Loueur\ContractController::class, 'download'])
