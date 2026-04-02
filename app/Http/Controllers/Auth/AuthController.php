@@ -81,8 +81,8 @@ class AuthController extends Controller
             'slug' => Str::slug($validated['company_name']) . '-' . Str::random(4),
             'phone' => $validated['phone'],
             'wilaya' => $validated['wilaya'],
-            'is_active' => true,
-            'offers_transfer' => $isTaxi, // Taxis have transfer enabled by default
+            'is_active' => false, // Compte en attente de validation admin
+            'offers_transfer' => $isTaxi,
         ]);
 
         // Send welcome email

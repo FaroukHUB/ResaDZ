@@ -22,6 +22,8 @@ class ProspectResource extends Resource
 
     protected static ?string $navigationGroup = 'Gestion';
 
+    protected static bool $shouldRegisterNavigation = false; // Kanban est le point d'entrée
+
     protected static ?string $navigationLabel = 'Prospects';
 
     protected static ?string $modelLabel = 'Prospect';

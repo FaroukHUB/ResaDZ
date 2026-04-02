@@ -74,6 +74,7 @@ class Loueur extends Model
         'specialites',
         'langues',
         'horaires',
+        'reminder_step',
     ];
 
     protected $casts = [

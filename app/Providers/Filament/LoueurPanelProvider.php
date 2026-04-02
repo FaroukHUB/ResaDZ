@@ -102,7 +102,7 @@ class LoueurPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_START,
-                fn () => $this->renderOnboardingBanner()
+                fn () => $this->renderValidationBanner() . $this->renderOnboardingBanner()
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
@@ -140,6 +140,28 @@ class LoueurPanelProvider extends PanelProvider
         }
 
         return '<script>document.body.classList.add("is-chauffeur");</script>';
+    }
+
+    protected function renderValidationBanner(): string
+    {
+        $user = Auth::user();
+        if (!$user || !$user->loueur || $user->loueur->is_active) {
+            return '';
+        }
+
+        return Blade::render('
+            <div class="bg-amber-50 border-b border-amber-200 px-4 py-3">
+                <div class="max-w-7xl mx-auto flex items-center gap-3">
+                    <svg class="w-6 h-6 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <div>
+                        <p class="text-amber-900 font-semibold text-sm">Compte en attente de validation</p>
+                        <p class="text-amber-700 text-xs">Votre compte est en cours de vérification par l\'équipe ResaDZ. Vous pouvez configurer votre espace en attendant, mais vos véhicules ne seront pas visibles tant que votre compte n\'est pas validé.</p>
+                    </div>
+                </div>
+            </div>
+        ');
     }
 
     protected function renderOnboardingBanner(): string
