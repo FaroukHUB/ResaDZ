@@ -1,5 +1,19 @@
 <x-filament-panels::page>
 
+    {{-- Actions en haut --}}
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-3">
+            <a href="{{ route('filament.admin.resources.prospects.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                Ajouter un prospect
+            </a>
+            <a href="{{ route('filament.admin.resources.prospects.index') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-white text-gray-700 font-semibold rounded-lg border border-gray-200 hover:bg-gray-50 transition text-sm">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                Vue liste + Import CSV
+            </a>
+        </div>
+    </div>
+
     {{-- Stats rapides --}}
     <div class="grid grid-cols-3 gap-4 mb-6">
         <div class="bg-white rounded-xl border border-gray-200 p-4 text-center">
@@ -107,13 +121,6 @@
                 </div>
             </div>
         @endforeach
-    </div>
-
-    <div class="mt-4 text-center">
-        <a href="{{ route('filament.admin.resources.prospects.create') }}" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition text-sm">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
-            Ajouter un prospect
-        </a>
     </div>
 
 </x-filament-panels::page>
