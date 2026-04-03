@@ -117,7 +117,6 @@ class VehicleResource extends Resource
                                         'rouge' => 'Rouge', 'bleu' => 'Bleu', 'vert' => 'Vert',
                                         'beige' => 'Beige', 'marron' => 'Marron', 'orange' => 'Orange', 'jaune' => 'Jaune',
                                     ])
-                                    ->allowHtml(false)
                                     ->searchable()
                                     ->helperText('Aide les clients à identifier le véhicule'),
                             ]),

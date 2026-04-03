@@ -88,14 +88,12 @@ class AuthController extends Controller
         // Send welcome email
         $this->sendWelcomeEmail($user->loueur);
 
-        Auth::login($user);
-
+        // Ne PAS connecter automatiquement - le compte doit être validé par l'admin
         $message = $isTaxi
-            ? 'Bienvenue sur ResaDZ ! Votre espace chauffeur est prêt.'
-            : 'Bienvenue sur ResaDZ ! Votre espace loueur est prêt.';
+            ? 'Salam ! Votre inscription a bien été prise en compte. Votre compte est en attente de validation par notre équipe. Vous recevrez un email dès que votre compte sera activé.'
+            : 'Salam ! Votre inscription a bien été prise en compte. Votre compte est en attente de validation par notre équipe. Vous recevrez un email dès que votre compte sera activé.';
 
-        $redirectPath = $isTaxi ? '/chauffeur' : '/loueur';
-        return redirect($redirectPath)->with('success', $message);
+        return redirect()->route('login')->with('success', $message);
     }
 
     // Google OAuth
@@ -130,11 +128,16 @@ class AuthController extends Controller
                 'user_id' => $user->id,
                 'company_name' => $googleUser->getName(),
                 'slug' => Str::slug($googleUser->getName()) . '-' . Str::random(4),
-                'is_active' => true,
+                'is_active' => false, // Compte en attente de validation admin
             ]);
 
             // Send welcome email for new Google OAuth accounts
             $this->sendWelcomeEmail($loueur);
+
+            // Ne pas connecter - compte en attente de validation
+            return redirect()->route('login')->with('success',
+                'Salam ! Votre inscription a bien été prise en compte. Votre compte est en attente de validation par notre équipe.'
+            );
         }
 
         Auth::login($user, true);
