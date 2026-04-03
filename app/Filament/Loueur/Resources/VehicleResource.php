@@ -610,9 +610,10 @@ class VehicleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
+                Tables\Columns\ImageColumn::make('display_image')
                     ->label('Photo')
-                    ->circular(),
+                    ->circular()
+                    ->getStateUsing(fn ($record) => $record->display_image),
                 Tables\Columns\TextColumn::make('full_name')
                     ->label('Véhicule')
                     ->searchable()

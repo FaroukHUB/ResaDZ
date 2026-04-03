@@ -162,10 +162,11 @@ class VehicleResource extends Resource
     {
         return $table
             ->columns([
-                Tables\Columns\ImageColumn::make('image')
+                Tables\Columns\ImageColumn::make('display_image')
                     ->label('Photo')
                     ->square()
-                    ->size(50),
+                    ->size(50)
+                    ->getStateUsing(fn ($record) => $record->display_image),
 
                 Tables\Columns\TextColumn::make('loueur.company_name')
                     ->label('Loueur')
