@@ -27,6 +27,15 @@ class VehicleTemplateResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
+    public static function canAccess(): bool
+    {
+        try {
+            return \Illuminate\Support\Facades\Schema::hasTable('vehicle_templates');
+        } catch (\Exception $e) {
+            return false;
+        }
+    }
+
     public static function form(Form $form): Form
     {
         return $form->schema([
