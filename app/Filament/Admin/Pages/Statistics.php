@@ -21,13 +21,21 @@ class Statistics extends Page
     protected static ?int $navigationSort = 0;
     protected static string $view = 'filament.admin.pages.statistics';
 
+    /**
+     * Use file cache (not database) for stats - much faster on shared hosting
+     */
+    private static function fileCache(): \Illuminate\Contracts\Cache\Repository
+    {
+        return Cache::store('file');
+    }
+
     public static function getNavigationBadge(): ?string
     {
-        $count = Cache::remember('stats_realtime_badge', 30, fn () =>
-            DB::table('page_visits')
-                ->where('visited_at', '>=', now()->subMinutes(5))
-                ->distinct('session_id')
-                ->count('session_id')
+        $count = static::fileCache()->remember('stats_badge', 60, fn () =>
+            (int) DB::selectOne("
+                SELECT COUNT(DISTINCT session_id) as c
+                FROM page_visits WHERE visited_at >= ?
+            ", [now()->subMinutes(5)->toDateTimeString()])->c
         );
         return $count > 0 ? $count . ' en ligne' : null;
     }
@@ -51,7 +59,7 @@ class Statistics extends Page
                 ->modalDescription('Supprimer les visites de plus de 90 jours ?')
                 ->action(function () {
                     $deleted = PageVisit::where('visited_at', '<', now()->subDays(90))->delete();
-                    Cache::forget('admin_statistics_data');
+                    static::fileCache()->forget('admin_stats');
                     Notification::make()
                         ->title("{$deleted} visites supprimées")
                         ->success()
@@ -65,13 +73,8 @@ class Statistics extends Page
         $currentIp = request()->ip();
         $excludedIps = config('resadz.excluded_tracking_ips', []);
 
-        $realtimeVisitors = DB::table('page_visits')
-            ->where('visited_at', '>=', now()->subMinutes(5))
-            ->distinct('session_id')
-            ->count('session_id');
-
-        // Cache 5 minutes - only arrays, no Eloquent objects
-        $cached = Cache::remember('admin_statistics_data', 300, function () {
+        // File cache 5 minutes - bypasses slow MySQL cache entirely
+        $cached = static::fileCache()->remember('admin_stats', 300, function () {
             $today = Carbon::today()->toDateString();
             $yesterday = Carbon::yesterday()->toDateString();
             $startOfWeek = Carbon::now()->startOfWeek()->toDateTimeString();
@@ -82,7 +85,7 @@ class Statistics extends Page
             $sevenDaysAgo = now()->subDays(7)->toDateTimeString();
             $thirtyDaysAgo = now()->subDays(30)->toDateTimeString();
 
-            // ===== ONE BIG QUERY for basic counts =====
+            // ===== BASIC STATS (1 query) =====
             $basicStats = DB::selectOne("
                 SELECT
                     SUM(CASE WHEN DATE(visited_at) = ? THEN 1 ELSE 0 END) as today_visits,
@@ -95,33 +98,30 @@ class Statistics extends Page
                 WHERE visited_at BETWEEN ? AND ?
             ", [$today, $yesterday, $startOfWeek, $today, $startOfMonth, $now]);
 
-            $lastMonthVisits = (int) DB::table('page_visits')
-                ->whereBetween('visited_at', [$startOfLastMonth, $endOfLastMonth])
-                ->count();
+            $lastMonthVisits = (int) DB::selectOne("
+                SELECT COUNT(*) as c FROM page_visits WHERE visited_at BETWEEN ? AND ?
+            ", [$startOfLastMonth, $endOfLastMonth])->c;
 
-            // ===== GEOGRAPHIC - 1 query with UNION =====
+            // ===== GEOGRAPHIC (3 queries) =====
             $topCountries = DB::select("
                 SELECT country, country_code, COUNT(*) as visits
-                FROM page_visits
-                WHERE visited_at BETWEEN ? AND ? AND country IS NOT NULL
+                FROM page_visits WHERE visited_at BETWEEN ? AND ? AND country IS NOT NULL
                 GROUP BY country, country_code ORDER BY visits DESC LIMIT 15
             ", [$startOfMonth, $now]);
 
             $topCities = DB::select("
                 SELECT city, country_code, COUNT(*) as visits
-                FROM page_visits
-                WHERE visited_at BETWEEN ? AND ? AND city IS NOT NULL
+                FROM page_visits WHERE visited_at BETWEEN ? AND ? AND city IS NOT NULL
                 GROUP BY city, country_code ORDER BY visits DESC LIMIT 15
             ", [$startOfMonth, $now]);
 
             $topRegions = DB::select("
                 SELECT region, country_code, COUNT(*) as visits
-                FROM page_visits
-                WHERE visited_at BETWEEN ? AND ? AND region IS NOT NULL
+                FROM page_visits WHERE visited_at BETWEEN ? AND ? AND region IS NOT NULL
                 GROUP BY region, country_code ORDER BY visits DESC LIMIT 15
             ", [$startOfMonth, $now]);
 
-            // ===== TRAFFIC =====
+            // ===== TRAFFIC (3 queries) =====
             $trafficSources = DB::select("
                 SELECT traffic_source, traffic_medium, COUNT(*) as visits
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
@@ -140,7 +140,7 @@ class Statistics extends Page
                 GROUP BY utm_source, utm_medium, utm_campaign ORDER BY visits DESC LIMIT 10
             ", [$startOfMonth, $now]);
 
-            // ===== TIME STATS =====
+            // ===== TIME STATS (2 queries) =====
             $hourlyRaw = DB::select("
                 SELECT HOUR(visited_at) as hour, COUNT(*) as visits
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
@@ -164,7 +164,7 @@ class Statistics extends Page
                 $dayOfWeekStats[(int) $row->day] = (int) $row->visits;
             }
 
-            // ===== TECH STATS =====
+            // ===== TECH STATS (3 queries) =====
             $deviceStats = DB::select("
                 SELECT device_type, COUNT(*) as visits
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
@@ -183,7 +183,7 @@ class Statistics extends Page
                 GROUP BY os ORDER BY visits DESC LIMIT 10
             ", [$startOfMonth, $now]);
 
-            // ===== PAGES =====
+            // ===== PAGES + VEHICLES + BOUNCE (4 queries) =====
             $topPages = DB::select("
                 SELECT page_type, COUNT(*) as visits
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
@@ -196,7 +196,6 @@ class Statistics extends Page
                 GROUP BY page_type ORDER BY visits DESC
             ", [$startOfMonth, $now]);
 
-            // ===== TOP VEHICLES =====
             $topVehicles = DB::select("
                 SELECT pv.vehicle_id, COUNT(*) as visits, v.full_name, v.image, b.name as brand_name
                 FROM page_visits pv
@@ -207,7 +206,6 @@ class Statistics extends Page
                 ORDER BY visits DESC LIMIT 10
             ", [$startOfMonth, $now]);
 
-            // ===== BOUNCE RATE =====
             $bounceData = DB::selectOne("
                 SELECT
                     COUNT(DISTINCT session_id) as total_sessions,
@@ -223,14 +221,13 @@ class Statistics extends Page
             $totalSessions = (int) ($bounceData->total_sessions ?? 0);
             $bounceRate = $totalSessions > 0 ? round((($bounceData->bounced ?? 0) / $totalSessions) * 100, 1) : 0;
 
-            // ===== DAILY VISITS =====
+            // ===== DAILY + CLICKS + FUNNEL + BUSINESS (4 queries) =====
             $dailyVisits = DB::select("
                 SELECT DATE(visited_at) as date, COUNT(*) as visits
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
                 GROUP BY date ORDER BY date
             ", [$thirtyDaysAgo, $now]);
 
-            // ===== CLICK EVENTS =====
             $clickStats = [];
             try {
                 $clickStats = DB::select("
@@ -238,11 +235,8 @@ class Statistics extends Page
                     FROM click_events WHERE clicked_at BETWEEN ? AND ?
                     GROUP BY event_type ORDER BY clicks DESC
                 ", [$startOfMonth, $now]);
-            } catch (\Exception $e) {
-                // Table may not exist
-            }
+            } catch (\Exception $e) {}
 
-            // ===== CONVERSION FUNNEL - 1 query =====
             $funnel = DB::selectOne("
                 SELECT
                     COUNT(DISTINCT CASE WHEN page_type = 'home' THEN session_id END) as home,
@@ -252,10 +246,6 @@ class Statistics extends Page
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
             ", [$startOfMonth, $now]);
 
-            $funnelCompleted = (int) DB::table('bookings')
-                ->whereBetween('created_at', [$startOfMonth, $now])->count();
-
-            // ===== BUSINESS STATS - 1 query =====
             $business = DB::selectOne("
                 SELECT
                     (SELECT COUNT(*) FROM loueurs) as total_loueurs,
@@ -264,36 +254,31 @@ class Statistics extends Page
                     (SELECT COALESCE(SUM(total_price), 0) FROM bookings WHERE created_at BETWEEN ? AND ? AND status = 'completed') as month_revenue
             ", [$startOfMonth, $now, $startOfMonth, $now]);
 
-            // ===== TOP IPs =====
+            // ===== IPs + TOTAL + RECENT (3 queries) =====
             $topIps = DB::select("
                 SELECT ip_address, COUNT(*) as visits, MIN(visited_at) as first_visit, MAX(visited_at) as last_visit
                 FROM page_visits WHERE visited_at BETWEEN ? AND ?
                 GROUP BY ip_address ORDER BY visits DESC LIMIT 20
             ", [$startOfMonth, $now]);
 
-            $totalRecords = (int) DB::table('page_visits')->count();
+            $totalRecords = (int) DB::selectOne("SELECT COUNT(*) as c FROM page_visits")->c;
 
-            // ===== RECENT VISITS =====
             $recentVisits = DB::select("
-                SELECT pv.visited_at, pv.city, pv.country, pv.country_code, pv.page_type,
-                       pv.device_type, pv.browser, pv.traffic_source, pv.utm_campaign,
-                       pv.is_landing, pv.ip_address
-                FROM page_visits pv
-                ORDER BY pv.visited_at DESC LIMIT 30
+                SELECT visited_at, city, country, country_code, page_type,
+                       device_type, browser, traffic_source, utm_campaign,
+                       is_landing, ip_address
+                FROM page_visits ORDER BY visited_at DESC LIMIT 30
             ");
 
-            // ===== CHART DATA =====
+            // ===== CHART DATA (computed in PHP, no extra queries) =====
             $chartDayLabels = array_values($dayNames);
             $chartDayData = array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames));
-
             $chartDailyLabels = array_map(fn($d) => Carbon::parse($d->date)->format('d/m'), $dailyVisits);
             $chartDailyData = array_map(fn($d) => (int) $d->visits, $dailyVisits);
-
             $chartDeviceLabels = array_map(fn($d) => match($d->device_type) {
                 'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d->device_type ?? 'Autre')
             }, $deviceStats);
             $chartDeviceData = array_map(fn($d) => (int) $d->visits, $deviceStats);
-
             $chartMediumLabels = array_map(fn($m) => match($m->traffic_medium) {
                 'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence',
                 'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m->traffic_medium ?? 'Autre')
@@ -310,13 +295,13 @@ class Statistics extends Page
                 'chartDeviceLabels' => $chartDeviceLabels,
                 'chartMediumData' => $chartMediumData,
                 'chartMediumLabels' => $chartMediumLabels,
-                'todayVisits' => (int) $basicStats->today_visits,
-                'yesterdayVisits' => (int) $basicStats->yesterday_visits,
-                'weekVisits' => (int) $basicStats->week_visits,
-                'monthVisits' => (int) $basicStats->month_visits,
+                'todayVisits' => (int) ($basicStats->today_visits ?? 0),
+                'yesterdayVisits' => (int) ($basicStats->yesterday_visits ?? 0),
+                'weekVisits' => (int) ($basicStats->week_visits ?? 0),
+                'monthVisits' => (int) ($basicStats->month_visits ?? 0),
                 'lastMonthVisits' => $lastMonthVisits,
-                'todayUnique' => (int) $basicStats->today_unique,
-                'monthUnique' => (int) $basicStats->month_unique,
+                'todayUnique' => (int) ($basicStats->today_unique ?? 0),
+                'monthUnique' => (int) ($basicStats->month_unique ?? 0),
                 'topCountries' => $topCountries,
                 'topCities' => $topCities,
                 'topRegions' => $topRegions,
@@ -340,7 +325,7 @@ class Statistics extends Page
                 'funnelVehicleList' => (int) ($funnel->vehicle_list ?? 0),
                 'funnelVehicle' => (int) ($funnel->vehicle ?? 0),
                 'funnelBooking' => (int) ($funnel->booking ?? 0),
-                'funnelCompleted' => $funnelCompleted,
+                'funnelCompleted' => (int) DB::table('bookings')->whereBetween('created_at', [Carbon::now()->startOfMonth(), now()])->count(),
                 'totalLoueurs' => (int) ($business->total_loueurs ?? 0),
                 'totalVehicles' => (int) ($business->total_vehicles ?? 0),
                 'monthBookings' => (int) ($business->month_bookings ?? 0),
@@ -352,10 +337,14 @@ class Statistics extends Page
             ];
         });
 
-        return array_merge($cached, [
-            'realtimeVisitors' => $realtimeVisitors,
-            'currentIp' => $currentIp,
-            'excludedIps' => $excludedIps,
-        ]);
+        $cached['realtimeVisitors'] = (int) DB::selectOne("
+            SELECT COUNT(DISTINCT session_id) as c
+            FROM page_visits WHERE visited_at >= ?
+        ", [now()->subMinutes(5)->toDateTimeString()])->c;
+
+        $cached['currentIp'] = $currentIp;
+        $cached['excludedIps'] = $excludedIps;
+
+        return $cached;
     }
 }
