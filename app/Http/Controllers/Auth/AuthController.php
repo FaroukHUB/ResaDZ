@@ -62,31 +62,55 @@ class AuthController extends Controller
             'wilaya' => 'required|string|max:100',
             'account_type' => 'required|in:loueur,taxi',
             'password' => 'required|string|min:6|confirmed',
+        ], [
+            'email.unique' => 'Cet email est déjà utilisé. Si vous avez déjà un compte, connectez-vous.',
+            'email.required' => 'L\'email est obligatoire.',
+            'email.email' => 'L\'email n\'est pas valide.',
+            'name.required' => 'Le nom est obligatoire.',
+            'phone.required' => 'Le téléphone est obligatoire.',
+            'company_name.required' => 'Le nom de l\'entreprise est obligatoire.',
+            'wilaya.required' => 'La wilaya est obligatoire.',
+            'password.required' => 'Le mot de passe est obligatoire.',
+            'password.min' => 'Le mot de passe doit faire au moins 6 caractères.',
+            'password.confirmed' => 'Les mots de passe ne correspondent pas.',
         ]);
 
         $isTaxi = $validated['account_type'] === 'taxi';
 
-        $user = User::create([
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'password' => Hash::make($validated['password']),
-            'role' => 'loueur',
-        ]);
+        try {
+            \DB::beginTransaction();
 
-        // Create loueur/taxi profile
-        Loueur::create([
-            'user_id' => $user->id,
-            'account_type' => $validated['account_type'],
-            'company_name' => $validated['company_name'],
-            'slug' => Str::slug($validated['company_name']) . '-' . Str::random(4),
-            'phone' => $validated['phone'],
-            'wilaya' => $validated['wilaya'],
-            'is_active' => false, // Compte en attente de validation admin
-            'offers_transfer' => $isTaxi,
-        ]);
+            $user = User::create([
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'password' => Hash::make($validated['password']),
+                'role' => 'loueur',
+            ]);
+
+            Loueur::create([
+                'user_id' => $user->id,
+                'account_type' => $validated['account_type'],
+                'company_name' => $validated['company_name'],
+                'slug' => Str::slug($validated['company_name']) . '-' . Str::random(6),
+                'phone' => $validated['phone'],
+                'wilaya' => $validated['wilaya'],
+                'is_active' => false,
+                'offers_transfer' => $isTaxi,
+            ]);
+
+            \DB::commit();
+        } catch (\Exception $e) {
+            \DB::rollBack();
+            \Log::error('Registration failed: ' . $e->getMessage());
+            return back()->withInput()->withErrors(['email' => 'Une erreur est survenue lors de l\'inscription. Veuillez réessayer.']);
+        }
 
         // Send welcome email
-        $this->sendWelcomeEmail($user->loueur);
+        try {
+            $this->sendWelcomeEmail($user->loueur);
+        } catch (\Exception $e) {
+            \Log::warning('Welcome email failed: ' . $e->getMessage());
+        }
 
         // Ne PAS connecter automatiquement - le compte doit être validé par l'admin
         $message = $isTaxi
