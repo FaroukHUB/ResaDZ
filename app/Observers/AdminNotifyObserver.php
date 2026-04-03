@@ -40,16 +40,18 @@ class AdminNotifyObserver
     private function notifyNewLoueur(Loueur $loueur): void
     {
         $type = $loueur->account_type === 'taxi' ? 'chauffeur/taxi' : 'loueur';
-        $subject = "Nouveau {$type} inscrit — " . ($loueur->company_name ?: 'Sans nom');
+        $subject = "⚠️ Nouveau {$type} à valider — " . ($loueur->company_name ?: 'Sans nom');
 
-        $body = "Nouveau {$type} inscrit sur ResaDZ.\n\n" .
+        $body = "🔔 Nouveau {$type} inscrit sur ResaDZ — ACTION REQUISE\n\n" .
+            "═══ INFORMATIONS ═══\n" .
             "Nom : " . ($loueur->company_name ?: 'Non renseigné') . "\n" .
             "Wilaya : " . ($loueur->wilaya ?: 'Non renseignée') . "\n" .
             "Téléphone : " . ($loueur->phone ?: 'Non renseigné') . "\n" .
-            "WhatsApp : " . ($loueur->whatsapp ?: 'Non renseigné') . "\n" .
             "Email : " . ($loueur->user->email ?? 'Non renseigné') . "\n" .
             "Type : " . $type . "\n\n" .
-            "→ Voir dans le panel admin : " . url('/admin/loueurs/' . $loueur->id);
+            "⚠️ Ce compte est EN ATTENTE DE VALIDATION.\n" .
+            "Rendez-vous dans le panel admin pour l'accepter ou le refuser.\n\n" .
+            "→ Panel admin loueurs : " . url('/admin/loueurs');
 
         $this->sendToAdmins($subject, $body, 'inscription');
     }
