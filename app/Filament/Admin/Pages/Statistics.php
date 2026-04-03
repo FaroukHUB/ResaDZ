@@ -60,337 +60,293 @@ class Statistics extends Page
 
     public function getViewData(): array
     {
-        $today = Carbon::today();
-        $startOfWeek = Carbon::now()->startOfWeek();
-        $startOfMonth = Carbon::now()->startOfMonth();
-        $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
-        $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
-
-        // Current IP and excluded IPs
+        // Non-cacheable data (must be fresh)
         $currentIp = request()->ip();
         $excludedIps = config('resadz.excluded_tracking_ips', []);
-
-        // Top IPs
-        $topIps = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('ip_address, COUNT(*) as visits, MIN(visited_at) as first_visit, MAX(visited_at) as last_visit')
-            ->groupBy('ip_address')
-            ->orderByDesc('visits')
-            ->limit(20)
-            ->get();
-
-        // Total records
-        $totalRecords = PageVisit::count();
-        $oldestRecord = PageVisit::orderBy('visited_at')->first();
-
-        // ===== BASIC STATS =====
-        $todayVisits = PageVisit::whereDate('visited_at', $today)->count();
-        $yesterdayVisits = PageVisit::whereDate('visited_at', Carbon::yesterday())->count();
-        $weekVisits = PageVisit::whereBetween('visited_at', [$startOfWeek, now()])->count();
-        $monthVisits = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])->count();
-        $lastMonthVisits = PageVisit::whereBetween('visited_at', [$startOfLastMonth, $endOfLastMonth])->count();
-
-        // Unique visitors
-        $todayUnique = PageVisit::whereDate('visited_at', $today)->distinct('ip_address')->count('ip_address');
-        $monthUnique = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])->distinct('ip_address')->count('ip_address');
-
-        // ===== GEOGRAPHIC STATS =====
-        $topCountries = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('country')
-            ->selectRaw('country, country_code, COUNT(*) as visits')
-            ->groupBy('country', 'country_code')
-            ->orderByDesc('visits')
-            ->limit(15)
-            ->get();
-
-        $topCities = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('city')
-            ->selectRaw('city, country_code, COUNT(*) as visits')
-            ->groupBy('city', 'country_code')
-            ->orderByDesc('visits')
-            ->limit(15)
-            ->get();
-
-        $topRegions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('region')
-            ->selectRaw('region, country_code, COUNT(*) as visits')
-            ->groupBy('region', 'country_code')
-            ->orderByDesc('visits')
-            ->limit(15)
-            ->get();
-
-        // ===== TRAFFIC SOURCES =====
-        $trafficSources = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('traffic_source, traffic_medium, COUNT(*) as visits')
-            ->groupBy('traffic_source', 'traffic_medium')
-            ->orderByDesc('visits')
-            ->limit(20)
-            ->get();
-
-        $trafficByMedium = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('traffic_medium, COUNT(*) as visits')
-            ->groupBy('traffic_medium')
-            ->orderByDesc('visits')
-            ->get();
-
-        // ===== UTM CAMPAIGNS =====
-        $utmCampaigns = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('utm_campaign')
-            ->selectRaw('utm_source, utm_medium, utm_campaign, COUNT(*) as visits')
-            ->groupBy('utm_source', 'utm_medium', 'utm_campaign')
-            ->orderByDesc('visits')
-            ->limit(10)
-            ->get();
-
-        // ===== HOURLY STATS =====
-        $hourlyStats = PageVisit::whereBetween('visited_at', [now()->subDays(7), now()])
-            ->selectRaw('HOUR(visited_at) as hour, COUNT(*) as visits')
-            ->groupBy('hour')
-            ->orderBy('hour')
-            ->get()
-            ->pluck('visits', 'hour')
-            ->toArray();
-
-        // Fill missing hours
-        for ($i = 0; $i < 24; $i++) {
-            if (!isset($hourlyStats[$i])) {
-                $hourlyStats[$i] = 0;
-            }
-        }
-        ksort($hourlyStats);
-
-        // ===== DAY OF WEEK STATS =====
-        $dayOfWeekStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('DAYOFWEEK(visited_at) as day, COUNT(*) as visits')
-            ->groupBy('day')
-            ->orderBy('day')
-            ->get()
-            ->pluck('visits', 'day')
-            ->toArray();
-
-        $dayNames = [1 => 'Dimanche', 2 => 'Lundi', 3 => 'Mardi', 4 => 'Mercredi', 5 => 'Jeudi', 6 => 'Vendredi', 7 => 'Samedi'];
-
-        // ===== DEVICES & BROWSERS & OS =====
-        $deviceStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('device_type, COUNT(*) as visits')
-            ->groupBy('device_type')
-            ->orderByDesc('visits')
-            ->get();
-
-        $browserStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('browser, COUNT(*) as visits')
-            ->groupBy('browser')
-            ->orderByDesc('visits')
-            ->limit(10)
-            ->get();
-
-        $osStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('os')
-            ->selectRaw('os, COUNT(*) as visits')
-            ->groupBy('os')
-            ->orderByDesc('visits')
-            ->limit(10)
-            ->get();
-
-        // ===== TOP PAGES =====
-        $topPages = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->selectRaw('page_type, COUNT(*) as visits')
-            ->groupBy('page_type')
-            ->orderByDesc('visits')
-            ->get();
-
-        // ===== TOP VEHICLES =====
-        $topVehicles = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('vehicle_id')
-            ->selectRaw('vehicle_id, COUNT(*) as visits')
-            ->groupBy('vehicle_id')
-            ->orderByDesc('visits')
-            ->limit(10)
-            ->with('vehicle.brand')
-            ->get();
-
-        // ===== LANDING PAGES =====
-        $landingPages = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->where('is_landing', true)
-            ->selectRaw('page_type, COUNT(*) as visits')
-            ->groupBy('page_type')
-            ->orderByDesc('visits')
-            ->get();
-
-        // ===== BOUNCE RATE =====
-        $totalSessions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->whereNotNull('session_id')
-            ->distinct('session_id')
-            ->count('session_id');
-
-        // Count sessions with only 1 page view (bounced)
-        $bouncedSessionsResult = DB::select("
-            SELECT COUNT(*) as count FROM (
-                SELECT session_id
-                FROM page_visits
-                WHERE visited_at BETWEEN ? AND ?
-                AND session_id IS NOT NULL
-                GROUP BY session_id
-                HAVING COUNT(*) = 1
-            ) as bounced
-        ", [$startOfMonth, now()]);
-        $bouncedSessions = $bouncedSessionsResult[0]->count ?? 0;
-
-        $bounceRate = $totalSessions > 0 ? round(($bouncedSessions / $totalSessions) * 100, 1) : 0;
-
-        // ===== DAILY VISITS CHART =====
-        $dailyVisits = PageVisit::whereBetween('visited_at', [now()->subDays(30), now()])
-            ->selectRaw('DATE(visited_at) as date, COUNT(*) as visits')
-            ->groupBy('date')
-            ->orderBy('date')
-            ->get();
-
-        // ===== CLICK EVENTS =====
-        $clickStats = [];
-        if (\Schema::hasTable('click_events')) {
-            $clickStats = ClickEvent::whereBetween('clicked_at', [$startOfMonth, now()])
-                ->selectRaw('event_type, COUNT(*) as clicks')
-                ->groupBy('event_type')
-                ->orderByDesc('clicks')
-                ->get();
-        }
-
-        // ===== CONVERSION FUNNEL =====
-        $funnelHome = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->where('page_type', 'home')
-            ->distinct('session_id')
-            ->count('session_id');
-
-        $funnelVehicleList = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->where('page_type', 'vehicles_list')
-            ->distinct('session_id')
-            ->count('session_id');
-
-        $funnelVehicle = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->where('page_type', 'vehicle')
-            ->distinct('session_id')
-            ->count('session_id');
-
-        $funnelBooking = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-            ->where('page_type', 'booking')
-            ->distinct('session_id')
-            ->count('session_id');
-
-        $funnelCompleted = Booking::whereBetween('created_at', [$startOfMonth, now()])->count();
-
-        // ===== REAL-TIME VISITORS =====
         $realtimeVisitors = PageVisit::where('visited_at', '>=', now()->subMinutes(5))
             ->distinct('session_id')
             ->count('session_id');
 
-        // ===== BUSINESS STATS =====
-        $totalLoueurs = Loueur::count();
-        $totalVehicles = Vehicle::where('is_active', true)->count();
-        $monthBookings = Booking::whereBetween('created_at', [$startOfMonth, now()])->count();
-        $monthRevenue = Booking::whereBetween('created_at', [$startOfMonth, now()])
-            ->where('status', 'completed')
-            ->sum('total_price');
+        // Cache all heavy queries for 2 minutes
+        $cached = Cache::remember('admin_statistics_data', 120, function () {
+            $today = Carbon::today();
+            $startOfWeek = Carbon::now()->startOfWeek();
+            $startOfMonth = Carbon::now()->startOfMonth();
+            $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
+            $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
 
-        // ===== RECENT VISITS =====
-        $recentVisits = PageVisit::with('vehicle')
-            ->orderByDesc('visited_at')
-            ->limit(50)
-            ->get();
+            // Top IPs
+            $topIps = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('ip_address, COUNT(*) as visits, MIN(visited_at) as first_visit, MAX(visited_at) as last_visit')
+                ->groupBy('ip_address')
+                ->orderByDesc('visits')
+                ->limit(20)
+                ->get();
 
-        // Chart.js pre-computed data
-        $chartHourlyData = array_values($hourlyStats);
-        $chartDayLabels = array_values($dayNames);
-        $chartDayData = array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames));
-        $chartDailyLabels = $dailyVisits->pluck('date')->map(fn($d) => Carbon::parse($d)->format('d/m'))->values()->toArray();
-        $chartDailyData = $dailyVisits->pluck('visits')->values()->toArray();
-        $chartDeviceData = $deviceStats->pluck('visits')->toArray();
-        $chartDeviceLabels = $deviceStats->pluck('device_type')->map(fn($d) => match($d) {
-            'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d ?? 'Autre')
-        })->toArray();
-        $chartMediumData = $trafficByMedium->pluck('visits')->toArray();
-        $chartMediumLabels = $trafficByMedium->pluck('traffic_medium')->map(fn($m) => match($m) {
-            'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence',
-            'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m ?? 'Autre')
-        })->toArray();
+            $totalRecords = PageVisit::count();
+            $oldestRecord = PageVisit::orderBy('visited_at')->first();
 
-        return [
-            // Chart.js data
-            'chartHourlyData' => $chartHourlyData,
-            'chartDayLabels' => $chartDayLabels,
-            'chartDayData' => $chartDayData,
-            'chartDailyLabels' => $chartDailyLabels,
-            'chartDailyData' => $chartDailyData,
-            'chartDeviceData' => $chartDeviceData,
-            'chartDeviceLabels' => $chartDeviceLabels,
-            'chartMediumData' => $chartMediumData,
-            'chartMediumLabels' => $chartMediumLabels,
+            // ===== BASIC STATS =====
+            $todayVisits = PageVisit::whereDate('visited_at', $today)->count();
+            $yesterdayVisits = PageVisit::whereDate('visited_at', Carbon::yesterday())->count();
+            $weekVisits = PageVisit::whereBetween('visited_at', [$startOfWeek, now()])->count();
+            $monthVisits = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])->count();
+            $lastMonthVisits = PageVisit::whereBetween('visited_at', [$startOfLastMonth, $endOfLastMonth])->count();
+            $todayUnique = PageVisit::whereDate('visited_at', $today)->distinct('ip_address')->count('ip_address');
+            $monthUnique = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])->distinct('ip_address')->count('ip_address');
 
-            // Basic stats
-            'todayVisits' => $todayVisits,
-            'yesterdayVisits' => $yesterdayVisits,
-            'weekVisits' => $weekVisits,
-            'monthVisits' => $monthVisits,
-            'lastMonthVisits' => $lastMonthVisits,
-            'todayUnique' => $todayUnique,
-            'monthUnique' => $monthUnique,
+            // ===== GEOGRAPHIC STATS =====
+            $topCountries = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('country')
+                ->selectRaw('country, country_code, COUNT(*) as visits')
+                ->groupBy('country', 'country_code')
+                ->orderByDesc('visits')
+                ->limit(15)
+                ->get();
 
-            // Geographic
-            'topCountries' => $topCountries,
-            'topCities' => $topCities,
-            'topRegions' => $topRegions,
+            $topCities = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('city')
+                ->selectRaw('city, country_code, COUNT(*) as visits')
+                ->groupBy('city', 'country_code')
+                ->orderByDesc('visits')
+                ->limit(15)
+                ->get();
 
-            // Traffic sources
-            'trafficSources' => $trafficSources,
-            'trafficByMedium' => $trafficByMedium,
-            'utmCampaigns' => $utmCampaigns,
+            $topRegions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('region')
+                ->selectRaw('region, country_code, COUNT(*) as visits')
+                ->groupBy('region', 'country_code')
+                ->orderByDesc('visits')
+                ->limit(15)
+                ->get();
 
-            // Time-based
-            'hourlyStats' => $hourlyStats,
-            'dayOfWeekStats' => $dayOfWeekStats,
-            'dayNames' => $dayNames,
-            'dailyVisits' => $dailyVisits,
+            // ===== TRAFFIC SOURCES =====
+            $trafficSources = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('traffic_source, traffic_medium, COUNT(*) as visits')
+                ->groupBy('traffic_source', 'traffic_medium')
+                ->orderByDesc('visits')
+                ->limit(20)
+                ->get();
 
-            // Technology
-            'deviceStats' => $deviceStats,
-            'browserStats' => $browserStats,
-            'osStats' => $osStats,
+            $trafficByMedium = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('traffic_medium, COUNT(*) as visits')
+                ->groupBy('traffic_medium')
+                ->orderByDesc('visits')
+                ->get();
 
-            // Pages
-            'topPages' => $topPages,
-            'topVehicles' => $topVehicles,
-            'landingPages' => $landingPages,
+            // ===== UTM CAMPAIGNS =====
+            $utmCampaigns = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('utm_campaign')
+                ->selectRaw('utm_source, utm_medium, utm_campaign, COUNT(*) as visits')
+                ->groupBy('utm_source', 'utm_medium', 'utm_campaign')
+                ->orderByDesc('visits')
+                ->limit(10)
+                ->get();
 
-            // Behavior
-            'bounceRate' => $bounceRate,
-            'totalSessions' => $totalSessions,
+            // ===== HOURLY STATS =====
+            $hourlyStats = PageVisit::whereBetween('visited_at', [now()->subDays(7), now()])
+                ->selectRaw('HOUR(visited_at) as hour, COUNT(*) as visits')
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->get()
+                ->pluck('visits', 'hour')
+                ->toArray();
 
-            // Clicks
-            'clickStats' => $clickStats,
+            for ($i = 0; $i < 24; $i++) {
+                if (!isset($hourlyStats[$i])) $hourlyStats[$i] = 0;
+            }
+            ksort($hourlyStats);
 
-            // Funnel
-            'funnelHome' => $funnelHome,
-            'funnelVehicleList' => $funnelVehicleList,
-            'funnelVehicle' => $funnelVehicle,
-            'funnelBooking' => $funnelBooking,
-            'funnelCompleted' => $funnelCompleted,
+            // ===== DAY OF WEEK STATS =====
+            $dayOfWeekStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('DAYOFWEEK(visited_at) as day, COUNT(*) as visits')
+                ->groupBy('day')
+                ->orderBy('day')
+                ->get()
+                ->pluck('visits', 'day')
+                ->toArray();
 
-            // Real-time
+            $dayNames = [1 => 'Dimanche', 2 => 'Lundi', 3 => 'Mardi', 4 => 'Mercredi', 5 => 'Jeudi', 6 => 'Vendredi', 7 => 'Samedi'];
+
+            // ===== DEVICES & BROWSERS & OS =====
+            $deviceStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('device_type, COUNT(*) as visits')
+                ->groupBy('device_type')
+                ->orderByDesc('visits')
+                ->get();
+
+            $browserStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('browser, COUNT(*) as visits')
+                ->groupBy('browser')
+                ->orderByDesc('visits')
+                ->limit(10)
+                ->get();
+
+            $osStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('os')
+                ->selectRaw('os, COUNT(*) as visits')
+                ->groupBy('os')
+                ->orderByDesc('visits')
+                ->limit(10)
+                ->get();
+
+            // ===== TOP PAGES =====
+            $topPages = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->selectRaw('page_type, COUNT(*) as visits')
+                ->groupBy('page_type')
+                ->orderByDesc('visits')
+                ->get();
+
+            // ===== TOP VEHICLES =====
+            $topVehicles = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('vehicle_id')
+                ->selectRaw('vehicle_id, COUNT(*) as visits')
+                ->groupBy('vehicle_id')
+                ->orderByDesc('visits')
+                ->limit(10)
+                ->get()
+                ->load('vehicle.brand');
+
+            // ===== LANDING PAGES =====
+            $landingPages = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->where('is_landing', true)
+                ->selectRaw('page_type, COUNT(*) as visits')
+                ->groupBy('page_type')
+                ->orderByDesc('visits')
+                ->get();
+
+            // ===== BOUNCE RATE =====
+            $totalSessions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->whereNotNull('session_id')
+                ->distinct('session_id')
+                ->count('session_id');
+
+            $bouncedSessionsResult = DB::select("
+                SELECT COUNT(*) as count FROM (
+                    SELECT session_id
+                    FROM page_visits
+                    WHERE visited_at BETWEEN ? AND ?
+                    AND session_id IS NOT NULL
+                    GROUP BY session_id
+                    HAVING COUNT(*) = 1
+                ) as bounced
+            ", [$startOfMonth, now()]);
+            $bouncedSessions = $bouncedSessionsResult[0]->count ?? 0;
+            $bounceRate = $totalSessions > 0 ? round(($bouncedSessions / $totalSessions) * 100, 1) : 0;
+
+            // ===== DAILY VISITS CHART =====
+            $dailyVisits = PageVisit::whereBetween('visited_at', [now()->subDays(30), now()])
+                ->selectRaw('DATE(visited_at) as date, COUNT(*) as visits')
+                ->groupBy('date')
+                ->orderBy('date')
+                ->get();
+
+            // ===== CLICK EVENTS =====
+            $clickStats = [];
+            if (\Schema::hasTable('click_events')) {
+                $clickStats = ClickEvent::whereBetween('clicked_at', [$startOfMonth, now()])
+                    ->selectRaw('event_type, COUNT(*) as clicks')
+                    ->groupBy('event_type')
+                    ->orderByDesc('clicks')
+                    ->get();
+            }
+
+            // ===== CONVERSION FUNNEL =====
+            $funnelHome = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->where('page_type', 'home')->distinct('session_id')->count('session_id');
+            $funnelVehicleList = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->where('page_type', 'vehicles_list')->distinct('session_id')->count('session_id');
+            $funnelVehicle = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->where('page_type', 'vehicle')->distinct('session_id')->count('session_id');
+            $funnelBooking = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
+                ->where('page_type', 'booking')->distinct('session_id')->count('session_id');
+            $funnelCompleted = Booking::whereBetween('created_at', [$startOfMonth, now()])->count();
+
+            // ===== BUSINESS STATS =====
+            $totalLoueurs = Loueur::count();
+            $totalVehicles = Vehicle::where('is_active', true)->count();
+            $monthBookings = Booking::whereBetween('created_at', [$startOfMonth, now()])->count();
+            $monthRevenue = Booking::whereBetween('created_at', [$startOfMonth, now()])
+                ->where('status', 'completed')->sum('total_price');
+
+            // ===== RECENT VISITS =====
+            $recentVisits = PageVisit::with('vehicle')
+                ->orderByDesc('visited_at')
+                ->limit(50)
+                ->get();
+
+            // Chart.js pre-computed data
+            $chartHourlyData = array_values($hourlyStats);
+            $chartDayLabels = array_values($dayNames);
+            $chartDayData = array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames));
+            $chartDailyLabels = $dailyVisits->pluck('date')->map(fn($d) => Carbon::parse($d)->format('d/m'))->values()->toArray();
+            $chartDailyData = $dailyVisits->pluck('visits')->values()->toArray();
+            $chartDeviceData = $deviceStats->pluck('visits')->toArray();
+            $chartDeviceLabels = $deviceStats->pluck('device_type')->map(fn($d) => match($d) {
+                'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d ?? 'Autre')
+            })->toArray();
+            $chartMediumData = $trafficByMedium->pluck('visits')->toArray();
+            $chartMediumLabels = $trafficByMedium->pluck('traffic_medium')->map(fn($m) => match($m) {
+                'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence',
+                'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m ?? 'Autre')
+            })->toArray();
+
+            return [
+                'chartHourlyData' => $chartHourlyData,
+                'chartDayLabels' => $chartDayLabels,
+                'chartDayData' => $chartDayData,
+                'chartDailyLabels' => $chartDailyLabels,
+                'chartDailyData' => $chartDailyData,
+                'chartDeviceData' => $chartDeviceData,
+                'chartDeviceLabels' => $chartDeviceLabels,
+                'chartMediumData' => $chartMediumData,
+                'chartMediumLabels' => $chartMediumLabels,
+                'todayVisits' => $todayVisits,
+                'yesterdayVisits' => $yesterdayVisits,
+                'weekVisits' => $weekVisits,
+                'monthVisits' => $monthVisits,
+                'lastMonthVisits' => $lastMonthVisits,
+                'todayUnique' => $todayUnique,
+                'monthUnique' => $monthUnique,
+                'topCountries' => $topCountries,
+                'topCities' => $topCities,
+                'topRegions' => $topRegions,
+                'trafficSources' => $trafficSources,
+                'trafficByMedium' => $trafficByMedium,
+                'utmCampaigns' => $utmCampaigns,
+                'hourlyStats' => $hourlyStats,
+                'dayOfWeekStats' => $dayOfWeekStats,
+                'dayNames' => $dayNames,
+                'dailyVisits' => $dailyVisits,
+                'deviceStats' => $deviceStats,
+                'browserStats' => $browserStats,
+                'osStats' => $osStats,
+                'topPages' => $topPages,
+                'topVehicles' => $topVehicles,
+                'landingPages' => $landingPages,
+                'bounceRate' => $bounceRate,
+                'totalSessions' => $totalSessions,
+                'clickStats' => $clickStats,
+                'funnelHome' => $funnelHome,
+                'funnelVehicleList' => $funnelVehicleList,
+                'funnelVehicle' => $funnelVehicle,
+                'funnelBooking' => $funnelBooking,
+                'funnelCompleted' => $funnelCompleted,
+                'totalLoueurs' => $totalLoueurs,
+                'totalVehicles' => $totalVehicles,
+                'monthBookings' => $monthBookings,
+                'monthRevenue' => $monthRevenue,
+                'recentVisits' => $recentVisits,
+                'topIps' => $topIps,
+                'totalRecords' => $totalRecords,
+                'oldestRecord' => $oldestRecord,
+            ];
+        });
+
+        return array_merge($cached, [
             'realtimeVisitors' => $realtimeVisitors,
-
-            // Business
-            'totalLoueurs' => $totalLoueurs,
-            'totalVehicles' => $totalVehicles,
-            'monthBookings' => $monthBookings,
-            'monthRevenue' => $monthRevenue,
-
-            // Recent
-            'recentVisits' => $recentVisits,
-
-            // IP tracking
             'currentIp' => $currentIp,
             'excludedIps' => $excludedIps,
-            'topIps' => $topIps,
-            'totalRecords' => $totalRecords,
-            'oldestRecord' => $oldestRecord,
-        ];
+        ]);
     }
 }
