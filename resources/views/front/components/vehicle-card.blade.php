@@ -29,8 +29,8 @@
     {{-- Image Section --}}
     <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative border-b border-neutral-800">
         <div class="aspect-[16/10] overflow-hidden">
-            @if($vehicle->image)
-                <img src="{{ asset('storage/' . $vehicle->image) }}"
+            @if($vehicle->display_image)
+                <img src="{{ asset('storage/' . $vehicle->display_image) }}"
                      alt="{{ $vehicle->full_name }}"
                      class="w-full h-full object-cover"
                      loading="lazy"

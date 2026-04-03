@@ -161,6 +161,28 @@ class Vehicle extends Model
         return $this->hasMany(Availability::class);
     }
 
+    /**
+     * Returns the display image: custom upload or template fallback
+     */
+    public function getDisplayImageAttribute(): ?string
+    {
+        if ($this->image) {
+            return $this->image;
+        }
+
+        if ($this->brand_id && $this->model && $this->color) {
+            $template = VehicleTemplate::where('brand_id', $this->brand_id)
+                ->whereRaw('LOWER(model_name) = ?', [strtolower($this->model)])
+                ->where('color', $this->color)
+                ->where('is_active', true)
+                ->value('image_path');
+
+            if ($template) return $template;
+        }
+
+        return null;
+    }
+
     public function transactions(): HasMany
     {
         return $this->hasMany(Transaction::class);

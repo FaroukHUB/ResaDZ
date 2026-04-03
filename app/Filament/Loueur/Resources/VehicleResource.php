@@ -63,6 +63,7 @@ class VehicleResource extends Resource
                                     ->options(Brand::pluck('name', 'id'))
                                     ->searchable()
                                     ->required()
+                                    ->live()
                                     ->helperText('La marque apparaît dans les filtres de recherche'),
                                 Forms\Components\Select::make('category_id')
                                     ->label('Catégorie')
@@ -76,6 +77,7 @@ class VehicleResource extends Resource
                                     ->label('Modèle')
                                     ->required()
                                     ->maxLength(255)
+                                    ->live(onBlur: true)
                                     ->helperText('Ex: Clio, Golf, Tucson...'),
                                 Forms\Components\TextInput::make('full_name')
                                     ->label('Nom complet')
@@ -107,8 +109,16 @@ class VehicleResource extends Resource
                                         'electric' => 'Électrique',
                                     ])
                                     ->helperText('Affiché sur la fiche véhicule'),
-                                Forms\Components\TextInput::make('color')
+                                Forms\Components\Select::make('color')
                                     ->label('Couleur')
+                                    ->live()
+                                    ->options([
+                                        'noir' => 'Noir', 'blanc' => 'Blanc', 'gris' => 'Gris',
+                                        'rouge' => 'Rouge', 'bleu' => 'Bleu', 'vert' => 'Vert',
+                                        'beige' => 'Beige', 'marron' => 'Marron', 'orange' => 'Orange', 'jaune' => 'Jaune',
+                                    ])
+                                    ->allowHtml(false)
+                                    ->searchable()
                                     ->helperText('Aide les clients à identifier le véhicule'),
                             ]),
                         Forms\Components\Grid::make(4)
@@ -425,12 +435,48 @@ class VehicleResource extends Resource
                                     </div>
                                 </div>
                             ')),
+                        Forms\Components\Placeholder::make('template_preview')
+                            ->label('Visuel studio disponible')
+                            ->visible(function (Forms\Get $get): bool {
+                                if (!$get('brand_id') || !$get('model') || !$get('color')) return false;
+                                return \App\Models\VehicleTemplate::where('brand_id', $get('brand_id'))
+                                    ->whereRaw('LOWER(model_name) = ?', [strtolower($get('model'))])
+                                    ->where('color', $get('color'))
+                                    ->where('is_active', true)
+                                    ->exists();
+                            })
+                            ->content(function (Forms\Get $get): \Illuminate\Support\HtmlString {
+                                $template = \App\Models\VehicleTemplate::where('brand_id', $get('brand_id'))
+                                    ->whereRaw('LOWER(model_name) = ?', [strtolower($get('model'))])
+                                    ->where('color', $get('color'))
+                                    ->where('is_active', true)
+                                    ->first();
+                                if (!$template) return new \Illuminate\Support\HtmlString('');
+                                $imgUrl = asset('storage/' . $template->image_path);
+                                return new \Illuminate\Support\HtmlString("
+                                    <div class='p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl'>
+                                        <div class='flex items-start gap-4'>
+                                            <img src='{$imgUrl}' alt='Visuel studio' class='w-48 rounded-xl border border-green-300 shadow-sm'>
+                                            <div>
+                                                <p class='font-bold text-green-900 dark:text-green-100'>Un visuel studio ResaDZ est disponible pour ce véhicule !</p>
+                                                <p class='text-sm text-green-800 dark:text-green-200 mt-1'>
+                                                    Si vous n'avez pas de photo, laissez le champ photo principale vide et ce visuel sera utilisé automatiquement.
+                                                </p>
+                                                <p class='text-xs text-green-600 dark:text-green-300 mt-2'>
+                                                    Vous pouvez aussi uploader votre propre photo — elle sera prioritaire.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ");
+                            }),
+
                         Forms\Components\FileUpload::make('image')
-                            ->label('Photo principale')
+                            ->label('Photo principale (optionnel si visuel studio disponible)')
                             ->image()
                             ->directory('vehicles')
                             ->visibility('public')
-                            ->helperText('Photo affichée en premier sur les cartes de recherche — choisissez la meilleure !'),
+                            ->helperText('Votre photo sera prioritaire sur le visuel studio. Laissez vide pour utiliser le visuel ResaDZ.'),
                         Forms\Components\FileUpload::make('gallery')
                             ->label('Galerie (optionnel)')
                             ->image()
