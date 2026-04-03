@@ -270,31 +270,7 @@ class Statistics extends Page
                 FROM page_visits ORDER BY visited_at DESC LIMIT 30
             ");
 
-            // ===== CHART DATA (computed in PHP, no extra queries) =====
-            $chartDayLabels = array_values($dayNames);
-            $chartDayData = array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames));
-            $chartDailyLabels = array_map(fn($d) => Carbon::parse($d->date)->format('d/m'), $dailyVisits);
-            $chartDailyData = array_map(fn($d) => (int) $d->visits, $dailyVisits);
-            $chartDeviceLabels = array_map(fn($d) => match($d->device_type) {
-                'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d->device_type ?? 'Autre')
-            }, $deviceStats);
-            $chartDeviceData = array_map(fn($d) => (int) $d->visits, $deviceStats);
-            $chartMediumLabels = array_map(fn($m) => match($m->traffic_medium) {
-                'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence',
-                'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m->traffic_medium ?? 'Autre')
-            }, $trafficByMedium);
-            $chartMediumData = array_map(fn($m) => (int) $m->visits, $trafficByMedium);
-
             return [
-                'chartHourlyData' => array_values($hourlyStats),
-                'chartDayLabels' => $chartDayLabels,
-                'chartDayData' => $chartDayData,
-                'chartDailyLabels' => $chartDailyLabels,
-                'chartDailyData' => $chartDailyData,
-                'chartDeviceData' => $chartDeviceData,
-                'chartDeviceLabels' => $chartDeviceLabels,
-                'chartMediumData' => $chartMediumData,
-                'chartMediumLabels' => $chartMediumLabels,
                 'todayVisits' => (int) ($basicStats->today_visits ?? 0),
                 'yesterdayVisits' => (int) ($basicStats->yesterday_visits ?? 0),
                 'weekVisits' => (int) ($basicStats->week_visits ?? 0),
