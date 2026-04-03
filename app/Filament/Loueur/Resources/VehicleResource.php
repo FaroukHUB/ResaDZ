@@ -439,18 +439,26 @@ class VehicleResource extends Resource
                             ->label('Visuel studio disponible')
                             ->visible(function (Forms\Get $get): bool {
                                 if (!$get('brand_id') || !$get('model') || !$get('color')) return false;
-                                return \App\Models\VehicleTemplate::where('brand_id', $get('brand_id'))
-                                    ->whereRaw('LOWER(model_name) = ?', [strtolower($get('model'))])
-                                    ->where('color', $get('color'))
-                                    ->where('is_active', true)
-                                    ->exists();
+                                try {
+                                    return \App\Models\VehicleTemplate::where('brand_id', $get('brand_id'))
+                                        ->whereRaw('LOWER(model_name) = ?', [strtolower($get('model'))])
+                                        ->where('color', $get('color'))
+                                        ->where('is_active', true)
+                                        ->exists();
+                                } catch (\Exception $e) {
+                                    return false;
+                                }
                             })
                             ->content(function (Forms\Get $get): \Illuminate\Support\HtmlString {
-                                $template = \App\Models\VehicleTemplate::where('brand_id', $get('brand_id'))
-                                    ->whereRaw('LOWER(model_name) = ?', [strtolower($get('model'))])
-                                    ->where('color', $get('color'))
-                                    ->where('is_active', true)
-                                    ->first();
+                                try {
+                                    $template = \App\Models\VehicleTemplate::where('brand_id', $get('brand_id'))
+                                        ->whereRaw('LOWER(model_name) = ?', [strtolower($get('model'))])
+                                        ->where('color', $get('color'))
+                                        ->where('is_active', true)
+                                        ->first();
+                                } catch (\Exception $e) {
+                                    return new \Illuminate\Support\HtmlString('');
+                                }
                                 if (!$template) return new \Illuminate\Support\HtmlString('');
                                 $imgUrl = asset('storage/' . $template->image_path);
                                 return new \Illuminate\Support\HtmlString("
