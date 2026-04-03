@@ -75,32 +75,6 @@
     <!-- Tailwind CSS + App -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
-    {{-- 3D loueur name on vehicle cards --}}
-    <style>
-        .loueur-3d-name {
-            font-family: 'Cairo', system-ui, sans-serif;
-            font-size: 1rem;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: #e8e8e8;
-            padding: 6px 20px;
-            background: rgba(0, 0, 0, 0.55);
-            backdrop-filter: blur(6px);
-            border-radius: 6px;
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            text-shadow:
-                0 1px 0 #b0b0b0,
-                0 2px 0 #a0a0a0,
-                0 3px 0 #909090,
-                0 4px 0 #808080,
-                0 5px 0 #707070,
-                0 6px 3px rgba(0, 0, 0, 0.4),
-                0 8px 8px rgba(0, 0, 0, 0.2),
-                0 12px 20px rgba(0, 0, 0, 0.3);
-        }
-    </style>
-
     @yield('head')
 </head>
 <body class="bg-white text-gray-900 antialiased">

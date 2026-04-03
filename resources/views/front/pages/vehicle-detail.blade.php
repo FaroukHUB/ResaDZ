@@ -71,8 +71,8 @@
                         @endif
                     </div>
                     @if($vehicle->loueur && $vehicle->loueur->company_name)
-                        <div class="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
-                            <span class="loueur-3d-name" style="font-size: 1.25rem;">{{ $vehicle->loueur->company_name }}</span>
+                        <div class="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm px-4 py-1.5 rounded">
+                            <span class="text-white text-sm font-semibold">{{ $vehicle->loueur->company_name }}</span>
                         </div>
                     @endif
                 </div>
