@@ -27,13 +27,16 @@ class VehicleTemplateResource extends Resource
 
     protected static ?int $navigationSort = 4;
 
-    public static function canAccess(): bool
+    public static function shouldRegisterNavigation(): bool
     {
-        try {
-            return \Illuminate\Support\Facades\Schema::hasTable('vehicle_templates');
-        } catch (\Exception $e) {
-            return false;
-        }
+        return \Illuminate\Support\Facades\Cache::store('file')
+            ->remember('has_vehicle_templates_table', 3600, function () {
+                try {
+                    return \Illuminate\Support\Facades\Schema::hasTable('vehicle_templates');
+                } catch (\Exception $e) {
+                    return false;
+                }
+            });
     }
 
     public static function form(Form $form): Form

@@ -31,13 +31,17 @@ class Statistics extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        $count = static::fileCache()->remember('stats_badge', 60, fn () =>
-            (int) DB::selectOne("
-                SELECT COUNT(DISTINCT session_id) as c
-                FROM page_visits WHERE visited_at >= ?
-            ", [now()->subMinutes(5)->toDateTimeString()])->c
-        );
-        return $count > 0 ? $count . ' en ligne' : null;
+        try {
+            $count = static::fileCache()->remember('stats_badge', 60, fn () =>
+                (int) DB::selectOne("
+                    SELECT COUNT(DISTINCT session_id) as c
+                    FROM page_visits WHERE visited_at >= ?
+                ", [now()->subMinutes(5)->toDateTimeString()])->c
+            );
+            return $count > 0 ? $count . ' en ligne' : null;
+        } catch (\Exception $e) {
+            return null;
+        }
     }
 
     public static function getNavigationBadgeColor(): ?string
