@@ -30,8 +30,6 @@ class ProspectResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Prospects';
 
-    protected static ?int $navigationSort = 1;
-
     public static function getNavigationBadge(): ?string
     {
         return static::getModel()::parRelance()->count() ?: null;
