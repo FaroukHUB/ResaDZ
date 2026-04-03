@@ -151,8 +151,28 @@ class FinanceDashboard extends Page
             ->whereMonth('created_at', Carbon::now()->month)
             ->count();
 
+        // Daily revenue for the last 30 days (Chart.js)
+        $chartLabels = [];
+        $chartTransfers = [];
+        $chartDeliveries = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i);
+            $chartLabels[] = $date->format('d/m');
+            $chartTransfers[] = (int) TransferBooking::where('loueur_id', $loueur->id)
+                ->where('status', 'completed')
+                ->whereDate('created_at', $date)
+                ->sum('price');
+            $chartDeliveries[] = (int) DeliveryBooking::where('loueur_id', $loueur->id)
+                ->where('status', 'delivered')
+                ->whereDate('created_at', $date)
+                ->sum('price');
+        }
+
         return [
             'isTaxi' => true,
+            'chartLabels' => $chartLabels,
+            'chartTransfers' => $chartTransfers,
+            'chartDeliveries' => $chartDeliveries,
             // Totaux
             'todayIncome' => $todayIncome,
             'todayExpenses' => $todayExpenses,
@@ -243,6 +263,36 @@ class FinanceDashboard extends Page
             ->whereIn('status', ['confirmed', 'active'])
             ->sum('total_price');
 
+        // Daily revenue for the last 30 days (Chart.js)
+        $dailyRevenue = Transaction::where('loueur_id', $loueur->id)
+            ->where('type', 'income')
+            ->whereBetween('transaction_date', [now()->subDays(30), now()])
+            ->selectRaw('DATE(transaction_date) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date')
+            ->toArray();
+
+        $dailyExpenses = Transaction::where('loueur_id', $loueur->id)
+            ->where('type', 'expense')
+            ->whereBetween('transaction_date', [now()->subDays(30), now()])
+            ->selectRaw('DATE(transaction_date) as date, SUM(amount) as total')
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date')
+            ->toArray();
+
+        // Fill all 30 days
+        $chartLabels = [];
+        $chartIncome = [];
+        $chartExpenses = [];
+        for ($i = 29; $i >= 0; $i--) {
+            $date = now()->subDays($i)->format('Y-m-d');
+            $chartLabels[] = now()->subDays($i)->format('d/m');
+            $chartIncome[] = (int) ($dailyRevenue[$date] ?? 0);
+            $chartExpenses[] = (int) ($dailyExpenses[$date] ?? 0);
+        }
+
         return [
             'isTaxi' => false,
             'todayIncome' => $todayIncome,
@@ -256,6 +306,9 @@ class FinanceDashboard extends Page
             'monthNet' => $monthIncome - $monthExpenses,
             'recentTransactions' => $recentTransactions,
             'pendingIncome' => $pendingIncome,
+            'chartLabels' => $chartLabels,
+            'chartIncome' => $chartIncome,
+            'chartExpenses' => $chartExpenses,
         ];
     }
 }

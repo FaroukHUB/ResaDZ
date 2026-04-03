@@ -5,6 +5,18 @@
 @section('og_title', $vehicle->full_name . ' - ' . number_format($vehicle->price_per_day, 0, ',', ' ') . ' DA/jour')
 @section('og_image', $vehicle->image ? asset('storage/' . $vehicle->image) : '')
 
+@section('head')
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
+<style>
+    #vehicle-availability-calendar .fc-daygrid-day.fc-day-today { background: #fffbeb !important; }
+    #vehicle-availability-calendar .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 700; }
+    #vehicle-availability-calendar .fc-button-primary { background: #111827 !important; border-color: #111827 !important; }
+    #vehicle-availability-calendar .fc-button-primary:hover { background: #374151 !important; }
+    #vehicle-availability-calendar .unavailable-bg { opacity: 0.6; }
+    #vehicle-availability-calendar .fc-daygrid-day-number { font-weight: 600; font-size: 0.85rem; }
+</style>
+@endsection
+
 @section('meta_extra')
 <!-- Schema.org JSON-LD -->
 <script type="application/ld+json">
@@ -121,6 +133,20 @@
                     </div>
                 </div>
                 @endif
+
+                <!-- Calendrier de disponibilité -->
+                <div class="bg-white rounded-2xl border border-gray-200 p-6">
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Disponibilité</h2>
+                    <div class="flex items-center gap-4 mb-4 text-sm text-gray-500">
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Disponible
+                        </span>
+                        <span class="flex items-center gap-1.5">
+                            <span class="w-2.5 h-2.5 rounded-full bg-red-300 inline-block"></span> Indisponible
+                        </span>
+                    </div>
+                    <div id="vehicle-availability-calendar" data-vehicle-slug="{{ $vehicle->slug }}"></div>
+                </div>
 
                 <!-- Loueur Info -->
                 @if($vehicle->loueur)
@@ -303,5 +329,9 @@
             </div>
         @endif
     </div>
+
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales/fr.global.min.js"></script>
+<script src="{{ asset('js/vehicle-calendar.js') }}"></script>
 
 @endsection

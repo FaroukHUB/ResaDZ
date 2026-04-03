@@ -3,6 +3,14 @@
 @section('title', 'Véhicules disponibles - ResaDZ')
 @section('meta_description', 'Parcourez tous les véhicules disponibles à la location en Algérie. Comparez les prix et réservez en ligne.')
 
+@section('head')
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    .resadz-marker { background: none !important; border: none !important; }
+    .leaflet-popup-content-wrapper { border-radius: 12px !important; }
+</style>
+@endsection
+
 @section('content')
 
     <!-- Header -->
@@ -18,6 +26,36 @@
                     <span class="text-gray-600">à {{ request('wilaya') }}</span>
                 @endif
             </p>
+        </div>
+    </section>
+
+    <!-- Carte interactive -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8" x-data="{ showMap: false }">
+        <button @click="showMap = !showMap"
+                class="flex items-center gap-2 text-sm font-semibold text-gray-700 hover:text-amber-600 transition mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"/></svg>
+            <span x-text="showMap ? 'Masquer la carte' : 'Voir la carte des véhicules par wilaya'"></span>
+            <svg class="w-4 h-4 transition-transform" :class="showMap && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+        </button>
+        <div x-show="showMap" x-collapse x-cloak>
+            <div class="bg-white rounded-2xl border border-gray-200 overflow-hidden mb-6">
+                <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                    <div>
+                        <h2 class="font-bold text-gray-900">Carte des véhicules par wilaya</h2>
+                        <p class="text-sm text-gray-500 mt-0.5">
+                            <span id="map-total-vehicles" class="font-semibold text-amber-600">...</span> véhicules dans
+                            <span id="map-total-wilayas" class="font-semibold text-amber-600">...</span> wilayas
+                        </p>
+                    </div>
+                    <div class="flex items-center gap-3 text-xs text-gray-500">
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-emerald-600 inline-block"></span> &lt;5</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-amber-600 inline-block"></span> 5-9</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-orange-600 inline-block"></span> 10-19</span>
+                        <span class="flex items-center gap-1"><span class="w-3 h-3 rounded-full bg-red-600 inline-block"></span> 20+</span>
+                    </div>
+                </div>
+                <div id="resadz-map" style="height: 450px; width: 100%;"></div>
+            </div>
         </div>
     </section>
 
@@ -150,5 +188,8 @@
             </div>
         </div>
     </div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{{ asset('js/map-vehicles.js') }}"></script>
 
 @endsection

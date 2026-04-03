@@ -238,6 +238,21 @@ class VehicleController extends Controller
             }
         }
 
+        // Add confirmed/active booking dates
+        $bookings = $vehicle->bookings()
+            ->whereIn('status', ['confirmed', 'active'])
+            ->where('end_date', '>=', now()->toDateString())
+            ->get(['start_date', 'end_date']);
+
+        foreach ($bookings as $b) {
+            $current = \Carbon\Carbon::parse($b->start_date);
+            $end = \Carbon\Carbon::parse($b->end_date);
+            while ($current->lte($end)) {
+                $dates[] = $current->format('Y-m-d');
+                $current->addDay();
+            }
+        }
+
         return response()->json([
             'success' => true,
             'dates' => array_values(array_unique($dates)),

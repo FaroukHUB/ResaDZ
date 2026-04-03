@@ -72,6 +72,9 @@ Route::middleware('throttle:tracking')->prefix('tracking')->group(function () {
     Route::post('/heartbeat', [\App\Http\Controllers\Api\TrackingController::class, 'heartbeat']);
 });
 
+// Map - Véhicules par wilaya pour Leaflet.js
+Route::middleware('throttle:public')->get('/map/vehicles-by-wilaya', [\App\Http\Controllers\Api\MapController::class, 'vehiclesByWilaya']);
+
 // Chatbot - Rate limited to prevent abuse
 Route::middleware('throttle:marketing')->post('/chatbot', [ChatbotController::class, 'chat']);
 

@@ -334,43 +334,8 @@
                     </svg>
                     Canaux de trafic
                 </h3>
-                @php
-                    $mediumColors = [
-                        'direct' => 'blue',
-                        'organic' => 'green',
-                        'social' => 'pink',
-                        'referral' => 'purple',
-                        'email' => 'yellow',
-                        'campaign' => 'orange',
-                    ];
-                    $mediumLabels = [
-                        'direct' => 'Direct',
-                        'organic' => 'Recherche',
-                        'social' => 'Réseaux sociaux',
-                        'referral' => 'Référence',
-                        'email' => 'Email',
-                        'campaign' => 'Campagne',
-                    ];
-                    $totalMedium = $trafficByMedium->sum('visits');
-                @endphp
-                <div class="space-y-3">
-                    @forelse($trafficByMedium as $medium)
-                        @php
-                            $percentage = $totalMedium > 0 ? ($medium->visits / $totalMedium) * 100 : 0;
-                            $color = $mediumColors[$medium->traffic_medium] ?? 'gray';
-                        @endphp
-                        <div>
-                            <div class="flex justify-between text-sm mb-1">
-                                <span class="text-gray-700 dark:text-gray-300">{{ $mediumLabels[$medium->traffic_medium] ?? ucfirst($medium->traffic_medium ?? 'Inconnu') }}</span>
-                                <span class="text-gray-500">{{ number_format($medium->visits) }} ({{ number_format($percentage, 1) }}%)</span>
-                            </div>
-                            <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                <div class="bg-{{ $color }}-500 h-2 rounded-full" style="width: {{ $percentage }}%"></div>
-                            </div>
-                        </div>
-                    @empty
-                        <p class="text-gray-500 text-sm text-center py-4">Pas encore de données</p>
-                    @endforelse
+                <div class="flex justify-center">
+                    <canvas id="chartTrafficMedium" width="280" height="280"></canvas>
                 </div>
             </div>
 
@@ -435,7 +400,7 @@
 
         {{-- Time-based Stats --}}
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            {{-- Hourly Stats --}}
+            {{-- Hourly Stats - Chart.js --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -443,25 +408,10 @@
                     </svg>
                     Visites par heure (7 derniers jours)
                 </h3>
-                <div class="flex items-end justify-between h-32 gap-1">
-                    @php $maxHourly = max($hourlyStats) ?: 1; @endphp
-                    @for($i = 0; $i < 24; $i++)
-                        @php
-                            $value = $hourlyStats[$i] ?? 0;
-                            $height = ($value / $maxHourly) * 100;
-                        @endphp
-                        <div class="flex-1 flex flex-col items-center group relative">
-                            <div class="w-full bg-blue-500 rounded-t transition-all hover:bg-blue-600" style="height: {{ max(2, $height) }}%"></div>
-                            <span class="text-xs text-gray-400 mt-1">{{ $i }}</span>
-                            <div class="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap">
-                                {{ $value }} visites
-                            </div>
-                        </div>
-                    @endfor
-                </div>
+                <canvas id="chartHourly" height="140"></canvas>
             </div>
 
-            {{-- Day of Week Stats --}}
+            {{-- Day of Week Stats - Chart.js --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                     <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -469,27 +419,11 @@
                     </svg>
                     Visites par jour (ce mois)
                 </h3>
-                <div class="space-y-2">
-                    @php $maxDay = max($dayOfWeekStats) ?: 1; @endphp
-                    @foreach($dayNames as $dayNum => $dayName)
-                        @php
-                            $value = $dayOfWeekStats[$dayNum] ?? 0;
-                            $percentage = ($value / $maxDay) * 100;
-                        @endphp
-                        <div class="flex items-center gap-3">
-                            <span class="w-20 text-sm text-gray-600 dark:text-gray-400">{{ $dayName }}</span>
-                            <div class="flex-1 bg-gray-200 dark:bg-gray-700 rounded-full h-4">
-                                <div class="bg-indigo-500 h-4 rounded-full flex items-center justify-end pr-2" style="width: {{ max(5, $percentage) }}%">
-                                    <span class="text-xs text-white font-medium">{{ $value }}</span>
-                                </div>
-                            </div>
-                        </div>
-                    @endforeach
-                </div>
+                <canvas id="chartDayOfWeek" height="140"></canvas>
             </div>
         </div>
 
-        {{-- Daily Visits Chart --}}
+        {{-- Daily Visits Chart - Chart.js --}}
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -497,22 +431,7 @@
                 </svg>
                 Visites quotidiennes (30 derniers jours)
             </h3>
-            <div class="flex items-end justify-between h-40 gap-1">
-                @php $maxDaily = $dailyVisits->max('visits') ?: 1; @endphp
-                @foreach($dailyVisits as $day)
-                    @php $height = ($day->visits / $maxDaily) * 100; @endphp
-                    <div class="flex-1 flex flex-col items-center group relative">
-                        <div class="w-full bg-green-500 rounded-t transition-all hover:bg-green-600" style="height: {{ max(2, $height) }}%"></div>
-                        <div class="absolute bottom-full mb-2 hidden group-hover:block bg-gray-800 text-white text-xs px-2 py-1 rounded whitespace-nowrap z-10">
-                            {{ \Carbon\Carbon::parse($day->date)->format('d/m') }}: {{ $day->visits }} visites
-                        </div>
-                    </div>
-                @endforeach
-            </div>
-            <div class="flex justify-between text-xs text-gray-400 mt-2">
-                <span>{{ $dailyVisits->first()?->date ? \Carbon\Carbon::parse($dailyVisits->first()->date)->format('d M') : '' }}</span>
-                <span>{{ $dailyVisits->last()?->date ? \Carbon\Carbon::parse($dailyVisits->last()->date)->format('d M') : '' }}</span>
-            </div>
+            <canvas id="chartDaily" height="160"></canvas>
         </div>
 
         {{-- Click Events Stats --}}
@@ -564,19 +483,8 @@
                     $deviceLabels = ['mobile' => 'Mobile', 'tablet' => 'Tablette', 'desktop' => 'Ordinateur'];
                     $totalDevices = $deviceStats->sum('visits');
                 @endphp
-                <div class="grid grid-cols-3 gap-2">
-                    @foreach(['mobile', 'desktop', 'tablet'] as $device)
-                        @php
-                            $stat = $deviceStats->firstWhere('device_type', $device);
-                            $visits = $stat->visits ?? 0;
-                            $percentage = $totalDevices > 0 ? ($visits / $totalDevices) * 100 : 0;
-                        @endphp
-                        <div class="text-center p-3 bg-gray-50 dark:bg-gray-700 rounded-xl">
-                            <div class="text-gray-400 mb-1 flex justify-center">{!! $deviceIcons[$device] !!}</div>
-                            <div class="text-xl font-bold text-gray-900 dark:text-white">{{ number_format($percentage, 0) }}%</div>
-                            <div class="text-xs text-gray-500">{{ $deviceLabels[$device] }}</div>
-                        </div>
-                    @endforeach
+                <div class="flex justify-center">
+                    <canvas id="chartDevices" width="220" height="220"></canvas>
                 </div>
             </div>
 
@@ -823,4 +731,168 @@
             </div>
         @endif
     </div>
+
+    {{-- Chart.js --}}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const isDark = document.documentElement.classList.contains('dark');
+        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)';
+        const textColor = isDark ? '#9ca3af' : '#6b7280';
+
+        Chart.defaults.color = textColor;
+        Chart.defaults.font.family = 'system-ui, sans-serif';
+
+        // === Hourly visits ===
+        const hourlyData = @json(array_values($hourlyStats));
+        new Chart(document.getElementById('chartHourly'), {
+            type: 'bar',
+            data: {
+                labels: Array.from({length: 24}, (_, i) => i + 'h'),
+                datasets: [{
+                    data: hourlyData,
+                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                    hoverBackgroundColor: 'rgba(59, 130, 246, 0.9)',
+                    borderRadius: 4,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: { label: ctx => ctx.raw + ' visites' }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+
+        // === Day of week ===
+        const dayLabels = @json(array_values($dayNames));
+        const dayData = @json(array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames)));
+        const dayColors = ['#ef4444','#3b82f6','#8b5cf6','#06b6d4','#22c55e','#f59e0b','#ec4899'];
+        new Chart(document.getElementById('chartDayOfWeek'), {
+            type: 'bar',
+            data: {
+                labels: dayLabels,
+                datasets: [{
+                    data: dayData,
+                    backgroundColor: dayColors.map(c => c + 'cc'),
+                    hoverBackgroundColor: dayColors,
+                    borderRadius: 6,
+                    borderSkipped: false,
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: { label: ctx => ctx.raw + ' visites' }
+                    }
+                },
+                scales: {
+                    x: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } },
+                    y: { grid: { display: false } }
+                }
+            }
+        });
+
+        // === Daily visits (line chart) ===
+        const dailyLabels = @json($dailyVisits->pluck('date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('d/m'))->values());
+        const dailyData = @json($dailyVisits->pluck('visits')->values());
+        new Chart(document.getElementById('chartDaily'), {
+            type: 'line',
+            data: {
+                labels: dailyLabels,
+                datasets: [{
+                    data: dailyData,
+                    borderColor: '#22c55e',
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 3,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: '#22c55e',
+                    borderWidth: 2.5,
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: { label: ctx => ctx.raw + ' visites' }
+                    }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: gridColor }, ticks: { precision: 0 } },
+                    x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
+                }
+            }
+        });
+
+        // === Device doughnut ===
+        const deviceCanvas = document.getElementById('chartDevices');
+        if (deviceCanvas) {
+            const deviceData = @json($deviceStats->pluck('visits')->toArray());
+            const deviceLabels = @json($deviceStats->pluck('device_type')->map(fn($d) => match($d) { 'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d) })->toArray());
+            new Chart(deviceCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: deviceLabels,
+                    datasets: [{
+                        data: deviceData,
+                        backgroundColor: ['#3b82f6', '#8b5cf6', '#f59e0b'],
+                        hoverOffset: 6,
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+
+        // === Traffic medium doughnut ===
+        const mediumCanvas = document.getElementById('chartTrafficMedium');
+        if (mediumCanvas) {
+            const mediumData = @json($trafficByMedium->pluck('visits')->toArray());
+            const mediumLabels = @json($trafficByMedium->pluck('traffic_medium')->map(fn($m) => match($m) { 'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence', 'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m ?? 'Autre') })->toArray());
+            const mediumColors = ['#3b82f6','#22c55e','#ec4899','#8b5cf6','#eab308','#f97316','#6b7280'];
+            new Chart(mediumCanvas, {
+                type: 'doughnut',
+                data: {
+                    labels: mediumLabels,
+                    datasets: [{
+                        data: mediumData,
+                        backgroundColor: mediumColors.slice(0, mediumData.length),
+                        hoverOffset: 6,
+                        borderWidth: 2,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    cutout: '60%',
+                    plugins: {
+                        legend: { position: 'bottom', labels: { padding: 16, usePointStyle: true } }
+                    }
+                }
+            });
+        }
+    });
+    </script>
 </x-filament-panels::page>
