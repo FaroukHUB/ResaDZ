@@ -12,12 +12,21 @@ class CreateVehicle extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        // Associer automatiquement le véhicule au loueur connecté
         $loueur = Auth::user()->loueur;
 
         if ($loueur) {
             $data['loueur_id'] = $loueur->id;
         }
+
+        // Valeurs par défaut pour les champs NOT NULL
+        $data['seats'] = $data['seats'] ?? 5;
+        $data['doors'] = $data['doors'] ?? 5;
+        $data['mileage'] = $data['mileage'] ?? 0;
+        $data['luggage_capacity'] = $data['luggage_capacity'] ?? 0;
+        $data['deposit_amount'] = $data['deposit_amount'] ?? 0;
+        $data['deposit_amount_eur'] = $data['deposit_amount_eur'] ?? 0;
+        $data['max_rental_days'] = $data['max_rental_days'] ?? 30;
+        $data['mileage_limit_per_day'] = $data['mileage_limit_per_day'] ?? 0;
 
         return $data;
     }
