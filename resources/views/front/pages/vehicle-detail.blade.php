@@ -60,7 +60,7 @@
             <!-- Left: Images + Details -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Main Image -->
-                <div class="bg-white rounded-2xl overflow-hidden border border-gray-200">
+                <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 relative">
                     <div class="aspect-[16/10] bg-gray-100">
                         @if($vehicle->image)
                             <img src="{{ asset('storage/' . $vehicle->image) }}" alt="{{ $vehicle->full_name }}" class="w-full h-full object-cover">
@@ -70,6 +70,11 @@
                             </div>
                         @endif
                     </div>
+                    @if($vehicle->loueur && $vehicle->loueur->company_name)
+                        <div class="absolute bottom-4 left-0 right-0 flex justify-center pointer-events-none">
+                            <span class="loueur-3d-name" style="font-size: 1.25rem;">{{ $vehicle->loueur->company_name }}</span>
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Gallery -->

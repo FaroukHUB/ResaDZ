@@ -71,10 +71,10 @@
             </div>
         @endif
 
-        {{-- Loueur name overlay --}}
+        {{-- Loueur name 3D overlay --}}
         @if($loueur && $loueur->company_name)
-            <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded">
-                <span class="text-white text-xs">{{ $loueur->company_name }}</span>
+            <div class="absolute bottom-3 left-0 right-0 flex justify-center pointer-events-none">
+                <span class="loueur-3d-name">{{ $loueur->company_name }}</span>
             </div>
         @endif
     </a>
