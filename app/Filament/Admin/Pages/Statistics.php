@@ -296,7 +296,34 @@ class Statistics extends Page
             ->limit(50)
             ->get();
 
+        // Chart.js pre-computed data
+        $chartHourlyData = array_values($hourlyStats);
+        $chartDayLabels = array_values($dayNames);
+        $chartDayData = array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames));
+        $chartDailyLabels = $dailyVisits->pluck('date')->map(fn($d) => Carbon::parse($d)->format('d/m'))->values()->toArray();
+        $chartDailyData = $dailyVisits->pluck('visits')->values()->toArray();
+        $chartDeviceData = $deviceStats->pluck('visits')->toArray();
+        $chartDeviceLabels = $deviceStats->pluck('device_type')->map(fn($d) => match($d) {
+            'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d ?? 'Autre')
+        })->toArray();
+        $chartMediumData = $trafficByMedium->pluck('visits')->toArray();
+        $chartMediumLabels = $trafficByMedium->pluck('traffic_medium')->map(fn($m) => match($m) {
+            'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence',
+            'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m ?? 'Autre')
+        })->toArray();
+
         return [
+            // Chart.js data
+            'chartHourlyData' => $chartHourlyData,
+            'chartDayLabels' => $chartDayLabels,
+            'chartDayData' => $chartDayData,
+            'chartDailyLabels' => $chartDailyLabels,
+            'chartDailyData' => $chartDailyData,
+            'chartDeviceData' => $chartDeviceData,
+            'chartDeviceLabels' => $chartDeviceLabels,
+            'chartMediumData' => $chartMediumData,
+            'chartMediumLabels' => $chartMediumLabels,
+
             // Basic stats
             'todayVisits' => $todayVisits,
             'yesterdayVisits' => $yesterdayVisits,

@@ -744,7 +744,7 @@
         Chart.defaults.font.family = 'system-ui, sans-serif';
 
         // === Hourly visits ===
-        const hourlyData = @json(array_values($hourlyStats));
+        const hourlyData = @json($chartHourlyData);
         new Chart(document.getElementById('chartHourly'), {
             type: 'bar',
             data: {
@@ -774,8 +774,8 @@
         });
 
         // === Day of week ===
-        const dayLabels = @json(array_values($dayNames));
-        const dayData = @json(array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames)));
+        const dayLabels = @json($chartDayLabels);
+        const dayData = @json($chartDayData);
         const dayColors = ['#ef4444','#3b82f6','#8b5cf6','#06b6d4','#22c55e','#f59e0b','#ec4899'];
         new Chart(document.getElementById('chartDayOfWeek'), {
             type: 'bar',
@@ -807,8 +807,8 @@
         });
 
         // === Daily visits (line chart) ===
-        const dailyLabels = @json($dailyVisits->pluck('date')->map(fn($d) => \Carbon\Carbon::parse($d)->format('d/m'))->values());
-        const dailyData = @json($dailyVisits->pluck('visits')->values());
+        const dailyLabels = @json($chartDailyLabels);
+        const dailyData = @json($chartDailyData);
         new Chart(document.getElementById('chartDaily'), {
             type: 'line',
             data: {
@@ -844,8 +844,8 @@
         // === Device doughnut ===
         const deviceCanvas = document.getElementById('chartDevices');
         if (deviceCanvas) {
-            const deviceData = @json($deviceStats->pluck('visits')->toArray());
-            const deviceLabels = @json($deviceStats->pluck('device_type')->map(fn($d) => match($d) { 'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d) })->toArray());
+            const deviceData = @json($chartDeviceData);
+            const deviceLabels = @json($chartDeviceLabels);
             new Chart(deviceCanvas, {
                 type: 'doughnut',
                 data: {
@@ -870,8 +870,8 @@
         // === Traffic medium doughnut ===
         const mediumCanvas = document.getElementById('chartTrafficMedium');
         if (mediumCanvas) {
-            const mediumData = @json($trafficByMedium->pluck('visits')->toArray());
-            const mediumLabels = @json($trafficByMedium->pluck('traffic_medium')->map(fn($m) => match($m) { 'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence', 'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m ?? 'Autre') })->toArray());
+            const mediumData = @json($chartMediumData);
+            const mediumLabels = @json($chartMediumLabels);
             const mediumColors = ['#3b82f6','#22c55e','#ec4899','#8b5cf6','#eab308','#f97316','#6b7280'];
             new Chart(mediumCanvas, {
                 type: 'doughnut',
