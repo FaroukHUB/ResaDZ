@@ -25,8 +25,11 @@ class CreateVehicle extends CreateRecord
         $data['luggage_capacity'] = $data['luggage_capacity'] ?? 0;
         $data['deposit_amount'] = $data['deposit_amount'] ?? 0;
         $data['deposit_amount_eur'] = $data['deposit_amount_eur'] ?? 0;
+        $data['price_per_day_eur'] = $data['price_per_day_eur'] ?? 0;
         $data['max_rental_days'] = $data['max_rental_days'] ?? 30;
         $data['mileage_limit_per_day'] = $data['mileage_limit_per_day'] ?? 0;
+        $data['image'] = $data['image'] ?? '';
+        $data['gallery'] = $data['gallery'] ?? [];
 
         return $data;
     }
