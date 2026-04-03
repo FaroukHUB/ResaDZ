@@ -364,7 +364,7 @@
         </div>
 
         {{-- UTM Campaigns --}}
-        @if($utmCampaigns->count() > 0)
+        @if(count($utmCampaigns) > 0)
         <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
             <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                 <svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -481,7 +481,7 @@
                         'desktop' => '<svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
                     ];
                     $deviceLabels = ['mobile' => 'Mobile', 'tablet' => 'Tablette', 'desktop' => 'Ordinateur'];
-                    $totalDevices = $deviceStats->sum('visits');
+                    $totalDevices = array_sum(array_column($deviceStats, 'visits'));
                 @endphp
                 <div class="flex justify-center">
                     <canvas id="chartDevices" width="220" height="220"></canvas>
@@ -492,7 +492,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Navigateurs</h3>
                 <div class="space-y-2">
-                    @php $totalBrowsers = $browserStats->sum('visits'); @endphp
+                    @php $totalBrowsers = array_sum(array_column($browserStats, 'visits')); @endphp
                     @forelse($browserStats as $browser)
                         @php $percentage = $totalBrowsers > 0 ? ($browser->visits / $totalBrowsers) * 100 : 0; @endphp
                         <div class="flex items-center justify-between">
@@ -514,7 +514,7 @@
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Systèmes d'exploitation</h3>
                 <div class="space-y-2">
-                    @php $totalOS = $osStats->sum('visits'); @endphp
+                    @php $totalOS = array_sum(array_column($osStats, 'visits')); @endphp
                     @forelse($osStats as $os)
                         @php $percentage = $totalOS > 0 ? ($os->visits / $totalOS) * 100 : 0; @endphp
                         <div class="flex items-center justify-between">
@@ -605,9 +605,6 @@
             </h3>
             <p class="text-sm text-gray-500 mb-4">
                 Total : {{ number_format($totalRecords) }} visites enregistrées
-                @if($oldestRecord)
-                    depuis le {{ $oldestRecord->visited_at->format('d/m/Y') }}
-                @endif
             </p>
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
@@ -668,7 +665,7 @@
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                         @forelse($recentVisits as $visit)
                             <tr class="hover:bg-gray-50 dark:hover:bg-gray-700 {{ $visit->ip_address === $currentIp ? 'bg-yellow-50 dark:bg-yellow-900/20' : '' }}">
-                                <td class="py-2 px-3 text-gray-500 whitespace-nowrap">{{ $visit->visited_at->format('d/m H:i') }}</td>
+                                <td class="py-2 px-3 text-gray-500 whitespace-nowrap">{{ \Carbon\Carbon::parse($visit->visited_at)->format('d/m H:i') }}</td>
                                 <td class="py-2 px-3">
                                     <div class="flex items-center gap-2">
                                         @if($visit->country_code)
@@ -704,28 +701,26 @@
         </div>
 
         {{-- Top Vehicles --}}
-        @if($topVehicles->count() > 0)
+        @if(count($topVehicles) > 0)
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Véhicules les plus consultés</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                     @foreach($topVehicles as $item)
-                        @if($item->vehicle)
-                            <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
-                                @if($item->vehicle->image)
-                                    <img src="{{ asset('storage/' . $item->vehicle->image) }}" alt="{{ $item->vehicle->full_name }}" class="w-12 h-12 rounded-lg object-cover">
-                                @else
-                                    <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
-                                        <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
-                                        </svg>
-                                    </div>
-                                @endif
-                                <div class="min-w-0 flex-1">
-                                    <div class="font-medium text-gray-900 dark:text-white text-sm truncate">{{ $item->vehicle->full_name }}</div>
-                                    <div class="text-xs text-gray-500">{{ number_format($item->visits) }} vues</div>
+                        <div class="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                            @if($item->image)
+                                <img src="{{ asset('storage/' . $item->image) }}" alt="{{ $item->full_name }}" class="w-12 h-12 rounded-lg object-cover">
+                            @else
+                                <div class="w-12 h-12 bg-gray-200 dark:bg-gray-600 rounded-lg flex items-center justify-center">
+                                    <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/>
+                                    </svg>
                                 </div>
+                            @endif
+                            <div class="min-w-0 flex-1">
+                                <div class="font-medium text-gray-900 dark:text-white text-sm truncate">{{ $item->full_name }}</div>
+                                <div class="text-xs text-gray-500">{{ number_format($item->visits) }} vues</div>
                             </div>
-                        @endif
+                        </div>
                     @endforeach
                 </div>
             </div>

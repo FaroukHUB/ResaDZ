@@ -3,7 +3,6 @@
 namespace App\Filament\Admin\Pages;
 
 use App\Models\Booking;
-use App\Models\ClickEvent;
 use App\Models\Loueur;
 use App\Models\PageVisit;
 use App\Models\Vehicle;
@@ -24,10 +23,12 @@ class Statistics extends Page
 
     public static function getNavigationBadge(): ?string
     {
-        // Show real-time visitors
-        $count = \App\Models\PageVisit::where('visited_at', '>=', now()->subMinutes(5))
-            ->distinct('session_id')
-            ->count('session_id');
+        $count = Cache::remember('stats_realtime_badge', 30, fn () =>
+            DB::table('page_visits')
+                ->where('visited_at', '>=', now()->subMinutes(5))
+                ->distinct('session_id')
+                ->count('session_id')
+        );
         return $count > 0 ? $count . ' en ligne' : null;
     }
 
@@ -50,6 +51,7 @@ class Statistics extends Page
                 ->modalDescription('Supprimer les visites de plus de 90 jours ?')
                 ->action(function () {
                     $deleted = PageVisit::where('visited_at', '<', now()->subDays(90))->delete();
+                    Cache::forget('admin_statistics_data');
                     Notification::make()
                         ->title("{$deleted} visites supprimées")
                         ->success()
@@ -60,239 +62,246 @@ class Statistics extends Page
 
     public function getViewData(): array
     {
-        // Non-cacheable data (must be fresh)
         $currentIp = request()->ip();
         $excludedIps = config('resadz.excluded_tracking_ips', []);
-        $realtimeVisitors = PageVisit::where('visited_at', '>=', now()->subMinutes(5))
+
+        $realtimeVisitors = DB::table('page_visits')
+            ->where('visited_at', '>=', now()->subMinutes(5))
             ->distinct('session_id')
             ->count('session_id');
 
-        // Cache all heavy queries for 2 minutes
-        $cached = Cache::remember('admin_statistics_data', 120, function () {
-            $today = Carbon::today();
-            $startOfWeek = Carbon::now()->startOfWeek();
-            $startOfMonth = Carbon::now()->startOfMonth();
-            $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth();
-            $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth();
+        // Cache 5 minutes - only arrays, no Eloquent objects
+        $cached = Cache::remember('admin_statistics_data', 300, function () {
+            $today = Carbon::today()->toDateString();
+            $yesterday = Carbon::yesterday()->toDateString();
+            $startOfWeek = Carbon::now()->startOfWeek()->toDateTimeString();
+            $startOfMonth = Carbon::now()->startOfMonth()->toDateTimeString();
+            $startOfLastMonth = Carbon::now()->subMonth()->startOfMonth()->toDateTimeString();
+            $endOfLastMonth = Carbon::now()->subMonth()->endOfMonth()->toDateTimeString();
+            $now = now()->toDateTimeString();
+            $sevenDaysAgo = now()->subDays(7)->toDateTimeString();
+            $thirtyDaysAgo = now()->subDays(30)->toDateTimeString();
 
-            // Top IPs
-            $topIps = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('ip_address, COUNT(*) as visits, MIN(visited_at) as first_visit, MAX(visited_at) as last_visit')
-                ->groupBy('ip_address')
-                ->orderByDesc('visits')
-                ->limit(20)
-                ->get();
+            // ===== ONE BIG QUERY for basic counts =====
+            $basicStats = DB::selectOne("
+                SELECT
+                    SUM(CASE WHEN DATE(visited_at) = ? THEN 1 ELSE 0 END) as today_visits,
+                    SUM(CASE WHEN DATE(visited_at) = ? THEN 1 ELSE 0 END) as yesterday_visits,
+                    SUM(CASE WHEN visited_at >= ? THEN 1 ELSE 0 END) as week_visits,
+                    COUNT(*) as month_visits,
+                    COUNT(DISTINCT CASE WHEN DATE(visited_at) = ? THEN ip_address END) as today_unique,
+                    COUNT(DISTINCT ip_address) as month_unique
+                FROM page_visits
+                WHERE visited_at BETWEEN ? AND ?
+            ", [$today, $yesterday, $startOfWeek, $today, $startOfMonth, $now]);
 
-            $totalRecords = PageVisit::count();
-            $oldestRecord = PageVisit::orderBy('visited_at')->first();
+            $lastMonthVisits = (int) DB::table('page_visits')
+                ->whereBetween('visited_at', [$startOfLastMonth, $endOfLastMonth])
+                ->count();
 
-            // ===== BASIC STATS =====
-            $todayVisits = PageVisit::whereDate('visited_at', $today)->count();
-            $yesterdayVisits = PageVisit::whereDate('visited_at', Carbon::yesterday())->count();
-            $weekVisits = PageVisit::whereBetween('visited_at', [$startOfWeek, now()])->count();
-            $monthVisits = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])->count();
-            $lastMonthVisits = PageVisit::whereBetween('visited_at', [$startOfLastMonth, $endOfLastMonth])->count();
-            $todayUnique = PageVisit::whereDate('visited_at', $today)->distinct('ip_address')->count('ip_address');
-            $monthUnique = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])->distinct('ip_address')->count('ip_address');
+            // ===== GEOGRAPHIC - 1 query with UNION =====
+            $topCountries = DB::select("
+                SELECT country, country_code, COUNT(*) as visits
+                FROM page_visits
+                WHERE visited_at BETWEEN ? AND ? AND country IS NOT NULL
+                GROUP BY country, country_code ORDER BY visits DESC LIMIT 15
+            ", [$startOfMonth, $now]);
 
-            // ===== GEOGRAPHIC STATS =====
-            $topCountries = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('country')
-                ->selectRaw('country, country_code, COUNT(*) as visits')
-                ->groupBy('country', 'country_code')
-                ->orderByDesc('visits')
-                ->limit(15)
-                ->get();
+            $topCities = DB::select("
+                SELECT city, country_code, COUNT(*) as visits
+                FROM page_visits
+                WHERE visited_at BETWEEN ? AND ? AND city IS NOT NULL
+                GROUP BY city, country_code ORDER BY visits DESC LIMIT 15
+            ", [$startOfMonth, $now]);
 
-            $topCities = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('city')
-                ->selectRaw('city, country_code, COUNT(*) as visits')
-                ->groupBy('city', 'country_code')
-                ->orderByDesc('visits')
-                ->limit(15)
-                ->get();
+            $topRegions = DB::select("
+                SELECT region, country_code, COUNT(*) as visits
+                FROM page_visits
+                WHERE visited_at BETWEEN ? AND ? AND region IS NOT NULL
+                GROUP BY region, country_code ORDER BY visits DESC LIMIT 15
+            ", [$startOfMonth, $now]);
 
-            $topRegions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('region')
-                ->selectRaw('region, country_code, COUNT(*) as visits')
-                ->groupBy('region', 'country_code')
-                ->orderByDesc('visits')
-                ->limit(15)
-                ->get();
+            // ===== TRAFFIC =====
+            $trafficSources = DB::select("
+                SELECT traffic_source, traffic_medium, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY traffic_source, traffic_medium ORDER BY visits DESC LIMIT 20
+            ", [$startOfMonth, $now]);
 
-            // ===== TRAFFIC SOURCES =====
-            $trafficSources = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('traffic_source, traffic_medium, COUNT(*) as visits')
-                ->groupBy('traffic_source', 'traffic_medium')
-                ->orderByDesc('visits')
-                ->limit(20)
-                ->get();
+            $trafficByMedium = DB::select("
+                SELECT traffic_medium, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY traffic_medium ORDER BY visits DESC
+            ", [$startOfMonth, $now]);
 
-            $trafficByMedium = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('traffic_medium, COUNT(*) as visits')
-                ->groupBy('traffic_medium')
-                ->orderByDesc('visits')
-                ->get();
+            $utmCampaigns = DB::select("
+                SELECT utm_source, utm_medium, utm_campaign, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ? AND utm_campaign IS NOT NULL
+                GROUP BY utm_source, utm_medium, utm_campaign ORDER BY visits DESC LIMIT 10
+            ", [$startOfMonth, $now]);
 
-            // ===== UTM CAMPAIGNS =====
-            $utmCampaigns = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('utm_campaign')
-                ->selectRaw('utm_source, utm_medium, utm_campaign, COUNT(*) as visits')
-                ->groupBy('utm_source', 'utm_medium', 'utm_campaign')
-                ->orderByDesc('visits')
-                ->limit(10)
-                ->get();
+            // ===== TIME STATS =====
+            $hourlyRaw = DB::select("
+                SELECT HOUR(visited_at) as hour, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY hour ORDER BY hour
+            ", [$sevenDaysAgo, $now]);
 
-            // ===== HOURLY STATS =====
-            $hourlyStats = PageVisit::whereBetween('visited_at', [now()->subDays(7), now()])
-                ->selectRaw('HOUR(visited_at) as hour, COUNT(*) as visits')
-                ->groupBy('hour')
-                ->orderBy('hour')
-                ->get()
-                ->pluck('visits', 'hour')
-                ->toArray();
-
-            for ($i = 0; $i < 24; $i++) {
-                if (!isset($hourlyStats[$i])) $hourlyStats[$i] = 0;
+            $hourlyStats = array_fill(0, 24, 0);
+            foreach ($hourlyRaw as $row) {
+                $hourlyStats[(int) $row->hour] = (int) $row->visits;
             }
-            ksort($hourlyStats);
 
-            // ===== DAY OF WEEK STATS =====
-            $dayOfWeekStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('DAYOFWEEK(visited_at) as day, COUNT(*) as visits')
-                ->groupBy('day')
-                ->orderBy('day')
-                ->get()
-                ->pluck('visits', 'day')
-                ->toArray();
+            $dayOfWeekRaw = DB::select("
+                SELECT DAYOFWEEK(visited_at) as day, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY day ORDER BY day
+            ", [$startOfMonth, $now]);
 
             $dayNames = [1 => 'Dimanche', 2 => 'Lundi', 3 => 'Mardi', 4 => 'Mercredi', 5 => 'Jeudi', 6 => 'Vendredi', 7 => 'Samedi'];
+            $dayOfWeekStats = [];
+            foreach ($dayOfWeekRaw as $row) {
+                $dayOfWeekStats[(int) $row->day] = (int) $row->visits;
+            }
 
-            // ===== DEVICES & BROWSERS & OS =====
-            $deviceStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('device_type, COUNT(*) as visits')
-                ->groupBy('device_type')
-                ->orderByDesc('visits')
-                ->get();
+            // ===== TECH STATS =====
+            $deviceStats = DB::select("
+                SELECT device_type, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY device_type ORDER BY visits DESC
+            ", [$startOfMonth, $now]);
 
-            $browserStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('browser, COUNT(*) as visits')
-                ->groupBy('browser')
-                ->orderByDesc('visits')
-                ->limit(10)
-                ->get();
+            $browserStats = DB::select("
+                SELECT browser, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY browser ORDER BY visits DESC LIMIT 10
+            ", [$startOfMonth, $now]);
 
-            $osStats = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('os')
-                ->selectRaw('os, COUNT(*) as visits')
-                ->groupBy('os')
-                ->orderByDesc('visits')
-                ->limit(10)
-                ->get();
+            $osStats = DB::select("
+                SELECT os, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ? AND os IS NOT NULL
+                GROUP BY os ORDER BY visits DESC LIMIT 10
+            ", [$startOfMonth, $now]);
 
-            // ===== TOP PAGES =====
-            $topPages = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->selectRaw('page_type, COUNT(*) as visits')
-                ->groupBy('page_type')
-                ->orderByDesc('visits')
-                ->get();
+            // ===== PAGES =====
+            $topPages = DB::select("
+                SELECT page_type, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY page_type ORDER BY visits DESC
+            ", [$startOfMonth, $now]);
+
+            $landingPages = DB::select("
+                SELECT page_type, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ? AND is_landing = 1
+                GROUP BY page_type ORDER BY visits DESC
+            ", [$startOfMonth, $now]);
 
             // ===== TOP VEHICLES =====
-            $topVehicles = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('vehicle_id')
-                ->selectRaw('vehicle_id, COUNT(*) as visits')
-                ->groupBy('vehicle_id')
-                ->orderByDesc('visits')
-                ->limit(10)
-                ->get()
-                ->load('vehicle.brand');
-
-            // ===== LANDING PAGES =====
-            $landingPages = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->where('is_landing', true)
-                ->selectRaw('page_type, COUNT(*) as visits')
-                ->groupBy('page_type')
-                ->orderByDesc('visits')
-                ->get();
+            $topVehicles = DB::select("
+                SELECT pv.vehicle_id, COUNT(*) as visits, v.full_name, v.image, b.name as brand_name
+                FROM page_visits pv
+                JOIN vehicles v ON pv.vehicle_id = v.id
+                LEFT JOIN brands b ON v.brand_id = b.id
+                WHERE pv.visited_at BETWEEN ? AND ? AND pv.vehicle_id IS NOT NULL
+                GROUP BY pv.vehicle_id, v.full_name, v.image, b.name
+                ORDER BY visits DESC LIMIT 10
+            ", [$startOfMonth, $now]);
 
             // ===== BOUNCE RATE =====
-            $totalSessions = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->whereNotNull('session_id')
-                ->distinct('session_id')
-                ->count('session_id');
+            $bounceData = DB::selectOne("
+                SELECT
+                    COUNT(DISTINCT session_id) as total_sessions,
+                    (SELECT COUNT(*) FROM (
+                        SELECT session_id FROM page_visits
+                        WHERE visited_at BETWEEN ? AND ? AND session_id IS NOT NULL
+                        GROUP BY session_id HAVING COUNT(*) = 1
+                    ) b) as bounced
+                FROM page_visits
+                WHERE visited_at BETWEEN ? AND ? AND session_id IS NOT NULL
+            ", [$startOfMonth, $now, $startOfMonth, $now]);
 
-            $bouncedSessionsResult = DB::select("
-                SELECT COUNT(*) as count FROM (
-                    SELECT session_id
-                    FROM page_visits
-                    WHERE visited_at BETWEEN ? AND ?
-                    AND session_id IS NOT NULL
-                    GROUP BY session_id
-                    HAVING COUNT(*) = 1
-                ) as bounced
-            ", [$startOfMonth, now()]);
-            $bouncedSessions = $bouncedSessionsResult[0]->count ?? 0;
-            $bounceRate = $totalSessions > 0 ? round(($bouncedSessions / $totalSessions) * 100, 1) : 0;
+            $totalSessions = (int) ($bounceData->total_sessions ?? 0);
+            $bounceRate = $totalSessions > 0 ? round((($bounceData->bounced ?? 0) / $totalSessions) * 100, 1) : 0;
 
-            // ===== DAILY VISITS CHART =====
-            $dailyVisits = PageVisit::whereBetween('visited_at', [now()->subDays(30), now()])
-                ->selectRaw('DATE(visited_at) as date, COUNT(*) as visits')
-                ->groupBy('date')
-                ->orderBy('date')
-                ->get();
+            // ===== DAILY VISITS =====
+            $dailyVisits = DB::select("
+                SELECT DATE(visited_at) as date, COUNT(*) as visits
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY date ORDER BY date
+            ", [$thirtyDaysAgo, $now]);
 
             // ===== CLICK EVENTS =====
             $clickStats = [];
-            if (\Schema::hasTable('click_events')) {
-                $clickStats = ClickEvent::whereBetween('clicked_at', [$startOfMonth, now()])
-                    ->selectRaw('event_type, COUNT(*) as clicks')
-                    ->groupBy('event_type')
-                    ->orderByDesc('clicks')
-                    ->get();
+            try {
+                $clickStats = DB::select("
+                    SELECT event_type, COUNT(*) as clicks
+                    FROM click_events WHERE clicked_at BETWEEN ? AND ?
+                    GROUP BY event_type ORDER BY clicks DESC
+                ", [$startOfMonth, $now]);
+            } catch (\Exception $e) {
+                // Table may not exist
             }
 
-            // ===== CONVERSION FUNNEL =====
-            $funnelHome = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->where('page_type', 'home')->distinct('session_id')->count('session_id');
-            $funnelVehicleList = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->where('page_type', 'vehicles_list')->distinct('session_id')->count('session_id');
-            $funnelVehicle = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->where('page_type', 'vehicle')->distinct('session_id')->count('session_id');
-            $funnelBooking = PageVisit::whereBetween('visited_at', [$startOfMonth, now()])
-                ->where('page_type', 'booking')->distinct('session_id')->count('session_id');
-            $funnelCompleted = Booking::whereBetween('created_at', [$startOfMonth, now()])->count();
+            // ===== CONVERSION FUNNEL - 1 query =====
+            $funnel = DB::selectOne("
+                SELECT
+                    COUNT(DISTINCT CASE WHEN page_type = 'home' THEN session_id END) as home,
+                    COUNT(DISTINCT CASE WHEN page_type = 'vehicles_list' THEN session_id END) as vehicle_list,
+                    COUNT(DISTINCT CASE WHEN page_type = 'vehicle' THEN session_id END) as vehicle,
+                    COUNT(DISTINCT CASE WHEN page_type = 'booking' THEN session_id END) as booking
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+            ", [$startOfMonth, $now]);
 
-            // ===== BUSINESS STATS =====
-            $totalLoueurs = Loueur::count();
-            $totalVehicles = Vehicle::where('is_active', true)->count();
-            $monthBookings = Booking::whereBetween('created_at', [$startOfMonth, now()])->count();
-            $monthRevenue = Booking::whereBetween('created_at', [$startOfMonth, now()])
-                ->where('status', 'completed')->sum('total_price');
+            $funnelCompleted = (int) DB::table('bookings')
+                ->whereBetween('created_at', [$startOfMonth, $now])->count();
+
+            // ===== BUSINESS STATS - 1 query =====
+            $business = DB::selectOne("
+                SELECT
+                    (SELECT COUNT(*) FROM loueurs) as total_loueurs,
+                    (SELECT COUNT(*) FROM vehicles WHERE is_active = 1) as total_vehicles,
+                    (SELECT COUNT(*) FROM bookings WHERE created_at BETWEEN ? AND ?) as month_bookings,
+                    (SELECT COALESCE(SUM(total_price), 0) FROM bookings WHERE created_at BETWEEN ? AND ? AND status = 'completed') as month_revenue
+            ", [$startOfMonth, $now, $startOfMonth, $now]);
+
+            // ===== TOP IPs =====
+            $topIps = DB::select("
+                SELECT ip_address, COUNT(*) as visits, MIN(visited_at) as first_visit, MAX(visited_at) as last_visit
+                FROM page_visits WHERE visited_at BETWEEN ? AND ?
+                GROUP BY ip_address ORDER BY visits DESC LIMIT 20
+            ", [$startOfMonth, $now]);
+
+            $totalRecords = (int) DB::table('page_visits')->count();
 
             // ===== RECENT VISITS =====
-            $recentVisits = PageVisit::with('vehicle')
-                ->orderByDesc('visited_at')
-                ->limit(50)
-                ->get();
+            $recentVisits = DB::select("
+                SELECT pv.visited_at, pv.city, pv.country, pv.country_code, pv.page_type,
+                       pv.device_type, pv.browser, pv.traffic_source, pv.utm_campaign,
+                       pv.is_landing, pv.ip_address
+                FROM page_visits pv
+                ORDER BY pv.visited_at DESC LIMIT 30
+            ");
 
-            // Chart.js pre-computed data
-            $chartHourlyData = array_values($hourlyStats);
+            // ===== CHART DATA =====
             $chartDayLabels = array_values($dayNames);
             $chartDayData = array_map(fn($d) => $dayOfWeekStats[$d] ?? 0, array_keys($dayNames));
-            $chartDailyLabels = $dailyVisits->pluck('date')->map(fn($d) => Carbon::parse($d)->format('d/m'))->values()->toArray();
-            $chartDailyData = $dailyVisits->pluck('visits')->values()->toArray();
-            $chartDeviceData = $deviceStats->pluck('visits')->toArray();
-            $chartDeviceLabels = $deviceStats->pluck('device_type')->map(fn($d) => match($d) {
-                'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d ?? 'Autre')
-            })->toArray();
-            $chartMediumData = $trafficByMedium->pluck('visits')->toArray();
-            $chartMediumLabels = $trafficByMedium->pluck('traffic_medium')->map(fn($m) => match($m) {
+
+            $chartDailyLabels = array_map(fn($d) => Carbon::parse($d->date)->format('d/m'), $dailyVisits);
+            $chartDailyData = array_map(fn($d) => (int) $d->visits, $dailyVisits);
+
+            $chartDeviceLabels = array_map(fn($d) => match($d->device_type) {
+                'mobile' => 'Mobile', 'desktop' => 'Ordinateur', 'tablet' => 'Tablette', default => ucfirst($d->device_type ?? 'Autre')
+            }, $deviceStats);
+            $chartDeviceData = array_map(fn($d) => (int) $d->visits, $deviceStats);
+
+            $chartMediumLabels = array_map(fn($m) => match($m->traffic_medium) {
                 'direct' => 'Direct', 'organic' => 'Recherche', 'social' => 'Social', 'referral' => 'Référence',
-                'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m ?? 'Autre')
-            })->toArray();
+                'email' => 'Email', 'campaign' => 'Campagne', default => ucfirst($m->traffic_medium ?? 'Autre')
+            }, $trafficByMedium);
+            $chartMediumData = array_map(fn($m) => (int) $m->visits, $trafficByMedium);
 
             return [
-                'chartHourlyData' => $chartHourlyData,
+                'chartHourlyData' => array_values($hourlyStats),
                 'chartDayLabels' => $chartDayLabels,
                 'chartDayData' => $chartDayData,
                 'chartDailyLabels' => $chartDailyLabels,
@@ -301,13 +310,13 @@ class Statistics extends Page
                 'chartDeviceLabels' => $chartDeviceLabels,
                 'chartMediumData' => $chartMediumData,
                 'chartMediumLabels' => $chartMediumLabels,
-                'todayVisits' => $todayVisits,
-                'yesterdayVisits' => $yesterdayVisits,
-                'weekVisits' => $weekVisits,
-                'monthVisits' => $monthVisits,
+                'todayVisits' => (int) $basicStats->today_visits,
+                'yesterdayVisits' => (int) $basicStats->yesterday_visits,
+                'weekVisits' => (int) $basicStats->week_visits,
+                'monthVisits' => (int) $basicStats->month_visits,
                 'lastMonthVisits' => $lastMonthVisits,
-                'todayUnique' => $todayUnique,
-                'monthUnique' => $monthUnique,
+                'todayUnique' => (int) $basicStats->today_unique,
+                'monthUnique' => (int) $basicStats->month_unique,
                 'topCountries' => $topCountries,
                 'topCities' => $topCities,
                 'topRegions' => $topRegions,
@@ -327,19 +336,19 @@ class Statistics extends Page
                 'bounceRate' => $bounceRate,
                 'totalSessions' => $totalSessions,
                 'clickStats' => $clickStats,
-                'funnelHome' => $funnelHome,
-                'funnelVehicleList' => $funnelVehicleList,
-                'funnelVehicle' => $funnelVehicle,
-                'funnelBooking' => $funnelBooking,
+                'funnelHome' => (int) ($funnel->home ?? 0),
+                'funnelVehicleList' => (int) ($funnel->vehicle_list ?? 0),
+                'funnelVehicle' => (int) ($funnel->vehicle ?? 0),
+                'funnelBooking' => (int) ($funnel->booking ?? 0),
                 'funnelCompleted' => $funnelCompleted,
-                'totalLoueurs' => $totalLoueurs,
-                'totalVehicles' => $totalVehicles,
-                'monthBookings' => $monthBookings,
-                'monthRevenue' => $monthRevenue,
+                'totalLoueurs' => (int) ($business->total_loueurs ?? 0),
+                'totalVehicles' => (int) ($business->total_vehicles ?? 0),
+                'monthBookings' => (int) ($business->month_bookings ?? 0),
+                'monthRevenue' => (float) ($business->month_revenue ?? 0),
                 'recentVisits' => $recentVisits,
                 'topIps' => $topIps,
                 'totalRecords' => $totalRecords,
-                'oldestRecord' => $oldestRecord,
+                'oldestRecord' => null,
             ];
         });
 
