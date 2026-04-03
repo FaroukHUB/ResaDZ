@@ -18,7 +18,6 @@ use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class LoueurResource extends Resource
