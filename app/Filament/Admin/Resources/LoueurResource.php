@@ -18,6 +18,7 @@ use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class LoueurResource extends Resource
@@ -301,6 +302,47 @@ class LoueurResource extends Resource
                     ->query(fn ($query) => $query->trialExpired()),
             ])
             ->actions([
+                Tables\Actions\Action::make('activate')
+                    ->label('Accepter')
+                    ->icon('heroicon-o-check-circle')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Activer ce compte')
+                    ->modalDescription(fn (Loueur $record) => "Activer le compte de {$record->company_name} et envoyer le mail d'accès ?")
+                    ->visible(fn (Loueur $record) => !$record->is_active && !$record->is_suspended)
+                    ->action(function (Loueur $record) {
+                        $record->update(['is_active' => true]);
+                        static::sendActivationEmail($record);
+                        Notification::make()
+                            ->title('Compte activé')
+                            ->body("Le compte de {$record->company_name} a été activé. Mail d'accès envoyé.")
+                            ->success()
+                            ->send();
+                    }),
+                Tables\Actions\Action::make('reject')
+                    ->label('Refuser')
+                    ->icon('heroicon-o-x-circle')
+                    ->color('danger')
+                    ->requiresConfirmation()
+                    ->modalHeading('Refuser ce compte')
+                    ->modalDescription(fn (Loueur $record) => "Refuser et suspendre le compte de {$record->company_name} ?")
+                    ->visible(fn (Loueur $record) => !$record->is_active && !$record->is_suspended)
+                    ->form([
+                        Forms\Components\Textarea::make('reason')
+                            ->label('Raison du refus (optionnel)')
+                            ->rows(2),
+                    ])
+                    ->action(function (Loueur $record, array $data) {
+                        $record->update([
+                            'is_suspended' => true,
+                            'suspension_reason' => $data['reason'] ?? 'Inscription refusée',
+                        ]);
+                        Notification::make()
+                            ->title('Compte refusé')
+                            ->body("Le compte de {$record->company_name} a été refusé.")
+                            ->danger()
+                            ->send();
+                    }),
                 Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
                 Tables\Actions\Action::make('loginAs')
@@ -455,6 +497,37 @@ class LoueurResource extends Resource
                 ->title('Erreur d\'envoi')
                 ->body('Impossible d\'envoyer le mail : ' . $e->getMessage())
                 ->danger()
+                ->send();
+        }
+    }
+
+    public static function sendActivationEmail(Loueur $loueur): void
+    {
+        try {
+            $email = $loueur->user?->email;
+            if (!$email) return;
+
+            $companyName = \App\Models\Setting::get('company_name', 'ResaDZ');
+            $whatsappNumber = \App\Models\Setting::get('whatsapp', '');
+
+            Mail::send('emails.account-activated-loueur', [
+                'loueur' => $loueur,
+                'companyName' => $companyName,
+                'whatsappNumber' => $whatsappNumber,
+            ], function ($message) use ($email, $loueur) {
+                $message->to($email)
+                    ->subject('Votre compte ResaDZ est activé ! 🎉')
+                    ->from(
+                        config('resadz_emails.inscription.address', config('mail.from.address')),
+                        config('resadz_emails.inscription.name', config('mail.from.name'))
+                    );
+            });
+        } catch (\Exception $e) {
+            Log::warning('Failed to send activation email to loueur #' . $loueur->id . ': ' . $e->getMessage());
+            Notification::make()
+                ->title('Erreur d\'envoi')
+                ->body('Compte activé mais email non envoyé : ' . $e->getMessage())
+                ->warning()
                 ->send();
         }
     }

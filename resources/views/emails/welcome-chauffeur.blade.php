@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue sur ResaDZ</title>
+    <title>Inscription reçue - ResaDZ</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #F8FAFF; line-height: 1.6;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
 
-        <!-- Header (dégradé indigo) -->
+        <!-- Header -->
         <div style="background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); padding: 40px 30px; border-radius: 16px 16px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 1px;">{{ $companyName }}</h1>
-            <p style="color: rgba(255,255,255,0.95); margin: 12px 0 0 0; font-size: 16px; font-weight: 400;">Votre espace chauffeur est prêt 🧑‍✈️</p>
+            <p style="color: rgba(255,255,255,0.95); margin: 12px 0 0 0; font-size: 16px; font-weight: 400;">Inscription reçue ✅</p>
         </div>
 
         <!-- Corps -->
@@ -22,117 +22,47 @@
             </p>
 
             <p style="font-size: 15px; color: #1E293B; margin: 0 0 12px 0;">
-                Bienvenue sur <strong>ResaDZ</strong>, la première plateforme algérienne de mise en relation entre chauffeurs et clients.
+                Merci de votre inscription sur <strong>ResaDZ</strong>, la première plateforme algérienne de mise en relation entre chauffeurs et clients.
+            </p>
+
+            <!-- Statut -->
+            <div style="background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+                <p style="font-size: 28px; margin: 0 0 8px 0;">⏳</p>
+                <h2 style="font-size: 18px; color: #92400E; margin: 0 0 8px 0;">Votre compte est en cours de vérification</h2>
+                <p style="font-size: 14px; color: #92400E; margin: 0;">
+                    Notre équipe vérifie chaque inscription pour garantir la qualité de la plateforme.
+                    Vous recevrez un email dès que votre compte sera activé.
+                </p>
+            </div>
+
+            <p style="font-size: 15px; color: #1E293B; margin: 0 0 12px 0;">
+                <strong>Délai habituel :</strong> moins de 24h (souvent beaucoup plus rapide).
             </p>
 
             <p style="font-size: 15px; color: #1E293B; margin: 0 0 28px 0;">
-                Votre compte chauffeur a bien été créé. Voici comment commencer à recevoir vos premières courses.
+                En attendant, voici ce qui vous attend une fois votre compte activé :
             </p>
 
-            <!-- Section Étapes -->
-            <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 20px 0;">🚀 Les 3 étapes pour recevoir vos premières demandes</h2>
-
-            <!-- Étape 1 -->
+            <!-- Ce qui vous attend -->
             <div style="border-left: 3px solid #6366F1; padding: 16px 20px; margin-bottom: 16px; background: #FAFAFA; border-radius: 0 8px 8px 0;">
-                <div style="display: inline-block; width: 28px; height: 28px; background: #6366F1; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 14px; font-weight: 700; margin-bottom: 8px;">1</div>
-                <strong style="color: #1E293B; font-size: 15px; margin-left: 8px;">Complétez votre profil</strong>
+                <strong style="color: #1E293B; font-size: 15px;">🧑‍✈️ Proposez vos services</strong>
                 <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Un profil complet rassure les clients avant de réserver. Décrivez votre expérience, votre style de conduite et ajoutez une belle photo de votre véhicule.
+                    Transferts aéroport, courses en ville, livraisons — configurez vos services.
                 </p>
             </div>
 
-            <!-- Étape 2 -->
             <div style="border-left: 3px solid #6366F1; padding: 16px 20px; margin-bottom: 16px; background: #FAFAFA; border-radius: 0 8px 8px 0;">
-                <div style="display: inline-block; width: 28px; height: 28px; background: #6366F1; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 14px; font-weight: 700; margin-bottom: 8px;">2</div>
-                <strong style="color: #1E293B; font-size: 15px; margin-left: 8px;">Configurez vos services</strong>
+                <strong style="color: #1E293B; font-size: 15px;">📩 Recevez des demandes de course</strong>
                 <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Indiquez les types de services que vous proposez :
-                </p>
-                <ul style="font-size: 14px; color: #475569; margin: 8px 0 0 0; padding-left: 20px; list-style: none;">
-                    <li style="margin-bottom: 4px;">✈️ Transferts aéroport/gare</li>
-                    <li style="margin-bottom: 4px;">🏙️ Courses en ville</li>
-                    <li>📦 Livraisons</li>
-                </ul>
-                <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Plus vous proposez de services, plus vous recevez de demandes.
+                    Les clients réservent directement en ligne. Vous êtes notifié en temps réel.
                 </p>
             </div>
 
-            <!-- Étape 3 -->
             <div style="border-left: 3px solid #6366F1; padding: 16px 20px; margin-bottom: 28px; background: #FAFAFA; border-radius: 0 8px 8px 0;">
-                <div style="display: inline-block; width: 28px; height: 28px; background: #6366F1; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 14px; font-weight: 700; margin-bottom: 8px;">3</div>
-                <strong style="color: #1E293B; font-size: 15px; margin-left: 8px;">Définissez vos disponibilités</strong>
+                <strong style="color: #1E293B; font-size: 15px;">💰 Commission simple : 10%</strong>
                 <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Configurez vos jours et créneaux horaires disponibles.
+                    Vous ne payez rien sans course. Les clients vous paient directement.
                 </p>
-                <p style="font-size: 14px; color: #475569; margin: 6px 0 0 0;">
-                    Les chauffeurs disponibles en soirée et le weekend reçoivent 40% de demandes en plus 🌙
-                </p>
-            </div>
-
-            <!-- Section Commission -->
-            <div style="background: #FFF3ED; border: 1px solid #6366F1; border-radius: 12px; padding: 24px; margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">💰 Comment fonctionne la commission ResaDZ</h2>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0;">
-                    Vous ne payez rien tant que vous n'avez pas de course.
-                </p>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 8px 0;">
-                    Quand une course est confirmée :
-                </p>
-                <ul style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0; padding-left: 20px;">
-                    <li><strong style="color: #6366F1;">10%</strong> du montant de la course</li>
-                </ul>
-                <p style="font-size: 14px; color: #1E293B; margin: 0;">
-                    Les clients vous paient directement. ResaDZ vous envoie une facture hebdomadaire récapitulant les commissions dues.
-                </p>
-            </div>
-
-            <!-- Section Trajets -->
-            <div style="background: #F0FDF4; border: 1px solid #22C55E; border-radius: 12px; padding: 24px; margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">🗺️ Ajoutez vos trajets réguliers</h2>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 8px 0;">
-                    Si vous faites des transferts, ajoutez vos trajets habituels :
-                </p>
-                <ul style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0; padding-left: 20px;">
-                    <li style="margin-bottom: 4px;">Alger centre → Aéroport</li>
-                    <li style="margin-bottom: 4px;">Alger → Oran</li>
-                    <li>Etc.</li>
-                </ul>
-                <p style="font-size: 14px; color: #1E293B; margin: 0;">
-                    Vos trajets apparaissent dans les recherches des clients — plus vous en ajoutez, plus vous êtes visible.
-                </p>
-            </div>
-
-            <!-- Section PWA -->
-            <div style="background: #EEF2FF; border-radius: 12px; padding: 24px; margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">📱 Installez ResaDZ sur votre téléphone</h2>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0;">
-                    Ne ratez aucune demande de course — installez ResaDZ comme une vraie application et recevez les notifications en temps réel.
-                </p>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 6px 0;">
-                    <strong>Sur Android :</strong> Menu ⋮ → "Ajouter à l'écran d'accueil"
-                </p>
-                <p style="font-size: 14px; color: #1E293B; margin: 0;">
-                    <strong>Sur iPhone :</strong> Bouton Partager → "Sur l'écran d'accueil"
-                </p>
-            </div>
-
-            <!-- Section Notifications -->
-            <div style="margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">🔔 Vous serez notifié immédiatement pour :</h2>
-                <ul style="font-size: 14px; color: #1E293B; margin: 0; padding-left: 20px; list-style: none;">
-                    <li style="margin-bottom: 8px;">📩 Chaque nouvelle demande de course</li>
-                    <li style="margin-bottom: 8px;">💬 Les messages de vos clients</li>
-                    <li>🧾 Vos factures hebdomadaires ResaDZ</li>
-                </ul>
-            </div>
-
-            <!-- Bouton CTA (dégradé indigo) -->
-            <div style="text-align: center; margin: 32px 0;">
-                <a href="{{ url('/loueur') }}"
-                   style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);">
-                    Accéder à mon espace chauffeur →
-                </a>
             </div>
 
             <!-- Section Support -->

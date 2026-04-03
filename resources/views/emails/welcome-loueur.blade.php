@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bienvenue sur ResaDZ</title>
+    <title>Inscription reçue - ResaDZ</title>
 </head>
 <body style="margin: 0; padding: 0; font-family: Arial, Helvetica, sans-serif; background-color: #F8FAFF; line-height: 1.6;">
     <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
@@ -11,7 +11,7 @@
         <!-- Header -->
         <div style="background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%); padding: 40px 30px; border-radius: 16px 16px 0 0; text-align: center;">
             <h1 style="color: white; margin: 0; font-size: 32px; font-weight: 700; letter-spacing: 1px;">{{ $companyName }}</h1>
-            <p style="color: rgba(255,255,255,0.95); margin: 12px 0 0 0; font-size: 16px; font-weight: 400;">Votre espace loueur est prêt 🚗</p>
+            <p style="color: rgba(255,255,255,0.95); margin: 12px 0 0 0; font-size: 16px; font-weight: 400;">Inscription reçue ✅</p>
         </div>
 
         <!-- Corps -->
@@ -22,94 +22,47 @@
             </p>
 
             <p style="font-size: 15px; color: #1E293B; margin: 0 0 12px 0;">
-                Bienvenue sur <strong>ResaDZ</strong>, la première plateforme algérienne de location de voiture entre particuliers.
+                Merci de votre inscription sur <strong>ResaDZ</strong>, la première plateforme algérienne de location de voiture entre particuliers.
+            </p>
+
+            <!-- Statut -->
+            <div style="background: #FEF3C7; border: 1px solid #F59E0B; border-radius: 12px; padding: 24px; margin: 24px 0; text-align: center;">
+                <p style="font-size: 28px; margin: 0 0 8px 0;">⏳</p>
+                <h2 style="font-size: 18px; color: #92400E; margin: 0 0 8px 0;">Votre compte est en cours de vérification</h2>
+                <p style="font-size: 14px; color: #92400E; margin: 0;">
+                    Notre équipe vérifie chaque inscription pour garantir la qualité de la plateforme.
+                    Vous recevrez un email dès que votre compte sera activé.
+                </p>
+            </div>
+
+            <p style="font-size: 15px; color: #1E293B; margin: 0 0 12px 0;">
+                <strong>Délai habituel :</strong> moins de 24h (souvent beaucoup plus rapide).
             </p>
 
             <p style="font-size: 15px; color: #1E293B; margin: 0 0 28px 0;">
-                Votre compte loueur a bien été créé. Voici comment démarrer en quelques minutes.
+                En attendant, voici ce qui vous attend une fois votre compte activé :
             </p>
 
-            <!-- Section Étapes -->
-            <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 20px 0;">🚀 Les 3 étapes pour recevoir vos premières réservations</h2>
-
-            <!-- Étape 1 -->
+            <!-- Ce qui vous attend -->
             <div style="border-left: 3px solid #FF6B2C; padding: 16px 20px; margin-bottom: 16px; background: #FAFAFA; border-radius: 0 8px 8px 0;">
-                <div style="display: inline-block; width: 28px; height: 28px; background: #FF6B2C; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 14px; font-weight: 700; margin-bottom: 8px;">1</div>
-                <strong style="color: #1E293B; font-size: 15px; margin-left: 8px;">Complétez votre profil</strong>
+                <strong style="color: #1E293B; font-size: 15px;">🚗 Publiez vos véhicules gratuitement</strong>
                 <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Un profil complet inspire confiance et attire 3x plus de clients. Ajoutez votre photo de couverture, votre description et vos coordonnées.
+                    Ajoutez vos véhicules en quelques minutes avec photos et tarifs.
                 </p>
             </div>
 
-            <!-- Étape 2 -->
             <div style="border-left: 3px solid #FF6B2C; padding: 16px 20px; margin-bottom: 16px; background: #FAFAFA; border-radius: 0 8px 8px 0;">
-                <div style="display: inline-block; width: 28px; height: 28px; background: #FF6B2C; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 14px; font-weight: 700; margin-bottom: 8px;">2</div>
-                <strong style="color: #1E293B; font-size: 15px; margin-left: 8px;">Ajoutez votre premier véhicule</strong>
+                <strong style="color: #1E293B; font-size: 15px;">📩 Recevez des réservations</strong>
                 <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Publiez votre véhicule gratuitement en 5 minutes.
-                </p>
-                <p style="font-size: 14px; color: #475569; margin: 6px 0 0 0;">
-                    <strong>Conseil important :</strong> la première photo doit être sur fond blanc ou fond noir — c'est elle qui apparaît sur toute la plateforme.
+                    Les clients réservent directement en ligne. Vous êtes notifié en temps réel.
                 </p>
             </div>
 
-            <!-- Étape 3 -->
             <div style="border-left: 3px solid #FF6B2C; padding: 16px 20px; margin-bottom: 28px; background: #FAFAFA; border-radius: 0 8px 8px 0;">
-                <div style="display: inline-block; width: 28px; height: 28px; background: #FF6B2C; color: white; border-radius: 50%; text-align: center; line-height: 28px; font-size: 14px; font-weight: 700; margin-bottom: 8px;">3</div>
-                <strong style="color: #1E293B; font-size: 15px; margin-left: 8px;">Configurez vos disponibilités</strong>
+                <strong style="color: #1E293B; font-size: 15px;">💰 Commission simple et transparente</strong>
                 <p style="font-size: 14px; color: #475569; margin: 8px 0 0 0;">
-                    Bloquez les dates où votre véhicule n'est pas disponible pour éviter les conflits de réservation.
+                    1-10 jours : 8% · Plus de 10 jours : 6%. Vous ne payez rien sans réservation.
                 </p>
-            </div>
-
-            <!-- Section Commission -->
-            <div style="background: #FFF3ED; border: 1px solid #FF6B2C; border-radius: 12px; padding: 24px; margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">💰 Comment fonctionne la commission ResaDZ</h2>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0;">
-                    Vous ne payez rien tant que vous ne louez pas.
-                </p>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 8px 0;">
-                    Quand une réservation est confirmée :
-                </p>
-                <ul style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0; padding-left: 20px;">
-                    <li style="margin-bottom: 6px;">Location 1 à 10 jours → <strong style="color: #FF6B2C;">8%</strong> du montant total</li>
-                    <li>Location plus de 10 jours → <strong style="color: #FF6B2C;">6%</strong> du montant total</li>
-                </ul>
-                <p style="font-size: 14px; color: #1E293B; margin: 0;">
-                    💡 <strong>Astuce :</strong> ajoutez 500 DA à votre tarif journalier habituel pour couvrir la commission et garder 100% de vos revenus cibles.
-                </p>
-            </div>
-
-            <!-- Section PWA -->
-            <div style="background: #EEF2FF; border-radius: 12px; padding: 24px; margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">📱 Installez ResaDZ sur votre téléphone</h2>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 12px 0;">
-                    Accédez à votre espace loueur comme une vraie application — notifications en temps réel, accès rapide depuis votre écran d'accueil.
-                </p>
-                <p style="font-size: 14px; color: #1E293B; margin: 0 0 6px 0;">
-                    <strong>Sur Android :</strong> Menu ⋮ → "Ajouter à l'écran d'accueil"
-                </p>
-                <p style="font-size: 14px; color: #1E293B; margin: 0;">
-                    <strong>Sur iPhone :</strong> Bouton Partager → "Sur l'écran d'accueil"
-                </p>
-            </div>
-
-            <!-- Section Notifications -->
-            <div style="margin-bottom: 28px;">
-                <h2 style="font-size: 17px; color: #1E293B; margin: 0 0 12px 0;">🔔 Vous serez notifié immédiatement pour :</h2>
-                <ul style="font-size: 14px; color: #1E293B; margin: 0; padding-left: 20px; list-style: none;">
-                    <li style="margin-bottom: 8px;">📩 Chaque nouvelle demande de réservation</li>
-                    <li style="margin-bottom: 8px;">💬 Les messages de vos clients</li>
-                    <li>🧾 Vos factures hebdomadaires ResaDZ</li>
-                </ul>
-            </div>
-
-            <!-- Bouton CTA -->
-            <div style="text-align: center; margin: 32px 0;">
-                <a href="{{ url('/loueur') }}"
-                   style="display: inline-block; padding: 16px 40px; background: linear-gradient(135deg, #FF6B2C 0%, #F59E0B 100%); color: white; text-decoration: none; border-radius: 12px; font-weight: 700; font-size: 16px; box-shadow: 0 4px 14px rgba(255, 107, 44, 0.4);">
-                    Accéder à mon espace loueur →
-                </a>
             </div>
 
             <!-- Section Support -->
