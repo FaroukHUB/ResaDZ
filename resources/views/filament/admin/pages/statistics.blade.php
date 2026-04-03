@@ -552,7 +552,7 @@
                         'client_booking' => 'Ma réservation',
                         'other' => 'Autres',
                     ];
-                    $totalPageVisits = $topPages->sum('visits');
+                    $totalPageVisits = array_sum(array_column($topPages, 'visits'));
                 @endphp
                 <div class="space-y-3">
                     @forelse($topPages as $page)
@@ -575,7 +575,7 @@
             {{-- Landing Pages --}}
             <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
                 <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Pages d'entrée (Landing)</h3>
-                @php $totalLanding = $landingPages->sum('visits'); @endphp
+                @php $totalLanding = array_sum(array_column($landingPages, 'visits')); @endphp
                 <div class="space-y-3">
                     @forelse($landingPages as $page)
                         @php $percentage = $totalLanding > 0 ? ($page->visits / $totalLanding) * 100 : 0; @endphp
