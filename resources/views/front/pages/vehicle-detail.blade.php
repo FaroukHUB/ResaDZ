@@ -71,8 +71,11 @@
                         @endif
                     </div>
                     @if($vehicle->loueur && $vehicle->loueur->company_name)
-                        <div class="absolute bottom-4 right-4 bg-black/70 backdrop-blur-sm px-4 py-1.5 rounded">
-                            <span class="text-white text-sm font-semibold">{{ $vehicle->loueur->company_name }}</span>
+                        <div class="absolute bottom-4 right-4" style="perspective: 250px;">
+                            <span class="block bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded text-white text-sm font-bold tracking-wide uppercase"
+                                  style="transform: rotateY(-8deg) rotateX(3deg); text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
+                                {{ $vehicle->loueur->company_name }}
+                            </span>
                         </div>
                     @endif
                 </div>

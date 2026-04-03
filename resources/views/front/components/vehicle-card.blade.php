@@ -73,8 +73,11 @@
 
         {{-- Loueur name overlay --}}
         @if($loueur && $loueur->company_name)
-            <div class="absolute bottom-3 right-3 bg-black/70 backdrop-blur-sm px-3 py-1 rounded">
-                <span class="text-white text-xs font-semibold">{{ $loueur->company_name }}</span>
+            <div class="absolute bottom-3 right-3" style="perspective: 200px;">
+                <span class="block bg-black/60 backdrop-blur-sm px-3 py-1 rounded text-white text-xs font-bold tracking-wide uppercase"
+                      style="transform: rotateY(-8deg) rotateX(3deg); text-shadow: 0 1px 4px rgba(0,0,0,0.5);">
+                    {{ $loueur->company_name }}
+                </span>
             </div>
         @endif
     </a>
