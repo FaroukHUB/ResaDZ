@@ -26,7 +26,7 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
 
     public ?array $data = [];
     public int $currentStep = 0;
-    public int $totalSteps = 7;
+    public int $totalSteps = 8;
 
     // CGU checkboxes (not persisted via form, handled in blade/wire)
     public bool $cguAccepted = false;
@@ -165,7 +165,8 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
             3 => $this->getReservationsSchema(),
             4 => $this->getOptionsSchema(),
             5 => $this->getConditionsSchema(),
-            6 => $this->getNotificationsSchema(),
+            6 => $this->getBadgesSchema(),
+            7 => $this->getNotificationsSchema(),
             default => [],
         };
     }
@@ -926,6 +927,18 @@ class Onboarding extends Page implements Forms\Contracts\HasForms
                 break;
 
             case 6:
+                // Badges
+                $loueur->update([
+                    'badge_insurance' => (bool) ($data['badge_insurance'] ?? false),
+                    'badge_delivery' => (bool) ($data['badge_delivery'] ?? false),
+                    'badge_degressive' => (bool) ($data['badge_degressive'] ?? false),
+                    'badge_airport' => (bool) ($data['badge_airport'] ?? false),
+                    'badge_km_unlimited' => (bool) ($data['badge_km_unlimited'] ?? false),
+                ]);
+                $loueur->setSetting('custom_badges', $data['custom_badges'] ?? [], 'json');
+                break;
+
+            case 7:
                 $loueur->setSetting('notify_push', $data['notify_push'] ?? true, 'boolean');
                 $loueur->setSetting('notify_whatsapp', $data['notify_whatsapp'] ?? true, 'boolean');
                 $loueur->setSetting('notify_email', $data['notify_email'] ?? true, 'boolean');

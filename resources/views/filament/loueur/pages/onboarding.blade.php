@@ -34,11 +34,11 @@
         $resabotMessages = [
             0 => '👋 Ces documents protègent à la fois vous et vos clients. Prenez 2 minutes pour les lire — c\'est important !',
             1 => 'Un profil complet attire 3x plus de clients 😊',
-            2 => 'Ajoutez l\'aéroport — très demandé par la diaspora en été ! ✈️',
+            2 => 'Indiquez les wilayas et villes où vous pouvez livrer vos véhicules 📍',
             3 => '💡 Un acompte entre 20% et 30% est idéal. Si vous acceptez PayPal, renseignez bien votre email — les clients pourront payer directement ! 💰 Astuce rentabilité : ajoutez 500 DA à votre tarif journalier habituel. Exemple : vous visez 6 000 DA nets ? Affichez 6 500 DA. Ça couvre la commission ResaDZ et vous gardez 100% de vos revenus cibles 😊',
             4 => 'Le siège bébé et le GPS sont les options les plus demandées ✨',
             5 => 'Des conditions claires = moins de litiges 📋',
-            6 => '🏆 Le badge Kilométrage illimité est le plus cliqué sur ResaDZ ! 📸 Conseil photo important : la première photo est votre vitrine sur ResaDZ — elle apparaît sur la homepage et dans toutes les recherches. Elle doit être sur fond blanc ou fond noir, propre et bien cadrée. Les autres photos peuvent montrer l\'intérieur, le coffre, les détails. Un véhicule avec de belles photos reçoit 3x plus de demandes ! 🚗',
+            6 => 'Activez les badges qui correspondent à vos services — ils attirent l\'attention des clients ! 🏆',
             7 => 'Activez WhatsApp en priorité 🔔',
         ];
     @endphp
