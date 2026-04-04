@@ -61,9 +61,14 @@ class VehicleResource extends Resource
                             ->schema([
                                 Forms\Components\Select::make('brand_id')
                                     ->label('Marque')
-                                    ->options(Brand::pluck('name', 'id'))
+                                    ->options(Brand::orderBy('name')->pluck('name', 'id'))
                                     ->searchable()
                                     ->required()
+                                    ->live()
+                                    ->afterStateUpdated(function (Forms\Set $set) {
+                                        $set('model', null);
+                                        $set('full_name', null);
+                                    })
                                     ->helperText('La marque apparaît dans les filtres de recherche'),
                                 Forms\Components\Select::make('category_id')
                                     ->label('Catégorie')
@@ -73,25 +78,62 @@ class VehicleResource extends Resource
                             ]),
                         Forms\Components\Grid::make(2)
                             ->schema([
-                                Forms\Components\TextInput::make('model')
+                                Forms\Components\Select::make('model')
                                     ->label('Modèle')
                                     ->required()
-                                    ->maxLength(255)
-                                    ->helperText('Ex: Clio, Golf, Tucson...'),
+                                    ->searchable()
+                                    ->options(function (Forms\Get $get) {
+                                        $brandId = $get('brand_id');
+                                        if (!$brandId) return [];
+                                        return \App\Models\VehicleModel::where('brand_id', $brandId)
+                                            ->where('is_active', true)
+                                            ->orderBy('name')
+                                            ->pluck('name', 'name')
+                                            ->toArray();
+                                    })
+                                    ->createOptionForm([
+                                        Forms\Components\TextInput::make('name')
+                                            ->label('Nom du modèle')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Ex: Clio 5, Tucson, Golf 8...'),
+                                    ])
+                                    ->createOptionUsing(function (array $data, Forms\Get $get): string {
+                                        $brandId = $get('brand_id');
+                                        if ($brandId) {
+                                            \App\Models\VehicleModel::firstOrCreate(
+                                                ['brand_id' => $brandId, 'name' => $data['name']],
+                                                ['is_active' => true]
+                                            );
+                                        }
+                                        return $data['name'];
+                                    })
+                                    ->createOptionModalHeading('Ajouter un modèle')
+                                    ->live()
+                                    ->afterStateUpdated(function (Forms\Get $get, Forms\Set $set) {
+                                        $brand = Brand::find($get('brand_id'));
+                                        $model = $get('model');
+                                        if ($brand && $model) {
+                                            $set('full_name', $brand->name . ' ' . $model);
+                                        }
+                                    })
+                                    ->helperText('Choisissez ou créez un modèle si absent de la liste'),
                                 Forms\Components\TextInput::make('full_name')
                                     ->label('Nom complet')
                                     ->required()
                                     ->maxLength(255)
-                                    ->helperText('Titre affiché sur la carte du véhicule. Ex: VW Tiguan 2024 Noir'),
+                                    ->helperText('Rempli automatiquement. Vous pouvez ajuster (ex: ajouter la finition)'),
                             ]),
                         Forms\Components\Grid::make(4)
                             ->schema([
-                                Forms\Components\TextInput::make('year')
+                                Forms\Components\Select::make('year')
                                     ->label('Année')
-                                    ->numeric()
                                     ->required()
-                                    ->minValue(2000)
-                                    ->maxValue(date('Y') + 1)
+                                    ->options(array_combine(
+                                        range(date('Y') + 1, 2005),
+                                        range(date('Y') + 1, 2005)
+                                    ))
+                                    ->searchable()
                                     ->helperText('Année de mise en circulation'),
                                 Forms\Components\Select::make('transmission')
                                     ->label('Transmission')
