@@ -348,6 +348,12 @@
         @endif
     </div>
 
+@if(\App\Models\Setting::get('facebook_pixel_id'))
+<script>
+fbq('track','ViewContent',{content_name:'{{ addslashes($vehicle->full_name) }}',content_category:'{{ $vehicle->category->name ?? "" }}',value:{{ $vehicle->price_per_day }},currency:'DZD'});
+</script>
+@endif
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales/fr.global.min.js"></script>
 <script src="{{ asset('js/vehicle-calendar.js') }}"></script>

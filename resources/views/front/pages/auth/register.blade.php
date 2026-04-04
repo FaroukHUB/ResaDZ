@@ -149,6 +149,10 @@
         </div>
     </div>
 </div>
+
+@if(\App\Models\Setting::get('facebook_pixel_id'))
+<script>fbq('track','Lead');</script>
+@endif
 @endsection
 
 @push('scripts')

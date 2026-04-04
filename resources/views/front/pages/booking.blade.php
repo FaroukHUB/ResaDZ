@@ -388,6 +388,12 @@
         </form>
     </div>
 
+@if(\App\Models\Setting::get('facebook_pixel_id'))
+<script>
+fbq('track','InitiateCheckout',{content_name:'{{ addslashes($vehicle->full_name) }}',value:{{ $vehicle->price_per_day }},currency:'DZD'});
+</script>
+@endif
+
 @endsection
 
 @section('scripts')

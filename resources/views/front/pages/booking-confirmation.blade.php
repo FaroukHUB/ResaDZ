@@ -134,6 +134,12 @@
         </div>
     </div>
 
+@if(\App\Models\Setting::get('facebook_pixel_id'))
+<script>
+fbq('track','Purchase',{content_name:'{{ addslashes($booking->vehicle->full_name ?? "") }}',value:{{ $booking->total_price ?? 0 }},currency:'{{ $booking->currency ?? "DZD" }}'});
+</script>
+@endif
+
 @endsection
 
 @section('scripts')
