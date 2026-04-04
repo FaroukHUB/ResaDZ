@@ -55,7 +55,7 @@ class VehicleResource extends Resource
                     ->iconColor('primary')
                     ->description('Ces informations sont affichées sur la fiche de votre véhicule côté client. Plus c\'est complet, plus les clients auront confiance.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-amber-500'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #f59e0b;'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -154,7 +154,7 @@ class VehicleResource extends Resource
                     ->iconColor('info')
                     ->description('Cochez les équipements présents dans le véhicule. Plus il y en a, plus les clients seront convaincus.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-blue-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #60a5fa;'])
                     ->schema([
                         Forms\Components\Toggle::make('has_air_conditioning')
                             ->label('❄️ Climatisation')
@@ -204,7 +204,7 @@ class VehicleResource extends Resource
                     ->iconColor('success')
                     ->description('Définissez vos tarifs. Le prix affiché aux clients inclut la commission ResaDZ.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-emerald-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #34d399;'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -293,7 +293,7 @@ class VehicleResource extends Resource
                     ->description('Attirez plus de clients avec des réductions longue durée ! Les prix dégressifs sont affichés sur votre fiche véhicule et incitent les clients à réserver plus longtemps.')
                     ->collapsed()
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-amber-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #fbbf24;'])
                     ->schema([
                         Forms\Components\Placeholder::make('degressive_help')
                             ->label('')
@@ -349,7 +349,7 @@ class VehicleResource extends Resource
                     ->description('Définissez des suppléments pour les périodes de forte demande.')
                     ->collapsed()
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-orange-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #fb923c;'])
                     ->schema([
                         Forms\Components\Placeholder::make('seasonal_help')
                             ->label('')
@@ -421,7 +421,7 @@ class VehicleResource extends Resource
                     ->iconColor('info')
                     ->description('Des photos de qualité augmentent vos réservations de 60% ! Prenez des photos en journée, véhicule propre, sous plusieurs angles.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-sky-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #38bdf8;'])
                     ->schema([
                         Forms\Components\Placeholder::make('photo_tips')
                             ->label('')
@@ -525,7 +525,7 @@ class VehicleResource extends Resource
                     ->iconColor('gray')
                     ->description('Contrôlez quand et si votre véhicule apparaît dans les résultats de recherche.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-gray-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #9ca3af;'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -562,7 +562,7 @@ class VehicleResource extends Resource
                     ->iconColor('success')
                     ->description('Les badges apparaissent sur la carte du véhicule et rassurent les clients. Cochez ceux qui s\'appliquent à ce véhicule.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-green-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #4ade80;'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -602,7 +602,7 @@ class VehicleResource extends Resource
                     ->iconColor('primary')
                     ->description('Proposez des options payantes ou gratuites aux clients. Ex: GPS, siège bébé, conducteur additionnel...')
                     ->collapsed()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-violet-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #a78bfa;'])
                     ->collapsible()
                     ->schema([
                         Forms\Components\Repeater::make('vehicle_options')
@@ -650,7 +650,7 @@ class VehicleResource extends Resource
                     ->iconColor('danger')
                     ->description('Frais facturés au client si le véhicule est rendu sans le plein ou sans lavage. Mettez 0 pour désactiver.')
                     ->collapsible()
-                    ->extraAttributes(['class' => 'border-l-4 border-l-red-400'])
+                    ->extraAttributes(['style' => 'border-left: 4px solid #f87171;'])
                     ->schema([
                         Forms\Components\Placeholder::make('return_fees_info')
                             ->label('')
