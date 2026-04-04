@@ -59,10 +59,12 @@
             </div>
         @endif
 
-        {{-- En location Badge --}}
+        {{-- En location - Ruban diagonal --}}
         @if($vehicle->status === 'reserved')
-            <div class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1 rounded z-10">
-                <span class="text-[10px] font-black text-white uppercase tracking-wider">En location</span>
+            <div class="absolute inset-0 z-10 overflow-hidden pointer-events-none">
+                <div style="position:absolute;top:28px;left:-35px;width:170px;text-align:center;padding:6px 0;background:linear-gradient(135deg,#dc2626,#991b1b);color:white;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);">
+                    EN LOCATION
+                </div>
             </div>
         @endif
 
