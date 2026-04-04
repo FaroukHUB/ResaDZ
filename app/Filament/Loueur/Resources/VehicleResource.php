@@ -55,6 +55,7 @@ class VehicleResource extends Resource
                     ->iconColor('primary')
                     ->description('Ces informations sont affichées sur la fiche de votre véhicule côté client. Plus c\'est complet, plus les clients auront confiance.')
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-amber-500'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -88,11 +89,13 @@ class VehicleResource extends Resource
                                 Forms\Components\TextInput::make('year')
                                     ->label('Année')
                                     ->numeric()
+                                    ->required()
                                     ->minValue(2000)
                                     ->maxValue(date('Y') + 1)
                                     ->helperText('Année de mise en circulation'),
                                 Forms\Components\Select::make('transmission')
                                     ->label('Transmission')
+                                    ->required()
                                     ->options([
                                         'manual' => 'Manuelle',
                                         'automatic' => 'Automatique',
@@ -100,6 +103,7 @@ class VehicleResource extends Resource
                                     ->helperText('Filtre très utilisé par les clients'),
                                 Forms\Components\Select::make('fuel_type')
                                     ->label('Carburant')
+                                    ->required()
                                     ->options([
                                         'essence' => 'Essence',
                                         'diesel' => 'Diesel',
@@ -109,6 +113,7 @@ class VehicleResource extends Resource
                                     ->helperText('Affiché sur la fiche véhicule'),
                                 Forms\Components\Select::make('color')
                                     ->label('Couleur')
+                                    ->required()
                                     ->live(onBlur: true)
                                     ->options([
                                         'noir' => 'Noir', 'blanc' => 'Blanc', 'gris' => 'Gris',
@@ -116,30 +121,28 @@ class VehicleResource extends Resource
                                         'beige' => 'Beige', 'marron' => 'Marron', 'orange' => 'Orange', 'jaune' => 'Jaune',
                                     ])
                                     ->searchable()
-                                    ->helperText('Aide les clients à identifier le véhicule'),
+                                    ->helperText('Important pour le visuel studio automatique'),
                             ]),
-                        Forms\Components\Grid::make(4)
+                        Forms\Components\Grid::make(3)
                             ->schema([
                                 Forms\Components\TextInput::make('seats')
                                     ->label('Places')
                                     ->numeric()
+                                    ->required()
                                     ->minValue(2)
                                     ->maxValue(9)
                                     ->helperText('Nombre de passagers max'),
                                 Forms\Components\TextInput::make('doors')
                                     ->label('Portes')
                                     ->numeric()
+                                    ->required()
                                     ->minValue(2)
                                     ->maxValue(5)
                                     ->helperText('2, 3, 4 ou 5 portes'),
-                                Forms\Components\TextInput::make('mileage')
-                                    ->label('Kilométrage')
-                                    ->numeric()
-                                    ->suffix('km')
-                                    ->helperText('Kilométrage actuel du véhicule'),
                                 Forms\Components\TextInput::make('luggage_capacity')
                                     ->label('Bagages')
                                     ->numeric()
+                                    ->required()
                                     ->suffix('valises')
                                     ->helperText('Capacité du coffre en nombre de valises'),
                             ]),
@@ -151,6 +154,7 @@ class VehicleResource extends Resource
                     ->iconColor('info')
                     ->description('Cochez les équipements présents dans le véhicule. Plus il y en a, plus les clients seront convaincus.')
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-blue-400'])
                     ->schema([
                         Forms\Components\Toggle::make('has_air_conditioning')
                             ->label('❄️ Climatisation')
@@ -200,6 +204,7 @@ class VehicleResource extends Resource
                     ->iconColor('success')
                     ->description('Définissez vos tarifs. Le prix affiché aux clients inclut la commission ResaDZ.')
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-emerald-400'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -288,6 +293,7 @@ class VehicleResource extends Resource
                     ->description('Attirez plus de clients avec des réductions longue durée ! Les prix dégressifs sont affichés sur votre fiche véhicule et incitent les clients à réserver plus longtemps.')
                     ->collapsed()
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-amber-400'])
                     ->schema([
                         Forms\Components\Placeholder::make('degressive_help')
                             ->label('')
@@ -343,6 +349,7 @@ class VehicleResource extends Resource
                     ->description('Définissez des suppléments pour les périodes de forte demande.')
                     ->collapsed()
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-orange-400'])
                     ->schema([
                         Forms\Components\Placeholder::make('seasonal_help')
                             ->label('')
@@ -414,6 +421,7 @@ class VehicleResource extends Resource
                     ->iconColor('info')
                     ->description('Des photos de qualité augmentent vos réservations de 60% ! Prenez des photos en journée, véhicule propre, sous plusieurs angles.')
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-sky-400'])
                     ->schema([
                         Forms\Components\Placeholder::make('photo_tips')
                             ->label('')
@@ -517,6 +525,7 @@ class VehicleResource extends Resource
                     ->iconColor('gray')
                     ->description('Contrôlez quand et si votre véhicule apparaît dans les résultats de recherche.')
                     ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-gray-400'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -552,6 +561,8 @@ class VehicleResource extends Resource
                     ->icon('heroicon-o-check-badge')
                     ->iconColor('success')
                     ->description('Les badges apparaissent sur la carte du véhicule et rassurent les clients. Cochez ceux qui s\'appliquent à ce véhicule.')
+                    ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-green-400'])
                     ->schema([
                         Forms\Components\Grid::make(2)
                             ->schema([
@@ -591,6 +602,7 @@ class VehicleResource extends Resource
                     ->iconColor('primary')
                     ->description('Proposez des options payantes ou gratuites aux clients. Ex: GPS, siège bébé, conducteur additionnel...')
                     ->collapsed()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-violet-400'])
                     ->collapsible()
                     ->schema([
                         Forms\Components\Repeater::make('vehicle_options')
@@ -637,6 +649,8 @@ class VehicleResource extends Resource
                     ->icon('heroicon-o-arrow-uturn-left')
                     ->iconColor('danger')
                     ->description('Frais facturés au client si le véhicule est rendu sans le plein ou sans lavage. Mettez 0 pour désactiver.')
+                    ->collapsible()
+                    ->extraAttributes(['class' => 'border-l-4 border-l-red-400'])
                     ->schema([
                         Forms\Components\Placeholder::make('return_fees_info')
                             ->label('')
