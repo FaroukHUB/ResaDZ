@@ -508,6 +508,16 @@ class BookingController extends Controller
 
         if (!empty($updates)) {
             $booking->update($updates);
+
+            // Notifier le loueur
+            $loueur = $booking->loueur;
+            if ($loueur) {
+                try {
+                    $loueur->notify(new \App\Notifications\ClientDocumentsUploadedNotification($booking));
+                } catch (\Exception $e) {
+                    \Log::warning('Failed to notify loueur about documents: ' . $e->getMessage());
+                }
+            }
         }
 
         return back()->with('success', 'Vos documents ont été téléchargés avec succès.');
