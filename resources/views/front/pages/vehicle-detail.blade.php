@@ -272,14 +272,24 @@
                     @endif
 
                     <!-- Réserver -->
-                    <a href="{{ route('booking.create', $vehicle->slug) }}"
-                       data-track="reserve"
-                       data-vehicle-id="{{ $vehicle->id }}"
-                       data-loueur-id="{{ $vehicle->loueur?->id }}"
-                       class="flex items-center justify-center gap-2 w-full py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                        Réserver ce véhicule
-                    </a>
+                    @if($vehicle->status === 'reserved')
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
+                            <div class="flex items-center justify-center gap-2 text-blue-700 font-bold mb-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                Actuellement en location
+                            </div>
+                            <p class="text-sm text-blue-600">Ce véhicule est en cours de location. Revenez bientôt !</p>
+                        </div>
+                    @else
+                        <a href="{{ route('booking.create', $vehicle->slug) }}"
+                           data-track="reserve"
+                           data-vehicle-id="{{ $vehicle->id }}"
+                           data-loueur-id="{{ $vehicle->loueur?->id }}"
+                           class="flex items-center justify-center gap-2 w-full py-4 bg-gray-900 text-white font-bold rounded-xl hover:bg-gray-800 transition shadow-lg">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                            Réserver ce véhicule
+                        </a>
+                    @endif
 
 
                     <!-- Payment Methods -->

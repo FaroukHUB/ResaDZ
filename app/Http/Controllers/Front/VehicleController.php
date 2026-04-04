@@ -18,7 +18,7 @@ class VehicleController extends Controller
     {
         $query = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('vehicles.is_active', true)
-            ->where('vehicles.status', 'available');
+            ->whereIn('vehicles.status', ['available', 'reserved']);
 
         // Filtres
         if ($request->filled('brand')) {
@@ -156,7 +156,7 @@ class VehicleController extends Controller
 
         $relatedVehicles = Vehicle::with(['brand', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('is_active', true)
-            ->where('status', 'available')
+            ->whereIn('status', ['available', 'reserved'])
             ->where('id', '!=', $vehicle->id)
             ->where(function ($q) use ($vehicle) {
                 $q->where('category_id', $vehicle->category_id)
@@ -189,7 +189,7 @@ class VehicleController extends Controller
 
         $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
             ->where('is_active', true)
-            ->where('status', 'available')
+            ->whereIn('status', ['available', 'reserved'])
             ->whereIn('loueur_id', $loueurIds)
             ->orderBy('is_featured', 'desc')
             ->orderBy('created_at', 'desc')

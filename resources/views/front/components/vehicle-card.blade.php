@@ -59,6 +59,13 @@
             </div>
         @endif
 
+        {{-- En location Badge --}}
+        @if($vehicle->status === 'reserved')
+            <div class="absolute top-3 left-3 bg-gradient-to-r from-blue-600 to-indigo-600 px-3 py-1 rounded z-10">
+                <span class="text-[10px] font-black text-white uppercase tracking-wider">En location</span>
+            </div>
+        @endif
+
         {{-- Haute saison Badge --}}
         @php
             $activeSeasonCard = $vehicle->relationLoaded('seasonalRates')
@@ -128,12 +135,23 @@
 
     {{-- Action Button --}}
     <div class="p-4 mt-auto">
-        <a href="{{ route('vehicles.show', $vehicle->slug) }}"
-           data-track="view_details"
-           data-vehicle-id="{{ $vehicle->id }}"
-           data-loueur-id="{{ $loueur?->id }}"
-           class="flex items-center justify-center gap-2 h-12 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-500 transition w-full">
-            Réserver
-        </a>
+        @if($vehicle->status === 'reserved')
+            <a href="{{ route('vehicles.show', $vehicle->slug) }}"
+               data-track="view_details"
+               data-vehicle-id="{{ $vehicle->id }}"
+               data-loueur-id="{{ $loueur?->id }}"
+               class="flex items-center justify-center gap-2 h-12 bg-gray-500 text-white text-sm font-bold rounded w-full cursor-default">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                Actuellement en location
+            </a>
+        @else
+            <a href="{{ route('vehicles.show', $vehicle->slug) }}"
+               data-track="view_details"
+               data-vehicle-id="{{ $vehicle->id }}"
+               data-loueur-id="{{ $loueur?->id }}"
+               class="flex items-center justify-center gap-2 h-12 bg-green-600 text-white text-sm font-bold rounded hover:bg-green-500 transition w-full">
+                Réserver
+            </a>
+        @endif
     </div>
 </article>
