@@ -388,8 +388,8 @@ class BookingController extends Controller
             'client_service_fee' => 0, // Nouveau modèle 2026: locataire ne paie aucune commission
             'advance_amount' => $pricing['advance_amount'],
             'advance_amount_eur' => $pricing['advance_amount_eur'] ?? 0,
-            'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : null,
-            'advance_payment_method' => $advancePaymentMethod,
+            'advance_status' => $pricing['advance_amount'] > 0 ? 'pending' : 'none',
+            'advance_payment_method' => $advancePaymentMethod ?? '',
             'advance_expires_at' => $timerHours ? now()->addHours($timerHours) : null,
             'deposit_amount' => $pricing['deposit_amount_da'] ?? $pricing['deposit_amount'] ?? 0,
             'deposit_amount_eur' => $pricing['deposit_amount_eur'] ?? 0,
