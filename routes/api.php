@@ -78,6 +78,9 @@ Route::middleware('throttle:public')->get('/map/vehicles-by-wilaya', [\App\Http\
 // Chatbot - Rate limited to prevent abuse
 Route::middleware('throttle:marketing')->post('/chatbot', [ChatbotController::class, 'chat']);
 
+// Panel Assistant (Résabot) - Rate limited
+Route::middleware('throttle:marketing')->post('/panel-assistant', [\App\Http\Controllers\Api\PanelAssistantController::class, 'chat']);
+
 // Push Notifications - Sensitive rate limit
 Route::middleware('throttle:sensitive')->prefix('push')->group(function () {
     Route::get('/public-key', [PushSubscriptionController::class, 'publicKey']);

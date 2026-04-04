@@ -91,6 +91,10 @@ class ChauffeurPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
                 fn () => '<div class="text-center mt-4"><a href="' . url('/mot-de-passe/oublie') . '" class="text-sm text-primary-600 hover:text-primary-700 font-medium">Mot de passe oublié ?</a></div>'
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn () => Auth::check() ? Blade::render('@include("filament.components.panel-assistant", ["panelType" => "chauffeur"])') : ''
             );
     }
 
