@@ -9,17 +9,15 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewBookingNotification extends Notification implements ShouldQueue
+class NewBookingNotification extends Notification
 {
-    use Queueable;
-
     public function __construct(
         public Booking $booking
     ) {}
 
     public function via(object $notifiable): array
     {
-        return ['mail'];
+        return ['mail', 'database'];
     }
 
     public function toMail(object $notifiable): MailMessage

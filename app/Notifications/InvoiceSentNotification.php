@@ -9,9 +9,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class InvoiceSentNotification extends Notification implements ShouldQueue
+class InvoiceSentNotification extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public Invoice $invoice

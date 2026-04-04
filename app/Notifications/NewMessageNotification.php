@@ -9,9 +9,8 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class NewMessageNotification extends Notification implements ShouldQueue
+class NewMessageNotification extends Notification
 {
-    use Queueable;
 
     public function __construct(
         public Conversation $conversation,
