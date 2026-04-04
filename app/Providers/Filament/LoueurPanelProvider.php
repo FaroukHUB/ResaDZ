@@ -119,6 +119,10 @@ class LoueurPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::BODY_START,
                 fn () => $this->renderChauffeurBodyClass()
+            )
+            ->renderHook(
+                PanelsRenderHook::AUTH_LOGIN_FORM_AFTER,
+                fn () => '<div class="text-center mt-4"><a href="' . url('/mot-de-passe/oublie') . '" class="text-sm text-primary-600 hover:text-primary-700 font-medium">Mot de passe oublié ?</a></div>'
             );
     }
 
