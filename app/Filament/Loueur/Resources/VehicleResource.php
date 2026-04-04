@@ -434,8 +434,13 @@ class VehicleResource extends Resource
                         Forms\Components\Placeholder::make('template_preview')
                             ->label('')
                             ->visible(function ($record): bool {
-                                if (!$record || $record->image) return false;
-                                return $record->display_image !== null;
+                                if (!$record) return false;
+                                if ($record->image) return false;
+                                try {
+                                    return $record->display_image !== null;
+                                } catch (\Exception $e) {
+                                    return false;
+                                }
                             })
                             ->content(function ($record): \Illuminate\Support\HtmlString {
                                 $imgUrl = asset('storage/' . $record->display_image);
@@ -446,7 +451,7 @@ class VehicleResource extends Resource
                                             <div>
                                                 <p class='font-bold text-green-900 dark:text-green-100'>Visuel studio ResaDZ actif</p>
                                                 <p class='text-sm text-green-800 dark:text-green-200 mt-1'>
-                                                    Ce visuel est affiché automatiquement car vous n'avez pas uploadé de photo.
+                                                    Ce visuel est affiché automatiquement sur le site car vous n'avez pas uploadé de photo.
                                                 </p>
                                                 <p class='text-xs text-green-600 dark:text-green-300 mt-2'>
                                                     Uploadez votre propre photo ci-dessous pour la remplacer.
@@ -456,12 +461,31 @@ class VehicleResource extends Resource
                                     </div>
                                 ");
                             }),
+                        Forms\Components\Placeholder::make('template_info')
+                            ->label('')
+                            ->visible(function ($record): bool {
+                                if ($record && !$record->image) {
+                                    try { return $record->display_image !== null; } catch (\Exception $e) {}
+                                }
+                                return false;
+                            })
+                            ->hidden(function ($record): bool {
+                                // Also hide in create mode - show only when record exists with template
+                                return !$record;
+                            })
+                            ->content(''),
                         Forms\Components\FileUpload::make('image')
                             ->label('Photo principale')
                             ->image()
                             ->directory('vehicles')
                             ->visibility('public')
-                            ->helperText('Si un visuel studio ResaDZ existe pour votre marque/modèle/couleur, il sera utilisé automatiquement si vous laissez ce champ vide.'),
+                            ->helperText(function ($record): string {
+                                $base = 'Photo affichée en premier sur les cartes de recherche.';
+                                if (!$record) {
+                                    return $base . ' Si un visuel studio ResaDZ existe pour votre marque/modèle/couleur, il sera utilisé automatiquement si vous laissez ce champ vide. Vous pourrez le voir après la création du véhicule.';
+                                }
+                                return $base;
+                            }),
                         Forms\Components\FileUpload::make('gallery')
                             ->label('Galerie (optionnel)')
                             ->image()
