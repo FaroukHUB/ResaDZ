@@ -45,14 +45,19 @@ class ForgotPasswordController extends Controller
         ]);
 
         // Envoyer l'email
-        Mail::send('emails.reset-password', [
-            'token' => $token,
-            'email' => $request->email,
-            'userName' => $user->name,
-        ], function ($message) use ($request) {
-            $message->to($request->email);
-            $message->subject('Réinitialisation de votre mot de passe — ResaDZ');
-        });
+        try {
+            Mail::send('emails.reset-password', [
+                'token' => $token,
+                'email' => $request->email,
+                'userName' => $user->name,
+            ], function ($message) use ($request) {
+                $message->to($request->email);
+                $message->subject('Réinitialisation de votre mot de passe — ResaDZ');
+            });
+        } catch (\Exception $e) {
+            \Log::error('Password reset email failed: ' . $e->getMessage());
+            return back()->withErrors(['email' => 'Impossible d\'envoyer l\'email. Veuillez réessayer plus tard ou nous contacter sur WhatsApp.']);
+        }
 
         return back()->with('status', 'Si cette adresse existe dans notre système, vous recevrez un email avec un lien de réinitialisation.');
     }
