@@ -291,8 +291,7 @@ class VehicleResource extends Resource
                     ->icon('heroicon-o-arrow-trending-down')
                     ->iconColor('warning')
                     ->description('Attirez plus de clients avec des réductions longue durée ! Les prix dégressifs sont affichés sur votre fiche véhicule et incitent les clients à réserver plus longtemps.')
-                    ->collapsed()
-                    ->collapsible()
+                                        ->collapsible()
                     ->extraAttributes(['style' => 'border-left: 4px solid #fbbf24;'])
                     ->schema([
                         Forms\Components\Placeholder::make('degressive_help')
@@ -347,8 +346,7 @@ class VehicleResource extends Resource
                     ->icon('heroicon-o-sun')
                     ->iconColor('warning')
                     ->description('Définissez des suppléments pour les périodes de forte demande.')
-                    ->collapsed()
-                    ->collapsible()
+                                        ->collapsible()
                     ->extraAttributes(['style' => 'border-left: 4px solid #fb923c;'])
                     ->schema([
                         Forms\Components\Placeholder::make('seasonal_help')
@@ -601,8 +599,7 @@ class VehicleResource extends Resource
                     ->icon('heroicon-o-squares-plus')
                     ->iconColor('primary')
                     ->description('Proposez des options payantes ou gratuites aux clients. Ex: GPS, siège bébé, conducteur additionnel...')
-                    ->collapsed()
-                    ->extraAttributes(['style' => 'border-left: 4px solid #a78bfa;'])
+                                        ->extraAttributes(['style' => 'border-left: 4px solid #a78bfa;'])
                     ->collapsible()
                     ->schema([
                         Forms\Components\Repeater::make('vehicle_options')
