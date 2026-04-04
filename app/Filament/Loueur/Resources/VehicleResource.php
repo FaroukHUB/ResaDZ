@@ -431,6 +431,31 @@ class VehicleResource extends Resource
                                     </div>
                                 </div>
                             ')),
+                        Forms\Components\Placeholder::make('template_preview')
+                            ->label('')
+                            ->visible(function ($record): bool {
+                                if (!$record || $record->image) return false;
+                                return $record->display_image !== null;
+                            })
+                            ->content(function ($record): \Illuminate\Support\HtmlString {
+                                $imgUrl = asset('storage/' . $record->display_image);
+                                return new \Illuminate\Support\HtmlString("
+                                    <div class='p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl'>
+                                        <div class='flex items-start gap-4'>
+                                            <img src='{$imgUrl}' alt='Visuel studio' class='w-48 rounded-xl border border-green-300 shadow-sm'>
+                                            <div>
+                                                <p class='font-bold text-green-900 dark:text-green-100'>Visuel studio ResaDZ actif</p>
+                                                <p class='text-sm text-green-800 dark:text-green-200 mt-1'>
+                                                    Ce visuel est affiché automatiquement car vous n'avez pas uploadé de photo.
+                                                </p>
+                                                <p class='text-xs text-green-600 dark:text-green-300 mt-2'>
+                                                    Uploadez votre propre photo ci-dessous pour la remplacer.
+                                                </p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ");
+                            }),
                         Forms\Components\FileUpload::make('image')
                             ->label('Photo principale')
                             ->image()
