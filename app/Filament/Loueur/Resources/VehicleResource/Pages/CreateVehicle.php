@@ -19,17 +19,36 @@ class CreateVehicle extends CreateRecord
         }
 
         // Valeurs par défaut pour les champs NOT NULL
-        $data['seats'] = $data['seats'] ?? 5;
-        $data['doors'] = $data['doors'] ?? 5;
-        $data['mileage'] = $data['mileage'] ?? 0;
-        $data['luggage_capacity'] = $data['luggage_capacity'] ?? 0;
-        $data['deposit_amount'] = $data['deposit_amount'] ?? 0;
-        $data['deposit_amount_eur'] = $data['deposit_amount_eur'] ?? 0;
-        $data['price_per_day_eur'] = $data['price_per_day_eur'] ?? 0;
-        $data['max_rental_days'] = $data['max_rental_days'] ?? 30;
-        $data['mileage_limit_per_day'] = $data['mileage_limit_per_day'] ?? 0;
-        $data['image'] = $data['image'] ?? '';
-        $data['gallery'] = $data['gallery'] ?? [];
+        $defaults = [
+            'seats' => 5,
+            'doors' => 5,
+            'mileage' => 0,
+            'luggage_capacity' => 0,
+            'deposit_amount' => 0,
+            'deposit_amount_eur' => 0,
+            'price_per_day_eur' => 0,
+            'max_rental_days' => 30,
+            'mileage_limit_per_day' => 0,
+            'image' => '',
+            'gallery' => [],
+            'transmission' => 'manual',
+            'fuel_type' => 'essence',
+            'year' => date('Y'),
+            'color' => '',
+            'status' => 'available',
+            'is_active' => true,
+            'min_rental_days' => 1,
+            'has_air_conditioning' => true,
+            'degressive_pricing' => [],
+            'vehicle_badges' => [],
+            'vehicle_options' => [],
+            'fuel_return_fee' => 0,
+            'wash_return_fee' => 0,
+        ];
+
+        foreach ($defaults as $key => $value) {
+            $data[$key] = $data[$key] ?? $value;
+        }
 
         return $data;
     }
