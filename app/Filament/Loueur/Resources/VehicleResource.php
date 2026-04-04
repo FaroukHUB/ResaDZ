@@ -109,6 +109,7 @@ class VehicleResource extends Resource
                                     ->helperText('Affiché sur la fiche véhicule'),
                                 Forms\Components\Select::make('color')
                                     ->label('Couleur')
+                                    ->live(onBlur: true)
                                     ->options([
                                         'noir' => 'Noir', 'blanc' => 'Blanc', 'gris' => 'Gris',
                                         'rouge' => 'Rouge', 'bleu' => 'Bleu', 'vert' => 'Vert',
@@ -433,59 +434,73 @@ class VehicleResource extends Resource
                             ')),
                         Forms\Components\Placeholder::make('template_preview')
                             ->label('')
-                            ->visible(function ($record): bool {
-                                if (!$record) return false;
-                                if ($record->image) return false;
+                            ->visible(function (Forms\Get $get, $record): bool {
+                                $brandId = $get('brand_id');
+                                $model = $get('model');
+                                $color = $get('color');
+                                if (!$brandId || !$model || !$color) {
+                                    // En edit, checker via le record
+                                    if ($record && !$record->image) {
+                                        try { return $record->display_image !== null; } catch (\Exception $e) { return false; }
+                                    }
+                                    return false;
+                                }
                                 try {
-                                    return $record->display_image !== null;
+                                    return \App\Models\VehicleTemplate::where('brand_id', $brandId)
+                                        ->whereRaw('LOWER(model_name) = ?', [strtolower($model)])
+                                        ->where('color', $color)
+                                        ->where('is_active', true)
+                                        ->exists();
                                 } catch (\Exception $e) {
                                     return false;
                                 }
                             })
-                            ->content(function ($record): \Illuminate\Support\HtmlString {
-                                $imgUrl = asset('storage/' . $record->display_image);
+                            ->content(function (Forms\Get $get, $record): \Illuminate\Support\HtmlString {
+                                $brandId = $get('brand_id');
+                                $model = $get('model');
+                                $color = $get('color');
+                                $template = null;
+                                try {
+                                    if ($brandId && $model && $color) {
+                                        $template = \App\Models\VehicleTemplate::where('brand_id', $brandId)
+                                            ->whereRaw('LOWER(model_name) = ?', [strtolower($model)])
+                                            ->where('color', $color)
+                                            ->where('is_active', true)
+                                            ->first();
+                                    }
+                                    if (!$template && $record && !$record->image && $record->display_image) {
+                                        $imgUrl = asset('storage/' . $record->display_image);
+                                    } elseif ($template) {
+                                        $imgUrl = asset('storage/' . $template->image_path);
+                                    } else {
+                                        return new \Illuminate\Support\HtmlString('');
+                                    }
+                                } catch (\Exception $e) {
+                                    return new \Illuminate\Support\HtmlString('');
+                                }
                                 return new \Illuminate\Support\HtmlString("
                                     <div class='p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-2xl'>
                                         <div class='flex items-start gap-4'>
                                             <img src='{$imgUrl}' alt='Visuel studio' class='w-48 rounded-xl border border-green-300 shadow-sm'>
                                             <div>
-                                                <p class='font-bold text-green-900 dark:text-green-100'>Visuel studio ResaDZ actif</p>
+                                                <p class='font-bold text-green-900 dark:text-green-100'>Visuel studio ResaDZ disponible !</p>
                                                 <p class='text-sm text-green-800 dark:text-green-200 mt-1'>
-                                                    Ce visuel est affiché automatiquement sur le site car vous n'avez pas uploadé de photo.
+                                                    Ce visuel sera affiché automatiquement si vous ne mettez pas de photo.
                                                 </p>
                                                 <p class='text-xs text-green-600 dark:text-green-300 mt-2'>
-                                                    Uploadez votre propre photo ci-dessous pour la remplacer.
+                                                    Vous pouvez aussi uploader votre propre photo — elle sera prioritaire.
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
                                 ");
                             }),
-                        Forms\Components\Placeholder::make('template_info')
-                            ->label('')
-                            ->visible(function ($record): bool {
-                                if ($record && !$record->image) {
-                                    try { return $record->display_image !== null; } catch (\Exception $e) {}
-                                }
-                                return false;
-                            })
-                            ->hidden(function ($record): bool {
-                                // Also hide in create mode - show only when record exists with template
-                                return !$record;
-                            })
-                            ->content(''),
                         Forms\Components\FileUpload::make('image')
                             ->label('Photo principale')
                             ->image()
                             ->directory('vehicles')
                             ->visibility('public')
-                            ->helperText(function ($record): string {
-                                $base = 'Photo affichée en premier sur les cartes de recherche.';
-                                if (!$record) {
-                                    return $base . ' Si un visuel studio ResaDZ existe pour votre marque/modèle/couleur, il sera utilisé automatiquement si vous laissez ce champ vide. Vous pourrez le voir après la création du véhicule.';
-                                }
-                                return $base;
-                            }),
+                            ->helperText('Laissez vide si un visuel studio ResaDZ est disponible pour votre véhicule.'),
                         Forms\Components\FileUpload::make('gallery')
                             ->label('Galerie (optionnel)')
                             ->image()
