@@ -125,7 +125,13 @@ class Vehicle extends Model
 
         static::creating(function ($vehicle) {
             if (empty($vehicle->slug)) {
-                $vehicle->slug = Str::slug($vehicle->full_name);
+                $baseSlug = Str::slug($vehicle->full_name);
+                $slug = $baseSlug;
+                $i = 1;
+                while (static::withTrashed()->where('slug', $slug)->exists()) {
+                    $slug = $baseSlug . '-' . $i++;
+                }
+                $vehicle->slug = $slug;
             }
         });
     }
