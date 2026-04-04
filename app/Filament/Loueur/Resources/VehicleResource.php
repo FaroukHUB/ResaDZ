@@ -573,7 +573,7 @@ class VehicleResource extends Resource
                                     ->label('Statut')
                                     ->options([
                                         'available' => 'Disponible',
-                                        'rented' => 'En location',
+                                        'reserved' => 'En location / Réservé',
                                         'maintenance' => 'En maintenance',
                                         'unavailable' => 'Indisponible',
                                     ])
@@ -749,13 +749,13 @@ class VehicleResource extends Resource
                     ->label('Statut')
                     ->colors([
                         'success' => 'available',
-                        'warning' => 'rented',
+                        'warning' => 'reserved',
                         'danger' => 'maintenance',
                         'gray' => 'unavailable',
                     ])
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'available' => 'Disponible',
-                        'rented' => 'En location',
+                        'reserved' => 'En location / Réservé',
                         'maintenance' => 'Maintenance',
                         'unavailable' => 'Indisponible',
                         default => $state,
@@ -769,7 +769,7 @@ class VehicleResource extends Resource
                     ->label('Statut')
                     ->options([
                         'available' => 'Disponible',
-                        'rented' => 'En location',
+                        'reserved' => 'En location / Réservé',
                         'maintenance' => 'Maintenance',
                         'unavailable' => 'Indisponible',
                     ]),
@@ -815,7 +815,7 @@ class VehicleResource extends Resource
                             ->label('Nouveau statut')
                             ->options([
                                 'available' => 'Disponible',
-                                'rented' => 'En location',
+                                'reserved' => 'En location / Réservé',
                                 'maintenance' => 'Maintenance',
                                 'unavailable' => 'Indisponible',
                             ])
