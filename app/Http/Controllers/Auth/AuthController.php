@@ -94,7 +94,7 @@ class AuthController extends Controller
                 'slug' => Str::slug($validated['company_name']) . '-' . Str::random(6),
                 'phone' => $validated['phone'],
                 'wilaya' => $validated['wilaya'],
-                'is_active' => false,
+                'is_active' => true,
                 'offers_transfer' => $isTaxi,
             ]);
 
@@ -112,12 +112,14 @@ class AuthController extends Controller
             \Log::warning('Welcome email failed: ' . $e->getMessage());
         }
 
-        // Ne PAS connecter automatiquement - le compte doit être validé par l'admin
-        $message = $isTaxi
-            ? 'Salam ! Votre inscription a bien été prise en compte. Votre compte est en attente de validation par notre équipe. Vous recevrez un email dès que votre compte sera activé.'
-            : 'Salam ! Votre inscription a bien été prise en compte. Votre compte est en attente de validation par notre équipe. Vous recevrez un email dès que votre compte sera activé.';
+        Auth::login($user);
 
-        return redirect()->route('login')->with('success', $message);
+        $message = $isTaxi
+            ? 'Salam ! Bienvenue sur ResaDZ. Votre espace chauffeur est prêt.'
+            : 'Salam ! Bienvenue sur ResaDZ. Votre espace loueur est prêt.';
+
+        $redirectPath = $isTaxi ? '/chauffeur' : '/loueur';
+        return redirect($redirectPath)->with('success', $message);
     }
 
     // Google OAuth
@@ -151,17 +153,16 @@ class AuthController extends Controller
             $loueur = Loueur::create([
                 'user_id' => $user->id,
                 'company_name' => $googleUser->getName(),
-                'slug' => Str::slug($googleUser->getName()) . '-' . Str::random(4),
-                'is_active' => false, // Compte en attente de validation admin
+                'slug' => Str::slug($googleUser->getName()) . '-' . Str::random(6),
+                'is_active' => true,
             ]);
 
             // Send welcome email for new Google OAuth accounts
-            $this->sendWelcomeEmail($loueur);
-
-            // Ne pas connecter - compte en attente de validation
-            return redirect()->route('login')->with('success',
-                'Salam ! Votre inscription a bien été prise en compte. Votre compte est en attente de validation par notre équipe.'
-            );
+            try {
+                $this->sendWelcomeEmail($loueur);
+            } catch (\Exception $e) {
+                \Log::warning('Welcome email failed (Google): ' . $e->getMessage());
+            }
         }
 
         Auth::login($user, true);
