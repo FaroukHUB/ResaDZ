@@ -93,13 +93,61 @@
 
     {{-- Price Section --}}
     <div class="px-4 py-4 border-b border-neutral-800">
-        <div class="flex items-baseline gap-2">
-            <span class="text-2xl font-black text-white">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA</span>
-            @if($vehicle->price_per_day_eur)
-                <span class="text-white/60 text-lg font-semibold">/ {{ number_format($vehicle->price_per_day_eur, 0) }} €</span>
-            @endif
+        <div class="flex items-center justify-between">
+            <div>
+                <div class="flex items-baseline gap-2">
+                    <span class="text-2xl font-black text-white">{{ number_format($vehicle->price_per_day, 0, ',', ' ') }} DA</span>
+                    @if($vehicle->price_per_day_eur)
+                        <span class="text-white/60 text-lg font-semibold">/ {{ number_format($vehicle->price_per_day_eur, 0) }} €</span>
+                    @endif
+                </div>
+                <p class="text-white/60 text-sm mt-1">Prix / jour</p>
+            </div>
+            {{-- Favori + Partager --}}
+            <div class="flex items-center gap-2">
+                <button type="button"
+                        x-data="{ liked: localStorage.getItem('fav_{{ $vehicle->id }}') === '1' }"
+                        x-on:click.stop="liked = !liked; liked ? localStorage.setItem('fav_{{ $vehicle->id }}', '1') : localStorage.removeItem('fav_{{ $vehicle->id }}')"
+                        class="w-9 h-9 rounded-full flex items-center justify-center transition"
+                        :class="liked ? 'bg-red-500/20 text-red-500' : 'bg-white/10 text-white/50 hover:text-red-400'"
+                        title="Favori">
+                    <svg class="w-5 h-5" :fill="liked ? 'currentColor' : 'none'" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"/></svg>
+                </button>
+                <div x-data="{ open: false }" class="relative">
+                    <button type="button" x-on:click.stop="open = !open"
+                            class="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition"
+                            title="Partager">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z"/></svg>
+                    </button>
+                    <div x-show="open" x-on:click.away="open = false" x-transition
+                         class="absolute bottom-full right-0 mb-2 bg-white rounded-xl shadow-2xl border border-gray-200 p-2 w-48 z-50">
+                        @php $shareUrl = route('vehicles.show', $vehicle->slug); $shareText = $vehicle->full_name . ' - ' . number_format($vehicle->price_per_day, 0, ',', ' ') . ' DA/jour sur ResaDZ'; @endphp
+                        <a href="https://wa.me/?text={{ urlencode($shareText . ' ' . $shareUrl) }}" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-green-50 text-gray-700 text-sm transition">
+                            <span class="text-lg">💬</span> WhatsApp
+                        </a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-blue-50 text-gray-700 text-sm transition">
+                            <span class="text-lg">📘</span> Facebook
+                        </a>
+                        <a href="https://t.me/share/url?url={{ urlencode($shareUrl) }}&text={{ urlencode($shareText) }}" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sky-50 text-gray-700 text-sm transition">
+                            <span class="text-lg">✈️</span> Telegram
+                        </a>
+                        <a href="https://www.instagram.com/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-pink-50 text-gray-700 text-sm transition">
+                            <span class="text-lg">📷</span> Instagram
+                        </a>
+                        <a href="https://www.snapchat.com/share?url={{ urlencode($shareUrl) }}" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 text-sm transition">
+                            <span class="text-lg">👻</span> Snapchat
+                        </a>
+                        <a href="https://www.tiktok.com/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition">
+                            <span class="text-lg">🎵</span> TikTok
+                        </a>
+                        <button type="button" x-on:click="navigator.clipboard.writeText('{{ $shareUrl }}'); $el.textContent = 'Copié !'; setTimeout(() => $el.innerHTML = '<span class=\'text-lg\'>🔗</span> Copier le lien', 2000)"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm transition w-full text-left">
+                            <span class="text-lg">🔗</span> Copier le lien
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
-        <p class="text-white/60 text-sm mt-1">Prix / jour</p>
     </div>
 
     {{-- National availability badge --}}
