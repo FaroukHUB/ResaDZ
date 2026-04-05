@@ -63,7 +63,7 @@
         @if($vehicle->status === 'reserved')
             <div class="absolute inset-0 z-10 overflow-hidden pointer-events-none">
                 <div style="position:absolute;top:28px;left:-35px;width:170px;text-align:center;padding:6px 0;background:linear-gradient(135deg,#dc2626,#991b1b);color:white;font-size:11px;font-weight:900;letter-spacing:1.5px;text-transform:uppercase;transform:rotate(-45deg);box-shadow:0 2px 8px rgba(0,0,0,0.3);">
-                    EN LOCATION
+                    INDISPONIBLE
                 </div>
             </div>
         @endif
@@ -144,7 +144,7 @@
                data-loueur-id="{{ $loueur?->id }}"
                class="flex items-center justify-center gap-2 h-12 bg-gray-500 text-white text-sm font-bold rounded w-full cursor-default">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                Actuellement en location
+                Indisponible
             </a>
         @else
             <a href="{{ route('vehicles.show', $vehicle->slug) }}"

@@ -276,9 +276,9 @@
                         <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 text-center">
                             <div class="flex items-center justify-center gap-2 text-blue-700 font-bold mb-2">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                                Actuellement en location
+                                Indisponible
                             </div>
-                            <p class="text-sm text-blue-600">Ce véhicule est en cours de location. Revenez bientôt !</p>
+                            <p class="text-sm text-blue-600">Ce véhicule est actuellement indisponible. Revenez bientôt !</p>
                         </div>
                     @else
                         <a href="{{ route('booking.create', $vehicle->slug) }}"
