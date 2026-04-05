@@ -131,15 +131,10 @@
                         <a href="https://t.me/share/url?url={{ urlencode($shareUrl) }}&text={{ urlencode($shareText) }}" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-sky-50 text-gray-700 text-sm transition">
                             <span class="text-lg">✈️</span> Telegram
                         </a>
-                        <a href="https://www.instagram.com/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-pink-50 text-gray-700 text-sm transition">
-                            <span class="text-lg">📷</span> Instagram
-                        </a>
-                        <a href="https://www.snapchat.com/share?url={{ urlencode($shareUrl) }}" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-yellow-50 text-gray-700 text-sm transition">
-                            <span class="text-lg">👻</span> Snapchat
-                        </a>
-                        <a href="https://www.tiktok.com/" target="_blank" class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-50 text-gray-700 text-sm transition">
-                            <span class="text-lg">🎵</span> TikTok
-                        </a>
+                        <button type="button" x-on:click="if(navigator.share){navigator.share({title:'{{ addslashes($vehicle->full_name) }}',text:'{{ addslashes($shareText) }}',url:'{{ $shareUrl }}'})}else{window.open('https://www.facebook.com/sharer/sharer.php?u={{ urlencode($shareUrl) }}')}"
+                                class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-purple-50 text-gray-700 text-sm transition w-full text-left">
+                            <span class="text-lg">📲</span> Autres apps
+                        </button>
                         <button type="button" x-on:click="navigator.clipboard.writeText('{{ $shareUrl }}'); $el.textContent = 'Copié !'; setTimeout(() => $el.innerHTML = '<span class=\'text-lg\'>🔗</span> Copier le lien', 2000)"
                                 class="flex items-center gap-3 px-3 py-2 rounded-lg hover:bg-gray-100 text-gray-700 text-sm transition w-full text-left">
                             <span class="text-lg">🔗</span> Copier le lien
