@@ -47,13 +47,39 @@ class VehicleTemplateResource extends Resource
                     ->label('Marque')
                     ->options(Brand::orderBy('name')->pluck('name', 'id'))
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->live(),
 
-                Forms\Components\TextInput::make('model_name')
+                Forms\Components\Select::make('model_name')
                     ->label('Modèle')
                     ->required()
-                    ->placeholder('Clio, Tucson, Golf...')
-                    ->maxLength(255),
+                    ->searchable()
+                    ->options(function (Forms\Get $get) {
+                        $brandId = $get('brand_id');
+                        if (!$brandId) return [];
+                        return \App\Models\VehicleModel::where('brand_id', $brandId)
+                            ->where('is_active', true)
+                            ->orderBy('name')
+                            ->pluck('name', 'name')
+                            ->toArray();
+                    })
+                    ->createOptionForm([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Nom du modèle')
+                            ->required()
+                            ->maxLength(255),
+                    ])
+                    ->createOptionUsing(function (array $data, Forms\Get $get): string {
+                        $brandId = $get('brand_id');
+                        if ($brandId) {
+                            \App\Models\VehicleModel::firstOrCreate(
+                                ['brand_id' => $brandId, 'name' => $data['name']],
+                                ['is_active' => true]
+                            );
+                        }
+                        return $data['name'];
+                    })
+                    ->createOptionModalHeading('Ajouter un modèle'),
 
                 Forms\Components\Select::make('color')
                     ->label('Couleur')
