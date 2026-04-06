@@ -136,6 +136,20 @@ Route::middleware(['auth'])->prefix('boost')->group(function () {
 Route::post('/webhook/paypal', [\App\Http\Controllers\BoostPaymentController::class, 'paypalWebhook'])
     ->name('boost.paypal.webhook');
 
+// Stripe Connect (loueur onboarding)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/stripe/onboard', [\App\Http\Controllers\StripeConnectController::class, 'onboard'])->name('stripe.onboard');
+    Route::get('/stripe/onboard/return', [\App\Http\Controllers\StripeConnectController::class, 'onboardReturn'])->name('stripe.onboard.return');
+    Route::get('/stripe/dashboard', [\App\Http\Controllers\StripeConnectController::class, 'dashboard'])->name('stripe.dashboard');
+});
+
+// Stripe Payment (client checkout)
+Route::post('/paiement/{reference}', [\App\Http\Controllers\StripePaymentController::class, 'checkout'])->name('stripe.payment.checkout');
+Route::get('/paiement/{reference}/success', [\App\Http\Controllers\StripePaymentController::class, 'success'])->name('stripe.payment.success');
+
+// Stripe Webhook (no auth)
+Route::post('/webhook/stripe', [\App\Http\Controllers\StripePaymentController::class, 'webhook'])->name('stripe.webhook');
+
 // Transferts / Taxi
 Route::get('/transferts', [TransferController::class, 'search'])->name('transfers.search');
 Route::post('/transferts/reserver', [TransferController::class, 'book'])->name('transfers.book');

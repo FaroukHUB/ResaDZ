@@ -45,6 +45,8 @@ class Loueur extends Model
         'tiktok',
         'payment_methods',
         'paypal_email',
+        'stripe_account_id',
+        'stripe_onboarding_complete',
         'iban',
         'wise_email',
         'baridimob_rip',

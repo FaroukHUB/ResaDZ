@@ -215,6 +215,23 @@ Chaque section a une bordure colorée à gauche pour s'y retrouver.
 - Sur la page de connexion, clique "Mot de passe oublié ?"
 - Entre ton email → tu recevras un lien de réinitialisation par email
 
+## PAIEMENT EN LIGNE (STRIPE CONNECT)
+- Va dans Finances → Paiement en ligne
+- Clique "Connecter mon compte Stripe" → tu es redirigé vers Stripe
+- Stripe te demande : email, téléphone, pièce d'identité, IBAN (compte EUR)
+- Un compte Wise, Revolut ou PayPal avec IBAN marche aussi
+- Après vérification (quelques minutes à 24h), tes clients peuvent payer en ligne
+- L'argent arrive directement sur TON compte bancaire (pas celui de ResaDZ)
+- Virements automatiques sous 2-7 jours ouvrés
+
+## COMMENT ÇA MARCHE POUR LES PAIEMENTS
+- Le client peut payer par : CB (Visa, Mastercard) ou PayPal
+- Paiement de l'acompte : 0% commission ResaDZ, tu reçois 100%
+- Paiement total : la commission ResaDZ (8% ou 6%) est prélevée automatiquement
+- Frais Stripe : environ 1,5% + 0,25€ par transaction (en plus de la commission)
+- Le client peut toujours payer en espèces s'il préfère (comme avant)
+- Tu peux voir tes paiements dans ton dashboard Stripe (bouton dans Finances → Paiement en ligne)
+
 ## PROBLÈMES FRÉQUENTS
 - "Je ne vois pas mon véhicule sur le site" → Vérifie statut = Disponible ET is_active activé
 - "Le client ne peut pas réserver" → Vérifie que le statut n'est pas Réservé ou Indisponible
@@ -222,6 +239,8 @@ Chaque section a une bordure colorée à gauche pour s'y retrouver.
 - "Mon acompte n'est pas configuré" → Configuration → Acomptes → mets le pourcentage et les méthodes
 - "Le visuel ne s'affiche pas" → Vérifie que la marque, le modèle ET la couleur correspondent exactement au template
 - "Je ne peux pas créer de véhicule" → Remplis tous les champs obligatoires (marque, modèle, année, transmission, carburant, couleur, places, portes, bagages, prix)
+- "Stripe ne marche pas" → Va dans Finances → Paiement en ligne → vérifie que ton compte est connecté et vérifié
+- "Le client ne peut pas payer en ligne" → Ton compte Stripe doit être connecté ET vérifié pour que les boutons CB/PayPal apparaissent
 KB;
     }
 

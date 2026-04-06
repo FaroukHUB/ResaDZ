@@ -44,8 +44,14 @@ return [
     'paypal' => [
         'client_id' => env('PAYPAL_CLIENT_ID'),
         'client_secret' => env('PAYPAL_CLIENT_SECRET'),
-        'mode' => env('PAYPAL_MODE', 'sandbox'), // 'sandbox' or 'live'
-        'dzd_to_usd_rate' => env('DZD_TO_USD_RATE', 0.0074), // Approximate exchange rate
+        'mode' => env('PAYPAL_MODE', 'sandbox'),
+        'dzd_to_usd_rate' => env('DZD_TO_USD_RATE', 0.0074),
+    ],
+
+    'stripe' => [
+        'key' => env('STRIPE_KEY'),
+        'secret' => env('STRIPE_SECRET'),
+        'webhook_secret' => env('STRIPE_WEBHOOK_SECRET'),
     ],
 
     'webpush' => [
