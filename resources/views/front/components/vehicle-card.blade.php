@@ -54,8 +54,10 @@
 
         {{-- Special Offer Badge --}}
         @if($vehicle->activeOffer)
-            <div class="absolute top-3 right-3 bg-gradient-to-r from-red-500 to-pink-500 px-3 py-1 rounded animate-pulse">
-                <span class="text-[10px] font-black text-white uppercase tracking-wider">{{ $vehicle->activeOffer->badge_text }}</span>
+            <div class="absolute top-3 right-3 z-10" style="animation: offerBounce 2s ease-in-out infinite;">
+                <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 6px 14px; border-radius: 8px; box-shadow: 0 4px 15px rgba(34,197,94,0.5);">
+                    <span style="color: white; font-size: 13px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">{{ $vehicle->activeOffer->badge_text }}</span>
+                </div>
             </div>
         @endif
 

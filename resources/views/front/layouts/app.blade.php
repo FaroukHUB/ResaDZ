@@ -77,6 +77,15 @@
 
     @yield('head')
 
+    <style>
+    @keyframes offerBounce {
+        0%, 100% { transform: translateY(0) scale(1); }
+        25% { transform: translateY(-4px) scale(1.05); }
+        50% { transform: translateY(0) scale(1); }
+        75% { transform: translateY(-2px) scale(1.02); }
+    }
+    </style>
+
     {{-- Meta Pixel (Facebook) --}}
     @php $fbPixelId = \App\Models\Setting::get('facebook_pixel_id', ''); @endphp
     @if($fbPixelId)
