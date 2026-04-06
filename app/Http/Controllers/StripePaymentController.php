@@ -122,31 +122,72 @@ class StripePaymentController extends Controller
     {
         $booking = Booking::where('reference', $reference)->firstOrFail();
         $type = $request->get('type', 'advance');
+        $booking->load(['vehicle', 'loueur']);
 
-        if ($type === 'advance') {
+        $companyName = Setting::get('company_name', 'ResaDZ');
+        $isAdvance = $type === 'advance';
+
+        if ($isAdvance) {
             $booking->update([
                 'advance_status' => 'paid',
                 'advance_paid_at' => now(),
                 'advance_payment_method' => 'stripe',
+                'status' => 'confirmed',
             ]);
-            $message = 'Acompte payé avec succès ! Le loueur a été notifié.';
+            $amount = number_format($booking->advance_amount_eur ?: $booking->advance_amount * 0.0037, 2) . ' €';
+            $message = 'Acompte payé avec succès ! Votre réservation est confirmée.';
         } else {
             $booking->update([
                 'payment_status' => 'paid',
                 'payment_method' => 'stripe',
                 'amount_paid' => $booking->total_price,
                 'amount_remaining' => 0,
+                'status' => 'confirmed',
             ]);
-            $message = 'Paiement total effectué ! Le loueur a été notifié.';
+            $amount = number_format($booking->total_price_eur ?: $booking->total_price * 0.0037, 2) . ' €';
+            $message = 'Paiement total effectué ! Votre réservation est confirmée.';
         }
+
+        $totalEur = number_format($booking->total_price_eur ?: $booking->total_price * 0.0037, 2) . ' €';
+        $advanceEur = number_format($booking->advance_amount_eur ?: ($booking->advance_amount ?? 0) * 0.0037, 2) . ' €';
+        $remainingEur = number_format(($booking->total_price_eur ?: $booking->total_price * 0.0037) - ($booking->advance_amount_eur ?: ($booking->advance_amount ?? 0) * 0.0037), 2) . ' €';
 
         // Notify loueur
         try {
             if ($booking->loueur) {
-                $booking->loueur->notify(new \App\Notifications\PaymentReceivedNotification($booking));
+                $booking->loueur->notify(new \App\Notifications\PaymentReceivedNotification(
+                    $booking,
+                    $isAdvance ? 'advance' : 'final',
+                    (float) ($isAdvance ? ($booking->advance_amount_eur ?: $booking->advance_amount) : ($booking->total_price_eur ?: $booking->total_price)),
+                    'EUR'
+                ));
             }
         } catch (\Exception $e) {
-            Log::warning('Payment notification failed: ' . $e->getMessage());
+            Log::warning('Loueur payment notification failed: ' . $e->getMessage());
+        }
+
+        // Send confirmation email to client
+        try {
+            if ($booking->client_email) {
+                \Illuminate\Support\Facades\Mail::send('emails.payment-confirmed-client', [
+                    'companyName' => $companyName,
+                    'clientName' => $booking->client_name,
+                    'paymentLabel' => $isAdvance ? 'Acompte' : 'Paiement total',
+                    'amount' => $amount,
+                    'reference' => $booking->reference,
+                    'vehicleName' => $booking->vehicle->full_name ?? '',
+                    'dates' => ($booking->start_date ? $booking->start_date->format('d/m/Y') : '') . ' au ' . ($booking->end_date ? $booking->end_date->format('d/m/Y') : ''),
+                    'totalPrice' => $totalEur,
+                    'loueurName' => $booking->loueur->company_name ?? '',
+                    'isAdvance' => $isAdvance,
+                    'remainingAmount' => $remainingEur,
+                ], function ($mail) use ($booking, $companyName, $isAdvance) {
+                    $mail->to($booking->client_email)
+                        ->subject(($isAdvance ? 'Acompte confirmé' : 'Paiement confirmé') . ' - Réservation ' . $booking->reference . ' - ' . $companyName);
+                });
+            }
+        } catch (\Exception $e) {
+            Log::warning('Client payment email failed: ' . $e->getMessage());
         }
 
         return redirect()->route('booking.confirmation', $booking->reference)
@@ -206,6 +247,7 @@ class StripePaymentController extends Controller
                 'advance_status' => 'paid',
                 'advance_paid_at' => now(),
                 'advance_payment_method' => 'stripe',
+                'status' => 'confirmed',
             ]);
         } else {
             $booking->update([
@@ -213,6 +255,7 @@ class StripePaymentController extends Controller
                 'payment_method' => 'stripe',
                 'amount_paid' => $booking->total_price,
                 'amount_remaining' => 0,
+                'status' => 'confirmed',
             ]);
         }
 
