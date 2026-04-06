@@ -328,7 +328,9 @@ class Vehicle extends Model
             $badges[] = ['icon' => 'check', 'text' => 'Assurance incluse', 'color' => 'green'];
         }
         if (!empty($config['badge_delivery'])) {
-            $badges[] = ['icon' => 'truck', 'text' => 'Livraison offerte', 'color' => 'blue'];
+            $minDays = $config['free_delivery_min_days'] ?? null;
+            $text = $minDays ? "Livraison offerte à partir de {$minDays} jours" : 'Livraison offerte';
+            $badges[] = ['icon' => 'truck', 'text' => $text, 'color' => 'blue'];
         }
         if (!empty($config['badge_degressive'])) {
             $badges[] = ['icon' => 'arrow-down', 'text' => 'Prix dégressif selon la durée', 'color' => 'amber'];

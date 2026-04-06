@@ -611,7 +611,16 @@ class VehicleResource extends Resource
                                     ->helperText('Le véhicule est assuré tous risques'),
                                 Forms\Components\Toggle::make('vehicle_badges.badge_delivery')
                                     ->label('Livraison offerte')
+                                    ->live()
                                     ->helperText('Vous livrez le véhicule gratuitement'),
+                                Forms\Components\TextInput::make('vehicle_badges.free_delivery_min_days')
+                                    ->label('À partir de combien de jours ?')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->maxValue(30)
+                                    ->placeholder('Ex: 3')
+                                    ->visible(fn (Forms\Get $get) => $get('vehicle_badges.badge_delivery'))
+                                    ->helperText('Nombre minimum de jours de location pour la livraison gratuite'),
                                 Forms\Components\Toggle::make('vehicle_badges.badge_degressive')
                                     ->label('Prix dégressif selon la durée')
                                     ->helperText('Tarifs réduits pour les longues durées'),
