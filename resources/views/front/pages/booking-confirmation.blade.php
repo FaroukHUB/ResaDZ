@@ -154,7 +154,7 @@
                                         onmouseover="this.style.background='#f8f7ff'" onmouseout="this.style.background='white'">
                                     <div style="text-align: left; flex: 1;">
                                         <p style="font-weight: 700; color: #1e293b; margin: 0; font-size: 15px;">Payer l'acompte</p>
-                                        <p style="color: #6b7280; font-size: 13px; margin: 2px 0 0 0;">Aucune commission — 100% va au loueur</p>
+                                        <p style="color: #6b7280; font-size: 13px; margin: 2px 0 0 0;">Paiement sécurisé par CB ou PayPal</p>
                                     </div>
                                     <div style="text-align: right;">
                                         <p style="font-weight: 800; color: #635BFF; font-size: 20px; margin: 0;">{{ number_format($advanceEur, 2) }} €</p>
