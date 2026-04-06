@@ -34,6 +34,69 @@
                 </div>
             </div>
 
+            {{-- Payment mode selection --}}
+            <div style="background: white; border: 1px solid #e5e7eb; border-radius: 16px; padding: 32px;">
+                <h3 style="font-size: 20px; font-weight: 700; color: #111827; margin: 0 0 8px 0;">Mode de paiement en ligne</h3>
+                <p style="color: #6b7280; font-size: 14px; margin: 0 0 20px 0;">Choisissez ce que vos clients peuvent payer en ligne.</p>
+
+                <div class="space-y-3">
+                    <label style="display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 2px solid {{ $this->onlinePaymentMode === 'advance_only' ? '#635BFF' : '#e5e7eb' }}; border-radius: 12px; cursor: pointer; background: {{ $this->onlinePaymentMode === 'advance_only' ? '#f0f4ff' : 'white' }};"
+                           wire:click="$set('onlinePaymentMode', 'advance_only')">
+                        <input type="radio" wire:model="onlinePaymentMode" value="advance_only" style="margin-top: 4px; accent-color: #635BFF;">
+                        <div>
+                            <p style="font-weight: 700; color: #111827; margin: 0; font-size: 15px;">Acompte en ligne uniquement</p>
+                            <p style="color: #6b7280; font-size: 13px; margin: 4px 0 0 0;">Le client paie l'acompte par CB en ligne. Le reste est réglé en espèces à la remise du véhicule. <strong>Aucune commission ResaDZ</strong> n'est prélevée sur l'acompte — vous recevez 100%.</p>
+                        </div>
+                    </label>
+
+                    <label style="display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 2px solid {{ $this->onlinePaymentMode === 'advance_and_full' ? '#635BFF' : '#e5e7eb' }}; border-radius: 12px; cursor: pointer; background: {{ $this->onlinePaymentMode === 'advance_and_full' ? '#f0f4ff' : 'white' }};"
+                           wire:click="$set('onlinePaymentMode', 'advance_and_full')">
+                        <input type="radio" wire:model="onlinePaymentMode" value="advance_and_full" style="margin-top: 4px; accent-color: #635BFF;">
+                        <div>
+                            <p style="font-weight: 700; color: #111827; margin: 0; font-size: 15px;">Acompte + totalité en ligne</p>
+                            <p style="color: #6b7280; font-size: 13px; margin: 4px 0 0 0;">Le client peut payer l'acompte OU la totalité par CB en ligne. <strong>Si le client paie la totalité</strong>, la commission ResaDZ (8% ou 6%) est prélevée automatiquement — vous recevez le reste directement.</p>
+                        </div>
+                    </label>
+
+                    <label style="display: flex; align-items: flex-start; gap: 12px; padding: 16px; border: 2px solid {{ $this->onlinePaymentMode === 'disabled' ? '#635BFF' : '#e5e7eb' }}; border-radius: 12px; cursor: pointer; background: {{ $this->onlinePaymentMode === 'disabled' ? '#f0f4ff' : 'white' }};"
+                           wire:click="$set('onlinePaymentMode', 'disabled')">
+                        <input type="radio" wire:model="onlinePaymentMode" value="disabled" style="margin-top: 4px; accent-color: #635BFF;">
+                        <div>
+                            <p style="font-weight: 700; color: #111827; margin: 0; font-size: 15px;">Désactivé</p>
+                            <p style="color: #6b7280; font-size: 13px; margin: 4px 0 0 0;">Pas de paiement en ligne. Tout se règle en espèces à la remise du véhicule.</p>
+                        </div>
+                    </label>
+                </div>
+
+                <button wire:click="updatePaymentMode" style="margin-top: 16px; padding: 12px 24px; background: #635BFF; color: white; border: none; border-radius: 10px; font-weight: 600; font-size: 14px; cursor: pointer;">
+                    Enregistrer mes préférences
+                </button>
+            </div>
+
+            {{-- Warning calendrier --}}
+            <div style="background: #FEF3C7; border: 2px solid #F59E0B; border-radius: 16px; padding: 24px;">
+                <div class="flex items-start gap-3">
+                    <span style="font-size: 28px; flex-shrink: 0;">⚠️</span>
+                    <div>
+                        <h3 style="font-weight: 700; color: #92400E; font-size: 16px; margin: 0 0 8px 0;">Important : tenez votre calendrier à jour !</h3>
+                        <p style="color: #92400E; font-size: 14px; margin: 0 0 8px 0;">
+                            Quand le paiement en ligne est activé, <strong>les réservations sont automatiquement confirmées</strong> dès que le client paie. Il n'y a pas de validation manuelle.
+                        </p>
+                        <p style="color: #92400E; font-size: 14px; margin: 0 0 8px 0;">
+                            Pour éviter les conflits de réservation :
+                        </p>
+                        <ul style="color: #92400E; font-size: 14px; margin: 0; padding-left: 20px;">
+                            <li style="margin-bottom: 4px;"><strong>Bloquez les dates</strong> où votre véhicule n'est pas disponible dans le Calendrier</li>
+                            <li style="margin-bottom: 4px;"><strong>Mettez à jour le statut</strong> de vos véhicules (Disponible / Indisponible)</li>
+                            <li>Si un véhicule est en location, passez-le en <strong>"En location / Réservé"</strong></li>
+                        </ul>
+                        <p style="color: #92400E; font-size: 13px; margin: 12px 0 0 0; font-style: italic;">
+                            Un client ne pourra pas réserver un véhicule si les dates sont déjà bloquées ou si une autre réservation confirmée existe pour la même période.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
         @elseif($hasAccount)
             {{-- Account created but onboarding incomplete --}}
             <div style="background: #fefce8; border: 2px solid #eab308; border-radius: 16px; padding: 24px;">

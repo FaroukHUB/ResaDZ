@@ -127,6 +127,9 @@
             @php
                 $loueur = $booking->vehicle?->loueur;
                 $canPayOnline = $loueur && $loueur->stripe_account_id && $loueur->stripe_onboarding_complete;
+                $paymentMode = $loueur ? $loueur->getSetting('online_payment_mode', 'advance_only') : 'disabled';
+                $canPayOnline = $canPayOnline && $paymentMode !== 'disabled';
+                $canPayFull = $paymentMode === 'advance_and_full';
                 $advancePaid = $booking->advance_status === 'paid';
                 $fullPaid = $booking->payment_status === 'paid';
                 $hasAdvance = $booking->advance_amount > 0;
@@ -169,7 +172,7 @@
                         @endif
 
                         {{-- Pay full amount --}}
-                        @if(!$fullPaid)
+                        @if(!$fullPaid && $canPayFull)
                             <form action="{{ route('stripe.payment.checkout', $booking->reference) }}" method="POST">
                                 @csrf
                                 <input type="hidden" name="payment_type" value="full">

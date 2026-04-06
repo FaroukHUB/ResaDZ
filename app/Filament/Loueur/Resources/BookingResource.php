@@ -574,8 +574,21 @@ class BookingResource extends Resource
                         'expired' => 'Expirée',
                         default => $state,
                     }),
+                Tables\Columns\BadgeColumn::make('advance_status')
+                    ->label('Acompte')
+                    ->colors([
+                        'warning' => 'pending',
+                        'success' => 'paid',
+                        'danger' => 'refunded',
+                    ])
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'pending' => 'En attente',
+                        'paid' => 'Payé ✓',
+                        'refunded' => 'Remboursé',
+                        default => $state ?? '-',
+                    }),
                 Tables\Columns\BadgeColumn::make('payment_status')
-                    ->label('Paiement')
+                    ->label('Paiement total')
                     ->colors([
                         'warning' => 'pending',
                         'info' => 'partial',
@@ -585,10 +598,19 @@ class BookingResource extends Resource
                     ->formatStateUsing(fn ($state) => match ($state) {
                         'pending' => 'En attente',
                         'partial' => 'Partiel',
-                        'paid' => 'Payé',
+                        'paid' => 'Payé ✓',
                         'refunded' => 'Remboursé',
                         default => $state ?? '-',
                     }),
+                Tables\Columns\TextColumn::make('advance_payment_method')
+                    ->label('Mode')
+                    ->formatStateUsing(fn ($state) => match ($state) {
+                        'stripe' => '💳 CB en ligne',
+                        'cash' => '💵 Espèces',
+                        'paypal' => '🅿️ PayPal',
+                        default => $state ?: '-',
+                    })
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')

@@ -22,6 +22,15 @@ class StripePaymentController extends Controller
             return back()->with('error', 'Le loueur n\'a pas encore configuré le paiement en ligne.');
         }
 
+        // Check loueur payment mode preference
+        $paymentMode = $loueur->getSetting('online_payment_mode', 'advance_only');
+        if ($paymentMode === 'disabled') {
+            return back()->with('error', 'Le paiement en ligne n\'est pas activé pour ce loueur.');
+        }
+        if ($request->payment_type === 'full' && $paymentMode === 'advance_only') {
+            return back()->with('error', 'Ce loueur accepte uniquement le paiement de l\'acompte en ligne.');
+        }
+
         // Anti-doublon : vérifier qu'il n'y a pas déjà une réservation payée pour ces dates
         $conflictingBooking = Booking::where('vehicle_id', $booking->vehicle_id)
             ->where('id', '!=', $booking->id)
