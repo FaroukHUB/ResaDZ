@@ -22,6 +22,24 @@ class StripePaymentController extends Controller
             return back()->with('error', 'Le loueur n\'a pas encore configuré le paiement en ligne.');
         }
 
+        // Anti-doublon : vérifier qu'il n'y a pas déjà une réservation payée pour ces dates
+        $conflictingBooking = Booking::where('vehicle_id', $booking->vehicle_id)
+            ->where('id', '!=', $booking->id)
+            ->whereIn('status', ['confirmed', 'active'])
+            ->where(function ($q) use ($booking) {
+                $q->whereBetween('start_date', [$booking->start_date, $booking->end_date])
+                  ->orWhereBetween('end_date', [$booking->start_date, $booking->end_date])
+                  ->orWhere(function ($q2) use ($booking) {
+                      $q2->where('start_date', '<=', $booking->start_date)
+                          ->where('end_date', '>=', $booking->end_date);
+                  });
+            })
+            ->exists();
+
+        if ($conflictingBooking) {
+            return back()->with('error', 'Ce véhicule a déjà une réservation confirmée pour ces dates. Veuillez contacter le loueur.');
+        }
+
         $request->validate([
             'payment_type' => 'required|in:advance,full',
         ]);

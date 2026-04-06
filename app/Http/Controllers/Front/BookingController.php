@@ -351,6 +351,23 @@ class BookingController extends Controller
             }
         }
 
+        // Anti-doublon : vérifier qu'il n'y a pas déjà une réservation confirmée pour ces dates
+        $conflicting = Booking::where('vehicle_id', $vehicle->id)
+            ->whereIn('status', ['confirmed', 'active'])
+            ->where(function ($q) use ($startDate, $endDate) {
+                $q->whereBetween('start_date', [$startDate, $endDate])
+                  ->orWhereBetween('end_date', [$startDate, $endDate])
+                  ->orWhere(function ($q2) use ($startDate, $endDate) {
+                      $q2->where('start_date', '<=', $startDate)
+                          ->where('end_date', '>=', $endDate);
+                  });
+            })
+            ->exists();
+
+        if ($conflicting) {
+            return back()->withInput()->withErrors(['dates' => 'Ce véhicule est déjà réservé pour ces dates. Veuillez choisir d\'autres dates.']);
+        }
+
         // Créer la réservation
         $booking = Booking::create([
             'loueur_id' => $vehicle->loueur_id,
