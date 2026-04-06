@@ -72,7 +72,7 @@ class StripePaymentController extends Controller
 
         try {
             $sessionParams = [
-                'payment_method_types' => ['card', 'paypal'],
+                'payment_method_types' => ['card'],
                 'mode' => 'payment',
                 'line_items' => [[
                     'price_data' => [
