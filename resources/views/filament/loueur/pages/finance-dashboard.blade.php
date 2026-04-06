@@ -246,15 +246,6 @@
                 </div>
             </div>
 
-            {{-- Revenue Chart (30 days) --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <x-heroicon-o-chart-bar class="w-5 h-5 text-gray-500" />
-                    Revenus des 30 derniers jours
-                </h3>
-                <canvas id="chartTaxiRevenue" height="180"></canvas>
-            </div>
-
             {{-- Recent Courses (Transfers + Deliveries) --}}
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {{-- Recent Transfers --}}
@@ -529,15 +520,6 @@
             </div>
             @endif
 
-            {{-- Revenue Chart (30 days) --}}
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
-                <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <x-heroicon-o-chart-bar class="w-5 h-5 text-gray-500" />
-                    Revenus vs Depenses (30 derniers jours)
-                </h3>
-                <canvas id="chartLoueurRevenue" height="180"></canvas>
-            </div>
-
             {{-- Recent Transactions --}}
             <div class="card-modern overflow-hidden p-0">
                 <div class="px-6 py-4 bg-gradient-to-r from-emerald-500 to-teal-600 flex justify-between items-center">
@@ -591,103 +573,4 @@
         @endif
     </div>
 
-    {{-- Chart.js --}}
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
-    <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const isDark = document.documentElement.classList.contains('dark');
-        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.06)';
-        const textColor = isDark ? '#9ca3af' : '#6b7280';
-        Chart.defaults.color = textColor;
-        Chart.defaults.font.family = 'system-ui, sans-serif';
-
-        @if($isTaxi ?? false)
-            // Taxi: Transfers vs Deliveries
-            const taxiCanvas = document.getElementById('chartTaxiRevenue');
-            if (taxiCanvas) {
-                new Chart(taxiCanvas, {
-                    type: 'bar',
-                    data: {
-                        labels: @json($chartLabels ?? []),
-                        datasets: [
-                            {
-                                label: 'Transferts',
-                                data: @json($chartTransfers ?? []),
-                                backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                                borderRadius: 4,
-                                borderSkipped: false,
-                            },
-                            {
-                                label: 'Livraisons',
-                                data: @json($chartDeliveries ?? []),
-                                backgroundColor: 'rgba(245, 158, 11, 0.7)',
-                                borderRadius: 4,
-                                borderSkipped: false,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
-                            tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw.toLocaleString('fr-FR') + ' DA' } }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { callback: v => v.toLocaleString('fr-FR') + ' DA' } },
-                            x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
-                        }
-                    }
-                });
-            }
-        @else
-            // Loueur: Income vs Expenses
-            const loueurCanvas = document.getElementById('chartLoueurRevenue');
-            if (loueurCanvas) {
-                new Chart(loueurCanvas, {
-                    type: 'line',
-                    data: {
-                        labels: @json($chartLabels ?? []),
-                        datasets: [
-                            {
-                                label: 'Revenus',
-                                data: @json($chartIncome ?? []),
-                                borderColor: '#22c55e',
-                                backgroundColor: 'rgba(34, 197, 94, 0.1)',
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 3,
-                                pointHoverRadius: 6,
-                                borderWidth: 2.5,
-                            },
-                            {
-                                label: 'Depenses',
-                                data: @json($chartExpenses ?? []),
-                                borderColor: '#ef4444',
-                                backgroundColor: 'rgba(239, 68, 68, 0.08)',
-                                fill: true,
-                                tension: 0.4,
-                                pointRadius: 3,
-                                pointHoverRadius: 6,
-                                borderWidth: 2.5,
-                            }
-                        ]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: { position: 'top', labels: { usePointStyle: true, padding: 16 } },
-                            tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw.toLocaleString('fr-FR') + ' DA' } }
-                        },
-                        scales: {
-                            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { callback: v => v.toLocaleString('fr-FR') + ' DA' } },
-                            x: { grid: { display: false }, ticks: { maxTicksLimit: 10 } }
-                        }
-                    }
-                });
-            }
-        @endif
-    });
-    </script>
 </x-filament-panels::page>

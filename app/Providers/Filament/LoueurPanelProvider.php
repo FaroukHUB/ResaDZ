@@ -95,10 +95,6 @@ class LoueurPanelProvider extends PanelProvider
                     ->collapsible(),
             ])
             ->navigationItems([
-                \Filament\Navigation\NavigationItem::make('Guide d\'utilisation')
-                    ->icon('heroicon-o-book-open')
-                    ->url('/guide', shouldOpenInNewTab: true)
-                    ->sort(99),
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_START,
