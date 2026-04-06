@@ -328,48 +328,18 @@
                         </div>
                         @endif
 
-                        <!-- Choix méthode de paiement acompte -->
-                        @if(!empty($advancePaymentMethods))
-                        <div id="advancePaymentSection" class="border-t border-gray-200 pt-4 mt-2 hidden">
-                            <p class="font-semibold text-gray-900 text-sm mb-2">Comment souhaitez-vous payer l'acompte ?</p>
-                            <p class="text-xs text-gray-500 mb-3">Le délai de réservation dépend du mode de paiement choisi.</p>
-                            <input type="hidden" name="advance_payment_method" id="advance_payment_method" value="">
-                            <div class="space-y-2">
-                                @php
-                                    $methodLabels = [
-                                        'cash' => ['label' => 'Espèces (sur place)', 'icon' => 'M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z'],
-                                        'cib' => ['label' => 'CIB (carte bancaire)', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
-                                        'dahabia' => ['label' => 'Dahabia', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
-                                        'baridimob' => ['label' => 'BaridiMob', 'icon' => 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z'],
-                                        'paypal' => ['label' => 'PayPal', 'icon' => 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z'],
-                                        'bank_transfer' => ['label' => 'Virement bancaire', 'icon' => 'M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z'],
-                                    ];
-                                @endphp
-                                @foreach($advancePaymentMethods as $apm)
-                                    @php $method = $apm['method'] ?? ''; $timer = $apm['timer_hours'] ?? 24; $info = $methodLabels[$method] ?? null; @endphp
-                                    @if($info)
-                                    <label class="advance-method-label flex items-center justify-between p-3 rounded-xl bg-gray-50 cursor-pointer transition border-2 border-transparent hover:border-amber-200 hover:bg-amber-50"
-                                           data-method="{{ $method }}" data-timer="{{ $timer }}">
-                                        <div class="flex items-center gap-3">
-                                            <input type="radio" name="advance_payment_method_radio" value="{{ $method }}"
-                                                   class="w-4 h-4 text-amber-600 focus:ring-amber-500 advance-method-radio">
-                                            <div>
-                                                <span class="font-medium text-gray-900 text-sm">{{ $info['label'] }}</span>
-                                                <p class="text-xs text-gray-500">Délai : {{ $timer }}h pour payer</p>
-                                            </div>
-                                        </div>
-                                        <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $info['icon'] }}"/></svg>
-                                    </label>
-                                    @endif
-                                @endforeach
-                            </div>
-                            <div id="advanceTimerInfo" class="hidden mt-3 bg-amber-50 border border-amber-200 rounded-lg p-3">
-                                <div class="flex items-start gap-2">
-                                    <svg class="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-                                    <p class="text-xs text-amber-800">
-                                        Vous aurez <strong id="timerDisplay">-</strong> heures pour régler l'acompte de <strong id="advanceAmountDisplay">-</strong><span id="advanceAmountEurDisplay" class="text-amber-600"></span>.
-                                        Passé ce délai, la réservation sera automatiquement annulée et le véhicule remis en disponibilité.
-                                    </p>
+                        <!-- Info paiement en ligne -->
+                        @if(!empty($advancePaymentMethods) || ($vehicle->loueur && $vehicle->loueur->stripe_onboarding_complete))
+                        <div class="border-t border-gray-200 pt-4 mt-2">
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <div class="flex items-start gap-3">
+                                    <svg class="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                                    <div>
+                                        <p class="font-semibold text-blue-900 text-sm">Paiement sécurisé disponible</p>
+                                        <p class="text-xs text-blue-700 mt-1">
+                                            Après validation de votre demande, vous pourrez régler l'acompte ou la totalité en ligne par <strong>carte bancaire</strong> (Visa, Mastercard). Vous pouvez aussi payer en espèces à la remise du véhicule.
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
