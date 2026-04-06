@@ -354,12 +354,12 @@ class BookingController extends Controller
         // Anti-doublon : vérifier qu'il n'y a pas déjà une réservation confirmée pour ces dates
         $conflicting = Booking::where('vehicle_id', $vehicle->id)
             ->whereIn('status', ['confirmed', 'active'])
-            ->where(function ($q) use ($startDate, $endDate) {
-                $q->whereBetween('start_date', [$startDate, $endDate])
-                  ->orWhereBetween('end_date', [$startDate, $endDate])
-                  ->orWhere(function ($q2) use ($startDate, $endDate) {
-                      $q2->where('start_date', '<=', $startDate)
-                          ->where('end_date', '>=', $endDate);
+            ->where(function ($q) use ($request) {
+                $q->whereBetween('start_date', [$request->start_date, $request->end_date])
+                  ->orWhereBetween('end_date', [$request->start_date, $request->end_date])
+                  ->orWhere(function ($q2) use ($request) {
+                      $q2->where('start_date', '<=', $request->start_date)
+                          ->where('end_date', '>=', $request->end_date);
                   });
             })
             ->exists();
