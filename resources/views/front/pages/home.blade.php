@@ -95,7 +95,7 @@
                                     @endif
                                 </{{ $index === 0 ? 'h1' : 'h2' }}>
                                 @if($slide->button_text && $slide->button_url)
-                                    <a href="{{ $slide->button_url }}" class="hidden sm:inline-flex mt-6 items-center px-6 py-3 bg-green-700 text-white font-bold rounded-lg hover:bg-green-600 transition">
+                                    <a href="{{ $slide->button_url }}" class="hidden sm:inline-flex mt-6 items-center px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-600 transition">
                                         {{ $slide->button_text }}
                                         <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                                     </a>
@@ -154,7 +154,7 @@
                                 <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme:dark">
                             </div>
                             <div>
-                                <button type="submit" class="w-full px-6 py-3.5 bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+                                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                                     Rechercher
                                 </button>
@@ -190,7 +190,7 @@
                     <label for="mobile-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
                     <input type="date" name="return_date" id="mobile-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
                 </div>
-                <button type="submit" class="w-full px-6 py-3.5 bg-green-700 text-white font-bold rounded-xl flex items-center justify-center gap-2">
+                <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
                     Rechercher
                 </button>
@@ -212,7 +212,7 @@
                     <p class="mt-2 text-gray-500 text-sm lg:text-base">{{ $homeContent['selection_subtitle'] ?? 'Les véhicules que nous recommandons' }}</p>
                 </div>
                 @if($selectedVehicles->count() > 8)
-                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold rounded-full transition">
+                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
                     Voir tout
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -237,7 +237,7 @@
             </div>
             @if($selectedVehicles->count() > 8)
             <div class="mt-8 text-center sm:hidden">
-                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold rounded-full transition">
+                <a href="{{ route('vehicles.index', ['selection' => 1]) }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
                     Voir tout
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -246,7 +246,7 @@
 
             {{-- Bouton voir tous les véhicules --}}
             <div class="mt-10 text-center">
-                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-green-700 hover:bg-green-800 text-white font-bold rounded-full transition shadow-lg shadow-green-600/20 text-lg">
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-full transition shadow-lg shadow-green-600/20 text-lg">
                     Voir tous nos véhicules
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -268,7 +268,7 @@
                     <h2 class="text-2xl lg:text-4xl font-black text-gray-900 tracking-tight">Ajoutés récemment</h2>
                     <p class="mt-2 text-gray-500 text-sm lg:text-base">Les derniers véhicules publiés par nos loueurs</p>
                 </div>
-                <a href="{{ route('vehicles.index') }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold rounded-full transition">
+                <a href="{{ route('vehicles.index') }}" class="hidden sm:flex items-center gap-2 px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
                     Voir tout
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -292,7 +292,7 @@
             </div>
 
             <div class="mt-8 text-center sm:hidden">
-                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold rounded-full transition">
+                <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
                     Voir tous les véhicules
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -456,7 +456,7 @@
 
             <!-- Bouton Voir tous nos partenaires -->
             <div class="text-center mt-10">
-                <a href="{{ route('loueurs.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition shadow-lg shadow-green-600/20">
+                <a href="{{ route('loueurs.index') }}" class="inline-flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-600 transition shadow-lg shadow-green-600/20">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
                     Voir tous nos partenaires
                 </a>
@@ -555,7 +555,7 @@
                     <h2 class="text-3xl md:text-4xl font-black text-gray-900">Actualites</h2>
                     <p class="mt-2 text-gray-500">Promotions, guides et conseils pour votre location</p>
                 </div>
-                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 px-6 py-3 bg-green-700 hover:bg-green-800 text-white text-sm font-semibold rounded-full transition">
+                <a href="{{ route('blog.index') }}" class="hidden sm:inline-flex items-center gap-2 px-6 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-full transition">
                     Tout voir
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
@@ -568,7 +568,7 @@
             </div>
 
             <div class="mt-10 text-center sm:hidden">
-                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-8 py-3 bg-green-700 hover:bg-green-800 text-white text-sm font-bold rounded-full transition">
+                <a href="{{ route('blog.index') }}" class="inline-flex items-center gap-2 px-8 py-3 bg-green-600 hover:bg-green-700 text-white text-sm font-bold rounded-full transition">
                     Voir toutes les actualites
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
                 </a>
