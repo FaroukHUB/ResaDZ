@@ -23,8 +23,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>@yield('title', $siteName . ' - ' . $siteSlogan)</title>
-    <meta name="description" content="@yield('meta_description', $siteName . ', la marketplace de location de voitures en Algérie. Trouvez et réservez votre véhicule en quelques clics.')">
+    <title>@yield('title', $siteName . ' — Location de voitures entre particuliers en Algérie')</title>
+    <meta name="description" content="@yield('meta_description', 'ResaDZ, la première marketplace de location de voitures en Algérie. Comparez les prix, réservez en ligne et payez par CB. Loueurs vérifiés dans les 58 wilayas.')">
 
     <!-- SEO Meta Tags -->
     <meta name="robots" content="@yield('meta_robots', 'index, follow')">

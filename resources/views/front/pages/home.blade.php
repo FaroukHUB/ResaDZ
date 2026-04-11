@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
-@section('title', \App\Models\Setting::get('company_name', 'ResaDZ') . ' - ' . \App\Models\Setting::get('company_slogan', 'Location de véhicules en Algérie'))
-@section('meta_description', 'Marketplace de location de voitures en Algérie. Comparez et réservez auprès de loueurs vérifiés partout en Algérie.')
+@section('title', 'ResaDZ — Location de voitures entre particuliers en Algérie | Réservez en ligne')
+@section('meta_description', 'Louez une voiture en Algérie au meilleur prix. Comparez les offres de loueurs vérifiés dans les 58 wilayas, réservez en ligne et payez par carte bancaire. Location courte et longue durée.')
 
 @section('head')
 {{-- Swiper CSS - Chargement non-bloquant --}}
@@ -83,7 +83,7 @@
                     <div class="relative">
                         @foreach($heroSlides as $index => $slide)
                             <div class="hero-title transition-opacity duration-700 {{ $index === 0 ? 'opacity-100' : 'opacity-0 absolute top-0 left-0' }}" data-index="{{ $index }}">
-                                <h1 class="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                                <{{ $index === 0 ? 'h1' : 'h2' }} class="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
                                     @if($slide->title)
                                         {{ $slide->title }}
                                         @if($slide->subtitle)
@@ -93,7 +93,7 @@
                                         Louez votre voiture
                                         <span class="block text-green-400">partout en Algérie</span>
                                     @endif
-                                </h1>
+                                </{{ $index === 0 ? 'h1' : 'h2' }}>
                                 @if($slide->button_text && $slide->button_url)
                                     <a href="{{ $slide->button_url }}" class="hidden sm:inline-flex mt-6 items-center px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition">
                                         {{ $slide->button_text }}

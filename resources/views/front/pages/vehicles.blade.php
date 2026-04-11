@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
-@section('title', 'Véhicules disponibles - ResaDZ')
-@section('meta_description', 'Parcourez tous les véhicules disponibles à la location en Algérie. Comparez les prix et réservez en ligne.')
+@section('title', 'Location de voitures en Algérie — Tous les véhicules disponibles | ResaDZ')
+@section('meta_description', 'Trouvez et louez une voiture en Algérie parmi notre sélection de véhicules vérifiés. Filtrez par ville, marque, prix et réservez en ligne. Paiement sécurisé par CB.')
 
 @section('head')
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
