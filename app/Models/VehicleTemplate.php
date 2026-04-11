@@ -2,11 +2,14 @@
 
 namespace App\Models;
 
+use App\Traits\HasWebpImages;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class VehicleTemplate extends Model
 {
+    use HasWebpImages;
+
     protected $fillable = [
         'brand_id',
         'model_name',
@@ -18,6 +21,11 @@ class VehicleTemplate extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
+
+    public function getWebpImageFields(): array
+    {
+        return ['image_path'];
+    }
 
     public function brand(): BelongsTo
     {
