@@ -86,6 +86,7 @@
                     <button
                         type="submit"
                         :disabled="loading"
+                        aria-label="{{ $buttonText }}"
                         class="px-6 py-3 text-white font-semibold rounded-lg transition disabled:opacity-50"
                         style="background-color: {{ $buttonColor }};"
                         onmouseover="this.style.backgroundColor='{{ $buttonHoverColor }}'"
