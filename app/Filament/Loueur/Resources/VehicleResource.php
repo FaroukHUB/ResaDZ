@@ -156,7 +156,7 @@ class VehicleResource extends Resource
                                 Forms\Components\Select::make('color')
                                     ->label('Couleur')
                                     ->required()
-                                    ->live(onBlur: true)
+                                    ->live()
                                     ->options([
                                         'noir' => 'Noir', 'blanc' => 'Blanc', 'gris' => 'Gris',
                                         'rouge' => 'Rouge', 'bleu' => 'Bleu', 'vert' => 'Vert',
