@@ -30,7 +30,7 @@
     <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative border-b border-neutral-800">
         <div class="aspect-[16/10] overflow-hidden">
             @if($vehicle->display_image)
-                <img src="{{ asset('storage/' . $vehicle->display_image) }}"
+                <img src="{{ asset('storage/' . \App\Services\ImageService::thumbnail($vehicle->display_image, 500, 312)) }}"
                      alt="{{ $vehicle->full_name }}"
                      class="w-full h-full object-cover"
                      loading="lazy"

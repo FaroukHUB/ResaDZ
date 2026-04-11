@@ -1,5 +1,5 @@
 {{-- Résabot Chatbot --}}
-<link rel="stylesheet" href="{{ asset('css/chatbot.css') }}">
+<link rel="stylesheet" href="{{ asset('css/chatbot.css') }}" media="print" onload="this.media='all'">
 
 <!-- Floating Action Button -->
 <button type="button" class="resabot-fab resabot-fab--idle" id="resabot-fab" aria-label="Ouvrir le chatbot Résabot">
