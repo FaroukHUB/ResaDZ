@@ -85,14 +85,27 @@ class AdminEmails extends Page
         ];
     }
 
-    public function selectTemplate(): void
+    public function updatedSelectedTemplate(): void
     {
         $templates = static::getTemplates();
         if (isset($templates[$this->selectedTemplate])) {
             $t = $templates[$this->selectedTemplate];
             $this->previewSubject = $t['subject'];
-            $this->previewBody = $t['body'];
+            $name = $this->getRecipientName($this->recipientType, $this->selectedLoueurId);
+            $this->previewBody = str_replace('{nom}', $name, $t['body']);
         }
+    }
+
+    public function updatedSelectedLoueurId(): void
+    {
+        if ($this->selectedTemplate && $this->selectedLoueurId) {
+            $this->updatedSelectedTemplate();
+        }
+    }
+
+    public function selectTemplate(): void
+    {
+        $this->updatedSelectedTemplate();
     }
 
     public function sendTemplate(): void
