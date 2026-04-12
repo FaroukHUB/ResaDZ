@@ -884,6 +884,48 @@
         </div>
     </section>
 
+    {{-- SEO Internal Links --}}
+    <section class="py-12 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <h2 class="text-xl font-bold text-gray-900 mb-6">Location de voiture par ville</h2>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+                <a href="/location-voiture-alger" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Alger
+                </a>
+                <a href="/location-voiture-aeroport-alger" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location aéroport Alger
+                </a>
+                <a href="/location-voiture-oran" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Oran
+                </a>
+                <a href="/location-voiture-constantine" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Constantine
+                </a>
+                <a href="/location-voiture-annaba" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Annaba
+                </a>
+                <a href="/location-voiture-boumerdes" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Boumerdès
+                </a>
+                <a href="/location-voiture-tizi-ouzou" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Tizi Ouzou
+                </a>
+                <a href="/location-voiture-bejaia" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Béjaïa
+                </a>
+                <a href="/location-voiture-setif" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Sétif
+                </a>
+                <a href="/location-voiture-blida" class="flex items-center gap-2 px-4 py-3 bg-white rounded-xl border border-gray-200 hover:border-green-300 hover:bg-green-50 transition text-sm font-medium text-gray-700">
+                    <span class="text-green-600">→</span> Location voiture Blida
+                </a>
+                <a href="{{ route('vehicles.index') }}" class="flex items-center gap-2 px-4 py-3 bg-green-600 rounded-xl text-white text-sm font-bold hover:bg-green-700 transition col-span-2">
+                    <span>🚗</span> Voir tous les véhicules disponibles
+                </a>
+            </div>
+        </div>
+    </section>
+
 @endsection
 
 @section('scripts')

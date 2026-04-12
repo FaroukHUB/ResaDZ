@@ -29,6 +29,13 @@ class SitemapController extends Controller
             'priority' => '0.8',
         ];
 
+        // Loueurs list page
+        $urls[] = [
+            'loc' => route('loueurs.index'),
+            'changefreq' => 'weekly',
+            'priority' => '0.8',
+        ];
+
         // Blog index page
         $urls[] = [
             'loc' => route('blog.index'),
@@ -38,7 +45,7 @@ class SitemapController extends Controller
 
         // Individual vehicle pages
         $vehicles = Vehicle::where('is_active', true)
-            ->where('status', 'available')
+            ->whereIn('status', ['available', 'reserved'])
             ->orderBy('updated_at', 'desc')
             ->get(['slug', 'updated_at']);
 
@@ -65,7 +72,7 @@ class SitemapController extends Controller
             ];
         }
 
-        // Loueur pages
+        // Loueur profile pages
         $loueurs = Loueur::where('is_active', true)
             ->where('is_suspended', false)
             ->orderBy('updated_at', 'desc')
@@ -80,17 +87,16 @@ class SitemapController extends Controller
             ];
         }
 
-        // Static pages
+        // Static pages (only pages that exist and work)
         $staticPages = [
             ['loc' => route('comment-ca-marche'), 'changefreq' => 'monthly', 'priority' => '0.7'],
-            ['loc' => url('/guide'), 'changefreq' => 'monthly', 'priority' => '0.6'],
             ['loc' => route('legal.mentions-legales'), 'changefreq' => 'yearly', 'priority' => '0.3'],
             ['loc' => route('legal.cgu'), 'changefreq' => 'yearly', 'priority' => '0.3'],
             ['loc' => route('legal.confidentialite'), 'changefreq' => 'yearly', 'priority' => '0.3'],
         ];
         $urls = array_merge($urls, $staticPages);
 
-        // SEO landing pages
+        // SEO landing pages (dedicated content)
         $seoPages = [
             ['loc' => url('/location-voiture-alger'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-aeroport-alger'), 'changefreq' => 'weekly', 'priority' => '0.9'],
@@ -100,16 +106,32 @@ class SitemapController extends Controller
         ];
         $urls = array_merge($urls, $seoPages);
 
-        // Vehicles by wilaya pages
+        // Dynamic wilaya pages — only for wilayas that have active loueurs
         $wilayas = config('resadz.wilayas', []);
+        $dedicatedSlugs = ['alger', 'aeroport-alger', 'oran', 'constantine', 'annaba'];
 
         foreach ($wilayas as $code => $name) {
             $wilayaSlug = Str::slug($name);
-            $urls[] = [
-                'loc' => route('vehicles.by-wilaya', $wilayaSlug),
-                'changefreq' => 'weekly',
-                'priority' => '0.8',
-            ];
+            // Skip wilayas that already have dedicated pages
+            if (in_array($wilayaSlug, $dedicatedSlugs)) continue;
+
+            // Only include wilayas that have active loueurs
+            $hasLoueurs = Loueur::where('is_active', true)
+                ->where('is_suspended', false)
+                ->where(function ($q) use ($name, $wilayaSlug) {
+                    $q->whereRaw('LOWER(wilaya) = ?', [strtolower($name)])
+                      ->orWhereRaw('LOWER(wilaya) = ?', [strtolower($wilayaSlug)])
+                      ->orWhere('disponible_national', true);
+                })
+                ->exists();
+
+            if ($hasLoueurs) {
+                $urls[] = [
+                    'loc' => route('vehicles.by-wilaya', $wilayaSlug),
+                    'changefreq' => 'weekly',
+                    'priority' => '0.8',
+                ];
+            }
         }
 
         // Build XML
@@ -141,15 +163,23 @@ class SitemapController extends Controller
 
         $content = "User-agent: *\n";
         $content .= "Allow: /\n";
+        $content .= "Allow: /loueur/*\n";
+        $content .= "\n";
         $content .= "Disallow: /admin\n";
         $content .= "Disallow: /admin/*\n";
-        $content .= "Disallow: /loueur\n";
-        $content .= "Disallow: /loueur/*\n";
         $content .= "Disallow: /chauffeur\n";
         $content .= "Disallow: /chauffeur/*\n";
         $content .= "Disallow: /livewire/*\n";
         $content .= "Disallow: /espace-client/*\n";
         $content .= "Disallow: /ma-reservation/*\n";
+        $content .= "Disallow: /reserver/*\n";
+        $content .= "Disallow: /paiement/*\n";
+        $content .= "Disallow: /stripe/*\n";
+        $content .= "Disallow: /connexion\n";
+        $content .= "Disallow: /inscription\n";
+        $content .= "Disallow: /deconnexion\n";
+        $content .= "Disallow: /mot-de-passe/*\n";
+        $content .= "Disallow: /*?*\n";
         $content .= "\n";
         $content .= "Sitemap: {$sitemapUrl}\n";
 

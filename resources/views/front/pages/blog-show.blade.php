@@ -11,6 +11,35 @@
 @endif
 <meta property="og:type" content="article">
 <meta property="article:published_time" content="{{ $post->published_at?->toIso8601String() }}">
+
+<!-- Schema.org BlogPosting -->
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BlogPosting",
+    "headline": "{{ addslashes($post->title) }}",
+    "description": "{{ addslashes($post->excerpt ?? '') }}",
+    "image": "{{ $post->featured_image ? asset('storage/' . $post->featured_image) : '' }}",
+    "datePublished": "{{ $post->published_at?->toIso8601String() }}",
+    "dateModified": "{{ $post->updated_at?->toIso8601String() }}",
+    "author": {
+        "@@type": "Organization",
+        "name": "ResaDZ"
+    },
+    "publisher": {
+        "@@type": "Organization",
+        "name": "ResaDZ",
+        "logo": {
+            "@@type": "ImageObject",
+            "url": "{{ asset('storage/' . \App\Models\Setting::get('logo_light', '')) }}"
+        }
+    },
+    "mainEntityOfPage": {
+        "@@type": "WebPage",
+        "@@id": "{{ route('blog.show', $post->slug) }}"
+    }
+}
+</script>
 @endsection
 
 @section('content')

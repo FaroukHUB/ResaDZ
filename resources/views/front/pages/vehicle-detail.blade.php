@@ -24,6 +24,8 @@
     "@@context": "https://schema.org",
     "@@type": "Car",
     "name": "{{ $vehicle->full_name }}",
+    "url": "{{ route('vehicles.show', $vehicle->slug) }}",
+    "image": "{{ $vehicle->display_image ? asset('storage/' . $vehicle->display_image) : '' }}",
     "brand": {
         "@@type": "Brand",
         "name": "{{ $vehicle->brand->name ?? '' }}"
@@ -32,11 +34,14 @@
     "numberOfDoors": {{ $vehicle->doors ?? 5 }},
     "vehicleTransmission": "{{ $vehicle->transmission }}",
     "seatingCapacity": {{ $vehicle->seats ?? 5 }},
+    "color": "{{ $vehicle->color ?? '' }}",
+    "modelDate": "{{ $vehicle->year ?? '' }}",
     "offers": {
         "@@type": "Offer",
+        "url": "{{ route('booking.create', $vehicle->slug) }}",
         "price": "{{ $vehicle->price_per_day }}",
         "priceCurrency": "DZD",
-        "availability": "https://schema.org/InStock"
+        "availability": "https://schema.org/{{ $vehicle->status === 'available' ? 'InStock' : 'OutOfStock' }}"
     }
 }
 </script>
