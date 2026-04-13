@@ -82,6 +82,11 @@ class AdminEmails extends Page
                 'subject' => 'Nouveau sur ResaDZ — Ne manquez pas !',
                 'body' => "Salam {nom},\n\nNous avons une nouveauté sur ResaDZ qui pourrait vous intéresser !\n\n[Décrivez la nouveauté ici]\n\nPour en profiter, connectez-vous sur votre espace loueur : resadz.com/loueur\n\nBonne continuation,\nL'équipe ResaDZ",
             ],
+            'reset_password' => [
+                'label' => 'Réinitialisation mot de passe',
+                'subject' => 'Réinitialisez votre mot de passe ResaDZ',
+                'body' => "Salam {nom},\n\nVous avez demandé la réinitialisation de votre mot de passe ResaDZ (ou notre équipe l'a fait pour vous).\n\nCliquez sur le lien ci-dessous pour créer un nouveau mot de passe :\n\n{reset_link}\n\nCe lien est valable 60 minutes. Passé ce délai, vous devrez refaire une demande.\n\nSi vous n'avez pas demandé cette réinitialisation, ignorez cet email — votre mot de passe actuel reste inchangé.\n\nCordialement,\nL'équipe ResaDZ",
+            ],
         ];
     }
 
@@ -92,7 +97,27 @@ class AdminEmails extends Page
             $t = $templates[$this->selectedTemplate];
             $this->previewSubject = $t['subject'];
             $name = $this->getRecipientName($this->recipientType, $this->selectedLoueurId);
-            $this->previewBody = str_replace('{nom}', $name, $t['body']);
+            $body = str_replace('{nom}', $name, $t['body']);
+
+            // Generate reset link for password reset template
+            if ($this->selectedTemplate === 'reset_password' && $this->selectedLoueurId) {
+                $email = $this->getRecipientEmail($this->recipientType, $this->selectedLoueurId, $this->customEmail);
+                if ($email) {
+                    $token = \Illuminate\Support\Str::random(64);
+                    \Illuminate\Support\Facades\DB::table('password_reset_tokens')->where('email', $email)->delete();
+                    \Illuminate\Support\Facades\DB::table('password_reset_tokens')->insert([
+                        'email' => $email,
+                        'token' => \Illuminate\Support\Facades\Hash::make($token),
+                        'created_at' => now(),
+                    ]);
+                    $resetLink = url('/mot-de-passe/reset/' . $token . '?email=' . urlencode($email));
+                    $body = str_replace('{reset_link}', $resetLink, $body);
+                } else {
+                    $body = str_replace('{reset_link}', '[Sélectionnez un loueur pour générer le lien]', $body);
+                }
+            }
+
+            $this->previewBody = $body;
         }
     }
 

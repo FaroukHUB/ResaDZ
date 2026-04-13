@@ -37,6 +37,7 @@
                         'demande_documents' => '📄',
                         'felicitations_reservation' => '🎉',
                         'promotion' => '📢',
+                        'reset_password' => '🔑',
                     ];
                 @endphp
                 @foreach($templates as $key => $template)
