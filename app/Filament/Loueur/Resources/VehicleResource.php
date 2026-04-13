@@ -567,6 +567,21 @@ class VehicleResource extends Resource
                     ->collapsible()
                     ->extraAttributes(['style' => 'border-left: 4px solid #9ca3af;'])
                     ->schema([
+                        Forms\Components\Placeholder::make('dispo_warning')
+                            ->label('')
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-xl">
+                                    <div class="flex items-start gap-3">
+                                        <span class="text-xl flex-shrink-0">⚠️</span>
+                                        <div>
+                                            <p class="font-bold text-amber-900 dark:text-amber-100 text-sm">Évitez les doubles réservations</p>
+                                            <p class="text-xs text-amber-800 dark:text-amber-200 mt-1">
+                                                Si ce véhicule est réservé en dehors de ResaDZ (bouche-à-oreille, autre site, etc.), pensez à <strong>bloquer les dates dans le Calendrier</strong> ou à passer le statut en <strong>Réservé</strong>. Un client ne pourra pas réserver un véhicule dont les dates sont déjà bloquées.
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ')),
                         Forms\Components\Grid::make(2)
                             ->schema([
                                 Forms\Components\Select::make('status')

@@ -78,20 +78,37 @@
                 <div class="flex items-start gap-3">
                     <span style="font-size: 28px; flex-shrink: 0;">⚠️</span>
                     <div>
-                        <h3 style="font-weight: 700; color: #92400E; font-size: 16px; margin: 0 0 8px 0;">Important : tenez votre calendrier à jour !</h3>
+                        <h3 style="font-weight: 700; color: #92400E; font-size: 16px; margin: 0 0 8px 0;">Évitez les doubles réservations</h3>
                         <p style="color: #92400E; font-size: 14px; margin: 0 0 8px 0;">
                             Quand le paiement en ligne est activé, <strong>les réservations sont automatiquement confirmées</strong> dès que le client paie. Il n'y a pas de validation manuelle.
                         </p>
                         <p style="color: #92400E; font-size: 14px; margin: 0 0 8px 0;">
-                            Pour éviter les conflits de réservation :
+                            Si vous louez aussi vos véhicules par d'autres moyens (votre propre site, bouche-à-oreille, autres plateformes), pensez à <strong>bloquer les dates sur ResaDZ immédiatement</strong> quand vous acceptez une réservation ailleurs.
+                        </p>
+                        <p style="color: #92400E; font-size: 14px; margin: 0 0 8px 0;">
+                            Pour éviter tout conflit :
                         </p>
                         <ul style="color: #92400E; font-size: 14px; margin: 0; padding-left: 20px;">
-                            <li style="margin-bottom: 4px;"><strong>Bloquez les dates</strong> où votre véhicule n'est pas disponible dans le Calendrier</li>
+                            <li style="margin-bottom: 4px;"><strong>Bloquez les dates</strong> dès qu'un véhicule est réservé (peu importe le canal)</li>
                             <li style="margin-bottom: 4px;"><strong>Mettez à jour le statut</strong> de vos véhicules (Disponible / Indisponible)</li>
-                            <li>Si un véhicule est en location, passez-le en <strong>"En location / Réservé"</strong></li>
+                            <li style="margin-bottom: 4px;">Si un véhicule est en location, passez-le en <strong>"Réservé"</strong></li>
+                            <li>Consultez votre <strong>Calendrier</strong> régulièrement</li>
                         </ul>
                         <p style="color: #92400E; font-size: 13px; margin: 12px 0 0 0; font-style: italic;">
-                            Un client ne pourra pas réserver un véhicule si les dates sont déjà bloquées ou si une autre réservation confirmée existe pour la même période.
+                            ResaDZ bloque automatiquement les dates quand une réservation est confirmée sur la plateforme. Mais les réservations faites en dehors de ResaDZ doivent être bloquées manuellement.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {{-- Astuce --}}
+            <div style="background: #EFF6FF; border: 1px solid #93C5FD; border-radius: 16px; padding: 20px;">
+                <div class="flex items-start gap-3">
+                    <span style="font-size: 22px; flex-shrink: 0;">💡</span>
+                    <div>
+                        <p style="font-weight: 600; color: #1E40AF; font-size: 14px; margin: 0 0 4px 0;">Astuce</p>
+                        <p style="color: #1E40AF; font-size: 13px; margin: 0;">
+                            Si vous ne souhaitez pas que les réservations soient automatiquement confirmées, choisissez le mode <strong>"Désactivé"</strong> ci-dessus. Les clients enverront une demande et vous pourrez la valider manuellement avant de confirmer.
                         </p>
                     </div>
                 </div>

@@ -215,6 +215,13 @@ Chaque section a une bordure colorée à gauche pour s'y retrouver.
 - Sur la page de connexion, clique "Mot de passe oublié ?"
 - Entre ton email → tu recevras un lien de réinitialisation par email
 
+## ÉVITER LES DOUBLES RÉSERVATIONS
+- Si tu loues tes véhicules par d'autres moyens (bouche-à-oreille, ton propre site, etc.), pense à bloquer les dates sur ResaDZ dès qu'un véhicule est réservé ailleurs
+- Va dans le Calendrier → sélectionne le véhicule → clique sur les dates à bloquer
+- Ou passe le statut du véhicule en "Réservé" dans Catalogue → Véhicules → Modifier
+- ResaDZ bloque automatiquement les dates quand une réservation est confirmée SUR la plateforme, mais les réservations faites EN DEHORS de ResaDZ doivent être bloquées manuellement
+- Si tu ne veux pas de confirmation automatique, désactive le paiement en ligne (Finances → Paiement en ligne → Désactivé). Les clients enverront une demande et tu pourras la valider avant de confirmer
+
 ## PAIEMENT EN LIGNE (STRIPE CONNECT)
 - Va dans Finances → Paiement en ligne
 - Clique "Connecter mon compte Stripe" → tu es redirigé vers Stripe
