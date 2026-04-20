@@ -15,9 +15,6 @@ class Vehicle extends Model
 {
     use HasFactory, SoftDeletes, HasWebpImages;
 
-    /**
-     * Image fields to convert to WebP
-     */
     public function getWebpImageFields(): array
     {
         return ['image'];
@@ -40,6 +37,14 @@ class Vehicle extends Model
         'deposit_amount_eur',
         'deposit_currency',
         'available_options',
+        'fuel_return_fee',
+        'wash_return_fee',
+        'badge_insurance',
+        'badge_delivery',
+        'badge_degressive',
+        'badge_airport',
+        'badge_km_unlimited',
+        'custom_badges',
         'transmission',
         'fuel_type',
         'has_air_conditioning',
@@ -69,26 +74,34 @@ class Vehicle extends Model
     ];
 
     protected $casts = [
-        'price_per_day' => 'decimal:2',
-        'price_per_day_eur' => 'decimal:2',
-        'price_per_week' => 'decimal:2',
-        'price_per_month' => 'decimal:2',
-        'pricing' => 'array',
-        'degressive_pricing' => 'array',
-        'deposit_amount' => 'decimal:2',
-        'deposit_amount_eur' => 'decimal:2',
-        'available_options' => 'array',
+        'price_per_day'         => 'decimal:2',
+        'price_per_day_eur'     => 'decimal:2',
+        'price_per_week'        => 'decimal:2',
+        'price_per_month'       => 'decimal:2',
+        'pricing'               => 'array',
+        'degressive_pricing'    => 'array',
+        'deposit_amount'        => 'decimal:2',
+        'deposit_amount_eur'    => 'decimal:2',
+        'available_options'     => 'array',
+        'fuel_return_fee'       => 'decimal:2',
+        'wash_return_fee'       => 'decimal:2',
+        'badge_insurance'       => 'boolean',
+        'badge_delivery'        => 'boolean',
+        'badge_degressive'      => 'boolean',
+        'badge_airport'         => 'boolean',
+        'badge_km_unlimited'    => 'boolean',
+        'custom_badges'         => 'array',
         'mileage_limit_per_day' => 'integer',
-        'has_air_conditioning' => 'boolean',
-        'extra_mileage_fee' => 'decimal:2',
-        'gallery' => 'array',
-        'is_featured' => 'boolean',
-        'is_in_selection' => 'boolean',
-        'is_active' => 'boolean',
-        'available_from' => 'date',
-        'available_until' => 'date',
-        'min_rental_days' => 'integer',
-        'max_rental_days' => 'integer',
+        'has_air_conditioning'  => 'boolean',
+        'extra_mileage_fee'     => 'decimal:2',
+        'gallery'               => 'array',
+        'is_featured'           => 'boolean',
+        'is_in_selection'       => 'boolean',
+        'is_active'             => 'boolean',
+        'available_from'        => 'date',
+        'available_until'       => 'date',
+        'min_rental_days'       => 'integer',
+        'max_rental_days'       => 'integer',
     ];
 
     protected static function boot()
@@ -148,9 +161,6 @@ class Vehicle extends Model
         return $this->hasMany(VehicleBoost::class);
     }
 
-    /**
-     * Get the active boost for this vehicle.
-     */
     public function getActiveBoostAttribute(): ?VehicleBoost
     {
         return $this->boosts()
@@ -159,9 +169,6 @@ class Vehicle extends Model
             ->first();
     }
 
-    /**
-     * Check if this vehicle is currently boosted.
-     */
     public function getIsBoostedAttribute(): bool
     {
         return $this->boosts()
@@ -170,9 +177,6 @@ class Vehicle extends Model
             ->exists();
     }
 
-    /**
-     * Get the currently active offer for this vehicle.
-     */
     public function getActiveOfferAttribute(): ?VehicleOffer
     {
         return $this->offers()
@@ -229,16 +233,13 @@ class Vehicle extends Model
         return $query->orderBy('sort_order')->orderBy('full_name');
     }
 
-    // Calculer le prix selon la durée avec prix dégressif et commission
     public function calculatePrice(int $days, string $currency = 'DZD'): array
     {
         $pricePerDay = $currency === 'EUR'
             ? ($this->price_per_day_eur ?? 0)
             : $this->price_per_day;
 
-        // Chercher le prix dégressif applicable
         if ($this->degressive_pricing && is_array($this->degressive_pricing)) {
-            // Trier par from_days descendant pour prendre le meilleur palier
             $tiers = collect($this->degressive_pricing)
                 ->filter(fn($tier) => isset($tier['from_days']) && $days >= $tier['from_days'])
                 ->sortByDesc('from_days')
@@ -251,69 +252,46 @@ class Vehicle extends Model
             }
         }
 
-        // Prix du loueur (ce qu'il affiche)
-        $loueurGrossTotal = $pricePerDay * $days;
-
-        // Commission ResaDZ (nouveau modèle 2026) - taux dégressif selon durée
-        // 1-3 jours: 8%, 4-7 jours: 6%, 8+ jours: 5%
-        $commissionRate = $this->getCommissionRate($days);
-        $loueurCommissionTotal = round($loueurGrossTotal * $commissionRate / 100, 2);
+        $loueurGrossTotal    = $pricePerDay * $days;
+        $commissionRate      = $this->getCommissionRate($days);
+        $loueurCommissionTotal  = round($loueurGrossTotal * $commissionRate / 100, 2);
         $loueurCommissionPerDay = round($loueurCommissionTotal / $days, 2);
-
-        // Ce que le loueur reçoit réellement
-        $loueurNetTotal = $loueurGrossTotal - $loueurCommissionTotal;
-
-        // Pas de frais de service client (nouveau modèle 2026)
-        $clientServiceFeePerDay = 0;
-        $clientServiceFeeTotal = 0;
-
-        // Prix affiché au client = prix loueur (pas de frais supplémentaires)
-        $clientTotal = $loueurGrossTotal;
+        $loueurNetTotal         = $loueurGrossTotal - $loueurCommissionTotal;
 
         return [
-            'price_per_day_loueur' => $pricePerDay,
-            'price_per_day_client' => $pricePerDay, // Même prix pour le client
-            'loueur_gross_total' => $loueurGrossTotal,
-            'loueur_commission_per_day' => $loueurCommissionPerDay,
-            'loueur_commission_total' => $loueurCommissionTotal,
-            'loueur_commission_rate' => $commissionRate,
-            'loueur_net_total' => $loueurNetTotal,
+            'price_per_day_loueur'       => $pricePerDay,
+            'price_per_day_client'       => $pricePerDay,
+            'loueur_gross_total'         => $loueurGrossTotal,
+            'loueur_commission_per_day'  => $loueurCommissionPerDay,
+            'loueur_commission_total'    => $loueurCommissionTotal,
+            'loueur_commission_rate'     => $commissionRate,
+            'loueur_net_total'           => $loueurNetTotal,
             'client_service_fee_per_day' => 0,
-            'client_service_fee_total' => 0,
-            'client_total' => $clientTotal,
-            'days' => $days,
-            'currency' => $currency,
+            'client_service_fee_total'   => 0,
+            'client_total'               => $loueurGrossTotal,
+            'days'                       => $days,
+            'currency'                   => $currency,
         ];
     }
 
-    /**
-     * Get commission rate based on rental duration (degressive rates).
-     * New model (2026): 1-3 days = 8%, 4-7 days = 6%, 8+ days = 5%
-     */
     public function getCommissionRate(int $days): float
     {
         $rate1to3 = (float) Setting::get('commission_rate_1_to_3_days', 8);
         $rate4to7 = (float) Setting::get('commission_rate_4_to_7_days', 6);
         $rate8plus = (float) Setting::get('commission_rate_8_plus_days', 5);
 
-        if ($days >= 8) {
-            return $rate8plus;
-        } elseif ($days >= 4) {
-            return $rate4to7;
-        }
+        if ($days >= 8) return $rate8plus;
+        if ($days >= 4) return $rate4to7;
         return $rate1to3;
     }
 
-    // Prix affiché au client (pas de frais de service - nouveau modèle 2026)
     public function getClientPricePerDay(string $currency = 'DZD'): float
     {
-        // Le client paie exactement le prix affiché par le loueur, sans frais supplémentaires
         return $currency === 'EUR'
             ? ($this->price_per_day_eur ?? 0)
             : $this->price_per_day;
     }
 
-    // Helpers
     public function isAvailable(): bool
     {
         return $this->status === 'available' && $this->is_active;
@@ -321,32 +299,23 @@ class Vehicle extends Model
 
     public function getFormattedPriceAttribute(): string
     {
-        $clientPrice = $this->getClientPricePerDay('DZD');
-        return number_format($clientPrice, 0, ',', ' ') . ' DA';
+        return number_format($this->getClientPricePerDay('DZD'), 0, ',', ' ') . ' DA';
     }
 
     public function getFormattedPriceEurAttribute(): string
     {
-        if (!$this->price_per_day_eur) {
-            return '';
-        }
+        if (!$this->price_per_day_eur) return '';
         return number_format($this->price_per_day_eur, 0, ',', ' ') . ' €';
     }
 
     public function isAvailableForDates($startDate, $endDate): bool
     {
         $start = \Carbon\Carbon::parse($startDate);
-        $end = \Carbon\Carbon::parse($endDate);
+        $end   = \Carbon\Carbon::parse($endDate);
 
-        // Vérifier available_from / available_until
-        if ($this->available_from && $start->lt($this->available_from)) {
-            return false;
-        }
-        if ($this->available_until && $end->gt($this->available_until)) {
-            return false;
-        }
+        if ($this->available_from && $start->lt($this->available_from)) return false;
+        if ($this->available_until && $end->gt($this->available_until)) return false;
 
-        // Vérifier s'il n'y a pas de blocage sur ces dates
         $hasBlocking = $this->availabilities()
             ->where(function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('start_date', [$startDate, $endDate])
@@ -359,5 +328,27 @@ class Vehicle extends Model
             ->exists();
 
         return !$hasBlocking && $this->isAvailable();
+    }
+
+    /**
+     * Retourne les badges actifs pour ce véhicule.
+     */
+    public function getActiveBadges(): array
+    {
+        $badges = [];
+
+        if ($this->badge_insurance)    $badges[] = ['icon' => 'check',     'text' => 'Assurance incluse',               'color' => 'green'];
+        if ($this->badge_delivery)     $badges[] = ['icon' => 'truck',     'text' => 'Livraison offerte',                'color' => 'blue'];
+        if ($this->badge_degressive)   $badges[] = ['icon' => 'arrow-down','text' => 'Prix d\u00e9gressif selon la dur\u00e9e', 'color' => 'amber'];
+        if ($this->badge_airport)      $badges[] = ['icon' => 'plane',     'text' => 'Livraison a\u00e9roport',         'color' => 'blue'];
+        if ($this->badge_km_unlimited) $badges[] = ['icon' => 'infinity',  'text' => 'Kilom\u00e9trage illimit\u00e9',  'color' => 'green'];
+
+        foreach ((array) $this->custom_badges as $custom) {
+            if (!empty($custom['text'])) {
+                $badges[] = ['icon' => 'star', 'text' => $custom['text'], 'color' => 'amber'];
+            }
+        }
+
+        return $badges;
     }
 }
