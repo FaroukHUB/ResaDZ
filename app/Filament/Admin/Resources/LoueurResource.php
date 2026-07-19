@@ -348,9 +348,8 @@ class LoueurResource extends Resource
                     ->label('Accéder au dashboard')
                     ->icon('heroicon-o-arrow-top-right-on-square')
                     ->color('success')
-                    ->url(fn (Loueur $record) => '/loueur')
-                    ->openUrlInNewTab()
-                    ->visible(fn (Loueur $record) => $record->is_active),
+                    ->url(fn (Loueur $record) => route('admin.impersonate', $record))
+                    ->visible(fn (Loueur $record) => $record->is_active && $record->user_id),
                 Tables\Actions\Action::make('sendWelcomeEmail')
                     ->label('Renvoyer mail bienvenue')
                     ->icon('heroicon-o-envelope')

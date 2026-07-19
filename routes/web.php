@@ -163,6 +163,14 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         ->name('admin.invoices.pdf.view');
 });
 
+// Admin : accès au dashboard d'un loueur (impersonation)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/admin/impersonate/{loueur}', [\App\Http\Controllers\Admin\ImpersonationController::class, 'start'])
+        ->name('admin.impersonate');
+    Route::get('/impersonation/stop', [\App\Http\Controllers\Admin\ImpersonationController::class, 'stop'])
+        ->name('admin.impersonate.stop');
+});
+
 // PWA Manifest (dynamique — utilise le logo ResaDZ depuis Settings)
 Route::get('/manifest.json', function () {
     $logoUrl = '/assets/favicon.png'; // fallback

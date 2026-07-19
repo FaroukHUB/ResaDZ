@@ -98,7 +98,7 @@ class LoueurPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_START,
-                fn () => $this->renderValidationBanner() . $this->renderOnboardingBanner()
+                fn () => $this->renderImpersonationBanner() . $this->renderValidationBanner() . $this->renderOnboardingBanner()
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
@@ -124,6 +124,15 @@ class LoueurPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 fn () => Auth::check() ? Blade::render('@include("filament.components.panel-assistant", ["panelType" => "loueur"])') : ''
             );
+    }
+
+    protected function renderImpersonationBanner(): string
+    {
+        if (!session()->has('impersonator_id')) {
+            return '';
+        }
+
+        return Blade::render('@include("filament.components.impersonation-banner")');
     }
 
     protected function renderChauffeurTheme(): string
