@@ -103,12 +103,16 @@ class SitemapController extends Controller
             ['loc' => url('/location-voiture-oran'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-constantine'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-annaba'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-blida'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-boumerdes'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-setif'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-sidi-bel-abbes'), 'changefreq' => 'weekly', 'priority' => '0.9'],
         ];
         $urls = array_merge($urls, $seoPages);
 
         // Dynamic wilaya pages — only for wilayas that have active loueurs
         $wilayas = config('resadz.wilayas', []);
-        $dedicatedSlugs = ['alger', 'aeroport-alger', 'oran', 'constantine', 'annaba'];
+        $dedicatedSlugs = ['alger', 'aeroport-alger', 'oran', 'constantine', 'annaba', 'blida', 'boumerdes', 'setif', 'sidi-bel-abbes'];
 
         foreach ($wilayas as $code => $name) {
             $wilayaSlug = Str::slug($name);

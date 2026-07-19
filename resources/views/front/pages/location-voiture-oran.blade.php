@@ -19,6 +19,17 @@
     }
 }
 </script>
+<script type="application/ld+json">
+{
+    "@@context": "https://schema.org",
+    "@@type": "BreadcrumbList",
+    "itemListElement": [
+        { "@@type": "ListItem", "position": 1, "name": "Accueil", "item": "{{ url('/') }}" },
+        { "@@type": "ListItem", "position": 2, "name": "Véhicules", "item": "{{ route('vehicles.index') }}" },
+        { "@@type": "ListItem", "position": 3, "name": "Location voiture Oran", "item": "{{ url('/location-voiture-oran') }}" }
+    ]
+}
+</script>
 @endsection
 
 @section('content')
@@ -437,6 +448,20 @@
             ]
         }
         </script>
+    </div>
+</section>
+
+{{-- Maillage interne : villes proches --}}
+<section class="bg-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-2xl font-black text-gray-900 tracking-tight mb-6">Location de voiture autour d'Oran</h2>
+        <div class="flex flex-wrap gap-3">
+            <a href="/location-voiture-sidi-bel-abbes" class="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-5 py-2.5 hover:border-green-400 hover:bg-green-50 transition text-sm font-semibold text-gray-700">Location voiture Sidi Bel Abbès</a>
+            <a href="/location-voiture-tlemcen" class="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-5 py-2.5 hover:border-green-400 hover:bg-green-50 transition text-sm font-semibold text-gray-700">Location voiture Tlemcen</a>
+            <a href="/location-voiture-mostaganem" class="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-5 py-2.5 hover:border-green-400 hover:bg-green-50 transition text-sm font-semibold text-gray-700">Location voiture Mostaganem</a>
+            <a href="/location-voiture-alger" class="inline-flex items-center gap-2 bg-gray-50 border border-gray-200 rounded-full px-5 py-2.5 hover:border-green-400 hover:bg-green-50 transition text-sm font-semibold text-gray-700">Location voiture Alger</a>
+            <a href="{{ route('vehicles.index') }}" class="inline-flex items-center gap-2 bg-gray-900 text-white rounded-full px-5 py-2.5 hover:bg-gray-700 transition text-sm font-semibold">Tous les véhicules</a>
+        </div>
     </div>
 </section>
 

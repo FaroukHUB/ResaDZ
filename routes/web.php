@@ -87,6 +87,18 @@ Route::get('/location-voiture-oran', function () {
 Route::get('/location-voiture-constantine', function () {
     return view('front.pages.location-voiture-constantine');
 })->name('seo.location-constantine');
+Route::get('/location-voiture-blida', function () {
+    return view('front.pages.location-voiture-blida');
+});
+Route::get('/location-voiture-boumerdes', function () {
+    return view('front.pages.location-voiture-boumerdes');
+});
+Route::get('/location-voiture-setif', function () {
+    return view('front.pages.location-voiture-setif');
+});
+Route::get('/location-voiture-sidi-bel-abbes', function () {
+    return view('front.pages.location-voiture-sidi-bel-abbes');
+});
 Route::get('/location-voiture-annaba', function () {
     return view('front.pages.location-voiture-annaba');
 })->name('seo.location-annaba');
