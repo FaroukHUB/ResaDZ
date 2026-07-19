@@ -78,6 +78,18 @@ Route::post('/avis/{token}', [ReviewController::class, 'store'])->name('review.s
 Route::get('/location-voiture-alger', function () {
     return view('front.pages.location-voiture-alger');
 })->name('seo.location-alger');
+Route::get('/location-voiture-aeroport-oran', function () {
+    return view('front.pages.location-voiture-aeroport-oran');
+});
+Route::get('/location-voiture-aeroport-constantine', function () {
+    return view('front.pages.location-voiture-aeroport-constantine');
+});
+Route::get('/location-voiture-aeroport-bejaia', function () {
+    return view('front.pages.location-voiture-aeroport-bejaia');
+});
+Route::get('/location-voiture-aeroport-annaba', function () {
+    return view('front.pages.location-voiture-aeroport-annaba');
+});
 Route::get('/location-voiture-aeroport-alger', function () {
     return view('front.pages.location-voiture-aeroport-alger');
 })->name('seo.location-aeroport-alger');

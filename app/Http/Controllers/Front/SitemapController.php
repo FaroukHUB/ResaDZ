@@ -100,6 +100,10 @@ class SitemapController extends Controller
         $seoPages = [
             ['loc' => url('/location-voiture-alger'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-aeroport-alger'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-aeroport-oran'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-aeroport-constantine'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-aeroport-bejaia'), 'changefreq' => 'weekly', 'priority' => '0.9'],
+            ['loc' => url('/location-voiture-aeroport-annaba'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-oran'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-constantine'), 'changefreq' => 'weekly', 'priority' => '0.9'],
             ['loc' => url('/location-voiture-annaba'), 'changefreq' => 'weekly', 'priority' => '0.9'],
