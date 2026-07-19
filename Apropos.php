@@ -1,8 +1,10 @@
 <?php
 // apropos.php
 
-$pageTitle = 'À propos — MBCARSDZ';
-$base      = './'; // on est à la racine
+$pageTitle       = 'À propos — MB CARS DZ | Agence de location à Rouiba, Alger';
+$pageDescription = 'MB CARS DZ est une agence de location de voitures basée à Rouiba, Alger. Flotte récente, assurance incluse, service personnalisé. Découvrez notre histoire et nos valeurs.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/Apropos.php';
+$base            = './'; // on est à la racine
 
 include __DIR__ . '/partials/header.php';
 ?>

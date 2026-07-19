@@ -1,8 +1,10 @@
 <?php
 // suv.php — Page catégorie SUV
 
-$base      = './';
-$pageTitle = 'Location SUV — MB CARS DZ';
+$base            = './';
+$pageTitle       = 'Location SUV à Alger — BMW X3, VW Tiguan, Mercedes GLE | MB CARS DZ';
+$pageDescription = 'Louez un SUV à Alger chez MB CARS DZ : BMW X3, VW Tiguan, Mercedes GLE, Hyundai Tucson et plus. Assurance incluse, livraison aéroport. À partir de 20 000 DA/jour.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/suv.php';
 
 // Tableau global des véhicules
 require __DIR__ . '/data/vehicles.php';

@@ -3,7 +3,9 @@
 //  PAGE MARQUE : HYUNDAI
 // ===============================
 $brand     = 'Hyundai';
-$pageTitle = 'Location Hyundai — MB CARS DZ';
+$pageTitle       = 'Location Hyundai à Alger | MB CARS DZ';
+$pageDescription = 'Hyundai Tucson, i20 à Alger — location SUV Hyundai avec assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/hyundai.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

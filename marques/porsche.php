@@ -3,7 +3,9 @@
 //  PAGE MARQUE : PORSCHE
 // ===============================
 $brand     = 'Porsche';
-$pageTitle = 'Location Porsche — MB CARS DZ';
+$pageTitle       = 'Location Porsche à Alger | MB CARS DZ';
+$pageDescription = 'Porsche Cayenne à Alger — location voiture Porsche luxe avec assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/porsche.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

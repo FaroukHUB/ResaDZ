@@ -3,7 +3,9 @@
 //  PAGE MARQUE : Dacia
 // ===============================
 $brand     = 'Dacia';
-$pageTitle = 'Location Dacia — MB CARS DZ';
+$pageTitle       = 'Location Dacia à Alger | MB CARS DZ';
+$pageDescription = 'Dacia Stepway, Sandero à Alger — location voiture Dacia économique. Assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/dacia.php';
 $base      = '../'; // remonte à la racine
 
 // Charge le tableau $vehicles

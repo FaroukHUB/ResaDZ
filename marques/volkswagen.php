@@ -3,7 +3,9 @@
 //  PAGE MARQUE : Volkswagen
 // ===============================
 $brand     = 'VW';
-$pageTitle = 'Location VW — MB CARS DZ';
+$pageTitle       = 'Location VW à Alger | MB CARS DZ';
+$pageDescription = 'VW Tiguan, Golf, T-Roc à Alger — location voiture Volkswagen avec assurance. MB CARS DZ Rouiba.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/volkswagen.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

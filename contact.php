@@ -6,8 +6,10 @@
 // include 'header.php';
 
 // Alors pour la page contact :
-$base = './';
-$pageTitle = 'Nous contacter — MB CARS DZ';
+$base            = './';
+$pageTitle       = 'Nous contacter — MB CARS DZ | Location voiture Alger';
+$pageDescription = 'Contactez MB CARS DZ pour louer une voiture à Alger. Formulaire, WhatsApp ou téléphone. Réponse sous 24h. Rouiba, Alger.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/contact.php';
 // Header global
 include __DIR__ . '/partials/header.php';
 

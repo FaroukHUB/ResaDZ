@@ -3,7 +3,9 @@
 //  PAGE MARQUE : SUZUKI
 // ===============================
 $brand     = 'Suzuki';
-$pageTitle = 'Location Suzuki — MB CARS DZ';
+$pageTitle       = 'Location Suzuki à Alger | MB CARS DZ';
+$pageDescription = 'Suzuki Vitara, Swift à Alger — location SUV Suzuki avec assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/suzuki.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

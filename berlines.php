@@ -1,8 +1,10 @@
 <?php
 // suv.php — Page catégorie BERLINE
 
-$base      = './';
-$pageTitle = 'Location berline — MB CARS DZ';
+$base            = './';
+$pageTitle       = 'Location berline à Alger — Audi, BMW, VW Golf | MB CARS DZ';
+$pageDescription = 'Louez une berline à Alger chez MB CARS DZ : Audi A1, BMW Série 1, VW Golf, Peugeot. Assurance incluse, livraison aéroport. Tarifs dégressifs. À partir de 8 000 DA/jour.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/berlines.php';
 
 // Tableau global des véhicules
 require __DIR__ . '/data/vehicles.php';

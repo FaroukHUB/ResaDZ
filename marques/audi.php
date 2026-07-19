@@ -3,7 +3,9 @@
 //  PAGE MARQUE : AUDI
 // ===============================
 $brand     = 'Audi';
-$pageTitle = 'Location Audi — MB CARS DZ';
+$pageTitle       = 'Location Audi à Alger | MB CARS DZ';
+$pageDescription = 'Audi A1, A3, Q3 à Alger — location voiture Audi avec assurance incluse. MB CARS DZ Rouiba.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/audi.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

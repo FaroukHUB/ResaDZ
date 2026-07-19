@@ -1,6 +1,93 @@
 <?php
-$base = './';
-$pageTitle = 'Accueil — MB CARS DZ';
+$base             = './';
+$pageTitle        = 'Location de voiture à Alger & Algérie | MB CARS DZ';
+$pageDescription  = "Louez une voiture à Alger chez MB CARS DZ : SUV, berlines et citadines récentes avec assurance incluse. Livraison aéroport Houari Boumediene. Entre particuliers. À partir de 8 000 DA/jour.";
+$canonicalUrl     = 'https://mbcarsdzrouiba.com/';
+$pageSchema       = json_encode([
+  '@context' => 'https://schema.org',
+  '@graph'   => [
+    [
+      '@type'       => 'CarRental',
+      '@id'         => 'https://mbcarsdzrouiba.com/#business',
+      'name'        => 'MB CARS DZ',
+      'url'         => 'https://mbcarsdzrouiba.com/',
+      'logo'        => 'https://mbcarsdzrouiba.com/assets/logo.jpeg',
+      'image'       => 'https://mbcarsdzrouiba.com/assets/hero.webp',
+      'description' => "Location de voitures à Rouiba, Alger. SUV, berlines et citadines récents avec assurance incluse et livraison à l'aéroport d'Alger.",
+      'address'     => [
+        '@type'           => 'PostalAddress',
+        'streetAddress'   => 'Rouiba',
+        'addressLocality' => 'Alger',
+        'addressRegion'   => 'Alger',
+        'addressCountry'  => 'DZ',
+      ],
+      'geo' => [
+        '@type'     => 'GeoCoordinates',
+        'latitude'  => 36.7413406,
+        'longitude' => 3.2835529,
+      ],
+      'telephone' => '+213656697788',
+      'openingHoursSpecification' => [
+        '@type'       => 'OpeningHoursSpecification',
+        'dayOfWeek'   => ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'],
+        'opens'       => '00:00',
+        'closes'      => '23:59',
+      ],
+      'priceRange' => '8000 DA – 60 000 DA / jour',
+      'areaServed' => 'DZ',
+      'sameAs'     => [
+        'https://www.facebook.com/MBcarsdzrouiba',
+        'https://www.instagram.com/mbcarsdzrouiba',
+      ],
+    ],
+    [
+      '@type'        => 'FAQPage',
+      'mainEntity'   => [
+        [
+          '@type' => 'Question',
+          'name'  => 'Quels types de voitures sont disponibles à Alger chez MB CARS DZ ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'MB CARS DZ propose des SUV (Mercedes GLE, VW Tiguan, BMW X3…), des berlines (Audi A1, BMW Série 1, VW Golf…) et des citadines (Fiat 500, Renault Symbol, Dacia Stepway…), tous récents et livrés avec assurance incluse.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'Quel est le prix de location de voiture à Alger ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Les tarifs commencent à 8 000 DA par jour pour une citadine, jusqu\'à 60 000 DA par jour pour un SUV premium. Des prix dégressifs s\'appliquent pour les locations de longue durée.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'L\'assurance est-elle incluse dans le prix ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Oui, tous les véhicules MB CARS DZ sont assurés et le coût est inclus dans le tarif affiché. Aucun frais caché.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'Livrez-vous à l\'aéroport d\'Alger ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Oui, MB CARS DZ propose la livraison gratuite à l\'aéroport Houari Boumediene d\'Alger (Dar El Beïda). Précisez votre vol et heure d\'arrivée lors de votre demande.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'Peut-on louer une voiture entre particuliers en Algérie ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'MB CARS DZ fonctionne comme une location directe entre particuliers : pas d\'agence multinationale, service personnalisé, prix compétitifs et contact direct avec le propriétaire.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'Livrez-vous en dehors d\'Alger ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Oui, MB CARS DZ livre partout en Algérie sur demande : Blida, Boumerdès, Oran, Sétif, Sidi Bel Abbès et plus. Contactez-nous pour un devis de livraison.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'Quel est le délai de confirmation d\'une réservation ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Nous confirmons votre demande sous 24 heures. Si le véhicule choisi n\'est pas disponible, nous vous proposons une alternative adaptée.'],
+        ],
+        [
+          '@type' => 'Question',
+          'name'  => 'Quels documents faut-il pour louer une voiture en Algérie ?',
+          'acceptedAnswer' => ['@type' => 'Answer', 'text' => 'Il faut une pièce d\'identité valide (carte nationale ou passeport), un permis de conduire valide depuis plus de 2 ans, et avoir au minimum 25 ans.'],
+        ],
+      ],
+    ],
+  ],
+], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+
 include __DIR__ . '/partials/header.php';
 
 // On charge la liste des véhicules
@@ -145,7 +232,7 @@ require_once __DIR__ . '/config-lang.php';
       <div class="hero-overlay"></div>
 
       <div class="hero-caption">
-        <h1 class="hero-title glow">Alger sous les étoiles... <br> Roulez avec style.</h1>
+        <h1 class="hero-title glow">Location de voiture à Alger<br><span style="font-size:.75em;opacity:.85">Roulez avec style.</span></h1>
         <a href="#airportForm" class="btn btn-gold hero-cta">Faire une demande</a>
       </div>
     </div>
@@ -172,6 +259,17 @@ require_once __DIR__ . '/config-lang.php';
       </div>
     </div>
 
+</section>
+
+<!-- INTRO SEO -->
+<section class="seo-intro wrap" id="intro" style="padding:40px 0 24px;max-width:900px;margin:0 auto">
+  <h2 style="font-size:1.4rem;font-weight:700;margin-bottom:12px;color:#ffc43a">Location de voiture à Alger — MB CARS DZ</h2>
+  <p style="line-height:1.75;color:#ddd;margin-bottom:10px">
+    Besoin de <strong>louer une voiture à Alger</strong> ou en Algérie ? MB CARS DZ met à votre disposition une flotte de véhicules récents — SUV, berlines et citadines — avec <strong>assurance incluse</strong> et <strong>livraison à l'aéroport d'Alger</strong> ou à votre domicile.
+  </p>
+  <p style="line-height:1.75;color:#ddd;margin-bottom:10px">
+    Basée à <strong>Rouiba, Alger</strong>, notre agence propose une <strong>location de voiture entre particuliers</strong> : contact direct, sans intermédiaire, tarifs transparents à partir de <strong>8 000 DA / jour</strong>. Nous intervenons également à <a href="/location-voiture-blida.php" style="color:#ffc43a">Blida</a>, <a href="/location-voiture-boumerdes.php" style="color:#ffc43a">Boumerdès</a>, <a href="/location-voiture-oran-particulier.php" style="color:#ffc43a">Oran</a>, <a href="/location-voiture-setif.php" style="color:#ffc43a">Sétif</a> et <a href="/location-voiture-sidi-bel-abbes.php" style="color:#ffc43a">Sidi Bel Abbès</a>.
+  </p>
 </section>
 
 <!-- SECTION VEHICLES -->
@@ -350,6 +448,89 @@ require_once __DIR__ . '/config-lang.php';
 <!-- app.js -->
 <script src="app.js" defer></script>
 
+
+<!-- ===== FAQ Section ===== -->
+<section class="faq-section wrap" id="faq" style="padding:48px 0;max-width:900px;margin:0 auto">
+  <header style="text-align:center;margin-bottom:32px">
+    <p class="steps-kicker">Questions fréquentes</p>
+    <h2 style="font-size:1.6rem;font-weight:700;color:#ffc43a">Location de voiture à Alger — FAQ</h2>
+  </header>
+
+  <div class="faq-list" style="display:flex;flex-direction:column;gap:0">
+
+    <details class="faq-item" open>
+      <summary class="faq-q"><h3>Quels types de voitures proposez-vous à Alger ?</h3></summary>
+      <div class="faq-a">
+        <p>MB CARS DZ dispose d'une gamme complète : <strong>SUV</strong> (Mercedes GLE, VW Tiguan, BMW X3, Hyundai Tucson…), <strong>berlines</strong> (Audi A1, BMW Série 1, VW Golf, Peugeot 208…) et <strong>citadines</strong> (Fiat 500, Renault Symbol, Dacia Stepway…). Tous les véhicules sont récents, entretien suivi, assurance incluse.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>Quel est le prix de location de voiture à Alger ?</h3></summary>
+      <div class="faq-a">
+        <p>Les tarifs démarrent à <strong>8 000 DA/jour</strong> pour une citadine, entre <strong>20 000 et 45 000 DA/jour</strong> pour un SUV selon le modèle. Des <strong>tarifs dégressifs</strong> sont appliqués pour les locations de plus de 3 jours.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>L'assurance est-elle incluse ?</h3></summary>
+      <div class="faq-a">
+        <p>Oui. L'assurance est incluse dans le prix affiché sur chaque véhicule. Aucun frais caché, aucune surprise à la remise du véhicule.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>Livrez-vous à l'aéroport d'Alger ?</h3></summary>
+      <div class="faq-a">
+        <p>Oui, MB CARS DZ propose la <strong>livraison gratuite à l'aéroport Houari Boumediene</strong> d'Alger (Dar El Beïda). Il suffit d'indiquer votre numéro de vol et l'heure d'arrivée lors de votre demande.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>Comment fonctionne la location entre particuliers ?</h3></summary>
+      <div class="faq-a">
+        <p>MB CARS DZ est une agence à taille humaine — vous traitez directement avec nous, sans intermédiaire. C'est le principe de la <strong>location de voiture entre particuliers en Algérie</strong> : prix justes, contact direct, service personnalisé. Disponible à <a href="/location-voiture-alger-particulier.php">Alger</a> et <a href="/location-voiture-oran-particulier.php">Oran</a>.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>Livrez-vous en dehors d'Alger ?</h3></summary>
+      <div class="faq-a">
+        <p>Oui, nous livrons partout en Algérie sur demande : <a href="/location-voiture-blida.php">Blida</a>, <a href="/location-voiture-boumerdes.php">Boumerdès</a>, <a href="/location-voiture-oran-particulier.php">Oran</a>, <a href="/location-voiture-setif.php">Sétif</a>, <a href="/location-voiture-sidi-bel-abbes.php">Sidi Bel Abbès</a>. Contactez-nous pour un devis.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>Quels documents faut-il pour louer ?</h3></summary>
+      <div class="faq-a">
+        <p>Pièce d'identité valide (carte nationale ou passeport), permis de conduire valide depuis plus de <strong>2 ans</strong>, et avoir au minimum <strong>25 ans</strong>. Aucune carte de crédit obligatoire.</p>
+      </div>
+    </details>
+
+    <details class="faq-item">
+      <summary class="faq-q"><h3>Sous quel délai confirmez-vous une réservation ?</h3></summary>
+      <div class="faq-a">
+        <p>Nous confirmons votre réservation <strong>sous 24 heures</strong>. Si le véhicule choisi n'est pas disponible, nous vous proposons une alternative équivalente.</p>
+      </div>
+    </details>
+
+  </div>
+</section>
+
+<style>
+.faq-item{border-bottom:1px solid #2a2a2a}
+.faq-item:first-child{border-top:1px solid #2a2a2a}
+.faq-q{
+  list-style:none;padding:18px 4px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+  font-weight:600;font-size:1rem;color:#fff;gap:12px
+}
+.faq-q h3{margin:0;font-size:inherit;font-weight:inherit;color:inherit}
+.faq-q::after{content:'+';font-size:1.4rem;color:#ffc43a;flex-shrink:0;transition:transform .2s}
+details[open] .faq-q::after{transform:rotate(45deg)}
+.faq-a{padding:0 4px 18px;color:#ccc;line-height:1.7}
+.faq-a p{margin:0}
+.faq-a a{color:#ffc43a}
+</style>
 
 <!-- ===== Section Réservation Aéroport ===== -->
 <section class="airport-rent wrap" id="airport-rent">

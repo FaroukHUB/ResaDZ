@@ -6,6 +6,9 @@ if (!isset($base)) {
 if (!isset($pageTitle)) {
     $pageTitle = 'MB CARS DZ — Location de véhicules';
 }
+$canonicalUrl = $canonicalUrl ?? 'https://mbcarsdzrouiba.com/';
+$ogImageUrl   = $ogImageUrl   ?? 'https://mbcarsdzrouiba.com/assets/hero.webp';
+$ogType       = $ogType       ?? 'website';
 ?>
 <!doctype html>
 <html lang="fr">
@@ -18,20 +21,21 @@ if (!isset($pageTitle)) {
 <link rel="icon" type="image/png" sizes="32x32" href="<?php echo $base; ?>assets/favicon.png">
 <link rel="apple-touch-icon" href="<?php echo $base; ?>assets/apple-touch-icon.png">
 
-<meta property="og:title" content="<?php echo htmlspecialchars($pageTitle ?? 'MB CARS DZ'); ?>">
+<link rel="canonical" href="<?php echo htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8'); ?>">
+
+<meta property="og:title" content="<?php echo htmlspecialchars($pageTitle ?? 'MB CARS DZ', ENT_QUOTES, 'UTF-8'); ?>">
 <meta property="og:site_name" content="MB CARS DZ">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://mbcarsdzrouiba.com/">
-<meta property="og:image" content="https://mbcarsdzrouiba.com/assets/hero.webp">
+<meta property="og:type" content="<?php echo htmlspecialchars($ogType, ENT_QUOTES, 'UTF-8'); ?>">
+<meta property="og:url" content="<?php echo htmlspecialchars($canonicalUrl, ENT_QUOTES, 'UTF-8'); ?>">
+<meta property="og:image" content="<?php echo htmlspecialchars($ogImageUrl, ENT_QUOTES, 'UTF-8'); ?>">
 <meta property="og:description" content="<?php echo htmlspecialchars($pageDescription ?? '', ENT_QUOTES, 'UTF-8'); ?>">
 <meta name="google-site-verification" content="-HCPPUz3AGhE0f9SgqUYv54CL9dcmSn4-g4bo_ruqUk" />
   <!-- Titre avec fallback -->
-  <title><?php echo htmlspecialchars($pageTitle ?? 'MB CARS DZ'); ?></title>
+  <title><?php echo htmlspecialchars($pageTitle ?? 'MB CARS DZ', ENT_QUOTES, 'UTF-8'); ?></title>
 
   <!-- Meta description avec fallback obligatoire -->
   <?php
-    // Description par défaut si aucune description n'est fournie dans la page
-    $fallbackDescription = "MB CARS DZ — Location de voitures à Alger : SUV, berlines et citadines récentes avec assurance incluse et livraison aéroport.";
+    $fallbackDescription = "MB CARS DZ — Location de voitures à Alger : SUV, berlines et citadines récentes avec assurance incluse et livraison aéroport d'Alger.";
     $desc = !empty($pageDescription) ? $pageDescription : $fallbackDescription;
   ?>
   <meta name="description"
@@ -43,6 +47,10 @@ if (!isset($pageTitle)) {
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap&subset=latin-ext" rel="stylesheet">
+
+<?php if (!empty($pageSchema)): ?>
+<script type="application/ld+json"><?php echo $pageSchema; ?></script>
+<?php endif; ?>
 </head>
 
 

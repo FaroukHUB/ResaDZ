@@ -3,7 +3,9 @@
 //  PAGE MARQUE : BMW
 // ===============================
 $brand     = 'BMW';
-$pageTitle = 'Location BMW — MB CARS DZ';
+$pageTitle       = 'Location BMW à Alger | MB CARS DZ';
+$pageDescription = 'BMW Série 1, X3 à Alger — location voiture BMW avec assurance incluse. MB CARS DZ Rouiba.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/bmw.php';
 $base      = '../'; // remonte à la racine
 
 // Charge le tableau $vehicles

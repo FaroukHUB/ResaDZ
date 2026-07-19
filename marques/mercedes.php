@@ -3,7 +3,9 @@
 //  PAGE MARQUE : Mercedes
 // ===============================
 $brand     = 'Mercedes';
-$pageTitle = 'Location Mercedes — MB CARS DZ';
+$pageTitle       = 'Location Mercedes à Alger | MB CARS DZ';
+$pageDescription = 'Mercedes GLE, Classe C à Alger — location Mercedes haut de gamme. Assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/mercedes.php';
 $base      = '../'; // remonte à la racine
 
 // Charge le tableau $vehicles

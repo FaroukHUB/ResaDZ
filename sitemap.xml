@@ -1,27 +1,140 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
-  <!-- Accueil -->
+  <!-- ===== Pages principales ===== -->
   <url>
     <loc>https://mbcarsdzrouiba.com/</loc>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/suv.php</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/berlines.php</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/citadines.php</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/conditions.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/contact.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/Apropos.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
 
-  <!-- Pages principales -->
-  <url><loc>https://mbcarsdzrouiba.com/suv.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/berlines.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/citadines.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/conditions.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/nous-contacter.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/Apropos.php</loc></url>
+  <!-- ===== Pages villes / SEO local ===== -->
+  <url>
+    <loc>https://mbcarsdzrouiba.com/location-voiture-alger-particulier.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/location-voiture-oran-particulier.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/location-voiture-blida.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/location-voiture-boumerdes.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/location-voiture-setif.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/location-voiture-sidi-bel-abbes.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
 
-  <!-- Marques (exemples) -->
-  <url><loc>https://mbcarsdzrouiba.com/marques/audi.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/marques/bmw.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/marques/mercedes.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/marques/vw.php</loc></url>
-  <url><loc>https://mbcarsdzrouiba.com/dacia.php</loc></url>
-  <!-- etc. pour chaque marque que tu as réellement en ligne -->
+  <!-- ===== Pages marques ===== -->
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/audi.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/bmw.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/dacia.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/fiat.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/hyundai.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/mercedes.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/peugeot.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/porsche.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/renault.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/seat.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/skoda.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/suzuki.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://mbcarsdzrouiba.com/marques/volkswagen.php</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 
 </urlset>

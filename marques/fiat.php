@@ -3,7 +3,9 @@
 //  PAGE MARQUE : FIAT
 // ===============================
 $brand     = 'Fiat';
-$pageTitle = 'Location Fiat — MB CARS DZ';
+$pageTitle       = 'Location Fiat à Alger | MB CARS DZ';
+$pageDescription = 'Fiat 500, Tipo, Doblo à Alger — location voiture Fiat avec assurance incluse. MB CARS DZ Rouiba.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/fiat.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

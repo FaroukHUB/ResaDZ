@@ -3,7 +3,9 @@
 //  PAGE MARQUE : SKODA
 // ===============================
 $brand     = 'Skoda';
-$pageTitle = 'Location Skoda — MB CARS DZ';
+$pageTitle       = 'Location Skoda à Alger | MB CARS DZ';
+$pageDescription = 'Skoda Kamiq, Octavia à Alger — location voiture Skoda avec assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/skoda.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

@@ -2,8 +2,10 @@
 // ===============================
 //  CONDITIONS DE LOCATION
 // ===============================
-$pageTitle = 'Conditions de location — MB CARS DZ';
-$base      = './'; // on est à la racine
+$pageTitle       = 'Conditions de location voiture en Algérie — MB CARS DZ';
+$pageDescription = 'Consultez les conditions de location de MB CARS DZ : âge minimum 25 ans, permis de 2 ans, assurance incluse, caution, etc. Location voiture Alger en toute transparence.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/conditions.php';
+$base            = './'; // on est à la racine
 
 include __DIR__ . '/partials/header.php';
 ?>

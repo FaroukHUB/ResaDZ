@@ -3,7 +3,9 @@
 //  PAGE MARQUE : Seat
 // ===============================
 $brand     = 'Seat';
-$pageTitle = 'Location Seat — MB CARS DZ';
+$pageTitle       = 'Location Seat à Alger | MB CARS DZ';
+$pageDescription = 'Seat Ateca, Ibiza à Alger — location voiture Seat avec assurance incluse. MB CARS DZ Rouiba.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/seat.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

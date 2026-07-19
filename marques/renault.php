@@ -3,7 +3,9 @@
 //  PAGE MARQUE : RENAULT
 // ===============================
 $brand     = 'Renault';
-$pageTitle = 'Location Renault — MB CARS DZ';
+$pageTitle       = 'Location Renault à Alger | MB CARS DZ';
+$pageDescription = 'Renault Symbol, Clio à Alger — location voiture Renault avec assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/renault.php';
 $base      = '../'; // remonte à la racine (index, assets, styles, etc.)
 
 // Charge le tableau $vehicles

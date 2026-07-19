@@ -3,7 +3,9 @@
 //  PAGE MARQUE : Peugeot
 // ===============================
 $brand     = 'Peugeot';
-$pageTitle = 'Location Peugeot — MB CARS DZ';
+$pageTitle       = 'Location Peugeot à Alger | MB CARS DZ';
+$pageDescription = 'Peugeot 208, 3008 à Alger — location voiture Peugeot avec assurance incluse. MB CARS DZ.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/marques/peugeot.php';
 $base      = '../'; // remonte à la racine
 
 // Charge le tableau $vehicles

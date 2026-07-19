@@ -1,8 +1,10 @@
 <?php
 // suv.php — Page catégorie CITADINES
 
-$base      = './';
-$pageTitle = 'Location CITADINES — MB CARS DZ';
+$base            = './';
+$pageTitle       = 'Location citadine à Alger — Fiat 500, Renault Symbol, Dacia | MB CARS DZ';
+$pageDescription = 'Louez une citadine à Alger chez MB CARS DZ : Fiat 500, Renault Symbol, Dacia Stepway. Assurance incluse. Prix économiques à partir de 8 000 DA/jour. Livraison aéroport.';
+$canonicalUrl    = 'https://mbcarsdzrouiba.com/citadines.php';
 
 // Tableau global des véhicules
 require __DIR__ . '/data/vehicles.php';
