@@ -353,6 +353,7 @@
             <div class="border-t border-white/10 py-6">
                 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
                     <p class="text-white/60 text-sm">&copy; {{ date('Y') }} {{ $siteName }}. Tous droits réservés.</p>
+                    <p class="text-white/60 text-sm">Propulsé par <a href="https://mon-agenceweb.fr/" target="_blank" rel="noopener" class="font-semibold text-green-400 hover:text-green-300 transition underline underline-offset-2">Farouk</a></p>
                     <div class="flex items-center gap-6 text-white/60 text-sm">
                         <a href="{{ route('legal.mentions-legales') }}" class="hover:text-white transition">Mentions légales</a>
                         <a href="{{ route('legal.cgu') }}" class="hover:text-white transition">CGU</a>
