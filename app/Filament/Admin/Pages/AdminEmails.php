@@ -26,6 +26,7 @@ class AdminEmails extends Page
     public string $selectedTemplate = '';
     public string $recipientType = 'loueur';
     public string $selectedLoueurId = '';
+    public string $customPhone = '';
     public string $customEmail = '';
     public string $previewSubject = '';
     public string $previewBody = '';
@@ -213,6 +214,69 @@ class AdminEmails extends Page
         }
 
         $this->sendEmail($email, $name, $this->aiSubject, $this->aiBody, 'ai_generated');
+    }
+
+    /**
+     * URL WhatsApp (wa.me) avec le message pré-rempli pour le loueur sélectionné.
+     * Retourne null si aucun numéro n'est disponible.
+     */
+    public function getWhatsappUrl(string $body): ?string
+    {
+        $phone = null;
+
+        if ($this->recipientType === 'loueur' && $this->selectedLoueurId) {
+            $loueur = \App\Models\Loueur::find($this->selectedLoueurId);
+            $phone = $loueur?->whatsapp ?: $loueur?->phone;
+        } elseif ($this->customPhone) {
+            $phone = $this->customPhone;
+        }
+
+        if (!$phone) {
+            return null;
+        }
+
+        // Normalise en format international algérien (213...)
+        $digits = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($digits, '0')) {
+            $digits = '213' . substr($digits, 1);
+        } elseif (!str_starts_with($digits, '213')) {
+            $digits = '213' . $digits;
+        }
+
+        // Remplace {nom} par le nom du destinataire
+        $name = $this->getRecipientName($this->recipientType, $this->selectedLoueurId);
+        $body = str_replace('{nom}', $name ?: '', $body);
+
+        return 'https://wa.me/' . $digits . '?text=' . rawurlencode($body);
+    }
+
+    /**
+     * URL WhatsApp pour l'onglet Rédacteur IA (destinataire IA + corps généré).
+     */
+    public function getAiWhatsappUrl(): ?string
+    {
+        if (!$this->aiBody) {
+            return null;
+        }
+
+        $phone = null;
+        if ($this->aiRecipientType === 'loueur' && $this->aiSelectedLoueurId) {
+            $loueur = \App\Models\Loueur::find($this->aiSelectedLoueurId);
+            $phone = $loueur?->whatsapp ?: $loueur?->phone;
+        }
+
+        if (!$phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($digits, '0')) {
+            $digits = '213' . substr($digits, 1);
+        } elseif (!str_starts_with($digits, '213')) {
+            $digits = '213' . $digits;
+        }
+
+        return 'https://wa.me/' . $digits . '?text=' . rawurlencode($this->aiBody);
     }
 
     private function sendEmail(string $email, string $name, string $subject, string $body, ?string $templateKey = null): void
