@@ -102,10 +102,32 @@
                                 @error('client_name') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <input type="tel" name="client_phone" required
-                                       value="{{ old('client_phone') }}"
-                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
-                                       placeholder="Téléphone *">
+                                <div class="flex gap-2">
+                                    <select name="client_phone_indicatif"
+                                            class="px-2 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500 text-sm"
+                                            style="max-width: 130px;">
+                                        <option value="+213" {{ old('client_phone_indicatif', '+213') === '+213' ? 'selected' : '' }}>🇩🇿 +213</option>
+                                        <option value="+33" {{ old('client_phone_indicatif') === '+33' ? 'selected' : '' }}>🇫🇷 +33</option>
+                                        <option value="+32" {{ old('client_phone_indicatif') === '+32' ? 'selected' : '' }}>🇧🇪 +32</option>
+                                        <option value="+41" {{ old('client_phone_indicatif') === '+41' ? 'selected' : '' }}>🇨🇭 +41</option>
+                                        <option value="+34" {{ old('client_phone_indicatif') === '+34' ? 'selected' : '' }}>🇪🇸 +34</option>
+                                        <option value="+39" {{ old('client_phone_indicatif') === '+39' ? 'selected' : '' }}>🇮🇹 +39</option>
+                                        <option value="+44" {{ old('client_phone_indicatif') === '+44' ? 'selected' : '' }}>🇬🇧 +44</option>
+                                        <option value="+49" {{ old('client_phone_indicatif') === '+49' ? 'selected' : '' }}>🇩🇪 +49</option>
+                                        <option value="+1" {{ old('client_phone_indicatif') === '+1' ? 'selected' : '' }}>🇨🇦/🇺🇸 +1</option>
+                                        <option value="+90" {{ old('client_phone_indicatif') === '+90' ? 'selected' : '' }}>🇹🇷 +90</option>
+                                        <option value="+971" {{ old('client_phone_indicatif') === '+971' ? 'selected' : '' }}>🇦🇪 +971</option>
+                                        <option value="+966" {{ old('client_phone_indicatif') === '+966' ? 'selected' : '' }}>🇸🇦 +966</option>
+                                        <option value="+974" {{ old('client_phone_indicatif') === '+974' ? 'selected' : '' }}>🇶🇦 +974</option>
+                                        <option value="+216" {{ old('client_phone_indicatif') === '+216' ? 'selected' : '' }}>🇹🇳 +216</option>
+                                        <option value="+212" {{ old('client_phone_indicatif') === '+212' ? 'selected' : '' }}>🇲🇦 +212</option>
+                                    </select>
+                                    <input type="tel" name="client_phone" required
+                                           value="{{ old('client_phone') }}"
+                                           class="flex-1 px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500"
+                                           placeholder="Téléphone / WhatsApp *">
+                                </div>
+                                <p class="text-gray-400 text-xs mt-1">Choisissez l'indicatif de votre numéro WhatsApp (ex : +33 si numéro français)</p>
                                 @error('client_phone') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                             <div class="sm:col-span-2">

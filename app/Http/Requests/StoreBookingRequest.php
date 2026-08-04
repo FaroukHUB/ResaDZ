@@ -37,6 +37,8 @@ class StoreBookingRequest extends FormRequest
                 'max:20',
                 'regex:/^[\d\s\+\-\(\)]+$/'
             ],
+            'client_phone_indicatif' => 'nullable|string|max:6',
+            'client_whatsapp' => 'nullable|string|max:25',
             'client_email' => 'required|email:rfc,dns|max:255',
             'pickup_zone_id' => 'nullable',
             'return_zone_id' => 'nullable',
@@ -93,6 +95,28 @@ class StoreBookingRequest extends FormRequest
         if ($this->has('client_phone')) {
             $this->merge([
                 'client_phone' => preg_replace('/\s+/', ' ', trim($this->client_phone)),
+            ]);
+        }
+
+        // Combine l'indicatif pays + numéro en format international (+213..., +33...)
+        if ($this->filled('client_phone_indicatif') && $this->filled('client_phone')) {
+            $digits = preg_replace('/\D/', '', $this->client_phone);
+            $code = preg_replace('/\D/', '', $this->client_phone_indicatif);
+
+            if (str_starts_with($digits, '00')) {
+                // Déjà en international saisi avec 00
+                $full = '+' . substr($digits, 2);
+            } elseif ($code && str_starts_with($digits, $code)) {
+                // L'utilisateur a déjà inclus l'indicatif
+                $full = '+' . $digits;
+            } else {
+                // Cas normal : indicatif + numéro local sans le 0 initial
+                $full = '+' . $code . ltrim($digits, '0');
+            }
+
+            $this->merge([
+                'client_phone' => $full,
+                'client_whatsapp' => $full,
             ]);
         }
 

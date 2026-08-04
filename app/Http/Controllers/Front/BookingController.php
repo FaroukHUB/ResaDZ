@@ -379,6 +379,7 @@ class BookingController extends Controller
             'total_days' => $pricing['total_days'],
             'client_name' => $request->client_name,
             'client_phone' => $request->client_phone,
+            'client_whatsapp' => $request->client_whatsapp ?: $request->client_phone,
             'client_email' => $request->client_email,
             'pickup_zone_id' => $pickupZoneId,
             'return_zone_id' => $returnZoneId,
