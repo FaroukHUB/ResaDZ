@@ -27,6 +27,7 @@ class AdminEmails extends Page
     public string $recipientType = 'loueur';
     public string $selectedLoueurId = '';
     public string $customPhone = '';
+    public string $prefillLoueurId = '';
     public string $customEmail = '';
     public string $previewSubject = '';
     public string $previewBody = '';
@@ -89,6 +90,19 @@ class AdminEmails extends Page
                 'body' => "Salam {nom},\n\nVous avez demandé la réinitialisation de votre mot de passe ResaDZ (ou notre équipe l'a fait pour vous).\n\nCliquez sur le lien ci-dessous pour créer un nouveau mot de passe :\n\n{reset_link}\n\nCe lien est valable 60 minutes. Passé ce délai, vous devrez refaire une demande.\n\nSi vous n'avez pas demandé cette réinitialisation, ignorez cet email — votre mot de passe actuel reste inchangé.\n\nCordialement,\nL'équipe ResaDZ",
             ],
         ];
+    }
+
+    public function updatedPrefillLoueurId(): void
+    {
+        if (!$this->prefillLoueurId) {
+            return;
+        }
+
+        $loueur = Loueur::with('user')->find($this->prefillLoueurId);
+        if ($loueur) {
+            $this->customEmail = $loueur->user?->email ?? '';
+            $this->customPhone = $loueur->whatsapp ?: ($loueur->phone ?? '');
+        }
     }
 
     public function updatedSelectedTemplate(): void

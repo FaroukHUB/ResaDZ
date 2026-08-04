@@ -76,8 +76,14 @@
                             @endforeach
                         </select>
                     @else
+                        <select wire:model.live="prefillLoueurId" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px; margin-bottom: 8px; color: #64748b;">
+                            <option value="">— Pré-remplir depuis un loueur (optionnel) —</option>
+                            @foreach($loueurs as $l)
+                                <option value="{{ $l->id }}">{{ $l->company_name }}</option>
+                            @endforeach
+                        </select>
                         <div style="display: flex; gap: 8px;">
-                            <input type="email" wire:model="customEmail" placeholder="email@exemple.com" style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px;" />
+                            <input type="email" wire:model.live="customEmail" placeholder="email@exemple.com" style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px;" />
                             <input type="tel" wire:model.live="customPhone" placeholder="Tél. WhatsApp (ex: 0550...)" style="flex: 1; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px;" />
                         </div>
                     @endif
