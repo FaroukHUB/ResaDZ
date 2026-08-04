@@ -92,6 +92,8 @@ class PlatformSettings extends Page
             'facebook' => Setting::get('facebook', ''),
             'instagram' => Setting::get('instagram', ''),
             'tiktok' => Setting::get('tiktok', 'https://www.tiktok.com/@resadzalger'),
+            'google_reviews_url' => Setting::get('google_reviews_url', ''),
+            'google_rating' => Setting::get('google_rating', 4.5),
             'whatsapp' => Setting::get('whatsapp', ''),
 
             // Logos & Favicon
@@ -481,6 +483,20 @@ class PlatformSettings extends Page
                                             ->placeholder('https://www.tiktok.com/@votrecompte')
                                             ->prefixIcon('heroicon-o-link')
                                             ->helperText('URL complète de votre profil TikTok'),
+                                        Forms\Components\TextInput::make('google_reviews_url')
+                                            ->label('Avis Google (lien)')
+                                            ->url()
+                                            ->placeholder('https://g.page/r/...')
+                                            ->prefixIcon('heroicon-o-link')
+                                            ->helperText('Lien vers votre fiche/avis Google. Affiche le badge Avis Google dans le header.'),
+                                        Forms\Components\TextInput::make('google_rating')
+                                            ->label('Note Google')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->maxValue(5)
+                                            ->step(0.1)
+                                            ->placeholder('4.5')
+                                            ->helperText('Note affichée en étoiles dans le header (ex : 4.5)'),
                                         Forms\Components\TextInput::make('whatsapp')
                                             ->label('WhatsApp')
                                             ->tel()
@@ -558,6 +574,8 @@ class PlatformSettings extends Page
         Setting::set('facebook', $data['facebook'] ?? '', 'social', 'text');
         Setting::set('instagram', $data['instagram'] ?? '', 'social', 'text');
         Setting::set('tiktok', $data['tiktok'] ?? '', 'social', 'text');
+        Setting::set('google_reviews_url', $data['google_reviews_url'] ?? '', 'social', 'text');
+        Setting::set('google_rating', $data['google_rating'] ?? 4.5, 'social', 'text');
         Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
 
         // Logos & Favicon
