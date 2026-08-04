@@ -161,7 +161,9 @@
                             <svg style="width:32px;height:32px;" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
                             <span style="display:flex;flex-direction:column;line-height:1.2;">
                                 <span style="font-size:14px;font-weight:700;color:#111827;">Avis Google</span>
-                                <span style="display:flex;align-items:center;gap:1px;">
+                                <span style="display:flex;align-items:center;gap:4px;">
+                                    <span style="font-size:13px;font-weight:700;color:#111827;">{{ number_format($googleRating, 1) }}</span>
+                                    <span style="display:flex;align-items:center;gap:1px;">
                                     @php $fullStars = (int) floor($googleRating); $halfStar = ($googleRating - $fullStars) >= 0.5; @endphp
                                     @for($i = 1; $i <= 5; $i++)
                                         @if($i <= $fullStars)
@@ -172,6 +174,7 @@
                                             <svg style="width:14px;height:14px;color:#D1D5DB;" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
                                         @endif
                                     @endfor
+                                    </span>
                                 </span>
                             </span>
                         </a>
