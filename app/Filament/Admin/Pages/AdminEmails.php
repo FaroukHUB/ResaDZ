@@ -29,6 +29,14 @@ class AdminEmails extends Page
     public string $customPhone = '';
     public string $prefillLoueurId = '';
     public string $selectedClientEmail = '';
+
+    // Onglet Clients
+    public string $clientSelectedTemplate = '';
+    public string $clientRecipientType = 'client';
+    public string $clientCustomEmail = '';
+    public string $clientCustomPhone = '';
+    public string $clientPreviewSubject = '';
+    public string $clientPreviewBody = '';
     public string $customEmail = '';
     public string $previewSubject = '';
     public string $previewBody = '';
@@ -85,11 +93,6 @@ class AdminEmails extends Page
                 'subject' => 'Nouveau sur ResaDZ — Ne manquez pas !',
                 'body' => "Salam {nom},\n\nNous avons une nouveauté sur ResaDZ qui pourrait vous intéresser !\n\n[Décrivez la nouveauté ici]\n\nPour en profiter, connectez-vous sur votre espace loueur : resadz.com/loueur\n\nBonne continuation,\nL'équipe ResaDZ",
             ],
-            'avis_google_client' => [
-                'label' => 'Client : merci + demande avis Google',
-                'subject' => 'Merci d\'avoir choisi ResaDZ ! Votre avis compte',
-                'body' => "Salam {nom},\n\nMerci d'avoir choisi ResaDZ pour votre location ! Nous espérons que votre expérience s'est parfaitement déroulée et que le véhicule était à la hauteur de vos attentes.\n\nVotre avis est précieux : il aide d'autres clients à louer en confiance et nous permet de nous améliorer.\n\nNous vous serions reconnaissants de prendre 30 secondes pour laisser un avis ici :\nhttps://www.google.com/maps/place//data=!4m3!3m2!1s0x211686839698b1eb:0x3c296773135ccdf7!12e1?source=g.page.m.nd._&laa=nmx-reviews-dialog\n\nMerci encore pour votre confiance, et à très bientôt sur ResaDZ !\n\nL'équipe ResaDZ",
-            ],
             'reset_password' => [
                 'label' => 'Réinitialisation mot de passe',
                 'subject' => 'Réinitialisez votre mot de passe ResaDZ',
@@ -109,6 +112,27 @@ class AdminEmails extends Page
             $this->customEmail = $loueur->user?->email ?? '';
             $this->customPhone = $loueur->whatsapp ?: ($loueur->phone ?? '');
         }
+    }
+
+    public static function getClientTemplates(): array
+    {
+        return [
+            'avis_google_client' => [
+                'label' => 'Merci + demande avis Google',
+                'subject' => 'Merci d\'avoir choisi ResaDZ ! Votre avis compte',
+                'body' => "Salam {nom},\n\nMerci d'avoir choisi ResaDZ pour votre location ! Nous espérons que votre expérience s'est parfaitement déroulée et que le véhicule était à la hauteur de vos attentes.\n\nVotre avis est précieux : il aide d'autres clients à louer en confiance et nous permet de nous améliorer.\n\nNous vous serions reconnaissants de prendre 30 secondes pour laisser un avis ici :\nhttps://www.google.com/maps/place//data=!4m3!3m2!1s0x211686839698b1eb:0x3c296773135ccdf7!12e1?source=g.page.m.nd._&laa=nmx-reviews-dialog\n\nMerci encore pour votre confiance, et à très bientôt sur ResaDZ !\n\nL'équipe ResaDZ",
+            ],
+            'suivi_reservation' => [
+                'label' => 'Suivi après réservation',
+                'subject' => 'Votre réservation ResaDZ — tout se passe bien ?',
+                'body' => "Salam {nom},\n\nNous espérons que votre location se passe à merveille !\n\nSi vous avez la moindre question ou difficulté (véhicule, contact avec le loueur, prolongation...), répondez simplement à ce message — notre équipe est là pour vous aider.\n\nBonne route,\nL'équipe ResaDZ",
+            ],
+            'promo_client' => [
+                'label' => 'Promotion / offre spéciale',
+                'subject' => 'Une offre spéciale pour vous sur ResaDZ',
+                'body' => "Salam {nom},\n\nMerci de faire partie des clients ResaDZ !\n\n[Décrivez votre offre ici]\n\nRéservez dès maintenant sur resadz.com et profitez-en.\n\nÀ très bientôt,\nL'équipe ResaDZ",
+            ],
+        ];
     }
 
     public function updatedSelectedTemplate(): void
@@ -153,6 +177,9 @@ class AdminEmails extends Page
     {
         if ($this->selectedTemplate && $this->selectedClientEmail) {
             $this->updatedSelectedTemplate();
+        }
+        if ($this->clientSelectedTemplate && $this->selectedClientEmail) {
+            $this->updatedClientSelectedTemplate();
         }
     }
 
@@ -241,6 +268,74 @@ class AdminEmails extends Page
         }
 
         $this->sendEmail($email, $name, $this->aiSubject, $this->aiBody, 'ai_generated');
+    }
+
+    // ===== Onglet Clients =====
+
+    public function updatedClientSelectedTemplate(): void
+    {
+        $templates = static::getClientTemplates();
+        if (isset($templates[$this->clientSelectedTemplate])) {
+            $t = $templates[$this->clientSelectedTemplate];
+            $this->clientPreviewSubject = $t['subject'];
+            $this->clientPreviewBody = str_replace('{nom}', $this->getClientName() ?: '', $t['body']);
+        }
+    }
+
+    public function updatedSelectedClientEmailForClientTab(): void
+    {
+        // hook manuel déclenché depuis updatedSelectedClientEmail
+    }
+
+    private function getClientName(): string
+    {
+        if ($this->clientRecipientType === 'client' && $this->selectedClientEmail) {
+            $booking = \App\Models\Booking::where('client_email', $this->selectedClientEmail)->latest()->first();
+            return $booking?->client_name ?: '';
+        }
+        return '';
+    }
+
+    public function sendClientTemplate(): void
+    {
+        $email = $this->clientRecipientType === 'custom'
+            ? $this->clientCustomEmail
+            : $this->selectedClientEmail;
+
+        if (!$email || !$this->clientPreviewSubject || !$this->clientPreviewBody) {
+            Notification::make()->title('Remplissez tous les champs')->danger()->send();
+            return;
+        }
+
+        $this->sendEmail($email, $this->getClientName() ?: 'Client', $this->clientPreviewSubject, $this->clientPreviewBody, $this->clientSelectedTemplate);
+    }
+
+    public function getClientWhatsappUrl(): ?string
+    {
+        if (!$this->clientPreviewBody) {
+            return null;
+        }
+
+        $phone = null;
+        if ($this->clientRecipientType === 'client' && $this->selectedClientEmail) {
+            $booking = \App\Models\Booking::where('client_email', $this->selectedClientEmail)->latest()->first();
+            $phone = $booking?->client_whatsapp ?: $booking?->client_phone;
+        } elseif ($this->clientCustomPhone) {
+            $phone = $this->clientCustomPhone;
+        }
+
+        if (!$phone) {
+            return null;
+        }
+
+        $digits = preg_replace('/\D/', '', $phone);
+        if (str_starts_with($digits, '0')) {
+            $digits = '213' . substr($digits, 1);
+        } elseif (!str_starts_with($digits, '213')) {
+            $digits = '213' . $digits;
+        }
+
+        return 'https://wa.me/' . $digits . '?text=' . rawurlencode($this->clientPreviewBody);
     }
 
     /**
@@ -378,6 +473,7 @@ class AdminEmails extends Page
     {
         return [
             'templates' => static::getTemplates(),
+            'clientTemplates' => static::getClientTemplates(),
             'loueurs' => Loueur::where('is_active', true)->orderBy('company_name')->get(['id', 'company_name']),
             'clients' => \App\Models\Booking::whereNotNull('client_email')->where('client_email', '!=', '')
                 ->orderByDesc('created_at')
