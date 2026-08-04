@@ -28,6 +28,7 @@ class AdminEmails extends Page
     public string $selectedLoueurId = '';
     public string $customPhone = '';
     public string $prefillLoueurId = '';
+    public string $selectedClientEmail = '';
     public string $customEmail = '';
     public string $previewSubject = '';
     public string $previewBody = '';
@@ -84,6 +85,11 @@ class AdminEmails extends Page
                 'subject' => 'Nouveau sur ResaDZ — Ne manquez pas !',
                 'body' => "Salam {nom},\n\nNous avons une nouveauté sur ResaDZ qui pourrait vous intéresser !\n\n[Décrivez la nouveauté ici]\n\nPour en profiter, connectez-vous sur votre espace loueur : resadz.com/loueur\n\nBonne continuation,\nL'équipe ResaDZ",
             ],
+            'avis_google_client' => [
+                'label' => 'Client : merci + demande avis Google',
+                'subject' => 'Merci d\'avoir choisi ResaDZ ! Votre avis compte',
+                'body' => "Salam {nom},\n\nMerci d'avoir choisi ResaDZ pour votre location ! Nous espérons que votre expérience s'est parfaitement déroulée et que le véhicule était à la hauteur de vos attentes.\n\nVotre avis est précieux : il aide d'autres clients à louer en confiance et nous permet de nous améliorer.\n\nNous vous serions reconnaissants de prendre 30 secondes pour laisser un avis ici :\nhttps://www.google.com/maps/place//data=!4m3!3m2!1s0x211686839698b1eb:0x3c296773135ccdf7!12e1?source=g.page.m.nd._&laa=nmx-reviews-dialog\n\nMerci encore pour votre confiance, et à très bientôt sur ResaDZ !\n\nL'équipe ResaDZ",
+            ],
             'reset_password' => [
                 'label' => 'Réinitialisation mot de passe',
                 'subject' => 'Réinitialisez votre mot de passe ResaDZ',
@@ -139,6 +145,13 @@ class AdminEmails extends Page
     public function updatedSelectedLoueurId(): void
     {
         if ($this->selectedTemplate && $this->selectedLoueurId) {
+            $this->updatedSelectedTemplate();
+        }
+    }
+
+    public function updatedSelectedClientEmail(): void
+    {
+        if ($this->selectedTemplate && $this->selectedClientEmail) {
             $this->updatedSelectedTemplate();
         }
     }
@@ -241,6 +254,9 @@ class AdminEmails extends Page
         if ($this->recipientType === 'loueur' && $this->selectedLoueurId) {
             $loueur = \App\Models\Loueur::find($this->selectedLoueurId);
             $phone = $loueur?->whatsapp ?: $loueur?->phone;
+        } elseif ($this->recipientType === 'client' && $this->selectedClientEmail) {
+            $booking = \App\Models\Booking::where('client_email', $this->selectedClientEmail)->latest()->first();
+            $phone = $booking?->client_whatsapp ?: $booking?->client_phone;
         } elseif ($this->customPhone) {
             $phone = $this->customPhone;
         }
@@ -338,6 +354,7 @@ class AdminEmails extends Page
     private function getRecipientEmail(string $type, string $loueurId, string $customEmail = ''): ?string
     {
         if ($type === 'custom') return $customEmail ?: null;
+        if ($type === 'client') return $this->selectedClientEmail ?: null;
         if ($type === 'loueur' && $loueurId) {
             $loueur = Loueur::find($loueurId);
             return $loueur?->email_contact ?: $loueur?->user?->email;
@@ -350,6 +367,10 @@ class AdminEmails extends Page
         if ($type === 'loueur' && $loueurId) {
             return Loueur::find($loueurId)?->company_name ?? 'loueur';
         }
+        if ($type === 'client' && $this->selectedClientEmail) {
+            $booking = \App\Models\Booking::where('client_email', $this->selectedClientEmail)->latest()->first();
+            return $booking?->client_name ?: 'client';
+        }
         return 'client';
     }
 
@@ -358,6 +379,11 @@ class AdminEmails extends Page
         return [
             'templates' => static::getTemplates(),
             'loueurs' => Loueur::where('is_active', true)->orderBy('company_name')->get(['id', 'company_name']),
+            'clients' => \App\Models\Booking::whereNotNull('client_email')->where('client_email', '!=', '')
+                ->orderByDesc('created_at')
+                ->get(['client_name', 'client_email'])
+                ->unique('client_email')
+                ->values(),
             'recentEmails' => AdminEmail::with('sender')->orderByDesc('created_at')->limit(30)->get(),
         ];
     }

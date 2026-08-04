@@ -37,6 +37,7 @@
                         'demande_documents' => '📄',
                         'felicitations_reservation' => '🎉',
                         'promotion' => '📢',
+                        'avis_google_client' => '⭐',
                         'reset_password' => '🔑',
                     ];
                 @endphp
@@ -62,6 +63,11 @@
                             {{ $recipientType === 'loueur' ? 'background: #1e293b; color: white;' : 'background: #f1f5f9; color: #64748b;' }}">
                             Un loueur
                         </button>
+                        <button wire:click="$set('recipientType', 'client')"
+                            style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+                            {{ $recipientType === 'client' ? 'background: #1e293b; color: white;' : 'background: #f1f5f9; color: #64748b;' }}">
+                            Un client
+                        </button>
                         <button wire:click="$set('recipientType', 'custom')"
                             style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
                             {{ $recipientType === 'custom' ? 'background: #1e293b; color: white;' : 'background: #f1f5f9; color: #64748b;' }}">
@@ -73,6 +79,13 @@
                             <option value="">— Choisir un loueur —</option>
                             @foreach($loueurs as $l)
                                 <option value="{{ $l->id }}">{{ $l->company_name }}</option>
+                            @endforeach
+                        </select>
+                    @elseif($recipientType === 'client')
+                        <select wire:model.live="selectedClientEmail" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px;">
+                            <option value="">— Choisir un client (issus des réservations) —</option>
+                            @foreach($clients as $c)
+                                <option value="{{ $c->client_email }}">{{ $c->client_name }} — {{ $c->client_email }}</option>
                             @endforeach
                         </select>
                     @else
