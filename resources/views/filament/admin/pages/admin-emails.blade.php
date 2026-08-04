@@ -292,9 +292,12 @@
                     </div>
                     @if($clientRecipientType === 'client')
                         <select wire:model.live="selectedClientEmail" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px;">
-                            <option value="">— Choisir un client (issus des réservations) —</option>
+                            <option value="">— Choisir un client (trié par location la plus récente) —</option>
+                            @php
+                                $statusLabels = ['completed' => 'terminée', 'confirmed' => 'confirmée', 'pending' => 'en attente', 'cancelled' => 'annulée', 'reserved' => 'en cours'];
+                            @endphp
                             @foreach($clients as $c)
-                                <option value="{{ $c->client_email }}">{{ $c->client_name }} — {{ $c->client_email }}</option>
+                                <option value="{{ $c->client_email }}">{{ $c->client_name }} — {{ $c->reference }}{{ $c->end_date ? ' — ' . ($statusLabels[$c->status] ?? $c->status) . ' le ' . $c->end_date->format('d/m/Y') : '' }}</option>
                             @endforeach
                         </select>
                     @else

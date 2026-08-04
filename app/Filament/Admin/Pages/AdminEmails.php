@@ -120,7 +120,7 @@ class AdminEmails extends Page
             'avis_google_client' => [
                 'label' => 'Merci + demande avis Google',
                 'subject' => 'Merci d\'avoir choisi ResaDZ ! Votre avis compte',
-                'body' => "Salam {nom},\n\nMerci d'avoir choisi ResaDZ pour votre location ! Nous espérons que votre expérience s'est parfaitement déroulée et que le véhicule était à la hauteur de vos attentes.\n\nVotre avis est précieux : il aide d'autres clients à louer en confiance et nous permet de nous améliorer.\n\nNous vous serions reconnaissants de prendre 30 secondes pour laisser un avis ici :\nhttps://www.google.com/maps/place//data=!4m3!3m2!1s0x211686839698b1eb:0x3c296773135ccdf7!12e1?source=g.page.m.nd._&laa=nmx-reviews-dialog\n\nMerci encore pour votre confiance, et à très bientôt sur ResaDZ !\n\nL'équipe ResaDZ",
+                'body' => "Salam {nom},\n\nMerci d'avoir choisi ResaDZ pour votre location {reference} ! Nous espérons que votre expérience s'est parfaitement déroulée et que le véhicule était à la hauteur de vos attentes.\n\nVotre avis est précieux : il aide d'autres clients à louer en confiance et nous permet de nous améliorer.\n\nNous vous serions reconnaissants de prendre 30 secondes pour laisser un avis ici :\nhttps://www.google.com/maps/place//data=!4m3!3m2!1s0x211686839698b1eb:0x3c296773135ccdf7!12e1?source=g.page.m.nd._&laa=nmx-reviews-dialog\n\nMerci encore pour votre confiance, et à très bientôt sur ResaDZ !\n\nL'équipe ResaDZ",
             ],
             'suivi_reservation' => [
                 'label' => 'Suivi après réservation',
@@ -278,7 +278,19 @@ class AdminEmails extends Page
         if (isset($templates[$this->clientSelectedTemplate])) {
             $t = $templates[$this->clientSelectedTemplate];
             $this->clientPreviewSubject = $t['subject'];
-            $this->clientPreviewBody = str_replace('{nom}', $this->getClientName() ?: '', $t['body']);
+
+            $body = str_replace('{nom}', $this->getClientName() ?: '', $t['body']);
+
+            // Référence de la dernière réservation du client
+            $reference = '';
+            if ($this->clientRecipientType === 'client' && $this->selectedClientEmail) {
+                $booking = \App\Models\Booking::where('client_email', $this->selectedClientEmail)->orderByDesc('end_date')->first();
+                $reference = $booking?->reference ?? '';
+            }
+            $body = str_replace(' {reference}', $reference ? ' ' . $reference : '', $body);
+            $body = str_replace('{reference}', $reference, $body);
+
+            $this->clientPreviewBody = $body;
         }
     }
 
@@ -482,8 +494,8 @@ class AdminEmails extends Page
             'clientTemplates' => static::getClientTemplates(),
             'loueurs' => Loueur::where('is_active', true)->orderBy('company_name')->get(['id', 'company_name']),
             'clients' => \App\Models\Booking::whereNotNull('client_email')->where('client_email', '!=', '')
-                ->orderByDesc('created_at')
-                ->get(['client_name', 'client_email'])
+                ->orderByDesc('end_date')
+                ->get(['client_name', 'client_email', 'reference', 'end_date', 'status'])
                 ->unique('client_email')
                 ->values(),
             'recentEmails' => AdminEmail::with('sender')->orderByDesc('created_at')->limit(30)->get(),
