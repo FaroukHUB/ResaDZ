@@ -329,10 +329,12 @@ class AdminEmails extends Page
         }
 
         $digits = preg_replace('/\D/', '', $phone);
-        if (str_starts_with($digits, '0')) {
+        if (str_starts_with($digits, '00')) {
+            // Déjà en international (ex: 0033... -> 33...)
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0')) {
+            // Numéro local algérien (ex: 0550... -> 213550...)
             $digits = '213' . substr($digits, 1);
-        } elseif (!str_starts_with($digits, '213')) {
-            $digits = '213' . $digits;
         }
 
         return 'https://wa.me/' . $digits . '?text=' . rawurlencode($this->clientPreviewBody);
@@ -362,10 +364,12 @@ class AdminEmails extends Page
 
         // Normalise en format international algérien (213...)
         $digits = preg_replace('/\D/', '', $phone);
-        if (str_starts_with($digits, '0')) {
+        if (str_starts_with($digits, '00')) {
+            // Déjà en international (ex: 0033... -> 33...)
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0')) {
+            // Numéro local algérien (ex: 0550... -> 213550...)
             $digits = '213' . substr($digits, 1);
-        } elseif (!str_starts_with($digits, '213')) {
-            $digits = '213' . $digits;
         }
 
         // Remplace {nom} par le nom du destinataire
@@ -395,10 +399,12 @@ class AdminEmails extends Page
         }
 
         $digits = preg_replace('/\D/', '', $phone);
-        if (str_starts_with($digits, '0')) {
+        if (str_starts_with($digits, '00')) {
+            // Déjà en international (ex: 0033... -> 33...)
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '0')) {
+            // Numéro local algérien (ex: 0550... -> 213550...)
             $digits = '213' . substr($digits, 1);
-        } elseif (!str_starts_with($digits, '213')) {
-            $digits = '213' . $digits;
         }
 
         return 'https://wa.me/' . $digits . '?text=' . rawurlencode($this->aiBody);
