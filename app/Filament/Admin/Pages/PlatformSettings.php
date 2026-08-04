@@ -91,6 +91,7 @@ class PlatformSettings extends Page
             // Social Media
             'facebook' => Setting::get('facebook', ''),
             'instagram' => Setting::get('instagram', ''),
+            'tiktok' => Setting::get('tiktok', 'https://www.tiktok.com/@resadzalger'),
             'whatsapp' => Setting::get('whatsapp', ''),
 
             // Logos & Favicon
@@ -474,6 +475,12 @@ class PlatformSettings extends Page
                                             ->placeholder('https://instagram.com/votrecompte')
                                             ->prefixIcon('heroicon-o-link')
                                             ->helperText('URL complète de votre profil Instagram'),
+                                        Forms\Components\TextInput::make('tiktok')
+                                            ->label('TikTok')
+                                            ->url()
+                                            ->placeholder('https://www.tiktok.com/@votrecompte')
+                                            ->prefixIcon('heroicon-o-link')
+                                            ->helperText('URL complète de votre profil TikTok'),
                                         Forms\Components\TextInput::make('whatsapp')
                                             ->label('WhatsApp')
                                             ->tel()
@@ -550,6 +557,7 @@ class PlatformSettings extends Page
         // Social Media
         Setting::set('facebook', $data['facebook'] ?? '', 'social', 'text');
         Setting::set('instagram', $data['instagram'] ?? '', 'social', 'text');
+        Setting::set('tiktok', $data['tiktok'] ?? '', 'social', 'text');
         Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
 
         // Logos & Favicon
