@@ -16,7 +16,7 @@ class AdminEmails extends Page
 {
     protected static ?string $navigationIcon = 'heroicon-o-envelope';
     protected static ?string $navigationGroup = 'Gestion';
-    protected static ?string $navigationLabel = 'Emails';
+    protected static ?string $navigationLabel = 'Emails / WhatsApp';
     protected static ?int $navigationSort = 5;
     protected static string $view = 'filament.admin.pages.admin-emails';
 
