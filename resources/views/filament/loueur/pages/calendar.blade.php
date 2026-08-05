@@ -169,6 +169,50 @@
             <span class="text-xs text-gray-400 dark:text-gray-500">Cliquez directement sur un jour pour le bloquer/débloquer</span>
         </div>
 
+        {{-- Synchronisation Google Calendar --}}
+        @if($icalUrl)
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700"
+             x-data="{ showSync: false, importUrl: '', copied: false }">
+            <button type="button" @click="showSync = !showSync" class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200 w-full">
+                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5"/></svg>
+                Synchronisation Google Calendar
+                <svg class="w-4 h-4 ml-auto transition-transform" :class="showSync && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+
+            <div x-show="showSync" x-collapse class="mt-4 space-y-4">
+                {{-- Export : lien iCal --}}
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Exporter vers Google Calendar</p>
+                    <p class="text-xs text-gray-400 mb-2">Copiez ce lien puis dans Google Agenda : Autres agendas → + → À partir d'une URL</p>
+                    <div class="flex gap-2">
+                        <input type="text" readonly value="{{ $icalUrl }}" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-xs text-gray-600 dark:text-gray-300" />
+                        <button type="button"
+                                @click="navigator.clipboard.writeText('{{ $icalUrl }}'); copied = true; setTimeout(() => copied = false, 2000)"
+                                class="px-4 py-2 rounded-lg text-xs font-bold text-white transition"
+                                style="background: linear-gradient(135deg, #FF6B2C, #F59E0B);">
+                            <span x-show="!copied">Copier</span>
+                            <span x-show="copied" x-cloak>Copié ✓</span>
+                        </button>
+                    </div>
+                </div>
+
+                {{-- Import : URL iCal Google --}}
+                <div>
+                    <p class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-1">Importer depuis Google Calendar</p>
+                    <p class="text-xs text-gray-400 mb-2">Dans Google Agenda : Paramètres de l'agenda → Intégrer l'agenda → Adresse secrète au format iCal. Les événements bloqueront les dates du véhicule sélectionné.</p>
+                    <div class="flex gap-2">
+                        <input type="url" x-model="importUrl" placeholder="https://calendar.google.com/calendar/ical/..." class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-xs text-gray-700 dark:text-gray-200" />
+                        <button type="button"
+                                @click="if (importUrl && $wire.selectedVehicle) { $wire.importGoogleCalendar(parseInt($wire.selectedVehicle), importUrl); importUrl = ''; }"
+                                class="px-4 py-2 rounded-lg text-xs font-bold text-white bg-gray-900 hover:bg-gray-700 transition">
+                            Importer
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- Calendar grid --}}
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 cal-slide-enter" wire:key="cal-{{ $currentMonth }}-{{ $currentYear }}-{{ $selectedVid }}">
             <div class="cal-grid">

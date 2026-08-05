@@ -187,6 +187,9 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
         ->name('admin.invoices.pdf.view');
 });
 
+// Calendar iCal Feed (abonnement Google Calendar / Apple / Outlook)
+Route::get('/calendar/ical/{token}.ics', [\App\Http\Controllers\Api\CalendarController::class, 'icalFeed'])->name('calendar.ical');
+
 // Admin : accès au dashboard d'un loueur (impersonation)
 Route::middleware(['auth'])->group(function () {
     Route::get('/admin/impersonate/{loueur}', [\App\Http\Controllers\Admin\ImpersonationController::class, 'start'])
