@@ -31,6 +31,17 @@ class Calendar extends Page
     {
         $this->currentMonth = (int) request('month', now()->month);
         $this->currentYear = (int) request('year', now()->year);
+
+        // Sélectionne le premier véhicule actif par défaut
+        if (!$this->selectedVehicle) {
+            $loueur = Auth::user()?->loueur;
+            if ($loueur) {
+                $this->selectedVehicle = Vehicle::where('loueur_id', $loueur->id)
+                    ->where('is_active', true)
+                    ->orderBy('full_name')
+                    ->value('id');
+            }
+        }
     }
 
     public function previousMonth(): void

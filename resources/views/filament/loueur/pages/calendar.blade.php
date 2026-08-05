@@ -12,7 +12,7 @@
         $firstDay = $days[0] ?? now()->startOfMonth();
         $startDow = ($firstDay->dayOfWeekIso - 1);
 
-        $selectedVid = $vehicles->first()?->id ?? 0;
+        $selectedVid = $selectedVehicle ?? ($vehicles->first()?->id ?? 0);
         $currentStats = $statsData[$selectedVid] ?? ['available' => 0, 'blocked' => 0, 'booked' => 0];
     @endphp
 
@@ -120,11 +120,10 @@
 
     <div class="cal-page space-y-6"
         x-data="{
-            selectedVehicleId: {{ $vehicles->first()?->id ?? 'null' }},
             onDayClick(dateStr, status) {
-                if (!this.selectedVehicleId) return;
+                if (!this.$wire.selectedVehicle) return;
                 if (status === 'past' || status === 'booked' || status === 'maintenance' || status === 'unavailable' || status === 'no-vehicle') return;
-                this.$wire.toggleBlock(parseInt(this.selectedVehicleId), dateStr);
+                this.$wire.toggleBlock(parseInt(this.$wire.selectedVehicle), dateStr);
             },
         }"
     >
@@ -134,7 +133,7 @@
             <div class="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                 <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H6.375c-.621 0-1.125-.504-1.125-1.125V11.25" /></svg>
             </div>
-            <select x-model="selectedVehicleId" class="cal-vehicle-select">
+            <select wire:model.live="selectedVehicle" class="cal-vehicle-select">
                 @if($vehicles->count() > 1)
                     <option value="">Choisir un véhicule...</option>
                 @endif
@@ -171,7 +170,7 @@
         </div>
 
         {{-- Calendar grid --}}
-        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 cal-slide-enter" wire:key="cal-{{ $currentMonth }}-{{ $currentYear }}">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 sm:p-6 shadow-sm border border-gray-100 dark:border-gray-700 cal-slide-enter" wire:key="cal-{{ $currentMonth }}-{{ $currentYear }}-{{ $selectedVid }}">
             <div class="cal-grid">
                 {{-- Day headers --}}
                 <div class="cal-day-header-cell">L</div>
