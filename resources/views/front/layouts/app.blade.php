@@ -131,7 +131,7 @@
                 <div class="flex items-center gap-3">
                     {{-- Réseaux sociaux + Avis Google (styles inline : indépendant du build Tailwind) --}}
                     <style>
-                        .hdr-logo { height: 62px; width: auto; }
+                        .hdr-logo { height: 92px; width: auto; }
                         @media (min-width: 1024px) { .hdr-logo { height: 112px; } }
                         .hdr-social-wrap { display: flex; align-items: center; gap: 4px; margin-right: 2px; }
                         .hdr-social-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: opacity .2s; }
