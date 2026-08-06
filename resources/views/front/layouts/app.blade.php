@@ -111,9 +111,9 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex justify-between items-center h-16">
                 <!-- Logo -->
-                <a href="{{ route('home') }}" class="flex items-center gap-3">
+                <a href="{{ route('home') }}" class="flex items-center gap-3" style="flex-shrink:0;">
                     @if($logoLight)
-                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="h-28 w-auto" width="140" height="112">
+                        <img src="{{ Storage::url($logoLight) }}" alt="{{ $siteName }}" class="hdr-logo" width="140" height="112">
                     @else
                         {{-- Fallback text logo --}}
                         <span class="text-2xl font-black text-gray-900">{{ $siteName }}</span>
@@ -131,6 +131,8 @@
                 <div class="flex items-center gap-3">
                     {{-- Réseaux sociaux + Avis Google (styles inline : indépendant du build Tailwind) --}}
                     <style>
+                        .hdr-logo { height: 44px; width: auto; }
+                        @media (min-width: 1024px) { .hdr-logo { height: 112px; } }
                         .hdr-social-wrap { display: flex; align-items: center; gap: 6px; margin-right: 4px; }
                         .hdr-social-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: opacity .2s; }
                         .hdr-social-btn svg { width: 16px; height: 16px; }
