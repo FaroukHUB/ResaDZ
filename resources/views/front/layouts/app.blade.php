@@ -131,23 +131,33 @@
                 <div class="flex items-center gap-3">
                     {{-- Réseaux sociaux + Avis Google (styles inline : indépendant du build Tailwind) --}}
                     <style>
-                        .hdr-logo { height: 44px; width: auto; }
+                        .hdr-logo { height: 62px; width: auto; }
                         @media (min-width: 1024px) { .hdr-logo { height: 112px; } }
-                        .hdr-social-wrap { display: flex; align-items: center; gap: 6px; margin-right: 4px; }
-                        .hdr-social-btn { width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: opacity .2s; }
-                        .hdr-social-btn svg { width: 16px; height: 16px; }
+                        .hdr-social-wrap { display: flex; align-items: center; gap: 4px; margin-right: 2px; }
+                        .hdr-social-btn { width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; border-radius: 9999px; color: #fff; box-shadow: 0 1px 2px rgba(0,0,0,.15); transition: opacity .2s; }
+                        .hdr-social-btn svg { width: 13px; height: 13px; }
                         .hdr-social-btn:hover { opacity: .8; }
-                        .hdr-greviews { display: flex; align-items: center; gap: 6px; padding: 0 8px; border-left: 1px solid #e5e7eb; text-decoration: none; transition: opacity .2s; }
+                        .hdr-greviews { display: flex; flex-direction: column; align-items: center; gap: 1px; padding: 0 6px; border-left: 1px solid #e5e7eb; text-decoration: none; transition: opacity .2s; }
                         .hdr-greviews:hover { opacity: .8; }
-                        .hdr-greviews-glogo { width: 24px; height: 24px; }
+                        .hdr-grev-top { display: flex; align-items: center; gap: 3px; }
+                        .hdr-greviews-glogo { width: 18px; height: 18px; }
+                        .hdr-grev-note { font-size: 12px; font-weight: 700; color: #111827; }
+                        .hdr-grev-stars { display: flex; align-items: center; gap: 1px; }
+                        .hdr-grev-stars svg { width: 10px; height: 10px; }
                         .hdr-greviews-label { display: none; }
+                        .hdr-user-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border-radius: 9999px; transition: opacity .2s; flex-shrink: 0; }
+                        .hdr-user-btn svg { width: 17px; height: 17px; }
                         @media (min-width: 1024px) {
                             .hdr-social-wrap { gap: 10px; margin-right: 8px; }
                             .hdr-social-btn { width: 36px; height: 36px; }
                             .hdr-social-btn svg { width: 20px; height: 20px; }
-                            .hdr-greviews { gap: 10px; padding: 0 14px; border-right: 1px solid #e5e7eb; }
-                            .hdr-greviews-glogo { width: 32px; height: 32px; }
-                            .hdr-greviews-label { display: block; }
+                            .hdr-greviews { gap: 2px; padding: 0 14px; border-right: 1px solid #e5e7eb; }
+                            .hdr-greviews-glogo { width: 26px; height: 26px; }
+                            .hdr-grev-note { font-size: 14px; }
+                            .hdr-grev-stars svg { width: 14px; height: 14px; }
+                            .hdr-greviews-label { display: block; font-size: 13px; font-weight: 700; color: #111827; }
+                            .hdr-user-btn { width: 38px; height: 38px; }
+                            .hdr-user-btn svg { width: 22px; height: 22px; }
                         }
                     </style>
                     <div class="hdr-social-wrap">
@@ -170,24 +180,22 @@
                         {{-- Avis Google --}}
                         @if($googleReviewsUrl)
                         <a href="{{ $googleReviewsUrl }}" target="_blank" rel="noopener" class="hdr-greviews" aria-label="Avis Google">
-                            <svg class="hdr-greviews-glogo" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
-                            <span style="display:flex;flex-direction:column;line-height:1.2;">
-                                <span class="hdr-greviews-label" style="font-size:14px;font-weight:700;color:#111827;">Avis Google</span>
-                                <span style="display:flex;align-items:center;gap:4px;">
-                                    <span style="font-size:13px;font-weight:700;color:#111827;">{{ number_format($googleRating, 1) }}</span>
-                                    <span style="display:flex;align-items:center;gap:1px;">
-                                    @php $fullStars = (int) floor($googleRating); $halfStar = ($googleRating - $fullStars) >= 0.5; @endphp
-                                    @for($i = 1; $i <= 5; $i++)
-                                        @if($i <= $fullStars)
-                                            <svg style="width:14px;height:14px;color:#FBBC04;" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        @elseif($i == $fullStars + 1 && $halfStar)
-                                            <svg style="width:14px;height:14px;" viewBox="0 0 20 20"><defs><linearGradient id="hdrhalfstar"><stop offset="50%" stop-color="#FBBC04"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#hdrhalfstar)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        @else
-                                            <svg style="width:14px;height:14px;color:#D1D5DB;" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
-                                        @endif
-                                    @endfor
-                                    </span>
-                                </span>
+                            <span class="hdr-grev-top">
+                                <svg class="hdr-greviews-glogo" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611 20.083H42V20H24v8h11.303c-1.649 4.657-6.08 8-11.303 8-6.627 0-12-5.373-12-12s5.373-12 12-12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 12.955 4 4 12.955 4 24s8.955 20 20 20 20-8.955 20-20c0-1.341-.138-2.65-.389-3.917z"/><path fill="#FF3D00" d="m6.306 14.691 6.571 4.819C14.655 15.108 18.961 12 24 12c3.059 0 5.842 1.154 7.961 3.039l5.657-5.657C34.046 6.053 29.268 4 24 4 16.318 4 9.656 8.337 6.306 14.691z"/><path fill="#4CAF50" d="M24 44c5.166 0 9.86-1.977 13.409-5.192l-6.19-5.238A11.91 11.91 0 0 1 24 36c-5.202 0-9.619-3.317-11.283-7.946l-6.522 5.025C9.505 39.556 16.227 44 24 44z"/><path fill="#1976D2" d="M43.611 20.083H42V20H24v8h11.303a12.04 12.04 0 0 1-4.087 5.571l.003-.002 6.19 5.238C36.971 39.205 44 34 44 24c0-1.341-.138-2.65-.389-3.917z"/></svg>
+                                <span class="hdr-grev-note">{{ number_format($googleRating, 1) }}</span>
+                                <span class="hdr-greviews-label">Avis Google</span>
+                            </span>
+                            <span class="hdr-grev-stars">
+                                @php $fullStars = (int) floor($googleRating); $halfStar = ($googleRating - $fullStars) >= 0.5; @endphp
+                                @for($i = 1; $i <= 5; $i++)
+                                    @if($i <= $fullStars)
+                                        <svg fill="currentColor" style="color:#FBBC04;" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    @elseif($i == $fullStars + 1 && $halfStar)
+                                        <svg viewBox="0 0 20 20"><defs><linearGradient id="hdrhalfstar"><stop offset="50%" stop-color="#FBBC04"/><stop offset="50%" stop-color="#E5E7EB"/></linearGradient></defs><path fill="url(#hdrhalfstar)" d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    @else
+                                        <svg fill="currentColor" style="color:#D1D5DB;" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/></svg>
+                                    @endif
+                                @endfor
                             </span>
                         </a>
                         @endif
@@ -196,9 +204,8 @@
                         @php
                             $espaceUrl = Auth::user()->loueur ? '/loueur' : (in_array(Auth::user()->role, ['admin', 'super_admin']) ? '/admin' : url('/'));
                         @endphp
-                        <a href="{{ $espaceUrl }}" aria-label="Mon compte" title="Connecté — Mon espace"
-                           style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9999px;background:#DCFCE7;transition:opacity .2s;">
-                            <svg style="width:22px;height:22px;color:#16A34A;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                        <a href="{{ $espaceUrl }}" aria-label="Mon compte" title="Connecté — Mon espace" class="hdr-user-btn" style="background:#DCFCE7;">
+                            <svg style="color:#16A34A;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                         </a>
                         @if(Auth::user()->loueur)
                             <a href="/loueur" class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition text-sm">
@@ -217,9 +224,8 @@
                             </button>
                         </form>
                     @else
-                        <a href="{{ route('login') }}" aria-label="Connexion" title="Connexion"
-                           style="display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:9999px;background:#FEE2E2;transition:opacity .2s;">
-                            <svg style="width:22px;height:22px;color:#DC2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
+                        <a href="{{ route('login') }}" aria-label="Connexion" title="Connexion" class="hdr-user-btn" style="background:#FEE2E2;">
+                            <svg style="color:#DC2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/></svg>
                         </a>
                         {{-- S'inscrire dropdown --}}
                         <div class="relative hidden sm:block" x-data="{ open: false }">
