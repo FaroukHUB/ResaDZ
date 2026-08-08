@@ -48,15 +48,14 @@
                     <!-- Dates & Heure de prise en charge -->
                     <div class="bg-white rounded-2xl border border-gray-200 p-6">
                         <h2 class="text-lg font-bold text-gray-900 mb-4">Quand souhaitez-vous louer ?</h2>
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date de prise en charge *</label>
-                                <input type="date" name="start_date" id="start_date" required
-                                       min="{{ date('Y-m-d') }}"
-                                       value="{{ old('start_date') }}"
-                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
-                                @error('start_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                            </div>
+                        {{-- Calendrier de sélection type Airbnb : pilote les champs cachés start_date / end_date --}}
+                        <input type="hidden" name="start_date" id="start_date" value="{{ old('start_date', request('start')) }}">
+                        <input type="hidden" name="end_date" id="end_date" value="{{ old('end_date', request('end')) }}">
+                        <div id="bookingRangeCalendar" class="mb-2"></div>
+                        @error('start_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                        @error('end_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Heure de prise en charge *</label>
                                 <select name="pickup_time" id="pickup_time" required class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
@@ -66,14 +65,6 @@
                                     @endfor
                                 </select>
                                 @error('pickup_time') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
-                            </div>
-                            <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Date de retour *</label>
-                                <input type="date" name="end_date" id="end_date" required
-                                       min="{{ date('Y-m-d', strtotime('+1 day')) }}"
-                                       value="{{ old('end_date') }}"
-                                       class="w-full px-4 py-3 rounded-xl bg-gray-50 border border-gray-200 focus:ring-amber-500 focus:border-amber-500">
-                                @error('end_date') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
 
@@ -389,6 +380,7 @@ fbq('track','InitiateCheckout',{content_name:'{{ addslashes($vehicle->full_name)
 @endsection
 
 @section('scripts')
+<script src="/js/resadz-range-calendar.js"></script>
 <script>
     const vehicleId = {{ $vehicle->id }};
     const calcUrl = '{{ route("booking.calculate") }}';
@@ -403,6 +395,29 @@ fbq('track','InitiateCheckout',{content_name:'{{ addslashes($vehicle->full_name)
 
     const startDate = document.getElementById('start_date');
     const endDate = document.getElementById('end_date');
+
+    // === Calendrier Airbnb : mêmes données de dispo que le calendrier loueur ===
+    (function initRangeCalendar() {
+        const container = document.getElementById('bookingRangeCalendar');
+        if (!container || !window.ResadzRangeCalendar) return;
+
+        const cal = new ResadzRangeCalendar(container, {
+            minDays: {{ max(1, (int) ($vehicle->min_rental_days ?? 1)) }},
+            start: startDate.value || null,
+            end: endDate.value || null,
+            onChange: function (s, e) {
+                startDate.value = s;
+                endDate.value = e;
+                startDate.dispatchEvent(new Event('change'));
+                endDate.dispatchEvent(new Event('change'));
+            }
+        });
+
+        fetch('/api/vehicles/{{ $vehicle->slug }}/unavailable-dates')
+            .then(r => r.json())
+            .then(data => { if (data && data.dates) cal.setUnavailable(data.dates); })
+            .catch(() => {});
+    })();
     const pickupTime = document.getElementById('pickup_time');
     const pickupZone = document.getElementById('pickup_zone_id');
     const returnZone = document.getElementById('return_zone_id');

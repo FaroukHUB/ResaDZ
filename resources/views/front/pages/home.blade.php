@@ -147,11 +147,11 @@
                             </div>
                             <div class="min-w-0">
                                 <label for="hero-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
-                                <input type="date" name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme:dark">
+                                <input type="text" readonly name="pickup_date" id="hero-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" data-rzc-pair="hero" data-rzc-role="start" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm">
                             </div>
                             <div class="min-w-0">
                                 <label for="hero-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
-                                <input type="date" name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme:dark">
+                                <input type="text" readonly name="return_date" id="hero-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" data-rzc-pair="hero" data-rzc-role="end" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm">
                             </div>
                             <div>
                                 <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
@@ -184,11 +184,11 @@
                 </div>
                 <div>
                     <label for="mobile-pickup-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de départ</label>
-                    <input type="date" name="pickup_date" id="mobile-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
+                    <input type="text" readonly name="pickup_date" id="mobile-pickup-date" value="{{ date('Y-m-d', strtotime('+1 day')) }}" data-rzc-pair="mobile" data-rzc-role="start" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm">
                 </div>
                 <div>
                     <label for="mobile-return-date" class="block text-xs font-semibold text-white/70 uppercase tracking-wide mb-2">Date de retour</label>
-                    <input type="date" name="return_date" id="mobile-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm" style="color-scheme: dark;">
+                    <input type="text" readonly name="return_date" id="mobile-return-date" value="{{ date('Y-m-d', strtotime('+4 days')) }}" data-rzc-pair="mobile" data-rzc-role="end" class="w-full px-4 py-3 rounded-xl bg-neutral-800 border border-neutral-700 text-white cursor-pointer text-sm">
                 </div>
                 <button type="submit" class="w-full px-6 py-3.5 bg-green-600 text-white font-bold rounded-xl flex items-center justify-center gap-2">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -929,6 +929,49 @@
 @endsection
 
 @section('scripts')
+<script src="{{ asset('js/resadz-range-calendar.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    if (!window.ResadzRangeCalendar) return;
+
+    // Modal plein écran partagé pour les deux formulaires (hero + mobile)
+    const overlay = document.createElement('div');
+    overlay.id = 'rzcSearchModal';
+    overlay.style.cssText = 'display:none;position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.7);align-items:center;justify-content:center;padding:16px;';
+    overlay.innerHTML = '<div style="background:#111827;border-radius:20px;padding:20px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.5);">'
+        + '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">'
+        + '<p style="color:#fff;font-weight:700;font-size:15px;margin:0;">Choisissez vos dates</p>'
+        + '<button type="button" id="rzcSearchClose" style="width:36px;height:36px;border-radius:9999px;background:rgba(255,255,255,.1);color:#fff;border:none;font-size:18px;cursor:pointer;">✕</button>'
+        + '</div><div id="rzcSearchCal"></div></div>';
+    document.body.appendChild(overlay);
+
+    let activePair = null;
+    const cal = new ResadzRangeCalendar(document.getElementById('rzcSearchCal'), {
+        dark: true,
+        onChange: function (s, e) {
+            if (!activePair) return;
+            document.querySelectorAll('[data-rzc-pair="' + activePair + '"][data-rzc-role="start"]').forEach(i => i.value = s);
+            document.querySelectorAll('[data-rzc-pair="' + activePair + '"][data-rzc-role="end"]').forEach(i => i.value = e);
+            setTimeout(() => { overlay.style.display = 'none'; }, 350);
+        }
+    });
+
+    document.querySelectorAll('[data-rzc-pair]').forEach(function (input) {
+        input.addEventListener('click', function () {
+            activePair = input.dataset.rzcPair;
+            const sv = document.querySelector('[data-rzc-pair="' + activePair + '"][data-rzc-role="start"]').value;
+            const ev = document.querySelector('[data-rzc-pair="' + activePair + '"][data-rzc-role="end"]').value;
+            cal.start = sv || null;
+            cal.end = ev || null;
+            cal.render();
+            overlay.style.display = 'flex';
+        });
+    });
+
+    document.getElementById('rzcSearchClose').addEventListener('click', () => overlay.style.display = 'none');
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.style.display = 'none'; });
+});
+</script>
 <script defer src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 <script>
     // Partners Slider

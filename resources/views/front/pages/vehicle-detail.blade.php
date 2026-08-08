@@ -6,7 +6,6 @@
 @section('og_image', $vehicle->image ? asset('storage/' . $vehicle->image) : '')
 
 @section('head')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.css">
 <style>
     #vehicle-availability-calendar .fc-daygrid-day.fc-day-today { background: #fffbeb !important; }
     #vehicle-availability-calendar .fc-toolbar-title { font-size: 1.1rem !important; font-weight: 700; }
@@ -188,16 +187,16 @@
 
                 <!-- Calendrier de disponibilité -->
                 <div class="bg-white rounded-2xl border border-gray-200 p-6">
-                    <h2 class="text-xl font-bold text-gray-900 mb-2">Disponibilité</h2>
-                    <div class="flex items-center gap-4 mb-4 text-sm text-gray-500">
-                        <span class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-green-500 inline-block"></span> Disponible
-                        </span>
-                        <span class="flex items-center gap-1.5">
-                            <span class="w-2.5 h-2.5 rounded-full bg-red-300 inline-block"></span> Indisponible
-                        </span>
-                    </div>
+                    <h2 class="text-xl font-bold text-gray-900 mb-2">Choisissez vos dates</h2>
+                    <p class="text-sm text-gray-500 mb-4">Cliquez sur votre date de départ puis votre date de retour — les dates barrées sont indisponibles.</p>
                     <div id="vehicle-availability-calendar" data-vehicle-slug="{{ $vehicle->slug }}"></div>
+                    <div id="detailDatesCta" class="mt-4" style="display:none;">
+                        <a id="detailDatesLink" href="#"
+                           class="flex items-center justify-center gap-2 w-full py-3.5 bg-green-600 text-white font-bold rounded-xl hover:bg-green-700 transition shadow-lg">
+                            Réserver ces dates
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                        </a>
+                    </div>
                 </div>
 
                 <!-- Loueur Info -->
@@ -398,8 +397,29 @@ fbq('track','ViewContent',{content_name:'{{ addslashes($vehicle->full_name) }}',
 </script>
 @endif
 
-<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.11/index.global.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@fullcalendar/core@6.1.11/locales/fr.global.min.js"></script>
-<script src="{{ asset('js/vehicle-calendar.js') }}"></script>
+<script src="{{ asset('js/resadz-range-calendar.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const el = document.getElementById('vehicle-availability-calendar');
+    if (!el || !window.ResadzRangeCalendar) return;
+
+    const cta = document.getElementById('detailDatesCta');
+    const link = document.getElementById('detailDatesLink');
+    const baseUrl = '{{ route('booking.create', $vehicle->slug) }}';
+
+    const cal = new ResadzRangeCalendar(el, {
+        minDays: {{ max(1, (int) ($vehicle->min_rental_days ?? 1)) }},
+        onChange: function (s, e) {
+            link.href = baseUrl + '?start=' + s + '&end=' + e;
+            cta.style.display = 'block';
+        }
+    });
+
+    fetch('/api/vehicles/' + el.dataset.vehicleSlug + '/unavailable-dates')
+        .then(r => r.json())
+        .then(data => { if (data && data.dates) cal.setUnavailable(data.dates); })
+        .catch(() => {});
+});
+</script>
 
 @endsection
