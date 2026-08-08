@@ -79,6 +79,7 @@ class Vehicle extends Model
         'features',
         'image',
         'gallery',
+        'max_gallery_images',
         'status',
         'is_featured',
         'is_in_selection',

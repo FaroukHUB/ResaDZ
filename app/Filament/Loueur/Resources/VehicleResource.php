@@ -556,7 +556,8 @@ class VehicleResource extends Resource
                             ->directory('vehicles/gallery')
                             ->visibility('public')
                             ->reorderable()
-                            ->helperText('Glissez pour réorganiser. Plus vous en mettez, plus les clients auront confiance.'),
+                            ->maxFiles(fn ($record) => $record?->max_gallery_images ?? 5)
+                            ->helperText(fn ($record) => 'Glissez pour réorganiser. Limite : ' . ($record?->max_gallery_images ?? 5) . ' photos. Pour ajouter plus de photos (1 000 DA/photo supplémentaire), contactez ResaDZ.'),
                     ]),
 
                 // Section 5: Disponibilité

@@ -114,6 +114,13 @@ class VehicleResource extends Resource
                             ->directory('vehicles/gallery')
                             ->visibility('public')
                             ->reorderable(),
+                        Forms\Components\TextInput::make('max_gallery_images')
+                            ->label('Photos autorisées (galerie)')
+                            ->numeric()
+                            ->minValue(5)
+                            ->maxValue(30)
+                            ->default(5)
+                            ->helperText('5 incluses. Augmentez après paiement du loueur (1 000 DA/photo supplémentaire).'),
                     ]),
 
                 Forms\Components\Section::make('Tarifs saisonniers')
