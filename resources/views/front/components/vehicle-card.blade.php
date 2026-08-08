@@ -82,7 +82,7 @@
             </div>
         @endif
 
-        {{-- Loueur name overlay --}}
+        {{-- Loueur name overlay — MASQUÉ à la demande (08/2026), ne pas supprimer : réactivable en décommentant
         @if($loueur && $loueur->company_name)
             <div class="absolute bottom-3 right-3" style="perspective: 200px;">
                 <span class="block bg-black/60 backdrop-blur-sm px-3 py-1 rounded text-white text-xs font-bold tracking-wide uppercase"
@@ -91,6 +91,7 @@
                 </span>
             </div>
         @endif
+        --}}
     </a>
 
     {{-- Price Section --}}

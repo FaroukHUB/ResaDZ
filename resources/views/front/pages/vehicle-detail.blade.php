@@ -92,6 +92,7 @@
                             </div>
                         @endif
                     </div>
+                    {{-- Nom du loueur sur l'image — MASQUÉ à la demande (08/2026), ne pas supprimer : réactivable en décommentant
                     @if($vehicle->loueur && $vehicle->loueur->company_name)
                         <div class="absolute bottom-4 right-4" style="perspective: 250px;">
                             <span class="block bg-black/60 backdrop-blur-sm px-4 py-1.5 rounded text-white text-sm font-bold tracking-wide uppercase"
@@ -100,6 +101,7 @@
                             </span>
                         </div>
                     @endif
+                    --}}
                 </div>
 
                 <!-- Gallery -->
