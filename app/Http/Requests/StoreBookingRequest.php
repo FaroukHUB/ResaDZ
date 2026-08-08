@@ -50,6 +50,9 @@ class StoreBookingRequest extends FormRequest
             'currency' => 'nullable|in:DZD,EUR',
             'advance_payment_method' => 'nullable|in:cash,cib,dahabia,baridimob,paypal,bank_transfer',
             'internal_notes' => 'nullable|string|max:1000',
+            'client_id_document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'client_license_front' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
+            'client_license_back' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:5120',
         ];
     }
 

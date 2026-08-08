@@ -74,6 +74,27 @@ class BookingResource extends Resource
                             ->label('Email')
                             ->email(),
 
+                        Forms\Components\FileUpload::make('client_id_document')
+                            ->label('Pièce d\'identité / passeport')
+                            ->directory('bookings/documents')
+                            ->visibility('private')
+                            ->openable()
+                            ->downloadable(),
+
+                        Forms\Components\FileUpload::make('client_license_front')
+                            ->label('Permis (recto)')
+                            ->directory('bookings/documents')
+                            ->visibility('private')
+                            ->openable()
+                            ->downloadable(),
+
+                        Forms\Components\FileUpload::make('client_license_back')
+                            ->label('Permis (verso)')
+                            ->directory('bookings/documents')
+                            ->visibility('private')
+                            ->openable()
+                            ->downloadable(),
+
                         Forms\Components\DatePicker::make('start_date')
                             ->label('Date début')
                             ->required()

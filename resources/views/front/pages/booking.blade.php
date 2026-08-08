@@ -36,7 +36,7 @@
             </div>
         @endif
 
-        <form action="{{ route('booking.store') }}" method="POST" id="bookingForm">
+        <form action="{{ route('booking.store') }}" method="POST" id="bookingForm" enctype="multipart/form-data">
             @csrf
             <input type="hidden" name="vehicle_id" value="{{ $vehicle->id }}">
 
@@ -129,6 +129,36 @@
                                 <p class="text-xs text-gray-500 mt-1">Vous recevrez la confirmation par email</p>
                                 @error('client_email') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
                             </div>
+                        </div>
+
+                        {{-- Documents (recommandé) --}}
+                        <div class="mt-6 pt-6 border-t border-gray-100">
+                            <div class="flex items-center gap-2 mb-1">
+                                <h3 class="font-bold text-gray-900">Vos documents</h3>
+                                <span class="text-xs font-semibold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-full">Recommandé</span>
+                            </div>
+                            <p class="text-sm text-gray-500 mb-4">Joindre votre pièce d'identité et votre permis accélère la confirmation par le loueur. Vous pourrez aussi les fournir plus tard depuis votre espace de suivi.</p>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Passeport / pièce d'identité</label>
+                                    <input type="file" name="client_id_document" accept=".jpg,.jpeg,.png,.pdf"
+                                           class="w-full text-sm text-gray-600 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-gray-900 file:text-white file:font-semibold file:cursor-pointer bg-gray-50 border border-gray-200 rounded-xl">
+                                    @error('client_id_document') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Permis (recto)</label>
+                                    <input type="file" name="client_license_front" accept=".jpg,.jpeg,.png,.pdf"
+                                           class="w-full text-sm text-gray-600 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-gray-900 file:text-white file:font-semibold file:cursor-pointer bg-gray-50 border border-gray-200 rounded-xl">
+                                    @error('client_license_front') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Permis (verso)</label>
+                                    <input type="file" name="client_license_back" accept=".jpg,.jpeg,.png,.pdf"
+                                           class="w-full text-sm text-gray-600 file:mr-3 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:bg-gray-900 file:text-white file:font-semibold file:cursor-pointer bg-gray-50 border border-gray-200 rounded-xl">
+                                    @error('client_license_back') <p class="text-red-500 text-sm mt-1">{{ $message }}</p> @enderror
+                                </div>
+                            </div>
+                            <p class="text-xs text-gray-400 mt-2">Formats : JPG, PNG ou PDF — 5 Mo max par fichier.</p>
                         </div>
                     </div>
 
