@@ -93,15 +93,20 @@
     @php $fbPixelId = \App\Models\Setting::get('facebook_pixel_id', ''); @endphp
     @if($fbPixelId)
     <script>
-    !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
-    n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
-    n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
-    t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
-    document,'script','https://connect.facebook.net/en_US/fbevents.js');
-    fbq('init','{{ $fbPixelId }}');
-    fbq('track','PageView');
+    // Pixel chargé uniquement après consentement cookies
+    window.resadzLoadPixel = function() {
+        if (window._resadzPixelLoaded) return;
+        window._resadzPixelLoaded = true;
+        !function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;
+        n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,
+        document,'script','https://connect.facebook.net/en_US/fbevents.js');
+        fbq('init','{{ $fbPixelId }}');
+        fbq('track','PageView');
+    };
+    try { if (localStorage.getItem('resadz_cookie_consent') === 'accepted') { window.resadzLoadPixel(); } } catch (e) {}
     </script>
-    <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id={{ $fbPixelId }}&ev=PageView&noscript=1"/></noscript>
     @endif
 </head>
 <body class="bg-white text-gray-900 antialiased">
@@ -449,6 +454,40 @@
     </footer>
 
     @yield('scripts')
+
+    {{-- Bannière de consentement cookies --}}
+    <div id="resadz-cookie-banner" style="display:none;position:fixed;bottom:16px;left:16px;right:16px;max-width:520px;margin:0 auto;z-index:9998;background:#111827;color:#fff;border-radius:16px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.35);">
+        <p style="font-weight:700;font-size:15px;margin:0 0 6px;">🍪 Cookies</p>
+        <p style="font-size:13px;line-height:1.5;color:rgba(255,255,255,.75);margin:0 0 14px;">
+            Nous utilisons des cookies pour mesurer l'audience et améliorer votre expérience (statistiques, publicité).
+            Vous pouvez accepter ou refuser — le site fonctionne dans les deux cas.
+            <a href="{{ route('legal.confidentialite') }}" style="color:#4ADE80;text-decoration:underline;">En savoir plus</a>
+        </p>
+        <div style="display:flex;gap:10px;">
+            <button type="button" onclick="resadzCookieChoice('accepted')"
+                    style="flex:1;padding:10px;border:none;border-radius:10px;background:#16A34A;color:#fff;font-weight:700;font-size:14px;cursor:pointer;">
+                Accepter
+            </button>
+            <button type="button" onclick="resadzCookieChoice('refused')"
+                    style="flex:1;padding:10px;border:1px solid rgba(255,255,255,.25);border-radius:10px;background:transparent;color:#fff;font-weight:600;font-size:14px;cursor:pointer;">
+                Refuser
+            </button>
+        </div>
+    </div>
+    <script>
+    (function() {
+        try {
+            if (!localStorage.getItem('resadz_cookie_consent')) {
+                document.getElementById('resadz-cookie-banner').style.display = 'block';
+            }
+        } catch (e) {}
+    })();
+    function resadzCookieChoice(choice) {
+        try { localStorage.setItem('resadz_cookie_consent', choice); } catch (e) {}
+        document.getElementById('resadz-cookie-banner').style.display = 'none';
+        if (choice === 'accepted' && window.resadzLoadPixel) { window.resadzLoadPixel(); }
+    }
+    </script>
 
     {{-- Analytics Tracking --}}
     <script defer src="{{ asset('js/tracking.js') }}"></script>
