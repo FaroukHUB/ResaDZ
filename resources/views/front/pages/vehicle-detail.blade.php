@@ -60,7 +60,24 @@
             <span class="text-gray-900">{{ $vehicle->full_name }}</span>
         </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        @php
+            $lightboxImages = [];
+            if ($vehicle->display_image) $lightboxImages[] = asset('storage/' . $vehicle->display_image);
+            foreach (($vehicle->gallery ?? []) as $g) $lightboxImages[] = asset('storage/' . $g);
+        @endphp
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"
+             x-data="{
+                lbOpen: false,
+                lbIndex: 0,
+                lbImages: {{ json_encode($lightboxImages) }},
+                lbShow(i) { this.lbIndex = i; this.lbOpen = true; document.body.style.overflow = 'hidden'; },
+                lbClose() { this.lbOpen = false; document.body.style.overflow = ''; },
+                lbNext() { this.lbIndex = (this.lbIndex + 1) % this.lbImages.length; },
+                lbPrev() { this.lbIndex = (this.lbIndex - 1 + this.lbImages.length) % this.lbImages.length; },
+             }"
+             @keydown.escape.window="lbClose()"
+             @keydown.arrow-right.window="lbOpen && lbNext()"
+             @keydown.arrow-left.window="lbOpen && lbPrev()">
 
             <!-- Left: Images + Details -->
             <div class="lg:col-span-2 space-y-6">
@@ -68,7 +85,7 @@
                 <div class="bg-white rounded-2xl overflow-hidden border border-gray-200 relative">
                     <div class="aspect-[16/10] bg-gray-100">
                         @if($vehicle->display_image)
-                            <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->full_name }}" class="w-full h-full object-cover">
+                            <img src="{{ asset('storage/' . $vehicle->display_image) }}" alt="{{ $vehicle->full_name }}" class="w-full h-full object-cover cursor-pointer" @click="lbShow(0)">
                         @else
                             <div class="w-full h-full flex items-center justify-center">
                                 <svg class="w-20 h-20 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0H21M3.375 14.25h4.875c.621 0 1.125-.504 1.125-1.125v-4.5c0-.621-.504-1.125-1.125-1.125H3.375c-.621 0-1.125.504-1.125 1.125v4.5c0 .621.504 1.125 1.125 1.125z"/></svg>
@@ -90,11 +107,31 @@
                     <div class="grid grid-cols-4 gap-3">
                         @foreach($vehicle->gallery as $photo)
                             <div class="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
-                                <img src="{{ asset('storage/' . $photo) }}" alt="{{ $vehicle->full_name }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer">
+                                <img src="{{ asset('storage/' . $photo) }}" alt="{{ $vehicle->full_name }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer" @click="lbShow({{ $loop->index + ($vehicle->display_image ? 1 : 0) }})">
                             </div>
                         @endforeach
                     </div>
                 @endif
+
+                {{-- Lightbox plein écran --}}
+                <template x-teleport="body">
+                    <div x-show="lbOpen" x-cloak
+                         style="position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;"
+                         @click.self="lbClose()">
+                        <button type="button" @click="lbClose()" aria-label="Fermer"
+                                style="position:absolute;top:16px;right:16px;width:44px;height:44px;border-radius:9999px;background:rgba(255,255,255,.12);color:#fff;font-size:22px;border:none;cursor:pointer;">✕</button>
+                        <button type="button" @click.stop="lbPrev()" x-show="lbImages.length > 1" aria-label="Précédente"
+                                style="position:absolute;left:10px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:9999px;background:rgba(255,255,255,.12);color:#fff;font-size:22px;border:none;cursor:pointer;">‹</button>
+                        <img :src="lbImages[lbIndex]" alt="{{ $vehicle->full_name }}"
+                             style="max-width:92vw;max-height:88vh;object-fit:contain;border-radius:8px;box-shadow:0 10px 60px rgba(0,0,0,.6);" @click.stop>
+                        <button type="button" @click.stop="lbNext()" x-show="lbImages.length > 1" aria-label="Suivante"
+                                style="position:absolute;right:10px;top:50%;transform:translateY(-50%);width:44px;height:44px;border-radius:9999px;background:rgba(255,255,255,.12);color:#fff;font-size:22px;border:none;cursor:pointer;">›</button>
+                        <div x-show="lbImages.length > 1"
+                             style="position:absolute;bottom:16px;left:50%;transform:translateX(-50%);color:#fff;font-size:13px;background:rgba(255,255,255,.12);padding:4px 12px;border-radius:9999px;">
+                            <span x-text="lbIndex + 1"></span> / <span x-text="lbImages.length"></span>
+                        </div>
+                    </div>
+                </template>
 
                 <!-- Specs -->
                 <div class="bg-white rounded-2xl border border-gray-200 p-6">
