@@ -117,10 +117,10 @@ class VehicleResource extends Resource
                         Forms\Components\TextInput::make('max_gallery_images')
                             ->label('Photos autorisées (galerie)')
                             ->numeric()
-                            ->minValue(5)
-                            ->maxValue(30)
-                            ->default(5)
-                            ->helperText('5 incluses. Augmentez après paiement du loueur (1 000 DA/photo supplémentaire).'),
+                            ->minValue(3)
+                            ->maxValue(33)
+                            ->default(3)
+                            ->helperText('3 incluses. Pack +5 photos = 1 000 DA : après paiement, ajoutez 5 (ex : 1 pack -> 8, 2 packs -> 13).'),
                     ]),
 
                 Forms\Components\Section::make('Tarifs saisonniers')

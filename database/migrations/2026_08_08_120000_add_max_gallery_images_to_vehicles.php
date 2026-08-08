@@ -10,7 +10,7 @@ return new class extends Migration
     {
         if (!Schema::hasColumn('vehicles', 'max_gallery_images')) {
             Schema::table('vehicles', function (Blueprint $table) {
-                $table->unsignedTinyInteger('max_gallery_images')->default(5)->after('gallery');
+                $table->unsignedTinyInteger('max_gallery_images')->default(3)->after('gallery');
             });
         }
     }
