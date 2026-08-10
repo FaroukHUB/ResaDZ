@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
-@section('title', 'ResaDZ — Location de voitures entre particuliers en Algérie | Réservez en ligne')
-@section('meta_description', 'Louez une voiture en Algérie au meilleur prix. Comparez les offres de loueurs vérifiés dans les 58 wilayas, réservez en ligne et payez par carte bancaire. Location courte et longue durée.')
+@section('title', 'Location voiture Algérie entre particuliers | ResaDZ')
+@section('meta_description', 'Louez une voiture en Algérie au meilleur prix : loueurs vérifiés dans les 58 wilayas, réservation en ligne, paiement CB. Courte et longue durée.')
 
 @section('head')
 {{-- Swiper CSS - Chargement non-bloquant --}}
@@ -79,11 +79,13 @@
 
         <div class="relative z-10 w-full px-4 sm:px-6 lg:px-8 sm:max-w-7xl sm:mx-auto">
             <div class="max-w-3xl">
+                {{-- H1 SEO unique (invisible visuellement, lu par Google) --}}
+                <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Location de voiture en Algérie entre particuliers — ResaDZ</h1>
                 @if(isset($heroSlides) && $heroSlides->count() > 0)
                     <div class="relative">
                         @foreach($heroSlides as $index => $slide)
                             <div class="hero-title transition-opacity duration-700 {{ $index === 0 ? 'opacity-100' : 'opacity-0 absolute top-0 left-0' }}" data-index="{{ $index }}">
-                                <{{ $index === 0 ? 'h1' : 'h2' }} class="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                                <h2 class="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
                                     @if($slide->title)
                                         {{ $slide->title }}
                                         @if($slide->subtitle)
@@ -93,7 +95,7 @@
                                         Louez votre voiture
                                         <span class="block text-green-400">partout en Algérie</span>
                                     @endif
-                                </{{ $index === 0 ? 'h1' : 'h2' }}>
+                                </h2>
                                 @if($slide->button_text && $slide->button_url)
                                     <a href="{{ $slide->button_url }}" class="hidden sm:inline-flex mt-6 items-center px-6 py-3 bg-green-600 text-white font-bold rounded-lg hover:bg-green-600 transition">
                                         {{ $slide->button_text }}
@@ -104,10 +106,10 @@
                         @endforeach
                     </div>
                 @else
-                    <h1 class="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
+                    <h2 class="text-xl sm:text-5xl lg:text-6xl font-black text-white leading-tight">
                         {{ $homeContent['hero_title'] ?? 'Louez votre voiture' }}
                         <span class="block text-green-400">{{ $homeContent['hero_subtitle'] ?? 'partout en Algérie' }}</span>
-                    </h1>
+                    </h2>
                 @endif
                 @if($totalVehicles >= 10 && $totalLoueurs >= 10 && $wilayas->count() >= 10)
                 <div class="mt-3 sm:mt-10 flex gap-4 sm:gap-12">
