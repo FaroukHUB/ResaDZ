@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('title', 'Location voiture Oran — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ')
-@section('meta_description', "Louez une voiture à Oran entre particuliers — tarifs réels 2026, livraison disponible, loueurs vérifiés. Réservation en ligne sur ResaDZ.")
+@section('meta_description', "Louez une voiture à Oran auprès de loueurs vérifiés — tarifs réels 2026, livraison disponible. Réservation en ligne sur ResaDZ.")
 @section('canonical', url('/location-voiture-oran'))
 
 @section('meta_extra')
@@ -10,7 +10,7 @@
     "@@context": "https://schema.org",
     "@@type": "WebPage",
     "name": "Location voiture Oran",
-    "description": "Louez une voiture à Oran entre particuliers — tarifs réels 2026, livraison disponible, loueurs vérifiés.",
+    "description": "Louez une voiture à Oran auprès de loueurs vérifiés — tarifs réels 2026, livraison disponible.",
     "url": "{{ url('/location-voiture-oran') }}",
     "publisher": {
         "@@type": "Organization",
@@ -49,7 +49,7 @@
             Location voiture <span style="color: #FF6B2C;">Oran</span> — trouver un loueur de confiance
         </h1>
         <p class="mt-4 text-lg text-gray-300 max-w-3xl">
-            Comparez les loueurs particuliers vérifiés à Oran. Prix transparents, contrat automatique, livraison disponible.
+            Comparez les loueurs vérifiés à Oran. Prix transparents, contrat automatique, livraison disponible.
         </p>
         <div class="mt-8">
             <a href="/vehicules?wilaya=oran" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition text-lg">
@@ -65,10 +65,10 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="prose prose-lg max-w-none">
             <p class="text-gray-700 text-lg leading-relaxed">
-                Oran est la deuxième ville d'Algérie et un pôle économique majeur. Entre le centre-ville, Bir El Djir, Es Sénia et l'aéroport Ahmed Ben Bella, la voiture reste indispensable. Que vous soyez en voyage d'affaires, touriste attiré par le fort de Santa Cruz et la corniche, ou Oranais de retour au pays — ResaDZ vous connecte avec des loueurs particuliers vérifiés dans la wilaya d'Oran.
+                Oran est la deuxième ville d'Algérie et un pôle économique majeur. Entre le centre-ville, Bir El Djir, Es Sénia et l'aéroport Ahmed Ben Bella, la voiture reste indispensable. Que vous soyez en voyage d'affaires, touriste attiré par le fort de Santa Cruz et la corniche, ou Oranais de retour au pays — ResaDZ vous connecte avec des loueurs vérifiés dans la wilaya d'Oran.
             </p>
             <p class="text-gray-700 text-lg leading-relaxed mt-4">
-                ResaDZ est la première plateforme algérienne qui vous connecte directement avec des loueurs particuliers vérifiés dans la wilaya d'Oran. Pas d'agence, pas d'intermédiaire opaque — vous voyez le véhicule, le loueur, le prix, et vous réservez en quelques minutes.
+                ResaDZ est la première plateforme algérienne qui vous connecte directement avec des loueurs vérifiés dans la wilaya d'Oran. Pas d'agence, pas d'intermédiaire opaque — vous voyez le véhicule, le loueur, le prix, et vous réservez en quelques minutes.
             </p>
         </div>
     </div>
@@ -87,7 +87,7 @@
         </div>
 
         <p class="text-gray-700 text-lg leading-relaxed mb-8">
-            Le marché oranais de la location entre particuliers tourne autour de ces fourchettes selon le type de véhicule :
+            Le marché oranais de la location via ResaDZ tourne autour de ces fourchettes selon le type de véhicule :
         </p>
 
         {{-- Tableau des prix --}}
@@ -126,7 +126,7 @@
         </div>
 
         <p class="text-gray-600 text-sm mt-4 italic">
-            Ces tarifs sont ceux du marché local entre particuliers, significativement inférieurs aux agences internationales. En juillet-août, comptez 20 à 30% de plus — réservez à l'avance.
+            Ces tarifs sont ceux du marché local des loueurs vérifiés, significativement inférieurs aux agences internationales. En juillet-août, comptez 20 à 30% de plus — réservez à l'avance.
         </p>
 
         {{-- Tip --}}
@@ -190,7 +190,7 @@
                     <h3 class="font-bold text-gray-900 text-lg">Bir El Djir & Haï Sabah</h3>
                 </div>
                 <p class="text-gray-600 text-sm leading-relaxed">
-                    Zone résidentielle et commerciale en pleine expansion. Beaucoup de loueurs particuliers actifs dans ce quartier, idéal pour les résidents et séjours longs.
+                    Zone résidentielle et commerciale en pleine expansion. Beaucoup de loueurs actifs dans ce quartier, idéal pour les résidents et séjours longs.
                 </p>
             </div>
 
@@ -297,7 +297,7 @@
                 <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Avantages</span>
                 <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
             </div>
-            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer entre particuliers à Oran — avantages et précautions</h2>
+            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer en toute confiance à Oran — avantages et précautions</h2>
         </div>
 
         <div class="prose prose-lg max-w-none">
@@ -361,7 +361,7 @@
                     <svg class="w-5 h-5 text-gray-400 flex-shrink-0 transition-transform" :class="open === 2 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                 </button>
                 <div x-show="open === 2" x-collapse class="px-6 pb-5">
-                    <p class="text-gray-600">Oui, la plupart des loueurs particuliers sur ResaDZ sont disponibles 7 jours sur 7, y compris le vendredi et le samedi.</p>
+                    <p class="text-gray-600">Oui, la plupart des loueurs sur ResaDZ sont disponibles 7 jours sur 7, y compris le vendredi et le samedi.</p>
                 </div>
             </div>
 
@@ -418,7 +418,7 @@
                     "name": "Y a-t-il des loueurs disponibles le weekend ?",
                     "acceptedAnswer": {
                         "@@type": "Answer",
-                        "text": "Oui, la plupart des loueurs particuliers sur ResaDZ sont disponibles 7 jours sur 7, y compris le vendredi et le samedi."
+                        "text": "Oui, la plupart des loueurs sur ResaDZ sont disponibles 7 jours sur 7, y compris le vendredi et le samedi."
                     }
                 },
                 {

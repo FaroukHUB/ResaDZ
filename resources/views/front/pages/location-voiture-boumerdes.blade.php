@@ -4,12 +4,12 @@
 $city = 'Boumerdès';
 $slug = 'boumerdes';
 $metaTitle = 'Location voiture Boumerdès — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
-$metaDescription = 'Louez une voiture à Boumerdès entre particuliers : tarifs 2026, loueurs vérifiés, plages et côte est d\'Alger. Réservation en ligne sur ResaDZ.';
-$heroSubtitle = 'Comparez les loueurs particuliers vérifiés à Boumerdès. Plages, université, côte est — à 30 minutes de l\'aéroport d\'Alger.';
+$metaDescription = 'Louez une voiture à Boumerdès auprès de loueurs vérifiés : tarifs 2026, plages et côte est d\'Alger. Réservation en ligne sur ResaDZ.';
+$heroSubtitle = 'Comparez les loueurs vérifiés à Boumerdès. Plages, université, côte est — à 30 minutes de l\'aéroport d\'Alger.';
 
 $intro = [
     'Entre mer et université, Boumerdès vit au rythme de sa côte : Rocher Noir, Boudouaou-El-Bahri, Zemmouri El Bahri, Cap Djinet... Autant de plages et de localités que les transports publics desservent mal. L\'été surtout, une voiture de location est le seul moyen de profiter réellement du littoral est-algérois sans dépendre des taxis.',
-    'ResaDZ réunit les loueurs particuliers vérifiés de la wilaya de Boumerdès : véhicules contrôlés, prix affichés, avis clients et réservation en ligne. Vous traitez directement avec le propriétaire, sans commission d\'agence.',
+    'ResaDZ réunit les loueurs vérifiés de la wilaya de Boumerdès : véhicules contrôlés, prix affichés, avis clients et réservation en ligne. Vous traitez directement avec le propriétaire, sans commission d\'agence.',
 ];
 
 $priceRows = [
@@ -29,7 +29,7 @@ $pickupSpots = [
 ];
 
 $particulierTexte = [
-    'À Boumerdès, l\'offre d\'agences classiques est limitée — la location entre particuliers est devenue le réflexe local, avec des prix nettement plus accessibles et un vrai contact humain.',
+    'À Boumerdès, l\'offre d\'agences classiques est limitée — la location via ResaDZ est devenue le réflexe local, avec des prix nettement plus accessibles et un vrai contact humain.',
     'Sur ResaDZ, chaque loueur est vérifié et chaque réservation est encadrée par un contrat. Conditions, caution et kilométrage sont affichés sur l\'annonce avant de payer. Les avis des locataires précédents vous aident à choisir le bon véhicule pour la côte ou le quotidien.',
 ];
 

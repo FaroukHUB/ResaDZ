@@ -22,7 +22,7 @@
             </p>
 
             <p style="font-size: 15px; color: #1E293B; margin: 0 0 12px 0;">
-                Bienvenue sur <strong>ResaDZ</strong>, la première plateforme algérienne de location de voiture entre particuliers.
+                Bienvenue sur <strong>ResaDZ</strong>, la première plateforme algérienne de location de voiture auprès de loueurs vérifiés.
             </p>
 
             <p style="font-size: 15px; color: #1E293B; margin: 0 0 28px 0;">

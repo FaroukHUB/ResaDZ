@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('title', 'Location voiture Constantine — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ')
-@section('meta_description', "Louez une voiture à Constantine entre particuliers — tarifs réels 2026, loueurs vérifiés. Réservation en ligne sur ResaDZ.")
+@section('meta_description', "Louez une voiture à Constantine auprès de loueurs vérifiés — tarifs réels 2026. Réservation en ligne sur ResaDZ.")
 @section('canonical', url('/location-voiture-constantine'))
 
 @section('meta_extra')
@@ -10,7 +10,7 @@
     "@@context": "https://schema.org",
     "@@type": "WebPage",
     "name": "Location voiture Constantine",
-    "description": "Louez une voiture à Constantine entre particuliers — tarifs réels 2026, loueurs vérifiés. Réservation en ligne sur ResaDZ.",
+    "description": "Louez une voiture à Constantine auprès de loueurs vérifiés — tarifs réels 2026. Réservation en ligne sur ResaDZ.",
     "url": "{{ url('/location-voiture-constantine') }}",
     "publisher": {
         "@@type": "Organization",
@@ -38,7 +38,7 @@
             Location voiture <span style="color: #FF6B2C;">Constantine</span> — trouver un loueur de confiance
         </h1>
         <p class="mt-4 text-lg text-gray-300 max-w-3xl">
-            Comparez les loueurs particuliers vérifiés à Constantine. Prix transparents, contrat automatique, remise en main propre disponible.
+            Comparez les loueurs vérifiés à Constantine. Prix transparents, contrat automatique, remise en main propre disponible.
         </p>
         <div class="mt-8">
             <a href="/vehicules?wilaya=constantine" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition text-lg">
@@ -54,10 +54,10 @@
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="prose prose-lg max-w-none">
             <p class="text-gray-700 text-lg leading-relaxed">
-                Constantine, la ville des ponts suspendus, est la troisième plus grande ville d'Algérie et le pôle économique de l'Est. Perchée sur un rocher traversé par les gorges du Rhumel, la ville a un relief unique qui rend la voiture indispensable. Que vous visitiez le pont de Sidi M'Cid, que vous soyez en déplacement professionnel ou Constantinois de retour — ResaDZ vous connecte avec des loueurs particuliers vérifiés dans la wilaya de Constantine.
+                Constantine, la ville des ponts suspendus, est la troisième plus grande ville d'Algérie et le pôle économique de l'Est. Perchée sur un rocher traversé par les gorges du Rhumel, la ville a un relief unique qui rend la voiture indispensable. Que vous visitiez le pont de Sidi M'Cid, que vous soyez en déplacement professionnel ou Constantinois de retour — ResaDZ vous connecte avec des loueurs vérifiés dans la wilaya de Constantine.
             </p>
             <p class="text-gray-700 text-lg leading-relaxed mt-4">
-                ResaDZ est la première plateforme algérienne qui vous connecte directement avec des loueurs particuliers vérifiés dans la wilaya de Constantine. Pas d'agence, pas d'intermédiaire opaque — vous voyez le véhicule, le loueur, le prix, et vous réservez en quelques minutes.
+                ResaDZ est la première plateforme algérienne qui vous connecte directement avec des loueurs vérifiés dans la wilaya de Constantine. Pas d'agence, pas d'intermédiaire opaque — vous voyez le véhicule, le loueur, le prix, et vous réservez en quelques minutes.
             </p>
         </div>
     </div>
@@ -76,7 +76,7 @@
         </div>
 
         <p class="text-gray-700 text-lg leading-relaxed mb-8">
-            Le marché constantinois de la location entre particuliers propose des tarifs généralement inférieurs à ceux d'Alger :
+            Le marché constantinois de la location via ResaDZ propose des tarifs généralement inférieurs à ceux d'Alger :
         </p>
 
         {{-- Tableau des prix --}}
@@ -115,7 +115,7 @@
         </div>
 
         <p class="text-gray-600 text-sm mt-4 italic">
-            Ces tarifs sont ceux du marché local entre particuliers, généralement inférieurs à ceux pratiqués à Alger. En été, comptez 15 à 25% de plus — réservez à l'avance.
+            Ces tarifs sont ceux du marché local des loueurs vérifiés, généralement inférieurs à ceux pratiqués à Alger. En été, comptez 15 à 25% de plus — réservez à l'avance.
         </p>
 
         {{-- Tip --}}
@@ -286,7 +286,7 @@
                 <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Avantages</span>
                 <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
             </div>
-            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer entre particuliers à Constantine — avantages et précautions</h2>
+            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer en toute confiance à Constantine — avantages et précautions</h2>
         </div>
 
         <div class="prose prose-lg max-w-none">

@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
-@section('title', 'Location voiture Algérie entre particuliers | ResaDZ')
-@section('meta_description', 'Louez une voiture en Algérie au meilleur prix : loueurs vérifiés dans les 58 wilayas, réservation en ligne, paiement CB. Courte et longue durée.')
+@section('title', 'Location de voiture en Algérie en toute confiance | ResaDZ')
+@section('meta_description', 'Location de voiture en Algérie : loueurs vérifiés, avis clients, réservation en ligne et paiement sécurisé. Disponible dans les 58 wilayas, courte et longue durée.')
 
 @section('head')
 {{-- Swiper CSS - Chargement non-bloquant --}}
@@ -80,7 +80,7 @@
         <div class="relative z-10 w-full px-4 sm:px-6 lg:px-8 sm:max-w-7xl sm:mx-auto">
             <div class="max-w-3xl">
                 {{-- H1 SEO unique (invisible visuellement, lu par Google) --}}
-                <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Location de voiture en Algérie entre particuliers — ResaDZ</h1>
+                <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Location de voiture en Algérie — loueurs vérifiés, réservation sécurisée</h1>
                 @if(isset($heroSlides) && $heroSlides->count() > 0)
                     <div class="relative">
                         @foreach($heroSlides as $index => $slide)

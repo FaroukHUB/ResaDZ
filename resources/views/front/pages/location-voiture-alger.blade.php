@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('title', 'Location voiture Alger — Loueurs vérifiés dès 4 500 DA/jour | ResaDZ')
-@section('meta_description', 'Louez une voiture à Alger entre particuliers — tarifs réels 2026, livraison aéroport, loueurs vérifiés. Réservation en ligne sur ResaDZ.')
+@section('meta_description', 'Louez une voiture à Alger auprès de loueurs vérifiés — tarifs réels 2026, livraison aéroport. Réservation en ligne sur ResaDZ.')
 @section('canonical', url('/location-voiture-alger'))
 
 @section('meta_extra')
@@ -10,7 +10,7 @@
     "@@context": "https://schema.org",
     "@@type": "WebPage",
     "name": "Location voiture Alger",
-    "description": "Louez une voiture à Alger entre particuliers — tarifs réels 2026, livraison aéroport, loueurs vérifiés.",
+    "description": "Louez une voiture à Alger auprès de loueurs vérifiés — tarifs réels 2026, livraison aéroport.",
     "url": "{{ url('/location-voiture-alger') }}",
     "publisher": {
         "@@type": "Organization",
@@ -49,7 +49,7 @@
             Location voiture <span style="color: #FF6B2C;">Alger</span> — trouver un loueur de confiance
         </h1>
         <p class="mt-4 text-lg text-gray-300 max-w-3xl">
-            Comparez les loueurs particuliers vérifiés à Alger. Prix transparents, contrat automatique, livraison aéroport disponible.
+            Comparez les loueurs vérifiés à Alger. Prix transparents, contrat automatique, livraison aéroport disponible.
         </p>
         <div class="mt-8">
             <a href="/vehicules?wilaya=alger" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition text-lg">
@@ -68,7 +68,7 @@
                 Alger est une ville qui ne s'improvise pas. Entre le centre, Bab Ezzouar, Hussein Dey, Dar El Beïda et l'aéroport Houari Boumédiène, les distances sont courtes sur la carte mais longues dans la réalité sans voiture. Que vous soyez résident, en déplacement professionnel, ou Algérien rentré de France pour quelques semaines — louer une voiture à Alger reste la solution la plus pratique et souvent la plus économique.
             </p>
             <p class="text-gray-700 text-lg leading-relaxed mt-4">
-                ResaDZ est la première plateforme algérienne qui vous connecte directement avec des loueurs particuliers vérifiés dans la wilaya d'Alger. Pas d'agence, pas d'intermédiaire opaque — vous voyez le véhicule, le loueur, le prix, et vous réservez en quelques minutes.
+                ResaDZ est la première plateforme algérienne qui vous connecte directement avec des loueurs vérifiés dans la wilaya d'Alger. Pas d'agence, pas d'intermédiaire opaque — vous voyez le véhicule, le loueur, le prix, et vous réservez en quelques minutes.
             </p>
         </div>
     </div>
@@ -87,7 +87,7 @@
         </div>
 
         <p class="text-gray-700 text-lg leading-relaxed mb-8">
-            Le marché algérois de la location entre particuliers tourne autour de ces fourchettes selon le type de véhicule :
+            Le marché algérois de la location via ResaDZ tourne autour de ces fourchettes selon le type de véhicule :
         </p>
 
         {{-- Tableau des prix --}}
@@ -126,7 +126,7 @@
         </div>
 
         <p class="text-gray-600 text-sm mt-4 italic">
-            Ces tarifs sont ceux du marché local entre particuliers, significativement inférieurs aux agences internationales. En juillet-août, comptez 20 à 30% de plus — réservez à l'avance.
+            Ces tarifs sont ceux du marché local des loueurs vérifiés, significativement inférieurs aux agences internationales. En juillet-août, comptez 20 à 30% de plus — réservez à l'avance.
         </p>
 
         {{-- Tip --}}
@@ -190,7 +190,7 @@
                     <h3 class="font-bold text-gray-900 text-lg">Bordj El Kiffan & Bordj El Bahri</h3>
                 </div>
                 <p class="text-gray-600 text-sm leading-relaxed">
-                    Zone est d'Alger, bien desservie, beaucoup de loueurs particuliers actifs. Bon point de départ si vous allez vers Boumerdès ou la côte.
+                    Zone est d'Alger, bien desservie, beaucoup de loueurs actifs. Bon point de départ si vous allez vers Boumerdès ou la côte.
                 </p>
             </div>
 
@@ -297,7 +297,7 @@
                 <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Avantages</span>
                 <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
             </div>
-            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer entre particuliers à Alger — avantages et précautions</h2>
+            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer en toute confiance à Alger — avantages et précautions</h2>
         </div>
 
         <div class="prose prose-lg max-w-none">

@@ -4,12 +4,12 @@
 $city = 'Blida';
 $slug = 'blida';
 $metaTitle = 'Location voiture Blida — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
-$metaDescription = 'Louez une voiture à Blida entre particuliers : tarifs réels 2026, loueurs vérifiés, réservation en ligne. La Mitidja, Chréa et Alger à portée de route.';
-$heroSubtitle = 'Comparez les loueurs particuliers vérifiés à Blida et dans la Mitidja. Prix transparents, contrat automatique, à 45 minutes d\'Alger.';
+$metaDescription = 'Louez une voiture à Blida auprès de loueurs vérifiés : tarifs réels 2026, réservation en ligne. La Mitidja, Chréa et Alger à portée de route.';
+$heroSubtitle = 'Comparez les loueurs vérifiés à Blida et dans la Mitidja. Prix transparents, contrat automatique, à 45 minutes d\'Alger.';
 
 $intro = [
     'Blida, la ville des Roses, est le carrefour naturel entre Alger, la Mitidja agricole et la montagne de Chréa. Que vous veniez pour un mariage, une visite familiale, un déplacement professionnel ou des vacances au parc national de Chréa, disposer d\'une voiture sur place change tout : les transports en commun ne couvrent ni les horaires ni les trajets dont vous avez réellement besoin.',
-    'ResaDZ vous connecte directement avec des loueurs particuliers vérifiés dans la wilaya de Blida. Vous comparez les véhicules, les prix et les avis, puis vous réservez en ligne en quelques minutes — sans agence ni intermédiaire.',
+    'ResaDZ vous connecte directement avec des loueurs vérifiés dans la wilaya de Blida. Vous comparez les véhicules, les prix et les avis, puis vous réservez en ligne en quelques minutes — sans agence ni intermédiaire.',
 ];
 
 $priceRows = [
@@ -18,7 +18,7 @@ $priceRows = [
     ['SUV', 'Duster, Stepway, Creta', '8 000 – 9 500 DA'],
     ['Van 7 places', 'Espace, Partner', '11 000 – 16 000 DA'],
 ];
-$priceNote = 'Tarifs du marché entre particuliers à Blida, généralement inférieurs de 10 à 15% à ceux d\'Alger. En saison des mariages (été) et pendant les fêtes, réservez plusieurs semaines à l\'avance.';
+$priceNote = 'Tarifs du marché des loueurs vérifiés à Blida, généralement inférieurs de 10 à 15% à ceux d\'Alger. En saison des mariages (été) et pendant les fêtes, réservez plusieurs semaines à l\'avance.';
 
 $pickupTitle = 'Où récupérer votre voiture à Blida';
 $pickupSpots = [
@@ -29,7 +29,7 @@ $pickupSpots = [
 ];
 
 $particulierTexte = [
-    'La location entre particuliers s\'est imposée à Blida comme l\'alternative économique aux agences : les prix sont plus bas, le contact est direct et les véhicules sont souvent plus récents que dans les petites agences locales.',
+    'La location auprès de loueurs vérifiés s\'est imposée à Blida comme l\'alternative économique aux agences : les prix sont plus bas, le contact est direct et les véhicules sont souvent plus récents que dans les petites agences locales.',
     'Sur ResaDZ, chaque loueur est vérifié (identité, documents du véhicule) et chaque location donne lieu à un contrat. Les avis laissés par les clients précédents vous permettent de choisir en confiance. La caution et les conditions sont affichées sur l\'annonce avant la réservation — aucune surprise le jour J.',
 ];
 

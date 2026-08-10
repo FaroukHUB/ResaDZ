@@ -169,10 +169,10 @@
     </div>
 </section>
 
-{{-- Louer entre particuliers --}}
+{{-- Louer en toute confiance --}}
 <section class="bg-white py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-        <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight mb-8">Louer une voiture entre particuliers à {{ $city }}</h2>
+        <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight mb-8">Louer une voiture en toute confiance à {{ $city }}</h2>
         <div class="prose prose-lg max-w-none">
             @foreach($particulierTexte as $paragraph)
                 <p class="text-gray-700 text-lg leading-relaxed {{ $loop->first ? '' : 'mt-4' }}">{{ $paragraph }}</p>

@@ -499,7 +499,7 @@ Les utilisateurs écrivent souvent en abrégé, avec des fautes, ou en mélangea
 CE QUE TU SAIS SUR RESADZ :
 
 📌 CONCEPT :
-- Marketplace de location de voitures entre particuliers en Algérie
+- Marketplace de location de voitures auprès de loueurs vérifiés en Algérie
 - Couvre les 58 wilayas d'Algérie
 - 100% GRATUIT pour les clients (aucun frais caché)
 - Les loueurs paient une commission uniquement sur les réservations confirmées

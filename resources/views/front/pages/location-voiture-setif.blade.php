@@ -4,12 +4,12 @@
 $city = 'Sétif';
 $slug = 'setif';
 $metaTitle = 'Location voiture Sétif — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
-$metaDescription = 'Louez une voiture à Sétif entre particuliers : tarifs réels 2026, loueurs vérifiés, El Eulma, Aïn El Fouara, Djemila. Réservation en ligne sur ResaDZ.';
-$heroSubtitle = 'Comparez les loueurs particuliers vérifiés à Sétif et El Eulma. Capitale des hauts plateaux, carrefour commercial de l\'Est algérien.';
+$metaDescription = 'Louez une voiture à Sétif auprès de loueurs vérifiés : tarifs réels 2026, El Eulma, Aïn El Fouara, Djemila. Réservation en ligne sur ResaDZ.';
+$heroSubtitle = 'Comparez les loueurs vérifiés à Sétif et El Eulma. Capitale des hauts plateaux, carrefour commercial de l\'Est algérien.';
 
 $intro = [
     'Sétif est la capitale économique des hauts plateaux : le commerce d\'El Eulma, le Park Mall, l\'université Ferhat Abbas et les ruines romaines de Djemila attirent chaque jour des milliers de visiteurs. Dans une wilaya aussi étendue — de Bougaâ aux portes de Bordj Bou Arréridj — la voiture reste le seul moyen de se déplacer efficacement.',
-    'ResaDZ regroupe les loueurs particuliers vérifiés de la wilaya de Sétif. Comparez les véhicules, les prix réels et les avis clients, puis réservez en ligne. Contact direct avec le propriétaire, contrat automatique, zéro commission d\'agence.',
+    'ResaDZ regroupe les loueurs vérifiés de la wilaya de Sétif. Comparez les véhicules, les prix réels et les avis clients, puis réservez en ligne. Contact direct avec le propriétaire, contrat automatique, zéro commission d\'agence.',
 ];
 
 $priceRows = [
@@ -29,7 +29,7 @@ $pickupSpots = [
 ];
 
 $particulierTexte = [
-    'À Sétif, la location entre particuliers est portée par une vraie culture du commerce : les propriétaires soignent leurs véhicules et la concurrence tire les prix vers le bas, loin des tarifs des agences classiques.',
+    'À Sétif, la location via ResaDZ est portée par une vraie culture du commerce : les propriétaires soignent leurs véhicules et la concurrence tire les prix vers le bas, loin des tarifs des agences classiques.',
     'Sur ResaDZ, chaque loueur est vérifié (identité et papiers du véhicule) et chaque location est encadrée par un contrat. Caution, kilométrage et conditions sont affichés avant la réservation, et les avis clients vous guident vers les meilleurs loueurs de la wilaya.',
 ];
 

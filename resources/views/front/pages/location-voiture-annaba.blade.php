@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('title', 'Location voiture Annaba — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ')
-@section('meta_description', "Louez une voiture à Annaba entre particuliers — tarifs réels 2026, loueurs vérifiés. Réservation en ligne sur ResaDZ.")
+@section('meta_description', "Louez une voiture à Annaba auprès de loueurs vérifiés — tarifs réels 2026. Réservation en ligne sur ResaDZ.")
 @section('canonical', url('/location-voiture-annaba'))
 
 @section('meta_extra')
@@ -10,7 +10,7 @@
     "@@context": "https://schema.org",
     "@@type": "WebPage",
     "name": "Location voiture Annaba",
-    "description": "Louez une voiture à Annaba entre particuliers — tarifs réels 2026, loueurs vérifiés. Réservation en ligne sur ResaDZ.",
+    "description": "Louez une voiture à Annaba auprès de loueurs vérifiés — tarifs réels 2026. Réservation en ligne sur ResaDZ.",
     "url": "{{ url('/location-voiture-annaba') }}",
     "publisher": {
         "@@type": "Organization",
@@ -38,7 +38,7 @@
             Location voiture <span style="color: #FF6B2C;">Annaba</span> — trouver un loueur de confiance
         </h1>
         <p class="mt-4 text-lg text-gray-300 max-w-3xl">
-            Comparez les loueurs particuliers vérifiés à Annaba. Prix transparents, contrat automatique, réservation en ligne.
+            Comparez les loueurs vérifiés à Annaba. Prix transparents, contrat automatique, réservation en ligne.
         </p>
         <div class="mt-8">
             <a href="/vehicules?wilaya=annaba" class="inline-flex items-center gap-2 px-8 py-4 bg-green-600 text-white font-bold rounded-lg hover:bg-green-500 transition text-lg">
@@ -57,7 +57,7 @@
                 Annaba, surnommée la Perle de l'Est, est la quatrième ville d'Algérie. Située entre mer et montagne, elle attire autant les touristes que les professionnels. Entre la corniche, le centre-ville, Seraïdi en altitude et les plages de Chetaïbi — la voiture est le meilleur moyen de tout explorer.
             </p>
             <p class="text-gray-700 text-lg leading-relaxed mt-4">
-                ResaDZ vous connecte avec des loueurs particuliers vérifiés dans la wilaya d'Annaba. Pas d'agence, pas d'intermédiaire — prix transparents et réservation en ligne.
+                ResaDZ vous connecte avec des loueurs vérifiés dans la wilaya d'Annaba. Pas d'agence, pas d'intermédiaire — prix transparents et réservation en ligne.
             </p>
         </div>
     </div>
@@ -76,7 +76,7 @@
         </div>
 
         <p class="text-gray-700 text-lg leading-relaxed mb-8">
-            Voici les fourchettes de prix pratiquées entre particuliers à Annaba selon le type de véhicule :
+            Voici les fourchettes de prix pratiquées par les loueurs vérifiés à Annaba selon le type de véhicule :
         </p>
 
         {{-- Tableau des prix --}}
@@ -115,7 +115,7 @@
         </div>
 
         <p class="text-gray-600 text-sm mt-4 italic">
-            Ces tarifs reflètent le marché local entre particuliers. En été, la saison balnéaire fait monter les prix de 20 à 30% — la demande explose sur les plages d'Annaba et de Chetaïbi.
+            Ces tarifs reflètent le marché local des loueurs vérifiés. En été, la saison balnéaire fait monter les prix de 20 à 30% — la demande explose sur les plages d'Annaba et de Chetaïbi.
         </p>
 
         {{-- Tip --}}
@@ -286,7 +286,7 @@
                 <span class="text-green-600 text-sm font-semibold uppercase tracking-wider">Avantages</span>
                 <div class="w-8 h-1 bg-gradient-to-r from-green-500 to-green-700 rounded-full"></div>
             </div>
-            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer entre particuliers à Annaba — avantages et précautions</h2>
+            <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight">Louer en toute confiance à Annaba — avantages et précautions</h2>
         </div>
 
         <div class="prose prose-lg max-w-none">

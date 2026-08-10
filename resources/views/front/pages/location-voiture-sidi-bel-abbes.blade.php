@@ -4,12 +4,12 @@
 $city = 'Sidi Bel Abbès';
 $slug = 'sidi-bel-abbes';
 $metaTitle = 'Location voiture Sidi Bel Abbès — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
-$metaDescription = 'Louez une voiture à Sidi Bel Abbès entre particuliers : tarifs 2026, loueurs vérifiés, Oran à 1h, réservation en ligne sur ResaDZ.';
-$heroSubtitle = 'Comparez les loueurs particuliers vérifiés à Sidi Bel Abbès. Capitale de la Mékerra, à une heure d\'Oran et aux portes du Sud-Ouest.';
+$metaDescription = 'Louez une voiture à Sidi Bel Abbès auprès de loueurs vérifiés : tarifs 2026, Oran à 1h, réservation en ligne sur ResaDZ.';
+$heroSubtitle = 'Comparez les loueurs vérifiés à Sidi Bel Abbès. Capitale de la Mékerra, à une heure d\'Oran et aux portes du Sud-Ouest.';
 
 $intro = [
     'Ville universitaire et carrefour de l\'Ouest algérien, Sidi Bel Abbès relie Oran, Tlemcen, Mascara et les portes du Sud. L\'université Djillali Liabès, le pôle électronique et le tissu commercial de la Mékerra génèrent un vrai besoin de mobilité — et sans voiture, se déplacer entre les communes de la wilaya relève du parcours du combattant.',
-    'ResaDZ vous met en relation directe avec des loueurs particuliers vérifiés à Sidi Bel Abbès. Véhicules contrôlés, prix affichés sans surprise, avis clients et réservation en ligne en quelques minutes.',
+    'ResaDZ vous met en relation directe avec des loueurs vérifiés à Sidi Bel Abbès. Véhicules contrôlés, prix affichés sans surprise, avis clients et réservation en ligne en quelques minutes.',
 ];
 
 $priceRows = [
@@ -29,7 +29,7 @@ $pickupSpots = [
 ];
 
 $particulierTexte = [
-    'À Sidi Bel Abbès, les agences de location se comptent sur les doigts d\'une main — la location entre particuliers est la solution naturelle, avec des prix plus doux et un contact direct avec le propriétaire.',
+    'À Sidi Bel Abbès, les agences de location se comptent sur les doigts d\'une main — la location via ResaDZ est la solution naturelle, avec des prix plus doux et un contact direct avec le propriétaire.',
     'Sur ResaDZ, chaque loueur est vérifié et chaque location donne lieu à un contrat. Caution, kilométrage et conditions figurent sur l\'annonce avant le paiement, et les avis des locataires précédents vous permettent de louer en toute confiance.',
 ];
 
