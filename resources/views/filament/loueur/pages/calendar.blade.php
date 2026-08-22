@@ -179,7 +179,7 @@
         @endphp
         @if($tutoId)
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700"
-             x-data="{ showVideo: false }">
+             x-data="{ showVideo: true }">
             <button type="button" @click="showVideo = !showVideo" class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200 w-full">
                 <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582 6.186a2.506 2.506 0 00-1.768-1.768C18.254 4 12 4 12 4s-6.254 0-7.814.418A2.506 2.506 0 002.418 6.186C2 7.746 2 12 2 12s0 4.254.418 5.814a2.506 2.506 0 001.768 1.768C5.746 20 12 20 12 20s6.254 0 7.814-.418a2.506 2.506 0 001.768-1.768C22 16.254 22 12 22 12s0-4.254-.418-5.814zM10 15.464V8.536L16 12l-6 3.464z"/></svg>
                 Tutoriel vidéo — utiliser votre calendrier
