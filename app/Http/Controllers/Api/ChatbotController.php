@@ -145,7 +145,7 @@ class ChatbotController extends Controller
             ->orderBy('price_per_day')
             ->get();
 
-        $baseUrl = rtrim(config('app.url', 'https://resadz.com'), '/');
+        $baseUrl = rtrim(config('app.url', 'https://www.resadz.com'), '/');
 
         if ($vehicles->isEmpty()) {
             return "🚗 CATALOGUE VÉHICULES : Aucun véhicule disponible pour le moment.";
@@ -339,7 +339,7 @@ class ChatbotController extends Controller
      */
     private function buildActiveOffers(): string
     {
-        $baseUrl = rtrim(config('app.url', 'https://resadz.com'), '/');
+        $baseUrl = rtrim(config('app.url', 'https://www.resadz.com'), '/');
 
         $offers = VehicleOffer::with(['vehicle', 'vehicle.brand'])
             ->where('is_active', true)
@@ -417,7 +417,7 @@ class ChatbotController extends Controller
         $now = now();
         $dateStr = $now->translatedFormat('l j F Y');
         $timeStr = $now->format('H:i');
-        $baseUrl = rtrim(config('app.url', 'https://resadz.com'), '/');
+        $baseUrl = rtrim(config('app.url', 'https://www.resadz.com'), '/');
 
         return <<<PROMPT
 Tu es Résabot, le CERVEAU de {$companyName}. Tu connais TOUT le site : chaque véhicule, chaque prix, chaque loueur, chaque chauffeur, chaque promo, chaque avis client, et surtout la DISPONIBILITÉ en temps réel de chaque véhicule. Tes données sont mises à jour en temps réel.

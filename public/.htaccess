@@ -61,9 +61,12 @@
     RewriteCond %{HTTPS} off
     RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 
-    # Redirection www -> sans-www (domaine canonique unique)
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^(.*)$ https://%1%{REQUEST_URI} [L,R=301]
+    # Domaine canonique : https://www.resadz.com
+    # (Google a indexe et classe la version www : 86% des impressions.)
+    # Cible uniquement resadz.com pour ne pas affecter les autres domaines
+    # pointant sur ce dossier (resadz.mon-agenceweb.fr).
+    RewriteCond %{HTTP_HOST} ^resadz\.com$ [NC]
+    RewriteRule ^(.*)$ https://www.resadz.com%{REQUEST_URI} [L,R=301]
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
