@@ -84,7 +84,7 @@ class SecurityHeaders
             "connect-src 'self' https://www.google-analytics.com https://www.paypal.com https://www.sandbox.paypal.com wss:",
 
             // Frames: payment providers
-            "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://www.google.com https://js.stripe.com https://checkout.stripe.com",
+            "frame-src 'self' https://www.paypal.com https://www.sandbox.paypal.com https://www.google.com https://js.stripe.com https://checkout.stripe.com https://www.youtube-nocookie.com https://www.youtube.com",
 
             // Frame ancestors: prevent embedding
             "frame-ancestors 'self'",

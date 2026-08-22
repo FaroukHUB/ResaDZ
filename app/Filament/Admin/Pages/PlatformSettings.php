@@ -93,6 +93,7 @@ class PlatformSettings extends Page
             'instagram' => Setting::get('instagram', ''),
             'tiktok' => Setting::get('tiktok', 'https://www.tiktok.com/@resadzalger'),
             'google_reviews_url' => Setting::get('google_reviews_url', ''),
+            'tutorial_calendar_video' => Setting::get('tutorial_calendar_video', 'https://youtu.be/vhC-3PXGUP8'),
             'google_rating' => Setting::get('google_rating', 4.5),
             'whatsapp' => Setting::get('whatsapp', ''),
 
@@ -459,6 +460,21 @@ class PlatformSettings extends Page
                             ]),
 
                         // Social Media Tab
+                        Forms\Components\Tabs\Tab::make('Tutoriels vidéo')
+                            ->icon('heroicon-o-play-circle')
+                            ->schema([
+                                Forms\Components\Section::make('Vidéos d\'aide pour les loueurs')
+                                    ->description('Collez un lien YouTube ou Vimeo. Laissez vide pour masquer la vidéo.')
+                                    ->schema([
+                                        Forms\Components\TextInput::make('tutorial_calendar_video')
+                                            ->label('Calendrier loueur')
+                                            ->url()
+                                            ->placeholder('https://youtu.be/xxxxxxxx')
+                                            ->prefixIcon('heroicon-o-play')
+                                            ->helperText('Affichée dans le panel loueur, page Calendrier.'),
+                                    ]),
+                            ]),
+
                         Forms\Components\Tabs\Tab::make('Réseaux sociaux')
                             ->icon('heroicon-o-share')
                             ->schema([
@@ -575,6 +591,7 @@ class PlatformSettings extends Page
         Setting::set('instagram', $data['instagram'] ?? '', 'social', 'text');
         Setting::set('tiktok', $data['tiktok'] ?? '', 'social', 'text');
         Setting::set('google_reviews_url', $data['google_reviews_url'] ?? '', 'social', 'text');
+        Setting::set('tutorial_calendar_video', $data['tutorial_calendar_video'] ?? '', 'tutorials', 'text');
         Setting::set('google_rating', $data['google_rating'] ?? 4.5, 'social', 'text');
         Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
 

@@ -169,6 +169,37 @@
             <span class="text-xs text-gray-400 dark:text-gray-500">Cliquez directement sur un jour pour le bloquer/débloquer</span>
         </div>
 
+        {{-- Tutoriel vidéo (lien configurable : Admin > Paramètres plateforme > Tutoriels vidéo) --}}
+        @php
+            $tutoVideo = \App\Models\Setting::get('tutorial_calendar_video', 'https://youtu.be/vhC-3PXGUP8');
+            $tutoId = null;
+            if ($tutoVideo && preg_match('~(?:youtu\.be/|youtube\.com/(?:watch\?v=|embed/|shorts/))([A-Za-z0-9_-]{6,})~', $tutoVideo, $m)) {
+                $tutoId = $m[1];
+            }
+        @endphp
+        @if($tutoId)
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700"
+             x-data="{ showVideo: false }">
+            <button type="button" @click="showVideo = !showVideo" class="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200 w-full">
+                <svg class="w-5 h-5 text-red-500" fill="currentColor" viewBox="0 0 24 24"><path d="M21.582 6.186a2.506 2.506 0 00-1.768-1.768C18.254 4 12 4 12 4s-6.254 0-7.814.418A2.506 2.506 0 002.418 6.186C2 7.746 2 12 2 12s0 4.254.418 5.814a2.506 2.506 0 001.768 1.768C5.746 20 12 20 12 20s6.254 0 7.814-.418a2.506 2.506 0 001.768-1.768C22 16.254 22 12 22 12s0-4.254-.418-5.814zM10 15.464V8.536L16 12l-6 3.464z"/></svg>
+                Tutoriel vidéo — utiliser votre calendrier
+                <svg class="w-4 h-4 ml-auto transition-transform" :class="showVideo && 'rotate-180'" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+            </button>
+
+            <div x-show="showVideo" x-collapse class="mt-4">
+                <div style="position:relative;width:100%;padding-top:56.25%;border-radius:12px;overflow:hidden;background:#000;">
+                    <iframe
+                        src="https://www.youtube-nocookie.com/embed/{{ $tutoId }}?rel=0"
+                        title="Tutoriel calendrier ResaDZ"
+                        style="position:absolute;inset:0;width:100%;height:100%;border:0;"
+                        loading="lazy"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+        @endif
+
         {{-- Synchronisation Google Calendar --}}
         @if($icalUrl)
         <div class="bg-white dark:bg-gray-800 rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-gray-700"
