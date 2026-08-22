@@ -44,6 +44,13 @@ Route::get('/loueur/{slug}', [LoueurController::class, 'show'])->name('loueur.sh
 
 // Blog
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+
+// Consolidation SEO aeroport Alger : 3 URLs se disputaient la meme requete
+// (page metier pos 38,6 / guide 2026 pos 9,7 / guide 2024 pos 29,7).
+// Ces redirections DOIVENT rester avant la route /blog/{slug}.
+Route::redirect('/blog/location-voiture-aeroport-alger-guide-complet-2024', '/location-voiture-aeroport-alger', 301);
+Route::redirect('/blog/location-voiture-aeroport-alger-guide-complet-2026', '/location-voiture-aeroport-alger', 301);
+
 Route::get('/blog/{slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Réservation

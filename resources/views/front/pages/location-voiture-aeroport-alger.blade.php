@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'Location voiture Aéroport Alger — Livraison au terminal | ResaDZ')
+@section('title', 'Location de voiture aéroport Alger — livraison terminal | ResaDZ')
 @section('meta_description', "Louez une voiture à l'aéroport d'Alger Houari Boumédiène — livraison directe au terminal, loueurs vérifiés, réservation en ligne. Dès 4 500 DA.")
 @section('canonical', url('/location-voiture-aeroport-alger'))
 
@@ -35,7 +35,7 @@
         </nav>
 
         <h1 class="text-3xl lg:text-5xl font-black text-white tracking-tight leading-tight">
-            Location voiture <span style="color: #FF6B2C;">Aéroport Alger</span> Houari Boumédiène — livraison au terminal
+            Location de voiture <span style="color: #FF6B2C;">aéroport Alger</span> Houari Boumédiène — livraison au terminal
         </h1>
         <p class="mt-4 text-lg text-gray-300 max-w-3xl">
             Votre voiture vous attend à la sortie du terminal. Loueurs vérifiés, livraison directe, contrat automatique.
@@ -312,6 +312,29 @@
                     </li>
                 </ul>
             </div>
+        </div>
+    </div>
+</section>
+
+{{-- Guide pratique (contenu consolide depuis les anciens articles de blog aeroport) --}}
+<section class="bg-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight mb-8">Louer une voiture à Alger aéroport : le guide complet</h2>
+        <div class="prose prose-lg max-w-none">
+            <p class="text-gray-700 text-lg leading-relaxed">
+                L'aéroport Houari Boumédiène compte trois aérogares : le terminal 1 pour l'international, le terminal 2 pour le domestique et le terminal 4 pour les vols low-cost. Quel que soit votre point d'arrivée, la remise du véhicule se fait à la sortie des arrivées ou au parking attenant — précisez simplement votre terminal au loueur lors de la réservation.
+            </p>
+            <p class="text-gray-700 text-lg leading-relaxed mt-4">
+                Comptez une quinzaine de minutes entre la sortie de la douane et le départ au volant : le temps de l'état des lieux, de la signature du contrat et de la remise des clés. Pour un vol arrivant de nuit, signalez-le à la réservation — la majorité des loueurs assurent les remises tardives sans supplément, mais mieux vaut l'avoir confirmé avant le décollage.
+            </p>
+            <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Combien coûte une location de voiture à l'aéroport d'Alger ?</h3>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                Les tarifs sont identiques à ceux du centre-ville — le tableau ci-dessus s'applique. Seule la livraison à l'aérogare peut faire l'objet d'un supplément, généralement compris entre 1 000 et 2 000 DA, et affiché sur chaque annonce avant la réservation. En haute saison estivale, comptez 20 à 30 % de plus sur le prix journalier, et réservez plusieurs semaines à l'avance : c'est la période où les véhicules partent le plus vite.
+            </p>
+            <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Réserver depuis l'étranger avant son vol</h3>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                La réservation se fait entièrement en ligne, sans avance obligatoire dans la plupart des cas. Communiquez votre numéro de vol : le loueur suit l'horaire réel d'atterrissage et s'adapte en cas de retard. Pour le retour, la restitution à l'aérogare se convient de la même manière — prévoyez trente minutes de marge avant votre enregistrement.
+            </p>
         </div>
     </div>
 </section>

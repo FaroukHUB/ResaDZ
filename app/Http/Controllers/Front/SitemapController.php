@@ -58,8 +58,15 @@ class SitemapController extends Controller
             ];
         }
 
+        // Slugs consolides vers une page metier (redirection 301) : jamais dans le sitemap
+        $redirectedSlugs = [
+            'location-voiture-aeroport-alger-guide-complet-2024',
+            'location-voiture-aeroport-alger-guide-complet-2026',
+        ];
+
         // Blog posts
         $posts = BlogPost::published()
+            ->whereNotIn('slug', $redirectedSlugs)
             ->orderBy('published_at', 'desc')
             ->get(['slug', 'published_at', 'updated_at']);
 
