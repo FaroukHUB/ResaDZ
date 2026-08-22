@@ -334,7 +334,9 @@
                             @endif
                             <div>
                                 <h3 class="font-bold text-gray-900 text-sm">{{ $vehicle->full_name }}</h3>
+                                {{-- Nom du loueur — MASQUÉ à la demande (08/2026), ne pas supprimer : réactivable en décommentant
                                 <p class="text-xs text-gray-500">{{ $vehicle->loueur->company_name ?? '' }}</p>
+                                --}}
                             </div>
                         </div>
 
