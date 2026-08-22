@@ -206,6 +206,54 @@
                     Pratique pour les séjours courts intra-muros. Préférez les remises en matinée pour éviter la circulation dense.
                 </p>
             </div>
+
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg hover:border-green-200 transition-all">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg">Alger centre & Sidi M'Hamed</h3>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Alger centre reste le point de rendez-vous le plus demandé : Grande Poste, Didouche Mourad, place Audin. Le stationnement y est difficile en journée — convenez d'un point précis avec le loueur.
+                </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg hover:border-green-200 transition-all">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg">Hydra, El Biar & Ben Aknoun</h3>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Les hauteurs d'Alger, prisées pour les déplacements professionnels et les séjours en résidence. Accès rapide à l'autoroute et aux ambassades.
+                </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg hover:border-green-200 transition-all">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg">Chéraga, Ouled Fayet & Dely Ibrahim</h3>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    Ouest algérois en pleine expansion, proche du centre d'affaires de Bab Ezzouar via la rocade. Nombreux loueurs disponibles sur cette zone.
+                </p>
+            </div>
+
+            <div class="bg-gray-50 rounded-2xl p-6 border border-gray-200 hover:shadow-lg hover:border-green-200 transition-all">
+                <div class="flex items-center gap-3 mb-3">
+                    <div class="w-10 h-10 bg-green-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a2 2 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <h3 class="font-bold text-gray-900 text-lg">Dar El Beïda & Rouïba</h3>
+                </div>
+                <p class="text-gray-600 text-sm leading-relaxed">
+                    À deux pas de l'aéroport et de la zone industrielle. Idéal si vous arrivez par avion et repartez vers l'est du pays.
+                </p>
+            </div>
         </div>
     </div>
 </section>
@@ -326,6 +374,34 @@
                 <p class="font-bold text-green-900 text-sm">Messagerie intégrée</p>
                 <p class="text-green-800 text-xs mt-1">Échanges tracés et sécurisés</p>
             </div>
+        </div>
+    </div>
+</section>
+
+{{-- Section ciblant la variante "location de voiture a Alger" --}}
+<section class="bg-white py-16">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight mb-8">Location de voiture à Alger : réserver en ligne, sans passer par une agence</h2>
+        <div class="prose prose-lg max-w-none">
+            <p class="text-gray-700 text-lg leading-relaxed">
+                La location de voiture à Alger a longtemps voulu dire faire le tour des agences, comparer des prix affichés nulle part et repartir sans garantie. Sur ResaDZ, tout se passe en ligne : vous voyez le véhicule, son prix réel à la journée, les avis laissés par les clients précédents, et vous réservez vos dates en quelques minutes.
+            </p>
+            <p class="text-gray-700 text-lg leading-relaxed mt-4">
+                Chaque loueur de la plateforme est vérifié — identité, documents du véhicule, assurance — et chaque réservation donne lieu à un contrat. Le montant de la caution, le kilométrage inclus et les conditions d'annulation sont affichés sur l'annonce avant que vous ne payiez quoi que ce soit.
+            </p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Trouver une location de voiture pas chère à Alger</h3>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                Le prix dépend surtout de trois facteurs : la catégorie du véhicule, la durée et la saison. Une citadine sur une semaine revient nettement moins cher qu'un SUV sur trois jours, et les tarifs baissent mécaniquement au-delà de dix jours de location. Pour les périodes tendues — juillet, août, les fêtes — réserver deux à trois semaines à l'avance fait souvent la différence entre un tarif normal et une majoration de 30 %.
+            </p>
+            <p class="text-gray-700 text-lg leading-relaxed mt-4">
+                Le comparateur affiche l'ensemble des véhicules disponibles à Alger sur vos dates, du moins cher au plus cher, sans frais de dossier ni commission ajoutée au moment de payer.
+            </p>
+
+            <h3 class="text-xl font-bold text-gray-900 mt-8 mb-3">Combien de temps pour obtenir sa voiture ?</h3>
+            <p class="text-gray-700 text-lg leading-relaxed">
+                La demande part immédiatement au loueur, qui répond en général dans l'heure. Une fois la réservation confirmée, la remise du véhicule se fait au point convenu — votre quartier, l'aéroport ou votre hôtel — avec l'état des lieux et la signature du contrat sur place, en un quart d'heure environ.
+            </p>
         </div>
     </div>
 </section>
