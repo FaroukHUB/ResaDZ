@@ -43,6 +43,8 @@ $faqs = [
 ];
 
 $nearby = [
+    '/prix-location-voiture-algerie' => 'Prix location voiture Algérie',
+    '/location-voiture-sans-caution' => 'Location sans caution',
     '/location-voiture-oran' => 'Location voiture Oran',
     '/location-voiture-tlemcen' => 'Location voiture Tlemcen',
     '/location-voiture-alger' => 'Location voiture Alger',

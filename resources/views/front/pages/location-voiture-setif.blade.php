@@ -43,6 +43,8 @@ $faqs = [
 ];
 
 $nearby = [
+    '/prix-location-voiture-algerie' => 'Prix location voiture Algérie',
+    '/location-voiture-sans-caution' => 'Location sans caution',
     '/location-voiture-aeroport-constantine' => 'Location aéroport Constantine',
     '/location-voiture-constantine' => 'Location voiture Constantine',
     '/location-voiture-bejaia' => 'Location voiture Béjaïa',

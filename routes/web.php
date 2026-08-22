@@ -122,6 +122,14 @@ Route::get('/location-voiture-annaba', function () {
     return view('front.pages.location-voiture-annaba');
 })->name('seo.location-annaba');
 
+// Pages piliers SEO (prix / caution) — doivent rester AVANT le wildcard
+Route::get('/prix-location-voiture-algerie', function () {
+    return view('front.pages.prix-location-voiture-algerie');
+})->name('seo.prix');
+Route::get('/location-voiture-sans-caution', function () {
+    return view('front.pages.location-voiture-sans-caution');
+})->name('seo.sans-caution');
+
 // Pages SEO par wilaya (wildcard — doit rester APRÈS les routes dédiées)
 Route::get('/location-voiture-{wilaya}', [VehicleController::class, 'byWilaya'])->name('vehicles.by-wilaya');
 
