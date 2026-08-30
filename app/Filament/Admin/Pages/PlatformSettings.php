@@ -98,6 +98,7 @@ class PlatformSettings extends Page
             'whatsapp' => Setting::get('whatsapp', ''),
 
             // Logos & Favicon
+            'studio_visual_priority' => Setting::get('studio_visual_priority', false),
             'logo_light' => Setting::get('logo_light', ''),
             'logo_dark' => Setting::get('logo_dark', ''),
             'favicon' => Setting::get('favicon', ''),
@@ -147,6 +148,13 @@ class PlatformSettings extends Page
                         Forms\Components\Tabs\Tab::make('Apparence')
                             ->icon('heroicon-o-paint-brush')
                             ->schema([
+                                Forms\Components\Section::make('Visuels des véhicules')
+                                    ->description('Choisissez quelle image apparaît en premier sur les cartes et les fiches véhicules.')
+                                    ->schema([
+                                        Forms\Components\Toggle::make('studio_visual_priority')
+                                            ->label('Afficher le visuel studio en image principale')
+                                            ->helperText('Désactivé : la photo du loueur prime, le visuel studio ne sert que si elle est absente. Activé : le visuel studio passe en premier et la photo du loueur bascule en tête de galerie — rien n\'est perdu, elle reste visible en un clic.'),
+                                    ]),
                                 Forms\Components\Section::make('Logos')
                                     ->description('Uploadez vos logos pour le header et le footer')
                                     ->schema([
@@ -596,6 +604,7 @@ class PlatformSettings extends Page
         Setting::set('whatsapp', $data['whatsapp'] ?? '', 'contact', 'text');
 
         // Logos & Favicon
+        Setting::set('studio_visual_priority', $data['studio_visual_priority'] ?? false, 'appearance', 'boolean');
         Setting::set('logo_light', $data['logo_light'] ?? '', 'appearance', 'text');
         Setting::set('logo_dark', $data['logo_dark'] ?? '', 'appearance', 'text');
         Setting::set('favicon', $data['favicon'] ?? '', 'appearance', 'text');

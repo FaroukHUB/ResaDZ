@@ -62,7 +62,7 @@
         @php
             $lightboxImages = [];
             if ($vehicle->display_image) $lightboxImages[] = asset('storage/' . $vehicle->display_image);
-            foreach (($vehicle->gallery ?? []) as $g) $lightboxImages[] = asset('storage/' . $g);
+            foreach ($vehicle->display_gallery as $g) $lightboxImages[] = asset('storage/' . $g);
         @endphp
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8"
              x-data="{
@@ -104,9 +104,9 @@
                 </div>
 
                 <!-- Gallery -->
-                @if($vehicle->gallery && count($vehicle->gallery) > 0)
+                @if(count($vehicle->display_gallery) > 0)
                     <div class="grid grid-cols-4 gap-3">
-                        @foreach($vehicle->gallery as $photo)
+                        @foreach($vehicle->display_gallery as $photo)
                             <div class="aspect-square rounded-xl overflow-hidden bg-gray-100 border border-gray-200">
                                 <img src="{{ asset('storage/' . $photo) }}" alt="{{ $vehicle->full_name }}" class="w-full h-full object-cover hover:scale-105 transition-transform duration-300 cursor-pointer" @click="lbShow({{ $loop->index + ($vehicle->display_image ? 1 : 0) }})">
                             </div>

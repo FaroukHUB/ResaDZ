@@ -171,27 +171,60 @@ class Vehicle extends Model
     /**
      * Returns the display image: custom upload or template fallback
      */
+    /**
+     * Visuel studio correspondant (marque + modele + couleur), s'il existe.
+     * Resolu a chaque affichage : un visuel cree plus tard s'applique
+     * retroactivement a tous les vehicules qui correspondent.
+     */
+    public function getStudioImageAttribute(): ?string
+    {
+        if (!$this->brand_id || !$this->model || !$this->color) {
+            return null;
+        }
+
+        try {
+            return VehicleTemplate::where('brand_id', $this->brand_id)
+                ->whereRaw('LOWER(model_name) = ?', [strtolower($this->model)])
+                ->where('color', $this->color)
+                ->where('is_active', true)
+                ->value('image_path');
+        } catch (\Exception $e) {
+            // Table absente (migrations non jouees)
+            return null;
+        }
+    }
+
+    /**
+     * Image principale affichee.
+     * Par defaut : la photo du loueur prime, le visuel studio sert de secours.
+     * Si le reglage 'studio_visual_priority' est actif : le visuel studio passe
+     * devant et la photo du loueur bascule en galerie (voir display_gallery).
+     */
     public function getDisplayImageAttribute(): ?string
     {
-        if ($this->image) {
-            return $this->image;
+        $studio = $this->studio_image;
+
+        if ($studio && Setting::get('studio_visual_priority', false)) {
+            return $studio;
         }
 
-        if ($this->brand_id && $this->model && $this->color) {
-            try {
-                $template = VehicleTemplate::where('brand_id', $this->brand_id)
-                    ->whereRaw('LOWER(model_name) = ?', [strtolower($this->model)])
-                    ->where('color', $this->color)
-                    ->where('is_active', true)
-                    ->value('image_path');
+        return $this->image ?: $studio;
+    }
 
-                if ($template) return $template;
-            } catch (\Exception $e) {
-                // Table may not exist yet
-            }
+    /**
+     * Galerie affichee. Quand le visuel studio occupe la place principale,
+     * la photo du loueur est replacee en tete de galerie : rien n'est perdu,
+     * le client voit le vrai vehicule en un clic.
+     */
+    public function getDisplayGalleryAttribute(): array
+    {
+        $gallery = is_array($this->gallery) ? $this->gallery : [];
+
+        if ($this->image && $this->display_image !== $this->image) {
+            array_unshift($gallery, $this->image);
         }
 
-        return null;
+        return array_values(array_unique(array_filter($gallery)));
     }
 
     public function transactions(): HasMany
