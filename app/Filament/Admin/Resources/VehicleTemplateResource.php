@@ -81,6 +81,22 @@ class VehicleTemplateResource extends Resource
                     })
                     ->createOptionModalHeading('Ajouter un modèle'),
 
+                Forms\Components\TextInput::make('year_from')
+                    ->label('Année de début')
+                    ->numeric()
+                    ->minValue(1950)
+                    ->maxValue(2100)
+                    ->placeholder('ex : 2020')
+                    ->helperText('Facultatif. Laissez vide pour couvrir toutes les années.'),
+
+                Forms\Components\TextInput::make('year_to')
+                    ->label('Année de fin')
+                    ->numeric()
+                    ->minValue(1950)
+                    ->maxValue(2100)
+                    ->placeholder('ex : 2024')
+                    ->helperText('Facultatif. Laissez vide si le modèle est toujours produit.'),
+
                 Forms\Components\Select::make('color')
                     ->label('Couleur')
                     ->required()
@@ -132,6 +148,17 @@ class VehicleTemplateResource extends Resource
                     ->label('Modèle')
                     ->sortable()
                     ->searchable(),
+
+                Tables\Columns\TextColumn::make('year_from')
+                    ->label('Années')
+                    ->formatStateUsing(function ($record) {
+                        if (!$record->year_from && !$record->year_to) return 'Toutes';
+                        if ($record->year_from && $record->year_to) return $record->year_from . ' – ' . $record->year_to;
+                        if ($record->year_from) return 'Depuis ' . $record->year_from;
+                        return "Jusqu'à " . $record->year_to;
+                    })
+                    ->badge()
+                    ->color(fn ($record) => ($record->year_from || $record->year_to) ? 'success' : 'gray'),
 
                 Tables\Columns\TextColumn::make('color')
                     ->label('Couleur')

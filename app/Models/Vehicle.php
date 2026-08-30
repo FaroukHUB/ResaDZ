@@ -183,13 +183,39 @@ class Vehicle extends Model
         }
 
         try {
-            return VehicleTemplate::where('brand_id', $this->brand_id)
+            $base = VehicleTemplate::where('brand_id', $this->brand_id)
                 ->whereRaw('LOWER(model_name) = ?', [strtolower($this->model)])
                 ->where('color', $this->color)
-                ->where('is_active', true)
+                ->where('is_active', true);
+
+            // Annee du vehicule : on extrait les 4 chiffres, ce qui tolere
+            // les saisies libres du type "fin 2018" ou "2019/2020".
+            $year = null;
+            if (preg_match('/(19|20)\d{2}/', (string) $this->year, $m)) {
+                $year = (int) $m[0];
+            }
+
+            if ($year) {
+                // Visuel dont la plage couvre l'annee ; le plus precis passe
+                // devant le visuel generique (sans plage).
+                $match = (clone $base)
+                    ->where(fn ($q) => $q->whereNull('year_from')->orWhere('year_from', '<=', $year))
+                    ->where(fn ($q) => $q->whereNull('year_to')->orWhere('year_to', '>=', $year))
+                    ->orderByRaw('CASE WHEN year_from IS NULL AND year_to IS NULL THEN 1 ELSE 0 END')
+                    ->value('image_path');
+
+                if ($match) {
+                    return $match;
+                }
+            }
+
+            // Pas d'annee exploitable, ou aucune plage ne correspond :
+            // on retombe sur le visuel generique s'il existe.
+            return $base
+                ->orderByRaw('CASE WHEN year_from IS NULL AND year_to IS NULL THEN 0 ELSE 1 END')
                 ->value('image_path');
         } catch (\Exception $e) {
-            // Table absente (migrations non jouees)
+            // Table ou colonnes absentes (migrations non jouees)
             return null;
         }
     }

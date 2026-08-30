@@ -13,6 +13,8 @@ class VehicleTemplate extends Model
     protected $fillable = [
         'brand_id',
         'model_name',
+        'year_from',
+        'year_to',
         'color',
         'image_path',
         'is_active',
