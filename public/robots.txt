@@ -2,11 +2,10 @@ User-agent: *
 Allow: /
 
 Disallow: /admin
-Disallow: /loueur
 Disallow: /mon-espace
 Disallow: /connexion
 Disallow: /inscription
 Disallow: /auth/
 Disallow: /api/
 
-Sitemap: https://resadz.com/sitemap.xml
+Sitemap: https://www.resadz.com/sitemap.xml
