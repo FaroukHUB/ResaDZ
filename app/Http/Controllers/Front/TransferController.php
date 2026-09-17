@@ -21,7 +21,7 @@ class TransferController extends Controller
         $passengers = (int) $request->input('passengers', 1);
 
         // Chercher les loueurs qui proposent le service de transfert
-        $loueurs = Loueur::where('is_active', true)
+        $loueurs = Loueur::approved()->where('is_active', true)
             ->whereHas('settings', function ($q) {
                 $q->where('key', 'transfer_enabled')->where('value', 'true');
             })

@@ -335,6 +335,16 @@ class Vehicle extends Model
         return $query->where('is_active', true);
     }
 
+    /**
+     * Restreint aux vehicules dont le loueur a ete valide par un administrateur.
+     * Utilise uniquement sur le front public : les panels loueur et admin
+     * doivent continuer a voir les vehicules des comptes en attente.
+     */
+    public function scopeFromApprovedLoueur($query)
+    {
+        return $query->whereHas('loueur', fn ($q) => $q->where('is_approved', true));
+    }
+
     public function scopeAvailable($query)
     {
         return $query->where('status', 'available');

@@ -17,6 +17,7 @@ class HomeController extends Controller
     {
         // Notre sélection pour vous (choisis manuellement depuis l'admin)
         $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+            ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
             ->where('is_in_selection', true)
@@ -27,6 +28,7 @@ class HomeController extends Controller
 
         // Véhicules ajoutés récemment (excluant ceux déjà dans la sélection)
         $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+            ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
             ->whereNotNull('image')
@@ -43,6 +45,7 @@ class HomeController extends Controller
         $vehiclesByCategory = [];
         foreach ($categories as $category) {
             $vehiclesByCategory[$category->slug] = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+                ->fromApprovedLoueur()
                 ->where('is_active', true)
                 ->whereIn('status', ['available', 'reserved'])
                 ->where('category_id', $category->id)
@@ -55,7 +58,7 @@ class HomeController extends Controller
         $brands = Brand::orderBy('name')->get();
 
         // Loueurs partenaires en vedette (choisis manuellement depuis l'admin)
-        $featuredLoueurs = Loueur::where('is_active', true)
+        $featuredLoueurs = Loueur::approved()->where('is_active', true)
             ->where('is_featured_partner', true)
             ->withCount('vehicles')
             ->orderBy('partner_order')
@@ -65,22 +68,22 @@ class HomeController extends Controller
         // Si aucun partenaire n'est mis en avant, utiliser les mieux notes
         $loueurs = $featuredLoueurs->count() > 0
             ? $featuredLoueurs
-            : Loueur::where('is_active', true)
+            : Loueur::approved()->where('is_active', true)
                 ->withCount('vehicles')
                 ->orderBy('rating', 'desc')
                 ->limit(5)
                 ->get();
 
         // Nombre total de partenaires en vedette (pour le bouton "Voir tous")
-        $totalFeaturedPartners = Loueur::where('is_active', true)
+        $totalFeaturedPartners = Loueur::approved()->where('is_active', true)
             ->where('is_featured_partner', true)
             ->count();
 
-        $totalVehicles = Vehicle::where('is_active', true)->count();
-        $totalLoueurs = Loueur::where('is_active', true)->count();
+        $totalVehicles = Vehicle::fromApprovedLoueur()->where('is_active', true)->count();
+        $totalLoueurs = Loueur::approved()->where('is_active', true)->count();
 
         // Get unique wilayas from active loueurs
-        $wilayas = Loueur::where('is_active', true)
+        $wilayas = Loueur::approved()->where('is_active', true)
             ->whereNotNull('wilaya')
             ->distinct()
             ->pluck('wilaya')

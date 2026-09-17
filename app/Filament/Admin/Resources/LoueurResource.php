@@ -174,6 +174,10 @@ class LoueurResource extends Resource
                                             ->label('Actif')
                                             ->default(true)
                                             ->helperText('Le loueur peut accéder à son dashboard'),
+                                        Forms\Components\Toggle::make('is_approved')
+                                            ->label('Validé')
+                                            ->default(true)
+                                            ->helperText('Profil et véhicules visibles sur le site public'),
                                         Forms\Components\Toggle::make('is_verified')
                                             ->label('Vérifié')
                                             ->helperText('Badge de confiance affiché sur le site'),
@@ -273,6 +277,16 @@ class LoueurResource extends Resource
                     ->trueIcon('heroicon-o-globe-alt')
                     ->trueColor('success')
                     ->falseColor('gray'),
+                Tables\Columns\IconColumn::make('is_approved')
+                    ->label('Validé')
+                    ->boolean()
+                    ->trueIcon('heroicon-o-check-badge')
+                    ->falseIcon('heroicon-o-clock')
+                    ->trueColor('success')
+                    ->falseColor('warning')
+                    ->tooltip(fn (Loueur $record) => $record->is_approved
+                        ? 'Visible sur le site public'
+                        : 'En attente de validation — invisible sur le site public'),
                 Tables\Columns\IconColumn::make('is_verified')
                     ->label('Vérifié')
                     ->boolean(),
@@ -287,6 +301,8 @@ class LoueurResource extends Resource
             ->filters([
                 Tables\Filters\TernaryFilter::make('is_active')
                     ->label('Actif'),
+                Tables\Filters\TernaryFilter::make('is_approved')
+                    ->label('Validé'),
                 Tables\Filters\TernaryFilter::make('is_verified')
                     ->label('Vérifié'),
                 Tables\Filters\TernaryFilter::make('is_suspended')
@@ -301,6 +317,23 @@ class LoueurResource extends Resource
                     ->query(fn ($query) => $query->trialExpired()),
             ])
             ->actions([
+                Tables\Actions\Action::make('approve')
+                    ->label('Valider')
+                    ->icon('heroicon-o-check-badge')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Valider la mise en ligne')
+                    ->modalDescription(fn (Loueur $record) => "Valider {$record->company_name} ? Son profil et ses véhicules deviendront visibles sur le site public.")
+                    ->visible(fn (Loueur $record) => ! $record->is_approved)
+                    ->action(function (Loueur $record) {
+                        $record->update(['is_approved' => true]);
+                        static::sendActivationEmail($record);
+                        Notification::make()
+                            ->title('Compte validé')
+                            ->body("{$record->company_name} est maintenant visible sur le site. Mail envoyé.")
+                            ->success()
+                            ->send();
+                    }),
                 Tables\Actions\Action::make('activate')
                     ->label('Accepter')
                     ->icon('heroicon-o-check-circle')

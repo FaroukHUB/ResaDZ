@@ -44,7 +44,7 @@ class SitemapController extends Controller
         ];
 
         // Individual vehicle pages
-        $vehicles = Vehicle::where('is_active', true)
+        $vehicles = Vehicle::fromApprovedLoueur()->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
             ->orderBy('updated_at', 'desc')
             ->get(['slug', 'updated_at']);
@@ -80,7 +80,7 @@ class SitemapController extends Controller
         }
 
         // Loueur profile pages
-        $loueurs = Loueur::where('is_active', true)
+        $loueurs = Loueur::approved()->where('is_active', true)
             ->where('is_suspended', false)
             ->orderBy('updated_at', 'desc')
             ->get(['slug', 'updated_at']);
@@ -133,7 +133,7 @@ class SitemapController extends Controller
             if (in_array($wilayaSlug, $dedicatedSlugs)) continue;
 
             // Only include wilayas that have active loueurs
-            $hasLoueurs = Loueur::where('is_active', true)
+            $hasLoueurs = Loueur::approved()->where('is_active', true)
                 ->where('is_suspended', false)
                 ->where(function ($q) use ($name, $wilayaSlug) {
                     $q->whereRaw('LOWER(wilaya) = ?', [strtolower($name)])

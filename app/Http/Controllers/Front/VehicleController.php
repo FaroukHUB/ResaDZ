@@ -17,6 +17,7 @@ class VehicleController extends Controller
     public function index(Request $request)
     {
         $query = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+            ->fromApprovedLoueur()
             ->where('vehicles.is_active', true)
             ->whereIn('vehicles.status', ['available', 'reserved']);
 
@@ -130,7 +131,7 @@ class VehicleController extends Controller
         $categories = Category::orderBy('name')->get();
 
         // Wilayas pour le filtre
-        $wilayas = Loueur::where('is_active', true)
+        $wilayas = Loueur::approved()->where('is_active', true)
             ->whereNotNull('wilaya')
             ->distinct()
             ->pluck('wilaya')
@@ -150,11 +151,13 @@ class VehicleController extends Controller
     public function show(string $slug)
     {
         $vehicle = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+            ->fromApprovedLoueur()
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
         $relatedVehicles = Vehicle::with(['brand', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+            ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
             ->where('id', '!=', $vehicle->id)
@@ -177,7 +180,7 @@ class VehicleController extends Controller
         $wilayaName = str_replace('-', ' ', ucwords($wilaya, '-'));
 
         // Find loueurs in this wilaya + loueurs disponibles nationalement
-        $loueurIds = Loueur::where('is_active', true)
+        $loueurIds = Loueur::approved()->where('is_active', true)
             ->where('is_suspended', false)
             ->where(function ($q) use ($wilayaName, $wilaya) {
                 $q->where(function ($sub) use ($wilayaName, $wilaya) {
@@ -188,6 +191,7 @@ class VehicleController extends Controller
             ->pluck('id');
 
         $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+            ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
             ->whereIn('loueur_id', $loueurIds)
@@ -195,7 +199,7 @@ class VehicleController extends Controller
             ->orderBy('created_at', 'desc')
             ->paginate(12);
 
-        $loueurs = Loueur::where('is_active', true)
+        $loueurs = Loueur::approved()->where('is_active', true)
             ->whereIn('id', $loueurIds)
             ->withCount('vehicles')
             ->get();
@@ -228,6 +232,7 @@ class VehicleController extends Controller
         }
 
         $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('id', $vehicleIds)
             ->get();

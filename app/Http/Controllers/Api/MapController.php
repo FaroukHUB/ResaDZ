@@ -24,6 +24,7 @@ class MapController extends Controller
                 ->where('vehicles.is_active', true)
                 ->where('vehicles.status', 'available')
                 ->where('loueurs.is_active', true)
+                ->where('loueurs.is_approved', true)
                 ->where('loueurs.is_suspended', false)
                 ->select('loueur_wilaya.wilaya_code', DB::raw('COUNT(DISTINCT vehicles.id) as count'))
                 ->groupBy('loueur_wilaya.wilaya_code')
@@ -33,6 +34,7 @@ class MapController extends Controller
             // Also count loueurs with disponible_national
             $nationalVehicles = Vehicle::whereHas('loueur', function ($q) {
                 $q->where('is_active', true)
+                  ->where('is_approved', true)
                   ->where('is_suspended', false)
                   ->where('disponible_national', true);
             })->where('is_active', true)
@@ -46,6 +48,7 @@ class MapController extends Controller
                 ->where('vehicles.is_active', true)
                 ->where('vehicles.status', 'available')
                 ->where('loueurs.is_active', true)
+                ->where('loueurs.is_approved', true)
                 ->where('loueurs.is_suspended', false)
                 ->select('loueur_wilaya.wilaya_code', DB::raw('MIN(vehicles.price_per_day) as min_price'))
                 ->groupBy('loueur_wilaya.wilaya_code')

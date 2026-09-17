@@ -52,6 +52,7 @@ class Loueur extends Model
         'baridimob_rip',
         'is_active',
         'is_verified',
+        'is_approved',
         'is_featured_partner',
         'partner_order',
         'verified_at',
@@ -83,6 +84,7 @@ class Loueur extends Model
         'payment_methods' => 'array',
         'is_active' => 'boolean',
         'is_verified' => 'boolean',
+        'is_approved' => 'boolean',
         'is_featured_partner' => 'boolean',
         'is_suspended' => 'boolean',
         'offers_transfer' => 'boolean',
@@ -760,6 +762,15 @@ class Loueur extends Model
     public function scopeVerified($query)
     {
         return $query->where('is_verified', true);
+    }
+
+    /**
+     * Comptes valides par un administrateur.
+     * Les inscriptions en attente ne sont visibles nulle part sur le site public.
+     */
+    public function scopeApproved($query)
+    {
+        return $query->where('is_approved', true);
     }
 
     public function scopeBySubdomain($query, string $subdomain)

@@ -140,6 +140,7 @@ class ChatbotController extends Controller
     private function buildVehicleCatalog(): string
     {
         $vehicles = Vehicle::with(['brand', 'category', 'loueur', 'availabilities', 'bookings'])
+            ->fromApprovedLoueur()
             ->active()
             ->available()
             ->orderBy('price_per_day')
@@ -294,7 +295,7 @@ class ChatbotController extends Controller
     private function buildLoueurDirectory(): string
     {
         // Loueurs with available vehicles
-        $vehicleLoueurs = Loueur::where('is_active', true)
+        $vehicleLoueurs = Loueur::approved()->where('is_active', true)
             ->where('is_suspended', false)
             ->whereNotNull('onboarding_completed_at')
             ->withCount(['vehicles' => function ($q) {
@@ -304,7 +305,7 @@ class ChatbotController extends Controller
             ->get();
 
         // Taxi/chauffeur accounts
-        $taxiLoueurs = Loueur::where('is_active', true)
+        $taxiLoueurs = Loueur::approved()->where('is_active', true)
             ->where('is_suspended', false)
             ->where('account_type', 'taxi')
             ->get();

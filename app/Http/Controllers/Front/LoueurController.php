@@ -11,14 +11,14 @@ class LoueurController extends Controller
     public function index()
     {
         // Priorite aux partenaires en vedette
-        $featuredLoueurs = Loueur::where('is_active', true)
+        $featuredLoueurs = Loueur::approved()->where('is_active', true)
             ->where('is_featured_partner', true)
             ->withCount('vehicles')
             ->orderBy('partner_order')
             ->get();
 
         // Puis les autres loueurs tries par note
-        $otherLoueurs = Loueur::where('is_active', true)
+        $otherLoueurs = Loueur::approved()->where('is_active', true)
             ->where(function ($query) {
                 $query->where('is_featured_partner', false)
                     ->orWhereNull('is_featured_partner');
@@ -36,11 +36,13 @@ class LoueurController extends Controller
     public function show(string $slug)
     {
         $loueur = Loueur::with('settings')
+            ->approved()
             ->where('slug', $slug)
             ->where('is_active', true)
             ->firstOrFail();
 
         $vehicles = Vehicle::with(['brand', 'category', 'loueur.settings'])
+            ->fromApprovedLoueur()
             ->where('loueur_id', $loueur->id)
             ->where('is_active', true)
             ->orderBy('is_featured', 'desc')

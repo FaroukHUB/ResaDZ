@@ -95,6 +95,9 @@ class AuthController extends Controller
                 'phone' => $validated['phone'],
                 'wilaya' => $validated['wilaya'],
                 'is_active' => true,
+                // En attente de validation admin : le compte est utilisable,
+                // mais rien n'apparait sur le site public avant approbation.
+                'is_approved' => false,
                 'offers_transfer' => $isTaxi,
             ]);
 
@@ -155,6 +158,8 @@ class AuthController extends Controller
                 'company_name' => $googleUser->getName(),
                 'slug' => Str::slug($googleUser->getName()) . '-' . Str::random(6),
                 'is_active' => true,
+                // Meme regle que l'inscription par formulaire.
+                'is_approved' => false,
             ]);
 
             // Send welcome email for new Google OAuth accounts
