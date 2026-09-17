@@ -74,7 +74,7 @@ class ChauffeurPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 PanelsRenderHook::BODY_START,
-                fn () => $this->renderImpersonationBanner() . $this->renderOnboardingBanner()
+                fn () => $this->renderImpersonationBanner() . $this->renderValidationBanner() . $this->renderOnboardingBanner()
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
@@ -96,6 +96,31 @@ class ChauffeurPanelProvider extends PanelProvider
                 PanelsRenderHook::BODY_END,
                 fn () => Auth::check() ? Blade::render('@include("filament.components.panel-assistant", ["panelType" => "chauffeur"])') : ''
             );
+    }
+
+    protected function renderValidationBanner(): string
+    {
+        $user = Auth::user();
+        if (!$user || !$user->loueur || $user->loueur->is_approved) {
+            return '';
+        }
+
+        // Styles en ligne volontairement : le CSS Tailwind du site public
+        // (@vite) n'est pas charge dans les panels Filament, les classes
+        // utilitaires comme bg-amber-50 n'y existent donc pas.
+        return <<<'HTML'
+            <div style="background:#fffbeb;border-bottom:1px solid #fde68a;padding:12px 16px;">
+                <div style="max-width:1280px;margin:0 auto;display:flex;align-items:flex-start;gap:12px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#d97706" stroke-width="2" style="width:24px;height:24px;flex-shrink:0;margin-top:2px;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z"/>
+                    </svg>
+                    <div>
+                        <p style="margin:0;font-weight:600;font-size:14px;color:#78350f;">Compte en attente de validation</p>
+                        <p style="margin:3px 0 0;font-size:12px;line-height:1.5;color:#92400e;">Votre compte est en cours de vérification par l'équipe ResaDZ. Vous pouvez déjà compléter votre profil, vos véhicules et vos trajets : ils apparaîtront sur le site public dès que votre compte sera validé.</p>
+                    </div>
+                </div>
+            </div>
+            HTML;
     }
 
     protected function renderImpersonationBanner(): string
