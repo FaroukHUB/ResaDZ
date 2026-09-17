@@ -33,7 +33,7 @@ class WelcomeChauffeurMail extends Mailable
                 'loueur' => $this->loueur,
                 'user' => $this->loueur->user,
                 'companyName' => Setting::get('company_name', 'ResaDZ'),
-                'whatsappNumber' => Setting::get('whatsapp_number', ''),
+                'whatsappNumber' => Setting::get('whatsapp', ''),
             ],
         );
     }
