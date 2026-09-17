@@ -81,7 +81,7 @@
                     @if($recipientType === 'multi')
                         <div style="border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden;">
                             <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
-                                <span style="font-size: 12px; font-weight: 700; color: #475569;">{{ count($selectedLoueurIds) }} loueur(s) s&eacute;lectionn&eacute;(s)</span>
+                                <span style="font-size: 12px; font-weight: 700; color: #475569;">{{ count($this->selectedLoueurIds ?? []) }} loueur(s) s&eacute;lectionn&eacute;(s)</span>
                                 <button type="button" wire:click="toggleAllLoueurs"
                                     style="padding: 5px 10px; border-radius: 7px; border: 1px solid #cbd5e1; background: white; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer;">
                                     Tout s&eacute;lectionner / d&eacute;s&eacute;lectionner
@@ -147,10 +147,10 @@
 
                         <div style="padding: 0 20px 20px; display: flex; gap: 10px;">
                             <button wire:click="{{ $recipientType === 'multi' ? 'sendTemplateToMany' : 'sendTemplate' }}"
-                                @if($recipientType === 'multi') wire:confirm="Envoyer cet email &agrave; {{ count($selectedLoueurIds) }} loueur(s) ? Cette action est irr&eacute;versible." @endif
+                                @if($recipientType === 'multi') wire:confirm="Envoyer cet email &agrave; {{ count($this->selectedLoueurIds ?? []) }} loueur(s) ? Cette action est irr&eacute;versible." @endif
                                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 700; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(34,197,94,0.3);">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-                                {{ $recipientType === 'multi' ? 'Envoyer a ' . count($selectedLoueurIds) . ' loueur(s)' : "Envoyer l'email" }}
+                                {{ $recipientType === 'multi' ? 'Envoyer a ' . count($this->selectedLoueurIds ?? []) . ' loueur(s)' : "Envoyer l'email" }}
                             </button>
                             @php $waUrl = $this->getWhatsappUrl($previewBody); @endphp
                             @if($waUrl)
@@ -212,7 +212,7 @@
                 @if($aiRecipientType === 'multi')
                     <div style="border: 1px solid #C7D2FE; border-radius: 10px; overflow: hidden; margin-bottom: 16px; background: white;">
                         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #EEF2FF; border-bottom: 1px solid #C7D2FE;">
-                            <span style="font-size: 12px; font-weight: 700; color: #4338CA;">{{ count($aiSelectedLoueurIds) }} loueur(s) s&eacute;lectionn&eacute;(s)</span>
+                            <span style="font-size: 12px; font-weight: 700; color: #4338CA;">{{ count($this->aiSelectedLoueurIds ?? []) }} loueur(s) s&eacute;lectionn&eacute;(s)</span>
                             <button type="button" wire:click="toggleAllAiLoueurs"
                                 style="padding: 5px 10px; border-radius: 7px; border: 1px solid #C7D2FE; background: white; font-size: 12px; font-weight: 600; color: #4338CA; cursor: pointer;">
                                 Tout s&eacute;lectionner / d&eacute;s&eacute;lectionner
@@ -275,10 +275,10 @@
                         </div>
                         <div style="padding: 0 20px 20px; display: flex; gap: 10px;">
                             <button wire:click="{{ $aiRecipientType === 'multi' ? 'sendAIEmailToMany' : 'sendAIEmail' }}"
-                                @if($aiRecipientType === 'multi') wire:confirm="Envoyer cet email &agrave; {{ count($aiSelectedLoueurIds) }} loueur(s) ? Cette action est irr&eacute;versible." @endif
+                                @if($aiRecipientType === 'multi') wire:confirm="Envoyer cet email &agrave; {{ count($this->aiSelectedLoueurIds ?? []) }} loueur(s) ? Cette action est irr&eacute;versible." @endif
                                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 700; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(34,197,94,0.3);">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-                                {{ $aiRecipientType === 'multi' ? 'Envoyer a ' . count($aiSelectedLoueurIds) . ' loueur(s)' : "Envoyer l'email" }}
+                                {{ $aiRecipientType === 'multi' ? 'Envoyer a ' . count($this->aiSelectedLoueurIds ?? []) . ' loueur(s)' : "Envoyer l'email" }}
                             </button>
                             @php $waAiUrl = $this->getAiWhatsappUrl(); @endphp
                             @if($waAiUrl)
