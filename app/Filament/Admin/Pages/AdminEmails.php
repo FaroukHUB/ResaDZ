@@ -26,6 +26,8 @@ class AdminEmails extends Page
     public string $selectedTemplate = '';
     public string $recipientType = 'loueur';
     public string $selectedLoueurId = '';
+    /** Destinataires du mode "Plusieurs loueurs" (email uniquement). */
+    public array $selectedLoueurIds = [];
     public string $customPhone = '';
     public string $prefillLoueurId = '';
     public string $selectedClientEmail = '';
@@ -45,6 +47,8 @@ class AdminEmails extends Page
     public string $aiPrompt = '';
     public string $aiRecipientType = 'loueur';
     public string $aiSelectedLoueurId = '';
+    /** Destinataires du mode "Plusieurs loueurs" (email uniquement). */
+    public array $aiSelectedLoueurIds = [];
     public string $aiCustomEmail = '';
     public string $aiSubject = '';
     public string $aiBody = '';
@@ -218,9 +222,13 @@ class AdminEmails extends Page
 
         $name = $this->getRecipientName($this->aiRecipientType, $this->aiSelectedLoueurId);
 
+        $recipientLine = $this->aiRecipientType === 'multi'
+            ? "L'email sera envoyé à plusieurs loueurs à la fois : écris exactement le marqueur {nom} à la place du nom du destinataire, il sera remplacé automatiquement par le nom de chacun. "
+            : "Le destinataire s'appelle {$name}. ";
+
         $systemPrompt = "Tu es l'assistant email de ResaDZ. Tu rédiges des emails professionnels mais chaleureux en français. "
             . "Tu utilises 'Salam' pour saluer. Tu tutoies pas, tu vouvoies. Tu signes toujours 'L'équipe ResaDZ'. "
-            . "Le destinataire s'appelle {$name}. ResaDZ est une marketplace de location de véhicules en Algérie. "
+            . $recipientLine . "ResaDZ est une marketplace de location de véhicules en Algérie. "
             . "Génère UNIQUEMENT le sujet et le corps de l'email, séparés par '---'. "
             . "Format: Sujet: [le sujet]\n---\n[le corps de l'email]";
 
@@ -424,6 +432,22 @@ class AdminEmails extends Page
 
     private function sendEmail(string $email, string $name, string $subject, string $body, ?string $templateKey = null): void
     {
+        $error = $this->deliverEmail($email, $name, $subject, $body, $templateKey);
+
+        if ($error === null) {
+            Notification::make()->title('Email envoyé à ' . $email)->success()->send();
+            $this->reset(['selectedTemplate', 'previewSubject', 'previewBody', 'customEmail', 'aiPrompt', 'aiSubject', 'aiBody', 'aiCustomEmail']);
+        } else {
+            Notification::make()->title('Erreur d\'envoi : ' . $error)->danger()->send();
+        }
+    }
+
+    /**
+     * Envoi unitaire + journalisation, sans notification ni remise a zero du
+     * formulaire. Retourne null si l'envoi a reussi, le message d'erreur sinon.
+     */
+    private function deliverEmail(string $email, string $name, string $subject, string $body, ?string $templateKey = null): ?string
+    {
         try {
             Mail::raw($body, function ($message) use ($email, $subject) {
                 $message->to($email)
@@ -444,8 +468,7 @@ class AdminEmails extends Page
                 'sent_by' => Auth::id(),
             ]);
 
-            Notification::make()->title('Email envoyé à ' . $email)->success()->send();
-            $this->reset(['selectedTemplate', 'previewSubject', 'previewBody', 'customEmail', 'aiPrompt', 'aiSubject', 'aiBody', 'aiCustomEmail']);
+            return null;
 
         } catch (\Exception $e) {
             Log::error('Admin email failed: ' . $e->getMessage());
@@ -460,8 +483,123 @@ class AdminEmails extends Page
                 'sent_by' => Auth::id(),
             ]);
 
-            Notification::make()->title('Erreur d\'envoi : ' . $e->getMessage())->danger()->send();
+            return $e->getMessage();
         }
+    }
+
+    // ===== Envoi groupe (email uniquement) =====
+
+    /** Liste des loueurs proposes a la selection multiple. */
+    private function selectableLoueurIds(): array
+    {
+        return Loueur::where('is_active', true)
+            ->orderBy('company_name')
+            ->pluck('id')
+            ->map(fn ($id) => (string) $id)
+            ->all();
+    }
+
+    public function toggleAllLoueurs(): void
+    {
+        $all = $this->selectableLoueurIds();
+        $this->selectedLoueurIds = count($this->selectedLoueurIds) === count($all) ? [] : $all;
+    }
+
+    public function toggleAllAiLoueurs(): void
+    {
+        $all = $this->selectableLoueurIds();
+        $this->aiSelectedLoueurIds = count($this->aiSelectedLoueurIds) === count($all) ? [] : $all;
+    }
+
+    public function sendTemplateToMany(): void
+    {
+        // Le lien de reinitialisation est genere pour une adresse precise :
+        // l'envoyer a plusieurs comptes donnerait le meme lien a tout le monde.
+        if ($this->selectedTemplate === 'reset_password') {
+            Notification::make()
+                ->title('Envoi groupé impossible pour ce modèle')
+                ->body('Le lien de réinitialisation est propre à un seul compte. Envoyez ce modèle loueur par loueur.')
+                ->danger()
+                ->send();
+            return;
+        }
+
+        if ($this->sendToMany($this->selectedLoueurIds, $this->previewSubject, $this->previewBody, $this->selectedTemplate)) {
+            $this->reset(['selectedTemplate', 'previewSubject', 'previewBody', 'selectedLoueurIds']);
+        }
+    }
+
+    public function sendAIEmailToMany(): void
+    {
+        if ($this->sendToMany($this->aiSelectedLoueurIds, $this->aiSubject, $this->aiBody, 'ai_generated')) {
+            $this->reset(['aiPrompt', 'aiSubject', 'aiBody', 'aiSelectedLoueurIds']);
+        }
+    }
+
+    /**
+     * Envoie le meme message a plusieurs loueurs, en personnalisant {nom}
+     * pour chacun. Retourne false si rien n'a pu etre envoye.
+     */
+    private function sendToMany(array $loueurIds, string $subject, string $body, ?string $templateKey): bool
+    {
+        $ids = array_filter($loueurIds);
+
+        if (empty($ids)) {
+            Notification::make()->title('Choisissez au moins un loueur')->danger()->send();
+            return false;
+        }
+
+        if (!$subject || !$body) {
+            Notification::make()->title('Remplissez le sujet et le message')->danger()->send();
+            return false;
+        }
+
+        $loueurs = Loueur::with('user')->whereIn('id', $ids)->orderBy('company_name')->get();
+
+        // La file d'attente est en mode sync sur l'hebergement : les mails
+        // partent un par un pendant la requete. On desserre la limite de temps
+        // pour qu'un envoi a une vingtaine de loueurs n'expire pas.
+        if (function_exists('set_time_limit')) {
+            @set_time_limit(300);
+        }
+
+        $sent = 0;
+        $failed = 0;
+        $skipped = 0;
+
+        foreach ($loueurs as $loueur) {
+            $email = $loueur->email_contact ?: $loueur->user?->email;
+
+            if (!$email) {
+                $skipped++;
+                continue;
+            }
+
+            $name = $loueur->company_name ?: 'loueur';
+
+            if ($this->deliverEmail($email, $name, $subject, str_replace('{nom}', $name, $body), $templateKey) === null) {
+                $sent++;
+            } else {
+                $failed++;
+            }
+        }
+
+        $details = [$sent . ' email(s) envoyé(s)'];
+        if ($failed > 0) {
+            $details[] = $failed . ' échec(s)';
+        }
+        if ($skipped > 0) {
+            $details[] = $skipped . ' sans adresse email';
+        }
+
+        $notification = Notification::make()
+            ->title($failed > 0 ? 'Envoi groupé terminé avec des erreurs' : 'Envoi groupé terminé')
+            ->body(implode(' · ', $details));
+
+        $failed > 0 ? $notification->warning() : $notification->success();
+        $notification->send();
+
+        return $sent > 0;
     }
 
     private function getRecipientEmail(string $type, string $loueurId, string $customEmail = ''): ?string
@@ -477,6 +615,11 @@ class AdminEmails extends Page
 
     private function getRecipientName(string $type, string $loueurId): string
     {
+        // Envoi groupe : on laisse le marqueur en place, il est remplace
+        // par le nom de chaque loueur au moment de l'envoi.
+        if ($type === 'multi') {
+            return '{nom}';
+        }
         if ($type === 'loueur' && $loueurId) {
             return Loueur::find($loueurId)?->company_name ?? 'loueur';
         }

@@ -67,13 +67,39 @@
                             {{ $recipientType === 'loueur' ? 'background: #1e293b; color: white;' : 'background: #f1f5f9; color: #64748b;' }}">
                             Un loueur
                         </button>
+                        <button wire:click="$set('recipientType', 'multi')"
+                            style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+                            {{ $recipientType === 'multi' ? 'background: #1e293b; color: white;' : 'background: #f1f5f9; color: #64748b;' }}">
+                            Plusieurs loueurs
+                        </button>
                         <button wire:click="$set('recipientType', 'custom')"
                             style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
                             {{ $recipientType === 'custom' ? 'background: #1e293b; color: white;' : 'background: #f1f5f9; color: #64748b;' }}">
                             Email libre
                         </button>
                     </div>
-                    @if($recipientType === 'loueur')
+                    @if($recipientType === 'multi')
+                        <div style="border: 1px solid #d1d5db; border-radius: 10px; overflow: hidden;">
+                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #f8fafc; border-bottom: 1px solid #e2e8f0;">
+                                <span style="font-size: 12px; font-weight: 700; color: #475569;">{{ count($selectedLoueurIds) }} loueur(s) s&eacute;lectionn&eacute;(s)</span>
+                                <button type="button" wire:click="toggleAllLoueurs"
+                                    style="padding: 5px 10px; border-radius: 7px; border: 1px solid #cbd5e1; background: white; font-size: 12px; font-weight: 600; color: #475569; cursor: pointer;">
+                                    Tout s&eacute;lectionner / d&eacute;s&eacute;lectionner
+                                </button>
+                            </div>
+                            <div style="max-height: 260px; overflow-y: auto; padding: 6px 12px 10px;">
+                                @foreach($loueurs as $l)
+                                    <label style="display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; color: #1e293b; cursor: pointer;">
+                                        <input type="checkbox" wire:model="selectedLoueurIds" value="{{ $l->id }}" style="width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;" />
+                                        <span>{{ $l->company_name }}</span>
+                                    </label>
+                                @endforeach
+                            </div>
+                        </div>
+                        <p style="margin: 8px 0 0; font-size: 12px; color: #64748b;">
+                            Envoi par email uniquement. Le marqueur <code style="background:#f1f5f9;padding:1px 5px;border-radius:4px;">{nom}</code> est remplac&eacute; par le nom de chaque loueur.
+                        </p>
+                    @elseif($recipientType === 'loueur')
                         <select wire:model.live="selectedLoueurId" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #d1d5db; font-size: 14px;">
                             <option value="">— Choisir un loueur —</option>
                             @foreach($loueurs as $l)
@@ -120,10 +146,11 @@
                         </div>
 
                         <div style="padding: 0 20px 20px; display: flex; gap: 10px;">
-                            <button wire:click="sendTemplate"
+                            <button wire:click="{{ $recipientType === 'multi' ? 'sendTemplateToMany' : 'sendTemplate' }}"
+                                @if($recipientType === 'multi') wire:confirm="Envoyer cet email &agrave; {{ count($selectedLoueurIds) }} loueur(s) ? Cette action est irr&eacute;versible." @endif
                                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 700; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(34,197,94,0.3);">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-                                Envoyer l'email
+                                {{ $recipientType === 'multi' ? 'Envoyer a ' . count($selectedLoueurIds) . ' loueur(s)' : "Envoyer l'email" }}
                             </button>
                             @php $waUrl = $this->getWhatsappUrl($previewBody); @endphp
                             @if($waUrl)
@@ -169,6 +196,11 @@
                             {{ $aiRecipientType === 'loueur' ? 'background: #4338CA; color: white;' : 'background: white; color: #6366F1; border: 1px solid #C7D2FE;' }}">
                             Un loueur
                         </button>
+                        <button wire:click="$set('aiRecipientType', 'multi')"
+                            style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
+                            {{ $aiRecipientType === 'multi' ? 'background: #4338CA; color: white;' : 'background: white; color: #6366F1; border: 1px solid #C7D2FE;' }}">
+                            Plusieurs loueurs
+                        </button>
                         <button wire:click="$set('aiRecipientType', 'custom')"
                             style="padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; border: none;
                             {{ $aiRecipientType === 'custom' ? 'background: #4338CA; color: white;' : 'background: white; color: #6366F1; border: 1px solid #C7D2FE;' }}">
@@ -177,7 +209,28 @@
                     </div>
                 </div>
 
-                @if($aiRecipientType === 'loueur')
+                @if($aiRecipientType === 'multi')
+                    <div style="border: 1px solid #C7D2FE; border-radius: 10px; overflow: hidden; margin-bottom: 16px; background: white;">
+                        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; background: #EEF2FF; border-bottom: 1px solid #C7D2FE;">
+                            <span style="font-size: 12px; font-weight: 700; color: #4338CA;">{{ count($aiSelectedLoueurIds) }} loueur(s) s&eacute;lectionn&eacute;(s)</span>
+                            <button type="button" wire:click="toggleAllAiLoueurs"
+                                style="padding: 5px 10px; border-radius: 7px; border: 1px solid #C7D2FE; background: white; font-size: 12px; font-weight: 600; color: #4338CA; cursor: pointer;">
+                                Tout s&eacute;lectionner / d&eacute;s&eacute;lectionner
+                            </button>
+                        </div>
+                        <div style="max-height: 260px; overflow-y: auto; padding: 6px 12px 10px;">
+                            @foreach($loueurs as $l)
+                                <label style="display: flex; align-items: center; gap: 10px; padding: 7px 0; font-size: 14px; color: #1e293b; cursor: pointer;">
+                                    <input type="checkbox" wire:model="aiSelectedLoueurIds" value="{{ $l->id }}" style="width: 16px; height: 16px; cursor: pointer; flex-shrink: 0;" />
+                                    <span>{{ $l->company_name }}</span>
+                                </label>
+                            @endforeach
+                        </div>
+                        <p style="margin: 0; padding: 0 12px 10px; font-size: 12px; color: #6366F1;">
+                            Envoi par email uniquement. L'IA &eacute;crira <code style="background:#EEF2FF;padding:1px 5px;border-radius:4px;">{nom}</code>, remplac&eacute; par le nom de chaque loueur.
+                        </p>
+                    </div>
+                @elseif($aiRecipientType === 'loueur')
                     <select wire:model="aiSelectedLoueurId" style="width: 100%; padding: 10px 14px; border-radius: 10px; border: 1px solid #C7D2FE; font-size: 14px; margin-bottom: 16px; background: white;">
                         <option value="">— Choisir un loueur —</option>
                         @foreach($loueurs as $l)
@@ -221,10 +274,11 @@
                             </div>
                         </div>
                         <div style="padding: 0 20px 20px; display: flex; gap: 10px;">
-                            <button wire:click="sendAIEmail"
+                            <button wire:click="{{ $aiRecipientType === 'multi' ? 'sendAIEmailToMany' : 'sendAIEmail' }}"
+                                @if($aiRecipientType === 'multi') wire:confirm="Envoyer cet email &agrave; {{ count($aiSelectedLoueurIds) }} loueur(s) ? Cette action est irr&eacute;versible." @endif
                                 style="flex: 1; padding: 14px; background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 700; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 14px rgba(34,197,94,0.3);">
                                 <svg width="20" height="20" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5"/></svg>
-                                Envoyer l'email
+                                {{ $aiRecipientType === 'multi' ? 'Envoyer a ' . count($aiSelectedLoueurIds) . ' loueur(s)' : "Envoyer l'email" }}
                             </button>
                             @php $waAiUrl = $this->getAiWhatsappUrl(); @endphp
                             @if($waAiUrl)
