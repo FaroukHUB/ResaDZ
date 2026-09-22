@@ -3,7 +3,21 @@
     $badges = $vehicle->getBadges();
     $degressivePricing = $vehicle->degressive_pricing;
     $showSelectionBorder = $showSelectionBorder ?? false;
-    $hasGoldenBorder = $vehicle->is_boosted || $showSelectionBorder;
+
+    // Boost et offre : on lit la relation quand elle a ete prechargee avec les
+    // memes criteres (accueil), sinon on garde l'accesseur, comme ailleurs.
+    $isBoosted = $vehicle->relationLoaded('boosts')
+        ? $vehicle->boosts->isNotEmpty()
+        : $vehicle->is_boosted;
+
+    $activeOffer = $vehicle->relationLoaded('offers')
+        ? $vehicle->offers->first()
+        : $vehicle->activeOffer;
+
+    // Accesseur resolu une seule fois : chaque appel peut interroger vehicle_templates.
+    $displayImage = $vehicle->display_image;
+
+    $hasGoldenBorder = $isBoosted || $showSelectionBorder;
 @endphp
 
 <article class="rounded-lg overflow-hidden flex flex-col {{ $hasGoldenBorder ? 'border-2 border-amber-500' : 'border border-neutral-800' }} bg-black">
@@ -29,8 +43,8 @@
     {{-- Image Section --}}
     <a href="{{ route('vehicles.show', $vehicle->slug) }}" class="block relative border-b border-neutral-800">
         <div class="aspect-[16/10] overflow-hidden">
-            @if($vehicle->display_image)
-                <img src="{{ asset('storage/' . \App\Services\ImageService::thumbnail($vehicle->display_image, 500, 312)) }}"
+            @if($displayImage)
+                <img src="{{ asset('storage/' . \App\Services\ImageService::thumbnail($displayImage, 500, 312)) }}"
                      alt="{{ $vehicle->full_name }}"
                      class="w-full h-full object-cover"
                      loading="lazy"
@@ -46,17 +60,17 @@
         </div>
 
         {{-- Sponsored Badge --}}
-        @if($vehicle->is_boosted)
+        @if($isBoosted)
             <div class="absolute top-3 left-3 bg-gradient-to-r from-amber-500 to-orange-500 px-3 py-1 rounded">
                 <span class="text-[10px] font-black text-white uppercase tracking-wider">Sponsorisé</span>
             </div>
         @endif
 
         {{-- Special Offer Badge --}}
-        @if($vehicle->activeOffer)
+        @if($activeOffer)
             <div class="absolute top-3 right-3 z-10" style="animation: offerBounce 2s ease-in-out infinite;">
                 <div style="background: linear-gradient(135deg, #22c55e, #16a34a); padding: 6px 14px; border-radius: 8px; box-shadow: 0 4px 15px rgba(34,197,94,0.5);">
-                    <span style="color: white; font-size: 13px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">{{ $vehicle->activeOffer->badge_text }}</span>
+                    <span style="color: white; font-size: 13px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase;">{{ $activeOffer->badge_text }}</span>
                 </div>
             </div>
         @endif

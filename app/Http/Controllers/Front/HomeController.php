@@ -4,8 +4,6 @@ namespace App\Http\Controllers\Front;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
-use App\Models\Brand;
-use App\Models\Category;
 use App\Models\HeroSlide;
 use App\Models\Loueur;
 use App\Models\Setting;
@@ -16,7 +14,19 @@ class HomeController extends Controller
     public function index()
     {
         // Notre sélection pour vous (choisis manuellement depuis l'admin)
-        $selectedVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+        $selectedVehicles = Vehicle::with([
+            'brand',
+            'category',
+            'loueur.settings',
+            'seasonalRates' => fn ($q) => $q->active(),
+            // Memes criteres que les accesseurs is_boosted et active_offer :
+            // precharges ici pour eviter une requete par carte sur l'accueil.
+            'boosts' => fn ($q) => $q->where('status', 'active')
+                ->where('ends_at', '>=', now()),
+            'offers' => fn ($q) => $q->where('is_active', true)
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now()),
+        ])
             ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
@@ -27,7 +37,19 @@ class HomeController extends Controller
             ->get();
 
         // Véhicules ajoutés récemment (excluant ceux déjà dans la sélection)
-        $recentVehicles = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
+        $recentVehicles = Vehicle::with([
+            'brand',
+            'category',
+            'loueur.settings',
+            'seasonalRates' => fn ($q) => $q->active(),
+            // Memes criteres que les accesseurs is_boosted et active_offer :
+            // precharges ici pour eviter une requete par carte sur l'accueil.
+            'boosts' => fn ($q) => $q->where('status', 'active')
+                ->where('ends_at', '>=', now()),
+            'offers' => fn ($q) => $q->where('is_active', true)
+                ->where('start_date', '<=', now())
+                ->where('end_date', '>=', now()),
+        ])
             ->fromApprovedLoueur()
             ->where('is_active', true)
             ->whereIn('status', ['available', 'reserved'])
@@ -37,25 +59,6 @@ class HomeController extends Controller
             ->orderByDesc('created_at')
             ->limit(8)
             ->get();
-
-        // Véhicules par catégorie (seulement les "featured" choisis par l'admin)
-        // Triés par prix croissant, limité à 4 pour l'affichage homepage
-        $categories = Category::active()->ordered()->get();
-
-        $vehiclesByCategory = [];
-        foreach ($categories as $category) {
-            $vehiclesByCategory[$category->slug] = Vehicle::with(['brand', 'category', 'loueur.settings', 'seasonalRates' => fn ($q) => $q->active()])
-                ->fromApprovedLoueur()
-                ->where('is_active', true)
-                ->whereIn('status', ['available', 'reserved'])
-                ->where('category_id', $category->id)
-                ->where('is_featured', true)
-                ->orderBy('price_per_day', 'asc')
-                ->limit(4)
-                ->get();
-        }
-
-        $brands = Brand::orderBy('name')->get();
 
         // Loueurs partenaires en vedette (choisis manuellement depuis l'admin)
         $featuredLoueurs = Loueur::approved()->where('is_active', true)
@@ -120,9 +123,6 @@ class HomeController extends Controller
         return view('front.pages.home', compact(
             'selectedVehicles',
             'recentVehicles',
-            'vehiclesByCategory',
-            'brands',
-            'categories',
             'loueurs',
             'totalVehicles',
             'totalLoueurs',

@@ -228,9 +228,18 @@ class Vehicle extends Model
      */
     public function getDisplayImageAttribute(): ?string
     {
+        $studioPriority = (bool) Setting::get('studio_visual_priority', false);
+
+        // Sans priorite studio, la photo du loueur l'emporte de toute facon :
+        // inutile d'interroger vehicle_templates quand elle existe. Le resultat
+        // est identique a la logique ci-dessous, sans la requete.
+        if (! $studioPriority && $this->image) {
+            return $this->image;
+        }
+
         $studio = $this->studio_image;
 
-        if ($studio && Setting::get('studio_visual_priority', false)) {
+        if ($studio && $studioPriority) {
             return $studio;
         }
 
