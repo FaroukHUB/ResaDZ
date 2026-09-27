@@ -3,7 +3,7 @@
 @php
 $city = 'Sidi Bel Abbès';
 $slug = 'sidi-bel-abbes';
-$metaTitle = 'Location voiture Sidi Bel Abbès — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
+$metaTitle = 'Location voiture Sidi Bel Abbès — Loueurs vérifiés dès 5 500 DA/jour | ResaDZ';
 $metaDescription = 'Louez une voiture à Sidi Bel Abbès auprès de loueurs vérifiés : tarifs 2026, Oran à 1h, réservation en ligne sur ResaDZ.';
 $heroSubtitle = 'Comparez les loueurs vérifiés à Sidi Bel Abbès. Capitale de la Mékerra, à une heure d\'Oran et aux portes du Sud-Ouest.';
 
@@ -13,12 +13,13 @@ $intro = [
 ];
 
 $priceRows = [
-    ['Citadine', 'Symbol, Clio, i10', '4 000 – 5 500 DA'],
-    ['Berline', 'Logan, Sandero, Accent', '5 500 – 7 000 DA'],
-    ['SUV', 'Duster, Stepway, Creta', '8 000 – 9 500 DA'],
-    ['Van 7 places', 'Espace, Partner', '11 000 – 15 000 DA'],
+    ['Citadine', 'Symbol, Clio, i10', '5 500 – 7 000 DA'],
+    ['Berline', 'Logan, Sandero, Accent', '7 500 – 9 000 DA'],
+    ['SUV', 'Duster, Stepway, Creta', '9 500 – 12 000 DA'],
+    ['Van 7 places', 'Espace, Partner', '12 000 – 16 000 DA'],
+    ['Haut de gamme', 'Berlines et SUV premium', '16 000 DA et +'],
 ];
-$priceNote = 'Les tarifs bel-abbésiens comptent parmi les plus accessibles de l\'Ouest. Pour l\'été et les fêtes de fin d\'année, réservez à l\'avance — l\'offre locale reste plus limitée qu\'à Oran.';
+$priceNote = 'Tarifs du marché des loueurs vérifiés à Sidi Bel Abbès. Pour l\'été et les fêtes de fin d\'année, réservez à l\'avance — l\'offre locale reste plus limitée qu\'à Oran.';
 
 $pickupTitle = 'Où récupérer votre voiture à Sidi Bel Abbès';
 $pickupSpots = [
@@ -34,7 +35,7 @@ $particulierTexte = [
 ];
 
 $faqs = [
-    ['q' => 'Quel est le prix d\'une location de voiture à Sidi Bel Abbès ?', 'a' => 'Environ 4 000 à 5 500 DA/jour pour une citadine, 5 500 à 7 000 DA pour une berline et 8 000 à 9 500 DA pour un SUV — parmi les tarifs les plus bas de l\'Ouest algérien.'],
+    ['q' => 'Quel est le prix d\'une location de voiture à Sidi Bel Abbès ?', 'a' => 'Environ 5 500 à 7 000 DA/jour pour une citadine, 7 500 à 9 000 DA pour une berline et 9 500 à 12 000 DA pour un SUV.'],
     ['q' => 'Peut-on se faire livrer la voiture à l\'aéroport d\'Oran ?', 'a' => 'Oui, plusieurs loueurs bel-abbésiens livrent à l\'aéroport Ahmed Ben Bella d\'Oran, à environ une heure par l\'autoroute Est-Ouest. Le supplément est indiqué sur l\'annonce.'],
     ['q' => 'Peut-on rouler vers Tlemcen ou le Sud avec la location ?', 'a' => 'Oui, sauf restriction mentionnée sur l\'annonce. Pour les longs trajets vers Béchar ou le Sud-Ouest, signalez votre itinéraire au loueur et vérifiez le kilométrage inclus.'],
     ['q' => 'Quels documents faut-il pour louer à Sidi Bel Abbès ?', 'a' => 'Permis de conduire valide (2 ans d\'ancienneté en général), pièce d\'identité ou passeport, et caution dont le montant est affiché sur chaque annonce.'],

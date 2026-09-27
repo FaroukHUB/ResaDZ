@@ -1,6 +1,6 @@
 @extends('front.layouts.app')
 
-@section('title', 'Location voiture Constantine — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ')
+@section('title', 'Location voiture Constantine — Loueurs vérifiés dès 5 500 DA/jour | ResaDZ')
 @section('meta_description', "Louez une voiture à Constantine auprès de loueurs vérifiés — tarifs réels 2026. Réservation en ligne sur ResaDZ.")
 @section('canonical', url('/location-voiture-constantine'))
 
@@ -93,22 +93,27 @@
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Citadine</td>
                         <td class="px-6 py-4 text-gray-600">Symbol, Clio, i10</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">4 000 – 5 500 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">5 500 – 7 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Berline</td>
                         <td class="px-6 py-4 text-gray-600">Logan, Sandero, Accent</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">5 500 – 7 000 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">7 500 – 9 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">SUV</td>
                         <td class="px-6 py-4 text-gray-600">Duster, Tucson, Creta</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Van 7 places</td>
                         <td class="px-6 py-4 text-gray-600">Espace, Partner</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">10 000 – 15 000 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">12 000 – 16 000 DA</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-bold text-gray-900">Haut de gamme</td>
+                        <td class="px-6 py-4 text-gray-600">Berlines et SUV premium</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">16 000 DA et +</td>
                     </tr>
                 </tbody>
             </table>

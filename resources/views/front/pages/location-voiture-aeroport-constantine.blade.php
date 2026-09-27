@@ -6,7 +6,7 @@ $slug = 'constantine';
 $airportName = 'Mohamed Boudiaf';
 $airportCode = 'CZL';
 $metaTitle = 'Location voiture aéroport Constantine (Mohamed Boudiaf) | ResaDZ';
-$metaDescription = 'Louez une voiture à l\'aéroport de Constantine Mohamed Boudiaf : livraison au terminal, loueurs vérifiés, réservation en ligne. Dès 4 500 DA/jour.';
+$metaDescription = 'Louez une voiture à l\'aéroport de Constantine Mohamed Boudiaf : livraison au terminal, loueurs vérifiés, réservation en ligne. Dès 5 500 DA/jour.';
 $heroSubtitle = 'Votre voiture vous attend à l\'aéroport Mohamed Boudiaf. Réservez avant le vol et prenez la route des ponts suspendus sans attendre.';
 
 $intro = [
@@ -15,10 +15,11 @@ $intro = [
 ];
 
 $priceRows = [
-    ['Citadine', 'Symbol, Clio, i10', '4 500 – 6 000 DA'],
-    ['Berline', 'Logan, Sandero, Elantra', '6 000 – 7 500 DA'],
-    ['SUV', 'Duster, Stepway, Tucson', '8 500 – 10 000 DA'],
+    ['Citadine', 'Symbol, Clio, i10', '5 500 – 7 000 DA'],
+    ['Berline', 'Logan, Sandero, Elantra', '7 500 – 9 000 DA'],
+    ['SUV', 'Duster, Stepway, Tucson', '9 500 – 12 000 DA'],
     ['Van 7 places', 'Espace, Expert', '12 000 – 16 000 DA'],
+    ['Haut de gamme', 'Berlines et SUV premium', '16 000 DA et +'],
 ];
 $priceNote = 'L\'été et pendant les fêtes religieuses, la diaspora constantinoise fait monter la demande : réservez tôt pour les vols de juillet-août.';
 
@@ -28,7 +29,7 @@ $deliveryText = [
 ];
 
 $faqs = [
-    ['q' => 'Combien coûte une location à l\'aéroport de Constantine ?', 'a' => 'Comptez 4 500 à 6 000 DA/jour pour une citadine, 6 000 à 7 500 DA pour une berline et 8 500 à 10 000 DA pour un SUV. Le supplément livraison aéroport éventuel figure sur l\'annonce.'],
+    ['q' => 'Combien coûte une location à l\'aéroport de Constantine ?', 'a' => 'Comptez 5 500 à 7 000 DA/jour pour une citadine, 7 500 à 9 000 DA pour une berline et 9 500 à 12 000 DA pour un SUV. Le supplément livraison aéroport éventuel figure sur l\'annonce.'],
     ['q' => 'Le loueur m\'attend-il en cas de retard de vol ?', 'a' => 'Oui, en communiquant votre numéro de vol (CZL), le loueur suit l\'horaire réel d\'atterrissage et adapte le rendez-vous.'],
     ['q' => 'Peut-on rouler vers Sétif, Mila ou Guelma avec la location ?', 'a' => 'Oui, sauf mention contraire sur l\'annonce. L\'autoroute Est-Ouest est à proximité — vérifiez simplement le kilométrage inclus.'],
     ['q' => 'Accepte-t-on les permis français ou étrangers ?', 'a' => 'Oui, la plupart des loueurs acceptent les permis européens, parfois avec permis international. La condition exacte est sur l\'annonce.'],

@@ -3,7 +3,7 @@
 @php
 $city = 'Boumerdès';
 $slug = 'boumerdes';
-$metaTitle = 'Location voiture Boumerdès — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
+$metaTitle = 'Location voiture Boumerdès — Loueurs vérifiés dès 5 500 DA/jour | ResaDZ';
 $metaDescription = 'Louez une voiture à Boumerdès auprès de loueurs vérifiés : tarifs 2026, plages et côte est d\'Alger. Réservation en ligne sur ResaDZ.';
 $heroSubtitle = 'Comparez les loueurs vérifiés à Boumerdès. Plages, université, côte est — à 30 minutes de l\'aéroport d\'Alger.';
 
@@ -13,10 +13,11 @@ $intro = [
 ];
 
 $priceRows = [
-    ['Citadine', 'Symbol, Clio, Picanto', '4 000 – 5 500 DA'],
-    ['Berline', 'Logan, Sandero, i20', '5 500 – 7 000 DA'],
-    ['SUV', 'Duster, Stepway, Tucson', '8 000 – 10 000 DA'],
-    ['Van 7 places', 'Espace, Caddy', '11 000 – 16 000 DA'],
+    ['Citadine', 'Symbol, Clio, Picanto', '5 500 – 7 000 DA'],
+    ['Berline', 'Logan, Sandero, i20', '7 500 – 9 000 DA'],
+    ['SUV', 'Duster, Stepway, Tucson', '9 500 – 12 000 DA'],
+    ['Van 7 places', 'Espace, Caddy', '12 000 – 16 000 DA'],
+    ['Haut de gamme', 'Berlines et SUV premium', '16 000 DA et +'],
 ];
 $priceNote = 'En juillet-août, la demande explose sur la côte de Boumerdès : les prix montent de 20 à 30% et les meilleurs véhicules partent vite. Réservez à l\'avance pour la saison estivale.';
 
@@ -34,7 +35,7 @@ $particulierTexte = [
 ];
 
 $faqs = [
-    ['q' => 'Quel est le prix d\'une location de voiture à Boumerdès ?', 'a' => 'Environ 4 000 à 5 500 DA/jour pour une citadine, 5 500 à 7 000 DA pour une berline et 8 000 à 10 000 DA pour un SUV. Comptez 20 à 30% de plus en juillet-août sur la côte.'],
+    ['q' => 'Quel est le prix d\'une location de voiture à Boumerdès ?', 'a' => 'Environ 5 500 à 7 000 DA/jour pour une citadine, 7 500 à 9 000 DA pour une berline et 9 500 à 12 000 DA pour un SUV. Comptez 20 à 30% de plus en juillet-août sur la côte.'],
     ['q' => 'Peut-on se faire livrer à l\'aéroport d\'Alger ?', 'a' => 'Oui — l\'aéroport Houari Boumédiène n\'est qu\'à 30 minutes de Boumerdès par l\'autoroute. La majorité des loueurs proposent la livraison à l\'aérogare, souvent avec un petit supplément.'],
     ['q' => 'Faut-il réserver à l\'avance pour l\'été ?', 'a' => 'Fortement conseillé. La saison balnéaire (juin à septembre) sature le marché local : les véhicules les mieux notés se réservent plusieurs semaines à l\'avance.'],
     ['q' => 'Quels documents faut-il pour louer à Boumerdès ?', 'a' => 'Permis de conduire valide (2 ans d\'ancienneté en général), pièce d\'identité ou passeport, et caution dont le montant est affiché sur chaque annonce.'],

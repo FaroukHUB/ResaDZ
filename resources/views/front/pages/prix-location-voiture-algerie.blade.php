@@ -2,7 +2,7 @@
 
 @php
 $faqs = [
-    ['q' => 'Combien coûte une location de voiture en Algérie en 2026 ?', 'a' => 'Comptez 4 000 à 6 000 DA par jour pour une citadine, 5 500 à 7 500 DA pour une berline, 8 000 à 10 000 DA pour un SUV et 11 000 à 18 000 DA pour un van 7 places. Alger reste la wilaya la plus chère, les villes de l\'Ouest et des Hauts Plateaux les plus accessibles.'],
+    ['q' => 'Combien coûte une location de voiture en Algérie en 2026 ?', 'a' => 'Comptez 5 500 à 7 000 DA par jour pour une citadine, 7 500 à 9 000 DA pour une berline, 9 500 à 12 000 DA pour un SUV, 12 000 à 16 000 DA pour un van 7 places et 16 000 DA et plus pour une voiture haut de gamme.'],
     ['q' => 'Le prix affiché est-il le prix final ?', 'a' => 'Oui. Le tarif journalier affiché sur chaque annonce est celui que vous payez, sans frais de dossier ni commission ajoutée au moment de réserver. Seules les options que vous choisissez explicitement — livraison, siège bébé, conducteur supplémentaire — s\'ajoutent, et elles sont chiffrées avant validation.'],
     ['q' => 'Comment payer moins cher sa location ?', 'a' => 'Trois leviers : louer plus longtemps, car les tarifs deviennent dégressifs au-delà de dix jours ; éviter juillet-août où les prix montent de 20 à 30 % ; et réserver deux à trois semaines à l\'avance, quand les véhicules les mieux notés sont encore disponibles.'],
     ['q' => 'Le carburant est-il compris dans le prix ?', 'a' => 'Non. La règle est le plein-plein : vous récupérez le véhicule avec un niveau donné et le rendez au même niveau. Le carburant reste à votre charge, comme dans toutes les locations en Algérie.'],
@@ -121,22 +121,27 @@ $faqs = [
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Citadine</td>
                         <td class="px-6 py-4 text-gray-600">Symbol, Clio, i10, Picanto</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">4 000 – 6 000 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">5 500 – 7 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Berline</td>
                         <td class="px-6 py-4 text-gray-600">Logan, Sandero, Accent, i20</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">5 500 – 7 500 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">7 500 – 9 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">SUV</td>
                         <td class="px-6 py-4 text-gray-600">Duster, Stepway, Tucson, Creta</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">8 000 – 10 000 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Van 7 places</td>
                         <td class="px-6 py-4 text-gray-600">Espace, Expert, Caddy, Partner</td>
-                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">11 000 – 18 000 DA</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">12 000 – 16 000 DA</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-bold text-gray-900">Haut de gamme</td>
+                        <td class="px-6 py-4 text-gray-600">Berlines et SUV premium</td>
+                        <td class="px-6 py-4 text-right font-bold" style="color: #FF6B2C;">16 000 DA et +</td>
                     </tr>
                 </tbody>
             </table>
@@ -151,7 +156,7 @@ $faqs = [
 <section class="bg-white py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <h2 class="text-3xl lg:text-4xl font-black text-gray-900 tracking-tight text-center mb-4">Prix moyens par wilaya</h2>
-        <p class="text-gray-600 text-center mb-10 max-w-2xl mx-auto">Alger concentre la demande et affiche les tarifs les plus élevés. L'écart avec les wilayas de l'Ouest et des Hauts Plateaux atteint 10 à 15 % sur les mêmes catégories.</p>
+        <p class="text-gray-600 text-center mb-10 max-w-2xl mx-auto">Les fourchettes sont aujourd'hui homogènes d'une wilaya à l'autre. Cliquez sur une ville pour voir les véhicules disponibles et les loueurs vérifiés sur place.</p>
 
         <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
             <table class="w-full text-left">
@@ -166,51 +171,51 @@ $faqs = [
                 <tbody class="divide-y divide-gray-100">
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-alger" class="hover:text-green-600 transition">Alger</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 500 – 6 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">6 000 – 7 500 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 500 – 10 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-oran" class="hover:text-green-600 transition">Oran</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
                         <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 9 500 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-constantine" class="hover:text-green-600 transition">Constantine</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
                         <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 9 500 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-annaba" class="hover:text-green-600 transition">Annaba</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
                         <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 9 500 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-blida" class="hover:text-green-600 transition">Blida</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
                         <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 9 500 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-setif" class="hover:text-green-600 transition">Sétif</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 500 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 10 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-boumerdes" class="hover:text-green-600 transition">Boumerdès</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
                         <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 10 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900"><a href="/location-voiture-sidi-bel-abbes" class="hover:text-green-600 transition">Sidi Bel Abbès</a></td>
-                        <td class="px-6 py-4 text-right text-gray-700">4 000 – 5 500 DA</td>
                         <td class="px-6 py-4 text-right text-gray-700">5 500 – 7 000 DA</td>
-                        <td class="px-6 py-4 text-right text-gray-700">8 000 – 9 500 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">7 500 – 9 000 DA</td>
+                        <td class="px-6 py-4 text-right text-gray-700">9 500 – 12 000 DA</td>
                     </tr>
                 </tbody>
             </table>

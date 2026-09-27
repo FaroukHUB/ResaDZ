@@ -6,7 +6,7 @@ $slug = 'bejaia';
 $airportName = 'Abane Ramdane (Soummam)';
 $airportCode = 'BJA';
 $metaTitle = 'Location voiture aéroport Béjaïa (Soummam) — Livraison au terminal | ResaDZ';
-$metaDescription = 'Louez une voiture à l\'aéroport de Béjaïa Soummam - Abane Ramdane : livraison au terminal, loueurs vérifiés, réservation en ligne. Dès 4 500 DA/jour.';
+$metaDescription = 'Louez une voiture à l\'aéroport de Béjaïa Soummam - Abane Ramdane : livraison au terminal, loueurs vérifiés, réservation en ligne. Dès 5 500 DA/jour.';
 $heroSubtitle = 'Votre voiture vous attend à l\'aéroport Soummam - Abane Ramdane. Cap sur la Corniche kabyle, les Aiguades ou la vallée de la Soummam.';
 
 $intro = [
@@ -15,10 +15,11 @@ $intro = [
 ];
 
 $priceRows = [
-    ['Citadine', 'Symbol, Clio, i10', '4 500 – 6 000 DA'],
-    ['Berline', 'Logan, Sandero, i20', '6 000 – 7 500 DA'],
-    ['SUV', 'Duster, Stepway, Creta', '8 500 – 10 500 DA'],
-    ['Van 7 places', 'Espace, Caddy', '12 000 – 17 000 DA'],
+    ['Citadine', 'Symbol, Clio, i10', '5 500 – 7 000 DA'],
+    ['Berline', 'Logan, Sandero, i20', '7 500 – 9 000 DA'],
+    ['SUV', 'Duster, Stepway, Creta', '9 500 – 12 000 DA'],
+    ['Van 7 places', 'Espace, Caddy', '12 000 – 16 000 DA'],
+    ['Haut de gamme', 'Berlines et SUV premium', '16 000 DA et +'],
 ];
 $priceNote = 'Béjaïa est l\'une des destinations les plus tendues de l\'été algérien : en juillet-août les prix montent de 25 à 35% et les véhicules partent très vite. Réservez dès que vos billets sont pris.';
 
@@ -28,7 +29,7 @@ $deliveryText = [
 ];
 
 $faqs = [
-    ['q' => 'Combien coûte une location à l\'aéroport de Béjaïa ?', 'a' => 'De 4 500 DA/jour pour une citadine à 10 500 DA pour un SUV. En haute saison estivale, comptez 25 à 35% de plus — la Corniche kabyle est très demandée.'],
+    ['q' => 'Combien coûte une location à l\'aéroport de Béjaïa ?', 'a' => 'De 5 500 DA/jour pour une citadine à 12 000 DA pour un SUV. En haute saison estivale, comptez 25 à 35% de plus — la Corniche kabyle est très demandée.'],
     ['q' => 'Faut-il réserver longtemps à l\'avance pour l\'été ?', 'a' => 'Oui, c\'est indispensable à Béjaïa : les véhicules d\'été se réservent dès le printemps. Réservez dès l\'achat de vos billets d\'avion.'],
     ['q' => 'Peut-on rouler sur la Corniche et vers Tichy, Aokas, Souk El Tenine ?', 'a' => 'Oui, tous ces trajets côtiers sont classiques. Vérifiez le kilométrage inclus sur l\'annonce si vous prévoyez aussi la vallée de la Soummam.'],
     ['q' => 'Les permis français sont-ils acceptés ?', 'a' => 'Oui, la majorité des loueurs acceptent le permis français ou européen, parfois accompagné du permis international — précisé sur chaque annonce.'],

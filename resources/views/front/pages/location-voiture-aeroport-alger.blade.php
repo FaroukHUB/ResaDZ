@@ -1,7 +1,7 @@
 @extends('front.layouts.app')
 
 @section('title', 'Location de voiture aéroport Alger — livraison terminal | ResaDZ')
-@section('meta_description', "Louez une voiture à l'aéroport d'Alger Houari Boumédiène — livraison directe au terminal, loueurs vérifiés, réservation en ligne. Dès 4 500 DA.")
+@section('meta_description', "Louez une voiture à l'aéroport d'Alger Houari Boumédiène — livraison directe au terminal, loueurs vérifiés, réservation en ligne. Dès 5 500 DA.")
 @section('canonical', url('/location-voiture-aeroport-alger'))
 
 @section('meta_extra')
@@ -149,22 +149,27 @@
                 <tbody class="divide-y divide-gray-100">
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Citadine</td>
-                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">4 500 – 6 000 DA</td>
+                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">5 500 – 7 000 DA</td>
                         <td class="px-6 py-4 text-right text-gray-600">Incluse ou faible coût</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Berline</td>
-                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">6 000 – 7 500 DA</td>
+                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">7 500 – 9 000 DA</td>
                         <td class="px-6 py-4 text-right text-gray-600">Incluse ou faible coût</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">SUV</td>
-                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">8 500 – 10 000 DA</td>
+                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">9 500 – 12 000 DA</td>
                         <td class="px-6 py-4 text-right text-green-600 font-semibold">Incluse</td>
                     </tr>
                     <tr class="hover:bg-gray-50 transition">
                         <td class="px-6 py-4 font-bold text-gray-900">Van 7 places</td>
-                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">12 000 – 18 000 DA</td>
+                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">12 000 – 16 000 DA</td>
+                        <td class="px-6 py-4 text-right text-green-600 font-semibold">Incluse</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 transition">
+                        <td class="px-6 py-4 font-bold text-gray-900">Haut de gamme</td>
+                        <td class="px-6 py-4 font-bold" style="color: #FF6B2C;">16 000 DA et +</td>
                         <td class="px-6 py-4 text-right text-green-600 font-semibold">Incluse</td>
                     </tr>
                 </tbody>

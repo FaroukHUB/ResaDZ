@@ -3,7 +3,7 @@
 @php
 $city = 'Blida';
 $slug = 'blida';
-$metaTitle = 'Location voiture Blida — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
+$metaTitle = 'Location voiture Blida — Loueurs vérifiés dès 5 500 DA/jour | ResaDZ';
 $metaDescription = 'Louez une voiture à Blida auprès de loueurs vérifiés : tarifs réels 2026, réservation en ligne. La Mitidja, Chréa et Alger à portée de route.';
 $heroSubtitle = 'Comparez les loueurs vérifiés à Blida et dans la Mitidja. Prix transparents, contrat automatique, à 45 minutes d\'Alger.';
 
@@ -13,12 +13,13 @@ $intro = [
 ];
 
 $priceRows = [
-    ['Citadine', 'Symbol, Clio, i10', '4 000 – 5 500 DA'],
-    ['Berline', 'Logan, Sandero, Accent', '5 500 – 7 000 DA'],
-    ['SUV', 'Duster, Stepway, Creta', '8 000 – 9 500 DA'],
-    ['Van 7 places', 'Espace, Partner', '11 000 – 16 000 DA'],
+    ['Citadine', 'Symbol, Clio, i10', '5 500 – 7 000 DA'],
+    ['Berline', 'Logan, Sandero, Accent', '7 500 – 9 000 DA'],
+    ['SUV', 'Duster, Stepway, Creta', '9 500 – 12 000 DA'],
+    ['Van 7 places', 'Espace, Partner', '12 000 – 16 000 DA'],
+    ['Haut de gamme', 'Berlines et SUV premium', '16 000 DA et +'],
 ];
-$priceNote = 'Tarifs du marché des loueurs vérifiés à Blida, généralement inférieurs de 10 à 15% à ceux d\'Alger. En saison des mariages (été) et pendant les fêtes, réservez plusieurs semaines à l\'avance.';
+$priceNote = 'Tarifs du marché des loueurs vérifiés à Blida. En saison des mariages (été) et pendant les fêtes, réservez plusieurs semaines à l\'avance.';
 
 $pickupTitle = 'Où récupérer votre voiture à Blida';
 $pickupSpots = [
@@ -34,7 +35,7 @@ $particulierTexte = [
 ];
 
 $faqs = [
-    ['q' => 'Quel est le prix d\'une location de voiture à Blida ?', 'a' => 'Comptez 4 000 à 5 500 DA/jour pour une citadine, 5 500 à 7 000 DA pour une berline et 8 000 à 9 500 DA pour un SUV. Les prix baissent pour les locations de longue durée (plus de 10 jours).'],
+    ['q' => 'Quel est le prix d\'une location de voiture à Blida ?', 'a' => 'Comptez 5 500 à 7 000 DA/jour pour une citadine, 7 500 à 9 000 DA pour une berline et 9 500 à 12 000 DA pour un SUV. Les prix baissent pour les locations de longue durée (plus de 10 jours).'],
     ['q' => 'Peut-on se faire livrer la voiture à l\'aéroport d\'Alger depuis Blida ?', 'a' => 'Oui, la plupart des loueurs de Blida proposent la livraison à l\'aéroport Houari Boumédiène, à 45 minutes par l\'autoroute. Le supplément éventuel est indiqué sur l\'annonce.'],
     ['q' => 'Quels documents faut-il pour louer une voiture à Blida ?', 'a' => 'Un permis de conduire valide (généralement 2 ans d\'ancienneté minimum), une pièce d\'identité ou un passeport, et une caution dont le montant est précisé sur chaque annonce.'],
     ['q' => 'Peut-on louer une voiture à Blida pour un mariage ?', 'a' => 'Oui, c\'est une demande très courante à Blida. Berlines et SUV récents sont disponibles ; réservez tôt en été car la saison des mariages sature le marché local.'],

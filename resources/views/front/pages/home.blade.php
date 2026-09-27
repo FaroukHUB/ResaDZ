@@ -676,22 +676,22 @@
                     <div class="bg-gray-50 rounded-xl p-3.5 lg:p-5 border border-gray-100 hover:border-green-200 transition">
                         <div class="text-xl lg:text-2xl mb-1.5 lg:mb-2">&#128663;</div>
                         <h4 class="font-bold text-gray-900 text-xs lg:text-base">Citadine économique</h4>
-                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">À partir de 4 000 DA / jour</p>
+                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">À partir de 5 500 DA / jour</p>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-3.5 lg:p-5 border border-gray-100 hover:border-green-200 transition">
                         <div class="text-xl lg:text-2xl mb-1.5 lg:mb-2">&#128664;</div>
                         <h4 class="font-bold text-gray-900 text-xs lg:text-base">Compacte</h4>
-                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">Entre 5 000 et 6 500 DA / jour</p>
+                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">Entre 7 500 et 9 000 DA / jour</p>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-3.5 lg:p-5 border border-gray-100 hover:border-green-200 transition">
                         <div class="text-xl lg:text-2xl mb-1.5 lg:mb-2">&#128665;</div>
                         <h4 class="font-bold text-gray-900 text-xs lg:text-base">SUV / 4x4</h4>
-                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">Entre 6 500 et 9 000 DA / jour</p>
+                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">Entre 9 500 et 12 000 DA / jour</p>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-3.5 lg:p-5 border border-gray-100 hover:border-green-200 transition">
                         <div class="text-xl lg:text-2xl mb-1.5 lg:mb-2">&#128084;</div>
                         <h4 class="font-bold text-gray-900 text-xs lg:text-base">Berline premium</h4>
-                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">À partir de 10 000 DA / jour</p>
+                        <p class="text-green-700 font-semibold mt-1 text-xs lg:text-sm">À partir de 16 000 DA / jour</p>
                     </div>
                     <div class="bg-gray-50 rounded-xl p-3.5 lg:p-5 border border-gray-100 hover:border-amber-200 transition">
                         <div class="text-xl lg:text-2xl mb-1.5 lg:mb-2">&#128662;</div>
@@ -833,7 +833,7 @@
                             <svg class="w-5 h-5 text-gray-400 transition-transform" :class="active === 1 && 'rotate-180'" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
                         </button>
                         <div x-show="active === 1" x-collapse class="px-6 pb-4">
-                            <p class="text-sm text-gray-600">Les citadines économiques démarrent autour de 4 000 DA par jour selon disponibilité.</p>
+                            <p class="text-sm text-gray-600">Les citadines économiques démarrent autour de 5 500 DA par jour selon disponibilité.</p>
                         </div>
                     </div>
 

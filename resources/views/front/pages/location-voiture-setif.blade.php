@@ -3,7 +3,7 @@
 @php
 $city = 'Sétif';
 $slug = 'setif';
-$metaTitle = 'Location voiture Sétif — Loueurs vérifiés dès 4 000 DA/jour | ResaDZ';
+$metaTitle = 'Location voiture Sétif — Loueurs vérifiés dès 5 500 DA/jour | ResaDZ';
 $metaDescription = 'Louez une voiture à Sétif auprès de loueurs vérifiés : tarifs réels 2026, El Eulma, Aïn El Fouara, Djemila. Réservation en ligne sur ResaDZ.';
 $heroSubtitle = 'Comparez les loueurs vérifiés à Sétif et El Eulma. Capitale des hauts plateaux, carrefour commercial de l\'Est algérien.';
 
@@ -13,10 +13,11 @@ $intro = [
 ];
 
 $priceRows = [
-    ['Citadine', 'Symbol, Clio, i10', '4 000 – 5 500 DA'],
-    ['Berline', 'Logan, Sandero, Elantra', '5 500 – 7 500 DA'],
-    ['SUV', 'Duster, Stepway, Tucson', '8 000 – 10 000 DA'],
-    ['Van 7 places', 'Espace, Expert', '11 000 – 16 000 DA'],
+    ['Citadine', 'Symbol, Clio, i10', '5 500 – 7 000 DA'],
+    ['Berline', 'Logan, Sandero, Elantra', '7 500 – 9 000 DA'],
+    ['SUV', 'Duster, Stepway, Tucson', '9 500 – 12 000 DA'],
+    ['Van 7 places', 'Espace, Expert', '12 000 – 16 000 DA'],
+    ['Haut de gamme', 'Berlines et SUV premium', '16 000 DA et +'],
 ];
 $priceNote = 'Le marché sétifien est dynamique grâce au commerce d\'El Eulma : l\'offre est large et les prix compétitifs. Pendant les fêtes et la saison des mariages, réservez tôt.';
 
@@ -34,7 +35,7 @@ $particulierTexte = [
 ];
 
 $faqs = [
-    ['q' => 'Quel est le prix d\'une location de voiture à Sétif ?', 'a' => 'Comptez 4 000 à 5 500 DA/jour pour une citadine, 5 500 à 7 500 DA pour une berline et 8 000 à 10 000 DA pour un SUV. Les tarifs baissent au-delà de 10 jours de location.'],
+    ['q' => 'Quel est le prix d\'une location de voiture à Sétif ?', 'a' => 'Comptez 5 500 à 7 000 DA/jour pour une citadine, 7 500 à 9 000 DA pour une berline et 9 500 à 12 000 DA pour un SUV. Les tarifs baissent au-delà de 10 jours de location.'],
     ['q' => 'Peut-on louer une voiture à El Eulma ?', 'a' => 'Oui, plusieurs loueurs de la plateforme sont basés à El Eulma. C\'est pratique pour les commerçants et visiteurs du marché — filtrez par wilaya de Sétif et vérifiez la commune du loueur.'],
     ['q' => 'Peut-on aller à Djemila avec la voiture de location ?', 'a' => 'Oui, le site romain de Djemila est à environ 50 km de Sétif par une route correcte. Signalez simplement votre itinéraire au loueur et vérifiez le kilométrage inclus.'],
     ['q' => 'Quels documents faut-il pour louer à Sétif ?', 'a' => 'Permis de conduire valide (2 ans d\'ancienneté en général), pièce d\'identité ou passeport, et caution dont le montant est précisé sur chaque annonce.'],
