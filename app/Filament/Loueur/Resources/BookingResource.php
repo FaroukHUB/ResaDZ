@@ -152,6 +152,14 @@ class BookingResource extends Resource
                                             <strong>👤 Informations client</strong> — L\'email est utilisé pour les notifications automatiques (confirmation, rappel, demande d\'avis). Le WhatsApp permet d\'envoyer des messages rapides.
                                         </div>
                                     ')),
+                                Forms\Components\Placeholder::make('client_contacts_locked')
+                                    ->label('')
+                                    ->visible(fn ($record) => $record && ! $record->contactsVisibleToProvider())
+                                    ->content(new \Illuminate\Support\HtmlString('
+                                        <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-800 dark:text-amber-200">
+                                            <strong>🔒 Coordonnées masquées</strong> — Le téléphone, l\'email, le WhatsApp et les documents du client s\'afficheront ici dès que vous aurez accepté cette demande.
+                                        </div>
+                                    ')),
                                 Forms\Components\Grid::make(2)
                                     ->schema([
                                         Forms\Components\TextInput::make('client_name')
@@ -161,6 +169,8 @@ class BookingResource extends Resource
                                         Forms\Components\TextInput::make('client_phone')
                                             ->label('Téléphone')
                                             ->tel()
+                                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider())
                                             ->helperText('Numéro principal pour vous contacter'),
                                     ]),
                                 Forms\Components\Grid::make(2)
@@ -168,13 +178,18 @@ class BookingResource extends Resource
                                         Forms\Components\TextInput::make('client_email')
                                             ->label('Email')
                                             ->email()
+                                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider())
                                             ->helperText('Important ! Sert pour les confirmations et demandes d\'avis'),
                                         Forms\Components\TextInput::make('client_whatsapp')
                                             ->label('WhatsApp')
+                                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider())
                                             ->helperText('Format international : +213 xxx... pour messages WhatsApp'),
                                     ]),
                                 Forms\Components\Section::make('Documents')
                                     ->description('Conservez les documents du client pour votre protection juridique. Ils ne sont jamais partagés publiquement.')
+                                    ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
                                     ->schema([
                                         Forms\Components\FileUpload::make('client_id_document')
                                             ->label('Pièce d\'identité')
@@ -835,7 +850,8 @@ class BookingResource extends Resource
                 ])->label('WhatsApp')
                     ->icon('heroicon-o-chat-bubble-oval-left-ellipsis')
                     ->color('success')
-                    ->visible(fn (Booking $record) => !empty($record->client_whatsapp)),
+                    ->visible(fn (Booking $record) => !empty($record->client_whatsapp)
+                        && $record->contactsVisibleToProvider()),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

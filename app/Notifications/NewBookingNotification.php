@@ -38,8 +38,6 @@ class NewBookingNotification extends Notification
             ->line('---')
             ->line('**Véhicule :** ' . $vehicle->full_name)
             ->line('**Client :** ' . $booking->client_name)
-            ->line('**Téléphone :** ' . $booking->client_phone)
-            ->line('**Email :** ' . $booking->client_email)
             ->line('**Dates :** du ' . $startDate . ' au ' . $endDate . ' (' . $totalDays . ' jours)')
             ->line('**Heure de prise en charge :** ' . $booking->pickup_time)
             ->line('**Lieu :** ' . ($booking->pickup_address ?: 'Non spécifié'))
@@ -49,6 +47,7 @@ class NewBookingNotification extends Notification
                 return $mail->line('**Acompte demandé :** ' . $advanceAmount);
             })
             ->line('---')
+            ->line('Les coordonnées du client s\'afficheront dans votre espace dès que vous aurez accepté la demande.')
             ->action('Voir la réservation', url('/loueur/bookings/' . $booking->id))
             ->line('Veuillez examiner cette demande et y répondre rapidement.')
             ->salutation('L\'équipe ' . $companyName);

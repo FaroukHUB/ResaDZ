@@ -147,10 +147,24 @@ class TransferBookingResource extends Resource
 
                         Forms\Components\TextInput::make('client_phone')
                             ->label('Telephone')
-                            ->required(),
+                            ->required()
+                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider()),
 
                         Forms\Components\TextInput::make('client_email')
-                            ->label('Email'),
+                            ->label('Email')
+                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider()),
+
+                        Forms\Components\Placeholder::make('client_contacts_locked')
+                            ->label('')
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => $record && ! $record->contactsVisibleToProvider())
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-800 dark:text-amber-200">
+                                    <strong>🔒 Coordonnées masquées</strong> — Le téléphone et l\'email du client s\'afficheront dès que vous aurez accepté cette demande.
+                                </div>
+                            ')),
 
                         Forms\Components\Textarea::make('client_notes')
                             ->label('Notes')
@@ -255,6 +269,7 @@ class TransferBookingResource extends Resource
                 Tables\Columns\TextColumn::make('client_phone')
                     ->label('Tel.')
                     ->searchable()
+                    ->formatStateUsing(fn ($state, $record) => $record->contactsVisibleToProvider() ? $state : '—')
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 Tables\Columns\TextColumn::make('created_at')

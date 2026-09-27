@@ -256,6 +256,17 @@ class Booking extends Model
         return in_array($this->status, ['pending', 'confirmed']);
     }
 
+    /**
+     * Les coordonnees du client sont-elles visibles par le loueur ?
+     * Elles restent masquees tant que la demande n'a pas ete acceptee.
+     * Un enregistrement inexistant (creation manuelle par le loueur) reste
+     * saisissable normalement.
+     */
+    public function contactsVisibleToProvider(): bool
+    {
+        return $this->exists && $this->status !== 'pending';
+    }
+
     public function getFormattedTotal(): string
     {
         $symbol = $this->currency === 'EUR' ? '€' : 'DA';

@@ -135,10 +135,24 @@ class TransferBookingResource extends Resource
 
                         Forms\Components\TextInput::make('client_phone')
                             ->label('Téléphone')
-                            ->required(),
+                            ->required()
+                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider()),
 
                         Forms\Components\TextInput::make('client_email')
-                            ->label('Email'),
+                            ->label('Email')
+                            ->visible(fn ($record) => ! $record || $record->contactsVisibleToProvider())
+                            ->dehydrated(fn ($record) => ! $record || $record->contactsVisibleToProvider()),
+
+                        Forms\Components\Placeholder::make('client_contacts_locked')
+                            ->label('')
+                            ->columnSpanFull()
+                            ->visible(fn ($record) => $record && ! $record->contactsVisibleToProvider())
+                            ->content(new \Illuminate\Support\HtmlString('
+                                <div class="p-3 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg text-sm text-amber-800 dark:text-amber-200">
+                                    <strong>🔒 Coordonnées masquées</strong> — Le téléphone et l\'email du client s\'afficheront dès que vous aurez accepté cette demande.
+                                </div>
+                            ')),
 
                         Forms\Components\Textarea::make('client_notes')
                             ->label('Notes')
@@ -197,7 +211,7 @@ class TransferBookingResource extends Resource
                     ->label('Client')
                     ->searchable()
                     ->icon('heroicon-o-user')
-                    ->description(fn ($record) => $record->client_phone),
+                    ->description(fn ($record) => $record->contactsVisibleToProvider() ? $record->client_phone : null),
 
                 Tables\Columns\TextColumn::make('departure')
                     ->label('Trajet')

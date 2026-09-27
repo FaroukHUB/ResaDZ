@@ -186,6 +186,15 @@ class DeliveryBooking extends Model
         ]);
     }
 
+    /**
+     * Les coordonnees du client sont-elles visibles par le chauffeur/loueur ?
+     * Elles restent masquees tant que la demande n'a pas ete acceptee.
+     */
+    public function contactsVisibleToProvider(): bool
+    {
+        return $this->exists && $this->status !== 'pending';
+    }
+
     public function getStatusLabel(): string
     {
         return match ($this->status) {
